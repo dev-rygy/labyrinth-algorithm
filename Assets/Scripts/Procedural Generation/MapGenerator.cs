@@ -42,7 +42,7 @@ namespace RyansLibrary.Labyrinth
         public int startMasterIdx;  // Start index in master path
         public int endMasterIdx;    // End index in master path
 
-        // Constructor for path; gets it's start and end index in the master trail
+        // Constructor for path; gets it's start and end index in the master path
         public Path(string newName, int startIdx, int endIdx)
         {
             name = newName;
@@ -134,7 +134,7 @@ namespace RyansLibrary.Labyrinth
             // TODO: Generate Random Loot
 
             // TODO: Clean Up
-            //ClearAllPaths();
+            // ClearAllPaths();
         }
 
         #region Blueprint Procedure
