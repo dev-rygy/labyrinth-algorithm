@@ -29,9 +29,10 @@ namespace RyansLibrary
 
     public class Room : MonoBehaviour
     {
+        [SerializeField] private List<Transform> roomWalls;
+        [SerializeField] public RoomShape roomShape;
+
         public Vector3 Position { get; private set; }
-        public List<Transform> roomWalls { get; private set; }
-        public RoomShape roomShape { get; private set; }
         public RoomType roomType { get; private set; }
 
         private bool[,] openEntracways;
@@ -45,7 +46,7 @@ namespace RyansLibrary
         public void Initialize(RoomType type)
         {
             roomType = type;
-            AcivateEntranceways();
+            //AcivateEntranceways();
         }
 
         /// <summary>

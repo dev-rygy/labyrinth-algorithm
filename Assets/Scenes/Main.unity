@@ -156,9 +156,9 @@ RectTransform:
   - {fileID: 1080271925}
   m_Father: {fileID: 1843263248}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -67.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &109839429
@@ -482,7 +482,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Gen. Prize Path
+  m_text: Gen. Rooms
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -898,8 +898,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 981829860}
-        m_TargetAssemblyTypeName: MapGenerator, Assembly-CSharp
-        m_MethodName: GeneratePrizePath
+        m_TargetAssemblyTypeName: RyansLibrary.Labyrinth.MapGenerator, Assembly-CSharp
+        m_MethodName: RoomGenerationProcedure
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1024,9 +1024,9 @@ RectTransform:
   - {fileID: 1110108836}
   m_Father: {fileID: 1843263248}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -17.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &818067241
@@ -1204,18 +1204,22 @@ MonoBehaviour:
   _roomGridCellSize: 13
   _mainPathLength: 10
   _prizePathLength: 5
-  rooms1x1x1: []
-  rooms2x1x1: []
-  rooms1x2x1: []
-  rooms2x1x2: []
+  rooms1x1x1:
+  - {fileID: 3555212718981034981, guid: cdbb42a81e2b22d4ebefbc59bafb4207, type: 3}
+  rooms2x1x1:
+  - {fileID: 7196033339211055550, guid: 9ccdd0e1d2aa7ce41be74fa9522aa117, type: 3}
+  rooms1x2x1:
+  - {fileID: 5049113557517550773, guid: 599a9fb51dbcde84092ca1023f715670, type: 3}
+  rooms2x1x2:
+  - {fileID: 7465102344113990548, guid: 39abf4a8a5b99584496cd21e44973c1b, type: 3}
   upChance: 0
   downChance: 0
   rightChance: 0
   leftChance: 0
   forwardChance: 0
   backChance: 0
-  tallRoomChance: 0.4
-  longRoomChance: 0.5
+  tallRoomChance: 0
+  longRoomChance: 1
   bigRoomChance: 0
   _debugAll: 1
   _debugBlueprint: 0
@@ -1680,6 +1684,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 749311725}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1287042776
 MonoBehaviour:
@@ -2246,9 +2262,9 @@ RectTransform:
   - {fileID: 1869154792}
   m_Father: {fileID: 1843263248}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -117.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1957057020
