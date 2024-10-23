@@ -9,45 +9,83 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum RoomShape
+namespace RyansLibrary
 {
-    generalRoom,
-    longRoom,
-    tallRoom,
-    bigRoom,
-};
-
-public enum RoomType
-{
-    small,
-    start,
-    prize,
-    boss
-}
-
-public class Room : MonoBehaviour
-{
-    public Vector3 Position { get; private set; }
-    //public bool[,] activeEntranceways { get; private set; }
-    //public List<GameObject> entranceways { get; private set; }
-
-    public RoomShape roomShape { get; private set; }
-    public RoomType roomType { get; private set; }
-
-    private void Awake()
+    public enum RoomShape
     {
-        //activeEntranceways = new bool[4, 6];
+        smallRoom,
+        longRoom,
+        tallRoom,
+        bigRoom,
+    };
+
+    public enum RoomType
+    {
+        general,
+        start,
+        prize,
+        boss
     }
 
-    /*
-    /// <summary>
-    /// Activate an Entranceway in the entranceway list
-    /// </summary>
-    /// <param name="entranceNum"></param>
-    private void ActivateEntranceway(int entranceNum)
+    public class Room : MonoBehaviour
     {
-        entranceways[entranceNum].transform.GetChild(0).gameObject.SetActive(false); // Deactivate Wall
-        entranceways[entranceNum].transform.GetChild(1).gameObject.SetActive(true); // Activate Entranceway
+        public Vector3 Position { get; private set; }
+        public List<Transform> roomWalls { get; private set; }
+        public RoomShape roomShape { get; private set; }
+        public RoomType roomType { get; private set; }
+
+        private bool[,] openEntracways;
+
+        private void Awake()
+        {
+            // up to 4 possible unit spaces a room can take up; 6 possible faces on each unit
+            openEntracways = new bool[4, 6];
+        }
+
+        public void Initialize(RoomType type)
+        {
+            roomType = type;
+            AcivateEntranceways();
+        }
+
+        /// <summary>
+        /// Simply copy the bluePrint room's entranceway flags into the room's open entraceways.
+        /// </summary>
+        /// <param name="bluePrintArray">The blueprint room's entranceway array (6 possible entrances)</param>
+        /// <param name="unitIndex">A specific unit space of the room in question</param>
+        public void CopyBlueprintRoomEntranceFlags(bool[] bluePrintArray, int unitIndex)
+        {
+            for (int i = 0; i < bluePrintArray.Length; i++) // iterate through all six faces of the Blueprint's flag array
+            {
+                openEntracways[unitIndex, i] = bluePrintArray[i]; // Copy into room array respectively
+            }
+        }
+
+        /// <summary>
+        /// When called will activate all entranceways that have been flagged as open in the openEntranceways array
+        /// </summary>
+        private void AcivateEntranceways()
+        {
+            int enListIdx = 0;              // iterator for activeEntranceway List
+            for (int i = 0; i < 4; i++)     // iterate through 4 possible unit spaces
+            {
+                for (int j = 0; j < 6; j++)     // iterate through the faces of each unit
+                {
+                    enListIdx = (i * 6) + j;
+                    if (openEntracways[i, j] == true)   // Activate entrance if true in activeEntranceway List
+                        ActivateEntranceway(enListIdx);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Activate an Entranceway in the entranceway list
+        /// </summary>
+        /// <param name="entranceNum"></param>
+        private void ActivateEntranceway(int entranceNum)
+        {
+            roomWalls[entranceNum].GetChild(0).gameObject.SetActive(false); // Deactivate Wall
+            roomWalls[entranceNum].GetChild(1).gameObject.SetActive(true); // Activate Entranceway
+        }
     }
-    */
 }
