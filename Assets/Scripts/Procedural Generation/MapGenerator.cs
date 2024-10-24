@@ -515,16 +515,18 @@ namespace RyansLibrary.Labyrinth
 
         bool TallRoomSpawnCondition(Vector3 originRoomPos, Vector3 nextRoomPos, out RoomCase rCase)
         {
-            if (originRoomPos.x == nextRoomPos.x                // if both blueprint rooms have same x value
-                && originRoomPos.z == nextRoomPos.z             // if both blueprint rooms have same z value
-                && (originRoomPos.y - nextRoomPos.y) <= 0)      // if difference of z <= 0
+            float differenceY = originRoomPos.y - nextRoomPos.y;
+            float differenceX = originRoomPos.x - nextRoomPos.x;
+            float differenceZ = originRoomPos.z - nextRoomPos.z;
+
+            if (differenceX == 0 && differenceZ == 0            // if both blueprint rooms have same x value and if both blueprint rooms have same z value
+                && (differenceY <= 0) && (Mathf.Abs(differenceY) <= _roomGridCellSize))      // if difference of z <= 0
             {
                 rCase = RoomCase.PosY; // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                 return true;
             }
-            else if (originRoomPos.x == nextRoomPos.x           // if both blueprint rooms on same x value
-                && originRoomPos.z == nextRoomPos.z             // if both blueprint rooms on same z value
-                && (originRoomPos.y - nextRoomPos.y) > 0)       // if difference of z > 0
+            else if (differenceX == 0 && differenceZ == 0            // if both blueprint rooms have same x value and if both blueprint rooms have same z value
+                && (differenceY > 0) && (Mathf.Abs(differenceY) <= _roomGridCellSize))      // if difference of z <= 0
             {
                 rCase = RoomCase.NegY;
                 return true;
@@ -542,41 +544,35 @@ namespace RyansLibrary.Labyrinth
             float differenceX = originRoomPos.x - nextRoomPos.x;
             float differenceZ = originRoomPos.z - nextRoomPos.z;
 
-            if (originRoomPos.z == nextRoomPos.z           // if both rooms on same z value
-                && originRoomPos.y == nextRoomPos.y             // if both rooms on same y value
-                && (originRoomPos.x - nextRoomPos.x) <= 0)      // if difference of x <= 0
+            if (differenceZ == 0 && differenceY == 0             // if both rooms on same z value and if both rooms on same y value
+                && (differenceX <= 0) && (Mathf.Abs(differenceX) <= _roomGridCellSize))      // if difference of x <= 0 and if the room is directly adjacent
             {
                 rCase = RoomCase.PosX;
                 return true;
             }
-            else if (originRoomPos.z == nextRoomPos.z               // if both rooms on same z value
-                    && originRoomPos.y == nextRoomPos.y             // if both rooms on same y value
-                    && (originRoomPos.x - nextRoomPos.x) > 0)       // if difference of x > 0
+            else if (differenceZ == 0 && differenceY == 0             // if both rooms on same z value and if both rooms on same y value
+                    && (differenceX > 0) && (Mathf.Abs(differenceX) <= _roomGridCellSize))       // if difference of x > 0 and if room is direcly adjacent
             {
                 rCase = RoomCase.NegX;
                 return true;
             }
-            // *** Skipping PosX condition for now ***
-            else if (originRoomPos.x == nextRoomPos.x                // if both rooms have same x value
-                && originRoomPos.y == nextRoomPos.y             // if both rooms have same y value
-                && (originRoomPos.z - nextRoomPos.z) <= 0)      // if difference of z <= 0
+            else if (differenceX == 0 && differenceY == 0            // if both rooms have same x value and if both rooms on same y value
+                && (differenceZ <= 0) && (Mathf.Abs(differenceZ) <= _roomGridCellSize))      // if difference of z <= 0 and if room is direcly adjacent
             {
                 rCase = RoomCase.PosZ;                          // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                 return true;
             }
-            // *** Skipping NegX condition for now ***
-            else if (originRoomPos.x == nextRoomPos.x           // if both rooms on same x value
-                && originRoomPos.y == nextRoomPos.y             // if both rooms on same y value
-                && (originRoomPos.z - nextRoomPos.z) > 0)       // if difference of z > 0
+            else if (differenceX == 0 && differenceY == 0            // if both rooms have same x value and if both rooms on same y value
+                && (differenceZ > 0) && (Mathf.Abs(differenceZ) <= _roomGridCellSize))      // if difference of z > 0 and if room is direcly adjacent
             {
                 rCase = RoomCase.NegZ;
                 return true;
             }
-            else
+            else  // If none of these conditions hold then return fail
             {
                 rCase = 0;
                 return false;
-            } // if both rooms differ by cellsize on y
+            }
         }
 
 
