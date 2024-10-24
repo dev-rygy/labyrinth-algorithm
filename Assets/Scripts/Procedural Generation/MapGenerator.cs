@@ -78,7 +78,7 @@ namespace RyansLibrary.Labyrinth
             Rooms.Add(room);
         }
 
-        public void ClearRooms()
+        public void ClearBluePrintRooms()
         {
             BlueprintRooms.Clear();
         }
@@ -99,6 +99,8 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Settings")]
         [SerializeField] private float _roomGridCellSize = 13;     // The unit size of the room grid's cell
+        [SerializeField] private Transform _blueprintRoomContainer;
+        [SerializeField] private Transform _roomContainer;
 
         [Header("Path Lengths")]
         [SerializeField] private int _mainPathLength;
@@ -110,13 +112,13 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private List<GameObject> rooms1x2x1;
         [SerializeField] private List<GameObject> rooms2x1x2;
 
-        [Header("Direction Chance")]        // TODO: Maybe implement
-        [SerializeField] [Range(0, 1)] private float upChance;
-        [SerializeField] [Range(0, 1)] private float downChance;
-        [SerializeField] [Range(0, 1)] private float rightChance;
-        [SerializeField] [Range(0, 1)] private float leftChance;
-        [SerializeField] [Range(0, 1)] private float forwardChance;
-        [SerializeField] [Range(0, 1)] private float backChance;
+        //[Header("Direction Chance")]        // TODO: Maybe implement
+        //[SerializeField] [Range(0, 1)] private float upChance;
+        //[SerializeField] [Range(0, 1)] private float downChance;
+        //[SerializeField] [Range(0, 1)] private float rightChance;
+        //[SerializeField] [Range(0, 1)] private float leftChance;
+        //[SerializeField] [Range(0, 1)] private float forwardChance;
+        //[SerializeField] [Range(0, 1)] private float backChance;
 
 
         [Header("Room Chance")]
@@ -128,7 +130,10 @@ namespace RyansLibrary.Labyrinth
         [Header("Debug")]
         [SerializeField] private bool _debugAll;
         [SerializeField] private bool _debugBlueprint;
+        [SerializeField] private bool _debugRoomGen;
         [SerializeField] private GameObject _blueprintGizmoPrefab;
+        [SerializeField] private Color _mainPathColor;
+        [SerializeField] private Color _prizePathColor;
 
         private Path MasterPath;
         private Path MainPath;
@@ -282,7 +287,8 @@ namespace RyansLibrary.Labyrinth
 
                 if (_debugAll || _debugBlueprint)
                 {
-                    GenerateBlueprintGizmo(curPos);
+                    string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
+                    GenerateBlueprintGizmo(curPos, pathType, blueName);
                 }
 
                 // Update paths
@@ -354,7 +360,8 @@ namespace RyansLibrary.Labyrinth
 
                     if (_debugAll || _debugBlueprint)
                     {
-                        GenerateBlueprintGizmo(curPos);
+                        string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
+                        GenerateBlueprintGizmo(curPos, pathType, blueName);
                     }
 
                     curRoom = newBlueRoom;
@@ -402,7 +409,7 @@ namespace RyansLibrary.Labyrinth
         private void GenerateRooms(Path path)
         {
             PathType pathType = path.Type;
-            int incAmt = 1;         // Amount to increment the loop by
+            int incAmt = 0;         // Amount to increment the loop by
 
             switch (pathType)
             {
@@ -413,7 +420,7 @@ namespace RyansLibrary.Labyrinth
                 case PathType.main:
                     path.Rooms.Add(GenerateRoom(RoomShape.smallRoom, RoomType.start, path, 0, 0));
 
-                    for (int i = 0; i < path.BlueprintCount(); i += incAmt)
+                    for (int i = 1; i < path.BlueprintCount(); i += incAmt)
                     {
                         float roomRoll = Random.Range(0, 1.01f);
                         RoomCase rCase = RoomCase.PosX;             // Default Room Case
@@ -427,7 +434,7 @@ namespace RyansLibrary.Labyrinth
                             // Hook up blueprintRoom.entrancewayflags to new room
                             incAmt = 4; // jump index to next empty blueprint room
                         }
-                        else if ((roomRoll <= tallRoomChance) && (i < path.BlueprintCount() - 1) && TallRoomPositionCondition(path.BlueprintRooms[i].Position, path.BlueprintRooms[i + 1].Position, out rCase))  // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2 at end of trail
+                        else if ((roomRoll <= tallRoomChance) && (i < path.BlueprintCount() - 1) && TallRoomSpawnCondition(path.BlueprintRooms[i].Position, path.BlueprintRooms[i + 1].Position, out rCase))  // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2 at end of trail
                         {
                             //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                             //   rType = RoomType.boss;
@@ -436,11 +443,11 @@ namespace RyansLibrary.Labyrinth
                             MasterPath.Add(genRoom);
                             incAmt = 2; // jump index to next empty blueprint room
                         }
-                        else if ((roomRoll <= longRoomChance) && (i < path.BlueprintCount() - 1) && LongRoomPositionCondition(path.BlueprintRooms[i].Position, path.BlueprintRooms[i + 1].Position, out rCase)) // else if can spawn H-Room & passed H-Room spawn chance && extra space for a 2x1 at end of trail
+                        else if ((roomRoll <= longRoomChance) && (i < path.BlueprintCount() - 1) && LongRoomSpawnCondition(path.BlueprintRooms[i].Position, path.BlueprintRooms[i + 1].Position, out rCase)) // else if can spawn L-Room & passed L-Room spawn chance && extra space for a 2x1 at end of trail
                         {
                             //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                             //    rType = RoomType.ToBoss;
-                            Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rCase); // Spawn H-Room
+                            Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rCase); // Spawn L-Room
                             path.Add(genRoom);
                             MasterPath.Add(genRoom);
                             incAmt = 2; // jump index to next empty blueprint room
@@ -449,7 +456,7 @@ namespace RyansLibrary.Labyrinth
                         {
                             //if (i + 1 >= path.Length()) // if the next room to be generated is the last room in the trail
                             //    rType = RoomType.ToBoss;
-                            Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, i, 0); // Spawn G-Room
+                            Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, i, 0); // Spawn S-Room
                             path.Add(genRoom);
                             MasterPath.Add(genRoom);
                         }
@@ -471,23 +478,23 @@ namespace RyansLibrary.Labyrinth
                             // Hook up blueprintRoom.entrancewayflags to new room
                             incAmt = 4; // jump index to next empty blueprint room
                         }
-                        else if ((roomRoll <= tallRoomChance) && (i < path.BlueprintCount() - 1) && TallRoomPositionCondition(path.BlueprintRooms[i].Position, path.BlueprintRooms[i + 1].Position, out rCase))  // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2 at end of trail
+                        else if ((roomRoll <= tallRoomChance) && (i < path.BlueprintCount() - 1) && TallRoomSpawnCondition(path.BlueprintRooms[i].Position, path.BlueprintRooms[i + 1].Position, out rCase))  // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2 at end of trail
                         {
                             //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                             //   rType = RoomType.boss;
                             Room genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, i, rCase); // Spawn T-Room
                             path.Add(genRoom);
                             MasterPath.Add(genRoom);
-                            incAmt = 2; // jump index to next empty blueprint room
+                            incAmt = 2;         // jump index to next empty blueprint room
                         }
-                        else if ((roomRoll <= longRoomChance) && (i < path.BlueprintCount() - 1) && LongRoomPositionCondition(path.BlueprintRooms[i].Position, path.BlueprintRooms[i + 1].Position, out rCase)) // else if can spawn H-Room & passed H-Room spawn chance && extra space for a 2x1 at end of trail
+                        else if ((roomRoll <= longRoomChance) && (i < path.BlueprintCount() - 1) && LongRoomSpawnCondition(path.BlueprintRooms[i].Position, path.BlueprintRooms[i + 1].Position, out rCase)) // else if can spawn H-Room & passed H-Room spawn chance && extra space for a 2x1 at end of trail
                         {
                             //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                             //    rType = RoomType.ToBoss;
                             Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rCase); // Spawn H-Room
                             path.Add(genRoom);
                             MasterPath.Add(genRoom);
-                            incAmt = 2; // jump index to next empty blueprint room
+                            incAmt = 2;         // jump index to next empty blueprint room
                         }
                         else
                         {
@@ -506,7 +513,7 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        bool TallRoomPositionCondition(Vector3 originRoomPos, Vector3 nextRoomPos, out RoomCase rCase)
+        bool TallRoomSpawnCondition(Vector3 originRoomPos, Vector3 nextRoomPos, out RoomCase rCase)
         {
             if (originRoomPos.x == nextRoomPos.x                // if both blueprint rooms have same x value
                 && originRoomPos.z == nextRoomPos.z             // if both blueprint rooms have same z value
@@ -529,8 +536,12 @@ namespace RyansLibrary.Labyrinth
             } // if both rooms differ by cellsize on y
         }
 
-        bool LongRoomPositionCondition(Vector3 originRoomPos, Vector3 nextRoomPos, out RoomCase rCase)
+        bool LongRoomSpawnCondition(Vector3 originRoomPos, Vector3 nextRoomPos, out RoomCase rCase)
         {
+            float differenceY = originRoomPos.y - nextRoomPos.y;
+            float differenceX = originRoomPos.x - nextRoomPos.x;
+            float differenceZ = originRoomPos.z - nextRoomPos.z;
+
             if (originRoomPos.z == nextRoomPos.z           // if both rooms on same z value
                 && originRoomPos.y == nextRoomPos.y             // if both rooms on same y value
                 && (originRoomPos.x - nextRoomPos.x) <= 0)      // if difference of x <= 0
@@ -551,7 +562,7 @@ namespace RyansLibrary.Labyrinth
                 && (originRoomPos.z - nextRoomPos.z) <= 0)      // if difference of z <= 0
             {
                 rCase = RoomCase.PosZ;                          // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
-                return false;
+                return true;
             }
             // *** Skipping NegX condition for now ***
             else if (originRoomPos.x == nextRoomPos.x           // if both rooms on same x value
@@ -559,7 +570,7 @@ namespace RyansLibrary.Labyrinth
                 && (originRoomPos.z - nextRoomPos.z) > 0)       // if difference of z > 0
             {
                 rCase = RoomCase.NegZ;
-                return false;
+                return true;
             }
             else
             {
@@ -580,7 +591,7 @@ namespace RyansLibrary.Labyrinth
                 // ********* Small Room **************
                 case RoomShape.smallRoom:
                     roomRoll = Random.Range(0, rooms1x1x1.Count);         // Choose a random 1x1x1-Room index from the prefab list of 1x1x1-Rooms
-                    generatedRoom = Instantiate(rooms1x1x1[roomRoll], path.BlueprintRooms[index].Position, rotation).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
+                    generatedRoom = Instantiate(rooms1x1x1[roomRoll], path.BlueprintRooms[index].Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
                     //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index].activeEntranceways, 0);           // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
                     generatedRoom.Initialize(rType);                                                                // Activate new rooms entranceways
                     break;
@@ -589,14 +600,14 @@ namespace RyansLibrary.Labyrinth
                     roomRoll = Random.Range(0, rooms2x1x1.Count);         // Choose a random 2x1x1-Room index from the prefab list of 2x1x1-Rooms
                     if (rCase == RoomCase.PosX)
                     {
-                        generatedRoom = Instantiate(rooms2x1x1[roomRoll], path.BlueprintRooms[index].Position, rotation).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
+                        generatedRoom = Instantiate(rooms2x1x1[roomRoll], path.BlueprintRooms[index].Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
                         //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index].activeEntranceways, 0);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index + 1].activeEntranceways, 1);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                            // Activate new rooms entranceways
                     }
                     else if (rCase == RoomCase.NegX)
                     {
-                        generatedRoom = Instantiate(rooms2x1x1[roomRoll], path.BlueprintRooms[index + 1].Position, rotation).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
+                        generatedRoom = Instantiate(rooms2x1x1[roomRoll], path.BlueprintRooms[index + 1].Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
                         //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index].activeEntranceways, 1);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index + 1].activeEntranceways, 0);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                            // Activate new rooms entranceways
@@ -604,10 +615,16 @@ namespace RyansLibrary.Labyrinth
                     else if (rCase == RoomCase.PosZ)
                     {
                         // TODO: PosZ case
+                        rotation.SetFromToRotation(Vector3.right, Vector3.forward);
+                        generatedRoom = Instantiate(rooms2x1x1[roomRoll], path.BlueprintRooms[index].Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.Initialize(rType);
+
                     }
                     else if (rCase == RoomCase.NegZ)
                     {
                         // TODO: NegZ case
+                        rotation.SetFromToRotation(Vector3.right, Vector3.forward);
+                        generatedRoom = Instantiate(rooms2x1x1[roomRoll], path.BlueprintRooms[index + 1].Position, rotation, _roomContainer).GetComponent<Room>();
                     }
                     else
                         Debug.LogError("Map Generator Error: Roomcase does not match any valid Long-Room Cases.");
@@ -617,14 +634,14 @@ namespace RyansLibrary.Labyrinth
                     roomRoll = Random.Range(0, rooms1x2x1.Count); // Choose a random 1x2x1-Room index from the prefab list of 1x2x1-Rooms
                     if (rCase == RoomCase.PosY)
                     {
-                        generatedRoom = Instantiate(rooms1x2x1[roomRoll], path.BlueprintRooms[index].Position, rotation).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
+                        generatedRoom = Instantiate(rooms1x2x1[roomRoll], path.BlueprintRooms[index].Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
                         //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index].activeEntranceways, 0);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index + 1].activeEntranceways, 1);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                             // Activate new rooms entranceways
                     }
                     else if (rCase == RoomCase.NegY)
                     {
-                        generatedRoom = Instantiate(rooms1x2x1[roomRoll], path.BlueprintRooms[index + 1].Position, rotation).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
+                        generatedRoom = Instantiate(rooms1x2x1[roomRoll], path.BlueprintRooms[index + 1].Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
                         //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index].activeEntranceways, 1);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         //generatedRoom.CopyBlueprintRoomEntranceFlags(path.BlueprintRooms[index + 1].activeEntranceways, 0);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                             // Activate new rooms entranceways
@@ -653,8 +670,9 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         void ClearAllPaths()
         {
-            MasterPath.ClearRooms(); // All paths combined
-            MainPath.ClearRooms();   // path to Boss Room
+            MasterPath.ClearBluePrintRooms(); // All paths combined
+            MainPath.ClearBluePrintRooms();   // path to Boss Room
+            PrizePath.ClearBluePrintRooms();  // path to Prize
         }
 
         #region Debug
@@ -663,11 +681,23 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="roomPos">Center position of the room to be generated</param>
         /// <param name="name">The name of the room; can be blank</param>
-        private void GenerateBlueprintGizmo(Vector3 roomPos, string name = "BlueprintRoom")
+        private void GenerateBlueprintGizmo(Vector3 roomPos, PathType type, string name = "BlueprintRoom")
         {
-            GameObject genRoom = Instantiate(_blueprintGizmoPrefab, roomPos, Quaternion.identity) as GameObject;
-            genRoom.name = name;
-            genRoom.transform.SetParent(transform);
+            // Set the Color of the gizmo
+            Color color = Color.blue;
+            switch(type)
+            {
+                case PathType.main:
+                    color = _mainPathColor;
+                    break;
+                case PathType.prize:
+                    color = _prizePathColor;
+                    break;
+            }
+
+            GameObject gizmo = Instantiate(_blueprintGizmoPrefab, roomPos, Quaternion.identity, _blueprintRoomContainer);
+            gizmo.GetComponent<Renderer>().material.color = color;
+            gizmo.name = name;
         }
         #endregion
     }

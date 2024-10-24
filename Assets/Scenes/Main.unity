@@ -279,6 +279,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 109839427}
   m_CullTransparentMesh: 1
+--- !u!1 &128193135
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 128193136}
+  m_Layer: 0
+  m_Name: BlueprintRooms
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &128193136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128193135}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 981829861}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &194332907
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,7 +1233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _roomGridCellSize: 13
-  _mainPathLength: 10
+  _mainPathLength: 30
   _prizePathLength: 5
   rooms1x1x1:
   - {fileID: 3555212718981034981, guid: cdbb42a81e2b22d4ebefbc59bafb4207, type: 3}
@@ -1212,19 +1243,16 @@ MonoBehaviour:
   - {fileID: 5049113557517550773, guid: 599a9fb51dbcde84092ca1023f715670, type: 3}
   rooms2x1x2:
   - {fileID: 7465102344113990548, guid: 39abf4a8a5b99584496cd21e44973c1b, type: 3}
-  upChance: 0
-  downChance: 0
-  rightChance: 0
-  leftChance: 0
-  forwardChance: 0
-  backChance: 0
-  tallRoomChance: 0
+  tallRoomChance: 1
   longRoomChance: 1
   bigRoomChance: 0
   _debugAll: 1
   _debugBlueprint: 0
+  _debugRoomGen: 0
   _blueprintGizmoPrefab: {fileID: 346890499486270653, guid: 1e7aed37650f79e4f83703d767189d05,
     type: 3}
+  _mainPathColor: {r: 0.08962262, g: 0.9914308, b: 1, a: 0.29803923}
+  _prizePathColor: {r: 1, g: 0.6938922, b: 0, a: 0.29803923}
 --- !u!4 &981829861
 Transform:
   m_ObjectHideFlags: 0
@@ -1240,6 +1268,7 @@ Transform:
   m_Children:
   - {fileID: 194332908}
   - {fileID: 811539170}
+  - {fileID: 128193136}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &987028918
