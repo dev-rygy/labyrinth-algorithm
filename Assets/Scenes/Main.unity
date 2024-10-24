@@ -1233,8 +1233,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _roomGridCellSize: 13
-  _mainPathLength: 30
-  _prizePathLength: 5
+  _blueprintRoomContainer: {fileID: 128193136}
+  _roomContainer: {fileID: 811539170}
+  _mainPathLength: 100
+  _prizePathLength: 10
   rooms1x1x1:
   - {fileID: 3555212718981034981, guid: cdbb42a81e2b22d4ebefbc59bafb4207, type: 3}
   rooms2x1x1:
@@ -1267,8 +1269,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 194332908}
-  - {fileID: 811539170}
   - {fileID: 128193136}
+  - {fileID: 811539170}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &987028918

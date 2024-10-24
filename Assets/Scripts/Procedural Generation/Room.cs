@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   10/13/2024 
+ * Last Modified:   10/23/2024 
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
@@ -11,6 +11,7 @@ using UnityEngine;
 
 namespace RyansLibrary
 {
+    // Determines how much grid space a room will ocupy.
     public enum RoomShape
     {
         smallRoom,
@@ -19,6 +20,7 @@ namespace RyansLibrary
         bigRoom,
     };
 
+    // Determines its gameplay and purpose.
     public enum RoomType
     {
         general,
