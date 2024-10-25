@@ -25,13 +25,14 @@ namespace RyansLibrary.Labyrinth
     /// </summary>
     public class BlueprintRoom
     {
-        public string roomName;
+        public string RoomName { get; private set; }
         public Vector3 Position { get; private set; }
         public bool[] activeEntranceways;
 
         // Constructor
-        public BlueprintRoom(Vector3 postion)
+        public BlueprintRoom(Vector3 postion, string roomName = "Blueprint Room")
         {
+            RoomName = roomName;
             Position = postion;
             activeEntranceways = new bool[6];
         }
@@ -103,9 +104,10 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Transform _blueprintRoomContainer;
         [SerializeField] private Transform _roomContainer;
 
-        [Header("Path Lengths")]
+        [Header("Path Settings")]
         [SerializeField] private int _mainPathLength;
         [SerializeField] private int _prizePathLength;
+        [SerializeField] private int _amountOfPrizePaths = 1;
 
         [Header("Room Prefabs")]
         [SerializeField] private List<GameObject> rooms1x1x1;
@@ -138,7 +140,7 @@ namespace RyansLibrary.Labyrinth
 
         private Path MasterPath;
         private Path MainPath;
-        private Path PrizePath;
+        private List<Path> PrizePaths;
         #endregion
 
         #region Mono
@@ -155,6 +157,7 @@ namespace RyansLibrary.Labyrinth
         {
             // Initialize Master Path
             MasterPath = new Path(MASTER_PATH_NAME, PathType.master, 0, 0);
+            PrizePaths = new List<Path>();
 
             // If debug is active; step through procedures with UI buttons
             if (!_debugAll)
@@ -195,8 +198,9 @@ namespace RyansLibrary.Labyrinth
             // Main Path to boss
             GenerateMainPath();
 
-            // Path to prize room
-            GeneratePrizePath();
+            // Paths to prize rooms
+            for (int i = 0; i < _amountOfPrizePaths; i++)
+                PrizePaths.Add(GeneratePrizePath());
 
             // TODO: Add more paths
         }
@@ -216,14 +220,17 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Helper function for generating the prize path
         /// </summary>
-        public void GeneratePrizePath()
+        public Path GeneratePrizePath()
         {
+            Path path;
             // Path to prize room; choose a random start room
             BlueprintRoom startRoom = ChooseRandomRoom(MasterPath, 1); // start at index 1 as to not choose the starting room of the game
-            RandomWalker(_prizePathLength, out PrizePath, PathType.prize, PRIZE_PATH_NAME, startRoom);
+            RandomWalker(_prizePathLength, out path, PathType.prize, PRIZE_PATH_NAME, startRoom);
             
             if (_debugAll || _debugBlueprint)
-                Debug.Log($"Map Generator: {PrizePath.name} generated with {PrizePath.BlueprintCount()} rooms.");
+                Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
+
+            return path;
         }
 
         /// <summary>
@@ -254,7 +261,7 @@ namespace RyansLibrary.Labyrinth
             // TODO: Make a enum/layer mask perameter that can choose a room from a specific type or types
 
             // Choose a random room respecting the constraints and return
-            int randomRoomIndex = UnityEngine.Random.Range(startIndex, endIndex);
+            int randomRoomIndex = Random.Range(startIndex, endIndex);
             BlueprintRoom room = pathToChooseFrom.BlueprintRooms[randomRoomIndex];
 
             if (_debugAll || _debugBlueprint)
@@ -274,7 +281,6 @@ namespace RyansLibrary.Labyrinth
         private void RandomWalker(int desiredLength, out Path path, PathType pathType, string pathName = "New Path", BlueprintRoom startRoom = null)
         {
             Vector3 curPos = Vector3.zero;
-            Vector3 tempPos = Vector3.zero;
             BlueprintRoom curRoom = null;
 
             // Initialize a new path
@@ -286,11 +292,11 @@ namespace RyansLibrary.Labyrinth
             // Prime loop with starting room
             if (startRoom == null)        // Generate Start Room if a start room was not passed in
             {
-                BlueprintRoom newRoom = new BlueprintRoom(curPos);
+                string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
+                BlueprintRoom newRoom = new BlueprintRoom(curPos, blueName);
 
                 if (_debugAll || _debugBlueprint)
                 {
-                    string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
                     GenerateBlueprintGizmo(curPos, pathType, blueName);
                 }
 
@@ -303,16 +309,17 @@ namespace RyansLibrary.Labyrinth
             }
             else
             {
+                Debug.Log($"Starting room for path {pathName} is {startRoom.RoomName}");
                 curPos = startRoom.Position;
                 curRoom = startRoom;
             }
 
             int failedAttempts = 0;
-
+            Vector3 tempPos = curPos;
             while (path.BlueprintCount() < desiredLength)
             {
                 // Choose a random direction to be the potential position for the next room.
-                int randomDirection = UnityEngine.Random.Range(1, STAND_ROOM_FACE_COUNT + 1);
+                int randomDirection = Random.Range(1, STAND_ROOM_FACE_COUNT + 1);
                 switch (randomDirection)        // "Walk" in that direction from the curerent pos
                 {
                     // E0 - E5 is the face count for a unit room, this will be used later for entranceways
@@ -358,12 +365,12 @@ namespace RyansLibrary.Labyrinth
                 {
                     curPos = tempPos; // Change Current Position to new position
 
-                    BlueprintRoom newBlueRoom = new BlueprintRoom(curPos);
+                    string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
+                    BlueprintRoom newBlueRoom = new BlueprintRoom(curPos, blueName);
                     //FlagDoorways(newRoom, curRoom, entrFlagIdx);
 
                     if (_debugAll || _debugBlueprint)
                     {
-                        string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
                         GenerateBlueprintGizmo(curPos, pathType, blueName);
                     }
 
@@ -399,7 +406,9 @@ namespace RyansLibrary.Labyrinth
         {
             // Generate Rooms along trails
             GenerateRooms(MainPath);
-            GenerateRooms(PrizePath);
+
+            for (int i = 0; i < _amountOfPrizePaths; i++)
+                GenerateRooms(PrizePaths[i]);
         }
 
         //The room case based on the direction of the adjacent/next room.
@@ -745,7 +754,9 @@ namespace RyansLibrary.Labyrinth
         {
             MasterPath.ClearBluePrintRooms(); // All paths combined
             MainPath.ClearBluePrintRooms();   // path to Boss Room
-            PrizePath.ClearBluePrintRooms();  // path to Prize
+            for (int i = 0; i < _amountOfPrizePaths; i++)
+                PrizePaths[i].ClearBluePrintRooms();  // paths to prize rooms
+            PrizePaths.Clear();
         }
 
         #region Debug
