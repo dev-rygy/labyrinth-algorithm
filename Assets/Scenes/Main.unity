@@ -954,6 +954,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Small Room (1x1x1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4482354393470152422, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
       propertyPath: m_IsActive
@@ -1041,6 +1046,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Small Room (1x1x1) (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4482354393470152422, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
@@ -1489,13 +1499,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3cd3e5e7b21eb04aa4f54c8e3f9e574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enabled: 0
+  enabled: 1
   _roomGridCellSize: 13
   _blueprintRoomContainer: {fileID: 128193136}
   _roomContainer: {fileID: 811539170}
-  _mainPathLength: 20
-  _prizePathLength: 3
-  _amountOfPrizePaths: 2
+  lowerBound: {x: -1000, y: 0, z: -1000}
+  upperBound: {x: 1000, y: 3, z: 1000}
+  _mainPathLength: 100
+  _prizePathLength: 0
+  _amountOfPrizePaths: 0
   rooms1x1x1:
   - {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135, type: 3}
   rooms2x1x1:

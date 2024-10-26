@@ -105,10 +105,12 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private float _roomGridCellSize = 13;     // The unit size of the room grid's cell
         [SerializeField] private Transform _blueprintRoomContainer;
         [SerializeField] private Transform _roomContainer;
+        [SerializeField] private Vector3 lowerBound = new Vector3(0, -1000, -1000);
+        [SerializeField] private Vector3 upperBound = new Vector3(3, 1000, 1000);
 
         [Header("Path Settings")]
-        [SerializeField] private int _mainPathLength;
-        [SerializeField] private int _prizePathLength;
+        [SerializeField] private int _mainPathLength = 1;
+        [SerializeField] private int _prizePathLength = 1;
         [SerializeField] private int _amountOfPrizePaths = 1;
 
         [Header("Room Prefabs")]
@@ -116,8 +118,8 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private List<GameObject> rooms2x1x1;
         [SerializeField] private List<GameObject> rooms1x2x1;
         [SerializeField] private List<GameObject> rooms2x1x2;
-
-        [Header("Room Chance")]
+        
+        [Header("Room Shape Chance")]
         [SerializeField] [Range(0, 1)] private float tallRoomChance = 0;
         [SerializeField] [Range(0, 1)] private float longRoomChance = 0;
         [SerializeField] [Range(0, 1)] private float bigRoomChance = 0;
@@ -152,6 +154,9 @@ namespace RyansLibrary.Labyrinth
             MasterPath = new Path(MASTER_PATH_NAME, PathType.master, 0, 0);
             PrizePaths = new List<Path>();
 
+            upperBound *= _roomGridCellSize;
+            lowerBound *= _roomGridCellSize;
+
             // If debug is active; step through procedures with UI buttons
             if (!_debugAll)
                 LabyrinthAlg();
@@ -165,6 +170,9 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         public void LabyrinthAlg()
         {
+            if (!enabled)
+                return;
+
             // Generate blueprint map
             BlueprintProcedure();
 
@@ -313,8 +321,9 @@ namespace RyansLibrary.Labyrinth
             while (path.BlueprintCount() < desiredLength)
             {
                 Vector3 tempPos = curPos;
+
                 // Choose a random direction to be the potential position for the next room.
-                int randomDirection = Random.Range(1, 5); // STAND_ROOM_FACE_COUNT + 1);
+                int randomDirection = Random.Range(1, STAND_ROOM_FACE_COUNT + 1);
                 switch (randomDirection)        // "Walk" in that direction from the curerent pos
                 {
                     // E0 - E5 is the face count for a unit room, this will be used later for entranceways
@@ -347,6 +356,12 @@ namespace RyansLibrary.Labyrinth
                         break;
                 }
 
+                if (!BoundingBoxCheck(tempPos))     // Check if the room is in the realm of the bounding box
+                {
+                    if (_debugAll || _debugBlueprint)  Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
+                    continue;
+                }
+
                 // Check Master Path for colliding rooms (the temp pos is inside another designated room space)
                 bool inRoomList = false;
                 BlueprintRoom collidedRoom = null;
@@ -370,8 +385,7 @@ namespace RyansLibrary.Labyrinth
                     BlueprintRoom newBlueRoom = new BlueprintRoom(curPos, blueName);
                     FlagDoorways(newBlueRoom, curRoom, entrFlagIdx);            // Flag the face that touches the opposite room
 
-                    if (_debugAll || _debugBlueprint)
-                        GenerateBlueprintGizmo(curPos, pathType, blueName);
+                    if (_debugAll || _debugBlueprint) GenerateBlueprintGizmo(curPos, pathType, blueName);
 
                     curRoom = newBlueRoom;
                     path.Add(newBlueRoom);
@@ -391,7 +405,19 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        void FlagDoorways(BlueprintRoom newRoom, BlueprintRoom prevRoom, int entrFlagIdx) // Flag the entranceways to be activated in each room
+        private bool BoundingBoxCheck(Vector3 desiredPos)
+        {
+            Vector3 differenceUpper = upperBound - desiredPos;
+            Vector3 differenceLower = lowerBound - desiredPos;
+            if (differenceUpper.x < 0 || differenceUpper.y < 0 || differenceUpper.z < 0)        // Valid
+                return false;
+            if (differenceLower.x > 0 || differenceLower.y > 0 || differenceLower.z > 0)        // Valid
+                return false;
+
+            return true;           // Invalid
+        }
+
+        private void FlagDoorways(BlueprintRoom newRoom, BlueprintRoom prevRoom, int entrFlagIdx) // Flag the entranceways to be activated in each room
         {
             // Flag the fact of the next room facing the prev. room
             if (entrFlagIdx % 2 == 0)                                   // If choosen an even numbered side (F4) then set opposite (F3) to true
