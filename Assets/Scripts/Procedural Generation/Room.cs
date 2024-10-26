@@ -7,6 +7,7 @@
 */
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace RyansLibrary
@@ -31,8 +32,14 @@ namespace RyansLibrary
 
     public class Room : MonoBehaviour
     {
+        [Header("Room Walls")]
         [SerializeField] private List<Transform> roomWalls;
+
+        [Header("Room Properties")]
         [SerializeField] public RoomShape roomShape;
+
+        [Header("debug")]
+        [SerializeField] private bool debug = false;
 
         public Vector3 Position { get; private set; }
         public RoomType roomType { get; private set; }
@@ -48,7 +55,7 @@ namespace RyansLibrary
         public void Initialize(RoomType type)
         {
             roomType = type;
-            //AcivateEntranceways();
+            AcivateEntranceways();
         }
 
         /// <summary>
@@ -56,12 +63,51 @@ namespace RyansLibrary
         /// </summary>
         /// <param name="bluePrintArray">The blueprint room's entranceway array (6 possible entrances)</param>
         /// <param name="unitIndex">A specific unit space of the room in question</param>
-        public void CopyBlueprintRoomEntranceFlags(bool[] bluePrintArray, int unitIndex)
+        public void CopyBlueprintRoomEntranceFlags(bool[] bluePrintArray, int unitIndex, Quaternion rotation)
         {
+            bluePrintArray = HandleRotation(bluePrintArray, rotation);
+
             for (int i = 0; i < bluePrintArray.Length; i++) // iterate through all six faces of the Blueprint's flag array
             {
                 openEntracways[unitIndex, i] = bluePrintArray[i]; // Copy into room array respectively
             }
+        }
+
+        private bool[] HandleRotation(bool[] bluePrintArray, Quaternion rotation)
+        {
+            if (rotation == Quaternion.identity)        // If no rotation return
+                return bluePrintArray;
+
+            float angle = 2.0f * Mathf.Acos(rotation.w);
+            bool[] rotatedArray = new bool[bluePrintArray.Length];
+
+            if (angle == Mathf.PI / 2)      // If 90 degree rotation shift down
+            {
+                rotatedArray[0] = bluePrintArray[5];        // Positive X to Negative Z
+                rotatedArray[1] = bluePrintArray[4];        // Negative X to Positive z
+                rotatedArray[2] = bluePrintArray[2];        // Positive Y direction the same
+                rotatedArray[3] = bluePrintArray[3];        // Negative Y direction the same
+                rotatedArray[4] = bluePrintArray[1];        // Positive Z to Positive X
+                rotatedArray[5] = bluePrintArray[0];        // Negative Z to Negative X
+                if (debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
+
+            }
+            else if (angle == 2 * Mathf.PI)     // If 90 degree rotation then shift up
+            {
+                rotatedArray[0] = bluePrintArray[4];        // Positive X to Negative Z
+                rotatedArray[1] = bluePrintArray[5];        // Negative X to Positive z
+                rotatedArray[2] = bluePrintArray[2];        // Positive Y direction the same
+                rotatedArray[3] = bluePrintArray[3];        // Negative Y direction the same
+                rotatedArray[4] = bluePrintArray[0];        // Positive Z to Positive X
+                rotatedArray[5] = bluePrintArray[1];        // Negative Z to Negative X
+                if (debug) Debug.Log($"Room {gameObject.name} has been rotated by -90 degrees.");
+            }
+            else
+            {
+                Debug.LogError($"Room Error: Room {gameObject.name} has been rotated incorrectly.");
+            }
+            
+            return rotatedArray;
         }
 
         /// <summary>
@@ -87,8 +133,8 @@ namespace RyansLibrary
         /// <param name="entranceNum"></param>
         private void ActivateEntranceway(int entranceNum)
         {
-            roomWalls[entranceNum].GetChild(0).gameObject.SetActive(false); // Deactivate Wall
-            roomWalls[entranceNum].GetChild(1).gameObject.SetActive(true); // Activate Entranceway
+            roomWalls[entranceNum].GetChild(0).gameObject.SetActive(true);   // Activate Entranceway
+            roomWalls[entranceNum].GetChild(1).gameObject.SetActive(false);  // Deactivate Wall
         }
     }
 }
