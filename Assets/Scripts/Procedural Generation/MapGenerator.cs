@@ -324,22 +324,22 @@ namespace RyansLibrary.Labyrinth
                 {
                     // E0 - E5 is the face count for a unit room, this will be used later for entranceways
                     case 1:
-                        tempPos += Vector3.right * _roomGridCellSize;    // E0 : (1, 0, 0) * Cell Unit Size
+                        tempPos += Vector3.right * _roomGridCellSize;    // F0 : (1, 0, 0) * Cell Unit Size; Wall Right
                         break;
                     case 2:
-                        tempPos += Vector3.left * _roomGridCellSize;     // E1 : (-1, 0, 0) * Cell Unit Size
+                        tempPos += Vector3.left * _roomGridCellSize;     // F1 : (-1, 0, 0) * Cell Unit Size; Wall Left
                         break;
                     case 3:
-                        tempPos += Vector3.forward * _roomGridCellSize;  // E2 : (0, 0, 1) * Cell Unit Size
+                        tempPos += Vector3.forward * _roomGridCellSize;  // F2 : (0, 0, 1) * Cell Unit Size; Wall Forward
                         break;
                     case 4:
-                        tempPos += Vector3.back * _roomGridCellSize;     // E3 : (0, 0, -1) * Cell Unit Size
+                        tempPos += Vector3.back * _roomGridCellSize;     // F3 : (0, 0, -1) * Cell Unit Size; Wall Back
                         break;
                     case 5:
-                        tempPos += Vector3.up * _roomGridCellSize;       // E4 : (0, 1, 0) * Cell Unit Size
+                        tempPos += Vector3.up * _roomGridCellSize;       // F4 : (0, 1, 0) * Cell Unit Size; Wall Top
                         break;
                     case 6:
-                        tempPos += Vector3.down * _roomGridCellSize;     // E5 : (0, 1, 0) * Cell Unit Size
+                        tempPos += Vector3.down * _roomGridCellSize;     // F5 : (0, 1, 0) * Cell Unit Size; Wall Bot
                         break;
                     default:
                         Debug.LogError("Map Generator Error: Direction choosen by gen alg does not exist.");

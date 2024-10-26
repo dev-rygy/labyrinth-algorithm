@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2942216689207972348
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8576971650072398190}
+  m_Layer: 0
+  m_Name: '(F4) Wall Top '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8576971650072398190
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2942216689207972348}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 823869513721391978}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3555212718981034981
 GameObject:
   m_ObjectHideFlags: 0
@@ -46,7 +77,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomWalls: []
+  roomWalls:
+  - {fileID: 2568129692234809714}
+  - {fileID: 4293022159439061449}
+  - {fileID: 1377878894023594343}
+  - {fileID: 6727221572116403113}
+  - {fileID: 8576971650072398190}
+  - {fileID: 6092763061802664676}
   roomShape: 0
 --- !u!1 &6352547418920695875
 GameObject:
@@ -77,11 +114,44 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1377878894023594343}
-  - {fileID: 4293022159439061449}
   - {fileID: 2568129692234809714}
+  - {fileID: 4293022159439061449}
+  - {fileID: 1377878894023594343}
   - {fileID: 6727221572116403113}
+  - {fileID: 8576971650072398190}
+  - {fileID: 6092763061802664676}
   m_Father: {fileID: 6498468685537148166}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6944168403148575479
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6092763061802664676}
+  m_Layer: 0
+  m_Name: (F5) Wall Bot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6092763061802664676
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6944168403148575479}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 823869513721391978}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &889418706989777971
 PrefabInstance:
@@ -144,7 +214,7 @@ PrefabInstance:
     - target: {fileID: 4311421554719560491, guid: 5be3ac847bdcc114388bf6b03ace04e0,
         type: 3}
       propertyPath: m_Name
-      value: Wall Left
+      value: (F1) Wall Left
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -218,7 +288,7 @@ PrefabInstance:
     - target: {fileID: 4311421554719560491, guid: 5be3ac847bdcc114388bf6b03ace04e0,
         type: 3}
       propertyPath: m_Name
-      value: Wall Right
+      value: (F0) Wall Right
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -371,7 +441,7 @@ PrefabInstance:
     - target: {fileID: 4311421554719560491, guid: 5be3ac847bdcc114388bf6b03ace04e0,
         type: 3}
       propertyPath: m_Name
-      value: Wall Forward
+      value: (F2) Wall Forward
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -445,7 +515,7 @@ PrefabInstance:
     - target: {fileID: 4311421554719560491, guid: 5be3ac847bdcc114388bf6b03ace04e0,
         type: 3}
       propertyPath: m_Name
-      value: Wall Back
+      value: (F3) Wall Back
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
