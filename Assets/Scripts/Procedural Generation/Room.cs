@@ -7,6 +7,7 @@
 */
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
@@ -63,7 +64,7 @@ namespace RyansLibrary
         /// </summary>
         /// <param name="bluePrintArray">The blueprint room's entranceway array (6 possible entrances)</param>
         /// <param name="unitIndex">A specific unit space of the room in question</param>
-        public void CopyBlueprintRoomEntranceFlags(bool[] bluePrintArray, int unitIndex, Quaternion rotation)
+        public void CopyBlueprintRoomEntranceFlags(bool[] bluePrintArray, int unitIndex, Vector3 rotation)
         {
             bluePrintArray = HandleRotation(bluePrintArray, rotation);
 
@@ -73,34 +74,27 @@ namespace RyansLibrary
             }
         }
 
-        private bool[] HandleRotation(bool[] bluePrintArray, Quaternion rotation)
+        private bool[] HandleRotation(bool[] bluePrintArray, Vector3 rotation)
         {
-            if (rotation == Quaternion.identity)        // If no rotation return
+            if (rotation == Vector3.zero)        // If no rotation return
+            {
+                if (debug) Debug.Log($"Room {gameObject.name} was not rotated.");
                 return bluePrintArray;
+            }
 
-            float angle = 2.0f * Mathf.Acos(rotation.w);
+            if (debug) Debug.Log($"Attempting to rotate room {gameObject.name}.");
             bool[] rotatedArray = new bool[bluePrintArray.Length];
 
-            if (angle == Mathf.PI / 2)      // If 90 degree rotation shift down
+            if (rotation.y == 90)      // If 90 degree rotation shift down
             {
-                rotatedArray[0] = bluePrintArray[5];        // Positive X to Negative Z
-                rotatedArray[1] = bluePrintArray[4];        // Negative X to Positive z
-                rotatedArray[2] = bluePrintArray[2];        // Positive Y direction the same
-                rotatedArray[3] = bluePrintArray[3];        // Negative Y direction the same
-                rotatedArray[4] = bluePrintArray[1];        // Positive Z to Positive X
-                rotatedArray[5] = bluePrintArray[0];        // Negative Z to Negative X
+                rotatedArray[0] = bluePrintArray[2];        // Positive X to Negative Z
+                rotatedArray[1] = bluePrintArray[3];        // Negative X to Positive z
+                rotatedArray[2] = bluePrintArray[1];        // Positive Z direction the same
+                rotatedArray[3] = bluePrintArray[0];        // Negative Z direction the same
+                rotatedArray[4] = bluePrintArray[4];        // Positive Y to Positive X
+                rotatedArray[5] = bluePrintArray[5];        // Negative Y to Negative X
                 if (debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
 
-            }
-            else if (angle == 2 * Mathf.PI)     // If 90 degree rotation then shift up
-            {
-                rotatedArray[0] = bluePrintArray[4];        // Positive X to Negative Z
-                rotatedArray[1] = bluePrintArray[5];        // Negative X to Positive z
-                rotatedArray[2] = bluePrintArray[2];        // Positive Y direction the same
-                rotatedArray[3] = bluePrintArray[3];        // Negative Y direction the same
-                rotatedArray[4] = bluePrintArray[0];        // Positive Z to Positive X
-                rotatedArray[5] = bluePrintArray[1];        // Negative Z to Negative X
-                if (debug) Debug.Log($"Room {gameObject.name} has been rotated by -90 degrees.");
             }
             else
             {
