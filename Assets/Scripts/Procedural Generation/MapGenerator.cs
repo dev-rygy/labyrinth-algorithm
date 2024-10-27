@@ -1,13 +1,11 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   10/23/2024 
+ * Last Modified:   10/26/2024 
  * Notes:           Room Map Generator
 */
-using System.Buffers.Text;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -90,6 +88,7 @@ namespace RyansLibrary.Labyrinth
     public class MapGenerator : MonoBehaviour
     {
         #region Variables
+        // CONSTANTS
         // Amount of faces on a blueprint room
         const int STAND_ROOM_FACE_COUNT = 6;
         const string MASTER_PATH_NAME = "Master Path";
@@ -99,14 +98,22 @@ namespace RyansLibrary.Labyrinth
         // Singleton Reference
         public static MapGenerator Instance { get; private set; }
 
-        [SerializeField] private bool enabled = true;
+        // Paths
+        public Path MasterPath { get; private set; }
+        public Path MainPath { get; private set; }
+        public List<Path> PrizePaths { get; private set; }
+
+        // Enable the map generator
+        [SerializeField] private bool _enabled = true;
 
         [Header("Settings")]
         [SerializeField] private float _roomGridCellSize = 13;     // The unit size of the room grid's cell
         [SerializeField] private Transform _blueprintRoomContainer;
         [SerializeField] private Transform _roomContainer;
-        [SerializeField] private Vector3 lowerBound = new Vector3(0, -1000, -1000);
-        [SerializeField] private Vector3 upperBound = new Vector3(3, 1000, 1000);
+        
+        [Header("Bounding Box")]
+        [SerializeField] private Vector3 _lowerBound = new Vector3(0, -1000, -1000);
+        [SerializeField] private Vector3 _upperBound = new Vector3(3, 1000, 1000);
 
         [Header("Path Settings")]
         [SerializeField] private int _mainPathLength = 1;
@@ -120,22 +127,18 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private List<GameObject> rooms2x1x2;
         
         [Header("Room Shape Chance")]
-        [SerializeField] [Range(0, 1)] private float tallRoomChance = 0;
-        [SerializeField] [Range(0, 1)] private float longRoomChance = 0;
-        [SerializeField] [Range(0, 1)] private float bigRoomChance = 0;
-
+        [SerializeField] [Range(0, 1)] private float _tallRoomSpawnChance = 0;
+        [SerializeField] [Range(0, 1)] private float _longRoomSpawnChance = 0;
+        [SerializeField] [Range(0, 1)] private float _bigRoomSpawnChance = 0;
 
         [Header("Debug")]
         [SerializeField] private bool _debugAll;
         [SerializeField] private bool _debugBlueprint;
         [SerializeField] private bool _debugRoomGen;
         [SerializeField] private GameObject _blueprintGizmoPrefab;
+        [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _mainPathColor;
         [SerializeField] private Color _prizePathColor;
-
-        private Path MasterPath;
-        private Path MainPath;
-        private List<Path> PrizePaths;
         #endregion
 
         #region Mono
@@ -154,8 +157,15 @@ namespace RyansLibrary.Labyrinth
             MasterPath = new Path(MASTER_PATH_NAME, PathType.master, 0, 0);
             PrizePaths = new List<Path>();
 
-            upperBound *= _roomGridCellSize;
-            lowerBound *= _roomGridCellSize;
+            if (!CheckBoundedVolume())
+            {
+                Debug.LogError("Map Generator Error: The amount of rooms to generate exceeds the bounding box's volume or the bounding box is inverted.");
+                return;
+            }
+
+            _upperBound *= _roomGridCellSize;
+            _lowerBound *= _roomGridCellSize;
+
 
             // If debug is active; step through procedures with UI buttons
             if (!_debugAll)
@@ -163,6 +173,7 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
+        #region Labyrinth Algorithm Sequence
         /// <summary>
         /// Labyrinth Algorithm, a wrapper algorithm that utalizes the classic drunken/random walker algorithm (RWA).
         /// Using the RWA the algorithm makes paths that can connect to each other into formint a 
@@ -170,7 +181,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         public void LabyrinthAlg()
         {
-            if (!enabled)
+            if (!_enabled)
                 return;
 
             // Generate blueprint map
@@ -186,6 +197,7 @@ namespace RyansLibrary.Labyrinth
             // TODO: Clean Up
             // ClearAllPaths();
         }
+        #endregion
 
         #region Blueprint Procedure
         /// <summary>
@@ -356,7 +368,7 @@ namespace RyansLibrary.Labyrinth
                         break;
                 }
 
-                if (!BoundingBoxCheck(tempPos))     // Check if the room is in the realm of the bounding box
+                if (!CheckBounds(tempPos))     // Check if the room is in the realm of the bounding box
                 {
                     if (_debugAll || _debugBlueprint)  Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
                     continue;
@@ -405,11 +417,16 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        private bool BoundingBoxCheck(Vector3 desiredPos)
+        /// <summary>
+        /// Check the bounding box to make sure the generator does not generate rooms out of the range.
+        /// </summary>
+        /// <param name="desiredPos">The desired position to spawn the next room</param>
+        /// <returns></returns>
+        private bool CheckBounds(Vector3 desiredPos)
         {
-            Vector3 differenceUpper = upperBound - desiredPos;
-            Vector3 differenceLower = lowerBound - desiredPos;
-            if (differenceUpper.x < 0 || differenceUpper.y < 0 || differenceUpper.z < 0)        // Valid
+            Vector3 differenceUpper = _upperBound - desiredPos;
+            Vector3 differenceLower = _lowerBound - desiredPos;
+            if (differenceUpper.x <= 0 || differenceUpper.y <= 0 || differenceUpper.z <= 0)        // Valid
                 return false;
             if (differenceLower.x > 0 || differenceLower.y > 0 || differenceLower.z > 0)        // Valid
                 return false;
@@ -528,6 +545,7 @@ namespace RyansLibrary.Labyrinth
 
                         incAmt = 1;     // Reset incAmt on each iteration
 
+                        // TODO: Check and spawn B-Rooms
                         if (false)  // if can spawn B-Room & passed B-Room spawn chance
                         {
                             // spawn B-Room
@@ -592,7 +610,7 @@ namespace RyansLibrary.Labyrinth
             {
                 // *********** Tall Room Conditions ***********
                 case RoomShape.tallRoom:
-                    if (roomRoll > tallRoomChance)     // If room failed roll then return and don't spawn room
+                    if (roomRoll > _tallRoomSpawnChance)     // If room failed roll then return and don't spawn room
                     {
                         rDir = 0;
                         return false;
@@ -618,7 +636,7 @@ namespace RyansLibrary.Labyrinth
                     }
                 // *********** Long Room Conditions ***********
                 case RoomShape.longRoom:
-                    if (roomRoll > longRoomChance)     // If room failed roll then return and don't spawn room
+                    if (roomRoll > _longRoomSpawnChance)     // If room failed roll then return and don't spawn room
                     {
                         rDir = 0;
                         return false;
@@ -790,6 +808,26 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
+        #region Utility
+        /// <summary>
+        /// Checks if the total amount of rooms is valid in a bounded range.
+        /// </summary>
+        /// <returns>The test success or fail</returns>
+        private bool CheckBoundedVolume()
+        {
+            float totalRooms = _mainPathLength + (_prizePathLength * _amountOfPrizePaths);
+
+            float xSize = (_upperBound.x - _lowerBound.x);
+            float ySize = (_upperBound.y - _lowerBound.y);
+            float zSize = (_upperBound.z - _lowerBound.z);
+            float volume = Math.RectangularVolume(xSize, ySize, zSize);
+
+            if (volume < totalRooms)
+                return false;
+
+            return true;
+        }
+
         /// <summary>
         /// Clean up path lists to free up memory
         /// </summary>
@@ -801,6 +839,7 @@ namespace RyansLibrary.Labyrinth
                 PrizePaths[i].ClearBluePrintRooms();  // paths to prize rooms
             PrizePaths.Clear();
         }
+        #endregion
 
         #region Debug
         /// <summary>
@@ -825,6 +864,31 @@ namespace RyansLibrary.Labyrinth
             GameObject gizmo = Instantiate(_blueprintGizmoPrefab, roomPos, Quaternion.identity, _blueprintRoomContainer);
             gizmo.GetComponent<Renderer>().material.color = color;
             gizmo.name = name;
+        }
+
+        /// <summary>
+        /// Draw the bounding box of the generator
+        /// </summary>
+        private void OnDrawGizmos()
+        {
+            if (!_debugAll)
+                return;
+
+            // Find the centerpoint of the box
+            float xPos = (_lowerBound.x + _upperBound.x - _roomGridCellSize) / 2;
+            float yPos = (_lowerBound.y + _upperBound.y - _roomGridCellSize) / 2;
+            float zPos = (_lowerBound.z + _upperBound.z - _roomGridCellSize) / 2;
+            Vector3 centerPoint = new Vector3(xPos, yPos, zPos);
+
+            // Find the size of the box
+            float xSize = (_upperBound.x - _lowerBound.x);
+            float ySize = (_upperBound.y - _lowerBound.y);
+            float zSize = (_upperBound.z - _lowerBound.z);
+            Vector3 size = new Vector3(xSize, ySize, zSize);
+
+
+            Gizmos.color = _boundingBoxColor;
+            Gizmos.DrawWireCube(centerPoint, size);
         }
         #endregion
     }

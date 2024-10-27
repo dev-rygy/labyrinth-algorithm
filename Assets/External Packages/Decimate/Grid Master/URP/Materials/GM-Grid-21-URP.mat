@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GM-Grid-21-URP
+  m_Shader: {fileID: -6465566751694194690, guid: b4bb8b5c4862a416fa38d705dedc4d96,
+    type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _BLEND_MODE_SCREEN
+  - _COORDINATES_OBJECT
+  m_InvalidKeywords:
+  - _BLEND_MODE_OVERLAY
+  m_LightmapFlags: 2
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Emission_Texture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Metallic_Texture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Side_Texture:
+        m_Texture: {fileID: 2800000, guid: eb865931055dc47ccb7784131a339de2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2D:
+        m_Texture: {fileID: 2800000, guid: 583384ba064432b41891bec94e35c8af, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture_Sides:
+        m_Texture: {fileID: 2800000, guid: 583384ba064432b41891bec94e35c8af, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture_Top:
+        m_Texture: {fileID: 2800000, guid: a7ff24a0f3bd4dd4aaf9265ba8da09ba, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_Texture:
+        m_Texture: {fileID: 2800000, guid: eb865931055dc47ccb7784131a339de2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BLEND_MODE: 3
+    - _Blend_Opacity: 0.2
+    - _COORDINATES: 0
+    - _Dirt: 0
+    - _Dirt_Blend: 0.976
+    - _Dirt_Height: 0.808
+    - _Edge_Sharpness: 1
+    - _Emission: 0
+    - _Emission_Tiling: 1
+    - _Metallic: 0.5
+    - _Metallic_Tiling: 1
+    - _Offset: 1.39
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _Smoothness: 0.414
+    - _Tiling: 1
+    m_Colors:
+    - _Dirt_Color: {r: 0, g: 0, b: 0, a: 0}
+    - _Emission_Color: {r: 0, g: 0, b: 0, a: 0}
+    - _Side_Color: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
+    - _Side_Offset: {r: 0, g: 0, b: 0, a: 0}
+    - _Top_Color: {r: 0.41966313, g: 0.5754717, b: 0, a: 1}
+    - _Top_Offset: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
+--- !u!114 &427184906883024837
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7

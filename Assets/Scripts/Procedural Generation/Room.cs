@@ -1,14 +1,11 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   10/23/2024 
+ * Last Modified:   10/26/2024 
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace RyansLibrary
@@ -53,6 +50,7 @@ namespace RyansLibrary
             openEntracways = new bool[4, 6];
         }
 
+        // Initialize the Room's entrances and loot
         public void Initialize(RoomType type)
         {
             roomType = type;
@@ -74,6 +72,12 @@ namespace RyansLibrary
             }
         }
 
+        /// <summary>
+        /// Simply shift the values in the blueprint array around to handle a 90 degree rotation.
+        /// </summary>
+        /// <param name="bluePrintArray">The blueprint array</param>
+        /// <param name="rotation">The angle of applied rotation</param>
+        /// <returns></returns>
         private bool[] HandleRotation(bool[] bluePrintArray, Vector3 rotation)
         {
             if (rotation == Vector3.zero)        // If no rotation return
@@ -82,9 +86,7 @@ namespace RyansLibrary
                 return bluePrintArray;
             }
 
-            if (debug) Debug.Log($"Attempting to rotate room {gameObject.name}.");
             bool[] rotatedArray = new bool[bluePrintArray.Length];
-
             if (rotation.y == 90)      // If 90 degree rotation shift down
             {
                 rotatedArray[0] = bluePrintArray[2];        // Positive X to Negative Z
@@ -97,9 +99,7 @@ namespace RyansLibrary
 
             }
             else
-            {
                 Debug.LogError($"Room Error: Room {gameObject.name} has been rotated incorrectly.");
-            }
             
             return rotatedArray;
         }
