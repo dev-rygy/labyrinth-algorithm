@@ -98,11 +98,6 @@ namespace RyansLibrary.Labyrinth
         // Singleton Reference
         public static MapGenerator Instance { get; private set; }
 
-        // Paths
-        public Path MasterPath { get; private set; }
-        public Path MainPath { get; private set; }
-        public List<Path> PrizePaths { get; private set; }
-
         // Enable the map generator
         [SerializeField] private bool _enabled = true;
 
@@ -139,6 +134,11 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _mainPathColor;
         [SerializeField] private Color _prizePathColor;
+
+        // Paths
+        private Path MasterPath;
+        private Path MainPath;
+        private List<Path> PrizePaths;
         #endregion
 
         #region Mono
@@ -309,9 +309,7 @@ namespace RyansLibrary.Labyrinth
                 BlueprintRoom newRoom = new BlueprintRoom(curPos, blueName);
 
                 if (_debugAll || _debugBlueprint)
-                {
                     GenerateBlueprintGizmo(curPos, pathType, blueName);
-                }
 
                 // Update paths
                 path.Add(newRoom);
@@ -322,7 +320,9 @@ namespace RyansLibrary.Labyrinth
             }
             else
             {
-                Debug.Log($"Starting room for path {pathName} is {startRoom.RoomName}");
+                if (_debugAll || _debugBlueprint)
+                    Debug.Log($"Starting room for path {pathName} is {startRoom.RoomName}");
+
                 curPos = startRoom.Position;
                 curRoom = startRoom;
             }
@@ -333,33 +333,41 @@ namespace RyansLibrary.Labyrinth
             while (path.BlueprintCount() < desiredLength)
             {
                 Vector3 tempPos = curPos;
+                bool[] attempts = new bool[STAND_ROOM_FACE_COUNT];
 
                 // Choose a random direction to be the potential position for the next room.
-                int randomDirection = Random.Range(1, STAND_ROOM_FACE_COUNT + 1);
-                switch (randomDirection)        // "Walk" in that direction from the curerent pos
+                int direction = Random.Range(1, STAND_ROOM_FACE_COUNT);
+                while (attempts[direction])     // Loop though attempts to find a unique direction
+                {
+                    direction++;
+                    if (direction % STAND_ROOM_FACE_COUNT == 0)
+                        direction = 0;
+                }
+
+                switch (direction)        // "Walk" in that direction from the curerent pos
                 {
                     // E0 - E5 is the face count for a unit room, this will be used later for entranceways
-                    case 1:
+                    case 0:
                         tempPos += Vector3.right * _roomGridCellSize;    // F0 : (1, 0, 0) * Cell Unit Size; Wall Right
                         entrFlagIdx = 0;
                         break;
-                    case 2:
+                    case 1:
                         tempPos += Vector3.left * _roomGridCellSize;     // F1 : (-1, 0, 0) * Cell Unit Size; Wall Left
                         entrFlagIdx = 1;
                         break;
-                    case 3:
+                    case 2:
                         tempPos += Vector3.forward * _roomGridCellSize;  // F2 : (0, 0, 1) * Cell Unit Size; Wall Forward
                         entrFlagIdx = 2;
                         break;
-                    case 4:
+                    case 3:
                         tempPos += Vector3.back * _roomGridCellSize;     // F3 : (0, 0, -1) * Cell Unit Size; Wall Back
                         entrFlagIdx = 3;
                         break;
-                    case 5:
+                    case 4:
                         tempPos += Vector3.up * _roomGridCellSize;       // F4 : (0, 1, 0) * Cell Unit Size; Wall Top
                         entrFlagIdx = 4;
                         break;
-                    case 6:
+                    case 5:
                         tempPos += Vector3.down * _roomGridCellSize;     // F5 : (0, 1, 0) * Cell Unit Size; Wall Bot
                         entrFlagIdx = 5;
                         break;
@@ -370,7 +378,10 @@ namespace RyansLibrary.Labyrinth
 
                 if (!CheckBounds(tempPos))     // Check if the room is in the realm of the bounding box
                 {
-                    if (_debugAll || _debugBlueprint)  Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
+                    // TODO: Enable the stuff below, we need a prev room in order to do this because you cannot set the collided room as the bound
+                    //attempts[entrFlagIdx] = true;
+                    //failedAttempts++;
+                    if (_debugAll || _debugBlueprint) Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
                     continue;
                 }
 
@@ -384,6 +395,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         collidedRoom = room;
                         inRoomList = true;
+                        attempts[entrFlagIdx] = true;
                         failedAttempts++;
                         break;              // Break loop, no need to continue; better performance
                     }

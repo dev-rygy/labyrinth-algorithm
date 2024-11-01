@@ -1340,27 +1340,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3cd3e5e7b21eb04aa4f54c8e3f9e574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enabled: 1
+  _enabled: 1
   _roomGridCellSize: 13
   _blueprintRoomContainer: {fileID: 128193136}
   _roomContainer: {fileID: 811539170}
-  lowerBound: {x: -100, y: 0, z: -100}
-  upperBound: {x: 100, y: 2, z: 100}
-  _mainPathLength: 20
-  _prizePathLength: 0
-  _amountOfPrizePaths: 0
+  _lowerBound: {x: -1000, y: 0, z: -1000}
+  _upperBound: {x: 1000, y: 3, z: 1000}
+  _mainPathLength: 50
+  _prizePathLength: 10
+  _amountOfPrizePaths: 2
   rooms1x1x1:
   - {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135, type: 3}
-  - {fileID: 3555212718981034981, guid: f6a7ce3f491a877478b57afd79f74395, type: 3}
   rooms2x1x1:
   - {fileID: 197979799327637701, guid: 302187ca606e5f5419cd4d080240de14, type: 3}
   rooms1x2x1:
   - {fileID: 5986294591766773533, guid: 66fa60f0bde56fb4a9b03c2086aabf30, type: 3}
   rooms2x1x2:
   - {fileID: 2479775355766125897, guid: 5a78b852af992604daf765df5782b318, type: 3}
-  tallRoomChance: 1
-  longRoomChance: 0.5
-  bigRoomChance: 0
+  _tallRoomSpawnChance: 1
+  _longRoomSpawnChance: 0.5
+  _bigRoomSpawnChance: 0
   _debugAll: 0
   _debugBlueprint: 0
   _debugRoomGen: 0
