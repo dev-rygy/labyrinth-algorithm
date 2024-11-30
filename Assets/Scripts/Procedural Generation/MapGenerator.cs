@@ -107,8 +107,8 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Transform _roomContainer;
         
         [Header("Bounding Box")]
-        [SerializeField] private Vector3 _lowerBound = new Vector3(0, -1000, -1000);
-        [SerializeField] private Vector3 _upperBound = new Vector3(3, 1000, 1000);
+        [SerializeField] private Vector3 _lowerBound = new Vector3(-1000, -1000, -1000);
+        [SerializeField] private Vector3 _upperBound = new Vector3(1000, 1000, 1000);
 
         [Header("Path Settings")]
         [SerializeField] private int _mainPathLength = 1;

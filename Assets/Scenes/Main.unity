@@ -1344,10 +1344,10 @@ MonoBehaviour:
   _roomGridCellSize: 13
   _blueprintRoomContainer: {fileID: 128193136}
   _roomContainer: {fileID: 811539170}
-  _lowerBound: {x: -1000, y: 0, z: -1000}
-  _upperBound: {x: 1000, y: 3, z: 1000}
-  _mainPathLength: 50
-  _prizePathLength: 10
+  _lowerBound: {x: -1000, y: -1000, z: -1000}
+  _upperBound: {x: 1000, y: 1000, z: 1000}
+  _mainPathLength: 10
+  _prizePathLength: 5
   _amountOfPrizePaths: 2
   rooms1x1x1:
   - {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135, type: 3}
@@ -1360,7 +1360,7 @@ MonoBehaviour:
   _tallRoomSpawnChance: 1
   _longRoomSpawnChance: 0.5
   _bigRoomSpawnChance: 0
-  _debugAll: 0
+  _debugAll: 1
   _debugBlueprint: 0
   _debugRoomGen: 0
   _blueprintGizmoPrefab: {fileID: 346890499486270653, guid: 1e7aed37650f79e4f83703d767189d05,
