@@ -136,7 +136,8 @@ namespace RyansLibrary.Labyrinth
 
         // Paths
         // TODO: There should be a separate master path hash map so we can access locations quickly during collision checks
-        private Path MasterPath;
+        private Dictionary<Vector3, BlueprintRoom> MasterDict;      // Dictionary used for quick access to checking locations
+        private Path MasterPath;                                    // List used for quick access using indexing
         private Path MainPath;
         private List<Path> PrizePaths;
         #endregion
@@ -153,7 +154,8 @@ namespace RyansLibrary.Labyrinth
 
         private void Start()
         {
-            // Initialize Master Path
+            // Initialize Data Structures
+            MasterDict = new Dictionary<Vector3, BlueprintRoom>();
             MasterPath = new Path(MASTER_PATH_NAME, PathType.master, 0, 0);
             PrizePaths = new List<Path>();
 
@@ -336,15 +338,15 @@ namespace RyansLibrary.Labyrinth
                 bool[] attempts = new bool[STAND_ROOM_FACE_COUNT];
 
                 // Choose a random direction to be the potential position for the next room.
-                int direction = Random.Range(1, STAND_ROOM_FACE_COUNT);
-                while (attempts[direction])     // Loop though attempts to find a unique direction
+                int faceIdx = Random.Range(1, STAND_ROOM_FACE_COUNT);
+                while (attempts[faceIdx])     // Loop though attempts to find a unique direction
                 {
-                    direction++;
-                    if (direction % STAND_ROOM_FACE_COUNT == 0)
-                        direction = 0;
+                    faceIdx++;
+                    if (faceIdx % STAND_ROOM_FACE_COUNT == 0)
+                        faceIdx = 0;
                 }
 
-                switch (direction)        // "Walk" in that direction from the curerent pos
+                switch (faceIdx)        // "Walk" in that direction from the curerent pos
                 {
                     // E0 - E5 is the face count for a unit room, this will be used later for entranceways
                     case 0:
@@ -379,15 +381,42 @@ namespace RyansLibrary.Labyrinth
                 if (!CheckBounds(tempPos))     // Check if the room is in the realm of the bounding box
                 {
                     // TODO: Enable the stuff below, we need a prev room in order to do this because you cannot set the collided room as the bound
-                    //attempts[entrFlagIdx] = true;
-                    //failedAttempts++;
+                    // attempts[entrFlagIdx] = true;
+                    // failedAttempts++;
+
                     if (_debugAll || _debugBlueprint) Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
                     continue;
                 }
 
                 // Check Master Path for colliding rooms (the temp pos is inside another designated room space)
-                bool inRoomList = false;
+                // bool inRoomList = false;
                 BlueprintRoom collidedRoom = null;
+
+                if (MasterDict.TryGetValue(tempPos, out collidedRoom))     // Check position in hash map; if failed then flag face attempt and try choosing a new position 
+                {
+                    // inRoomList = true;
+                    attempts[entrFlagIdx] = true;
+                    failedAttempts++;
+                }
+                else                                         // Test Passed; no collision
+                {
+                    curPos = tempPos; // Change Current Position to new position
+
+                    string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
+                    BlueprintRoom newBlueRoom = new BlueprintRoom(curPos, blueName);
+                    FlagDoorways(newBlueRoom, curRoom, entrFlagIdx);            // Flag the face that touches the opposite room
+
+                    if (_debugAll || _debugBlueprint) GenerateBlueprintGizmo(curPos, pathType, blueName);
+
+                    curRoom = newBlueRoom;
+                    path.Add(newBlueRoom);
+                    MasterPath.Add(newBlueRoom);            // Add to List
+                    MasterDict.Add(curPos, newBlueRoom);    // Add to Dictionary
+
+                    failedAttempts = 0;
+                }
+
+                /*
                 foreach (BlueprintRoom room in MasterPath.BlueprintRooms)      // Check all rooms in the Master Path
                 {
                     bool hasCollided = Equals(tempPos, room.Position);
@@ -400,23 +429,7 @@ namespace RyansLibrary.Labyrinth
                         break;              // Break loop, no need to continue; better performance
                     }
                 }
-
-                if (!inRoomList)                        // Test Passed; no collision
-                {
-                    curPos = tempPos; // Change Current Position to new position
-
-                    string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
-                    BlueprintRoom newBlueRoom = new BlueprintRoom(curPos, blueName);
-                    FlagDoorways(newBlueRoom, curRoom, entrFlagIdx);            // Flag the face that touches the opposite room
-
-                    if (_debugAll || _debugBlueprint) GenerateBlueprintGizmo(curPos, pathType, blueName);
-
-                    curRoom = newBlueRoom;
-                    path.Add(newBlueRoom);
-                    MasterPath.Add(newBlueRoom);
-
-                    failedAttempts = 0;
-                }
+                */
 
                 // If failed too many times -> try another room (very rare)
                 if (failedAttempts >= STAND_ROOM_FACE_COUNT)        // All spaces adjacent to the current room are covered
