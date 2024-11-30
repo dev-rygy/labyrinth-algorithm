@@ -89,8 +89,7 @@ namespace RyansLibrary.Labyrinth
     {
         #region Variables
         // CONSTANTS
-        // Amount of faces on a blueprint room
-        const int STAND_ROOM_FACE_COUNT = 6;
+        const int STAND_ROOM_FACE_COUNT = 6;                // Amount of faces on a blueprint room; This should never be changed unless unique shapes are made in the future
         const string MASTER_PATH_NAME = "Master Path";
         const string MAIN_PATH_NAME = "Main Path";
         const string PRIZE_PATH_NAME = "Prize Path";
@@ -136,6 +135,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _prizePathColor;
 
         // Paths
+        // TODO: There should be a separate master path hash map so we can access locations quickly during collision checks
         private Path MasterPath;
         private Path MainPath;
         private List<Path> PrizePaths;
