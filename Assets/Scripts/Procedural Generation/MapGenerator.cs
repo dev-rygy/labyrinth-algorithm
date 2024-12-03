@@ -315,7 +315,8 @@ namespace RyansLibrary.Labyrinth
 
                 // Update paths
                 path.Add(newRoom);
-                MasterPath.Add(newRoom);
+                MasterPath.Add(newRoom);            // Add to List
+                MasterDict.Add(curPos, newRoom);    // Add to Dictionary
 
                 // Update current Room
                 curRoom = newRoom;
@@ -415,21 +416,6 @@ namespace RyansLibrary.Labyrinth
 
                     failedAttempts = 0;
                 }
-
-                /*
-                foreach (BlueprintRoom room in MasterPath.BlueprintRooms)      // Check all rooms in the Master Path
-                {
-                    bool hasCollided = Equals(tempPos, room.Position);
-                    if (hasCollided)                    // Test Failed; room collision
-                    {
-                        collidedRoom = room;
-                        inRoomList = true;
-                        attempts[entrFlagIdx] = true;
-                        failedAttempts++;
-                        break;              // Break loop, no need to continue; better performance
-                    }
-                }
-                */
 
                 // If failed too many times -> try another room (very rare)
                 if (failedAttempts >= STAND_ROOM_FACE_COUNT)        // All spaces adjacent to the current room are covered
