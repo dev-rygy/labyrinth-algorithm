@@ -843,7 +843,7 @@ namespace RyansLibrary.Labyrinth
                     roomRoll = Random.Range(0, rooms2x1x2.Count); // Choose a random 1x2x1-Room index from the prefab list of 1x2x1-Rooms
 
                     // Generate Big Room
-                    if (rDir == RoomDirection.PosX)
+                    if (rDir == RoomDirection.PosX)     // Right, Forward, Left
                     {
                         BlueprintRoom rightRoom = MasterDict[startingRoom.Position + (Vector3.right * _roomGridCellSize)];      // _>--
                         BlueprintRoom fwdRoom = MasterDict[rightRoom.Position + (Vector3.forward * _roomGridCellSize)];         // __-^
@@ -856,42 +856,42 @@ namespace RyansLibrary.Labyrinth
                         generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
                         generatedRoom.Initialize(rType);
                     }
-                    else if (rDir == RoomDirection.NegX)
+                    else if (rDir == RoomDirection.NegX)        // Left, Forward, Right
                     {
                         BlueprintRoom leftRoom = MasterDict[startingRoom.Position + (Vector3.left * _roomGridCellSize)];        // <_--
                         BlueprintRoom fwdRoom = MasterDict[leftRoom.Position + (Vector3.forward * _roomGridCellSize)];          // __^-
                         BlueprintRoom rightRoom = MasterDict[fwdRoom.Position + (Vector3.right * _roomGridCellSize)];           // __->
-
-                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(fwdRoom.entrancewayFlags, 2, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
+                        
+                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], leftRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 2, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(fwdRoom.entrancewayFlags, 3, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
                         generatedRoom.Initialize(rType);
                     }
-                    else if (rDir == RoomDirection.PosZ)
+                    else if (rDir == RoomDirection.PosZ)        // Right, Back, Left
                     {
                         BlueprintRoom rightRoom = MasterDict[startingRoom.Position + (Vector3.right * _roomGridCellSize)];      // __->
                         BlueprintRoom backRoom = MasterDict[rightRoom.Position + (Vector3.back * _roomGridCellSize)];           // _v--
                         BlueprintRoom leftRoom = MasterDict[backRoom.Position + (Vector3.left * _roomGridCellSize)];            // <_--
 
-                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(backRoom.entrancewayFlags, 2, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
+                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], leftRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 3, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 2, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(backRoom.entrancewayFlags, 1, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
                         generatedRoom.Initialize(rType);
                     }
-                    else if (rDir == RoomDirection.NegZ)
+                    else if (rDir == RoomDirection.NegZ)        // Left, Back, Right
                     {
                         BlueprintRoom leftRoom = MasterDict[startingRoom.Position + (Vector3.left * _roomGridCellSize)];        // __<-
                         BlueprintRoom backRoom = MasterDict[leftRoom.Position + (Vector3.back * _roomGridCellSize)];            // v_--
                         BlueprintRoom rightRoom = MasterDict[backRoom.Position + (Vector3.right * _roomGridCellSize)];          // _>--
 
-                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], backRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 2, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
-                        generatedRoom.CopyBlueprintRoomEntranceFlags(backRoom.entrancewayFlags, 2, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(backRoom.entrancewayFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
                         generatedRoom.Initialize(rType);
                     }
