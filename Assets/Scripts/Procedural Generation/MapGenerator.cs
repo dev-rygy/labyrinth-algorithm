@@ -24,18 +24,20 @@ namespace RyansLibrary.Labyrinth
     /// </summary>
     public class BlueprintRoom
     {
+        public PathType pathType;
         public string RoomName { get; private set; }
         public Vector3 Position { get; private set; }
         public bool Available { get; set; }
         public bool[] entrancewayFlags;
 
         // Constructor
-        public BlueprintRoom(Vector3 postion, string roomName = "Blueprint Room")
+        public BlueprintRoom(Vector3 postion, PathType type, string roomName = "Blueprint Room")
         {
             Available = true;
             RoomName = roomName;
             Position = postion;
             entrancewayFlags = new bool[6];       // A flag to mark which entrances should be open for a room
+            pathType = type;
         }
     }
 
@@ -311,7 +313,7 @@ namespace RyansLibrary.Labyrinth
             if (startRoom == null)        // Generate Start Room if a start room was not passed in
             {
                 string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
-                BlueprintRoom newRoom = new BlueprintRoom(curPos, blueName);
+                BlueprintRoom newRoom = new BlueprintRoom(curPos, pathType, blueName);
 
                 if (_debugAll || _debugBlueprint)
                     GenerateBlueprintGizmo(curPos, pathType, blueName);
@@ -407,7 +409,7 @@ namespace RyansLibrary.Labyrinth
                     curPos = tempPos; // Change Current Position to new position
 
                     string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
-                    BlueprintRoom newBlueRoom = new BlueprintRoom(curPos, blueName);
+                    BlueprintRoom newBlueRoom = new BlueprintRoom(curPos, pathType, blueName);
                     FlagDoorways(newBlueRoom, curRoom, entrFlagIdx);            // Flag the face that touches the opposite room
 
                     if (_debugAll || _debugBlueprint) GenerateBlueprintGizmo(curPos, pathType, blueName);
@@ -517,13 +519,16 @@ namespace RyansLibrary.Labyrinth
                             RoomDirection rDir = RoomDirection.PosX;        // Default Room Case
                             RoomType rType = RoomType.general;                      // Default Room Type
 
-                            if (false)  // if can spawn B-Room & passed B-Room spawn chance
+                            if (SpawnShapeCondition(path.BlueprintRooms[i], PathType.main, RoomShape.bigRoom, out rDir))  // if can spawn B-Room & passed B-Room spawn chance
                             {
                                 // spawn B-Room
                                 // Hook up blueprintRoom.entrancewayflags to new room
+                                Room genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, i, rDir); // Spawn T-Room
+                                path.Add(genRoom);              // Add new room to paths
+                                MasterPath.Add(genRoom);
                             }
                             // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2x1 at end of trail
-                            else if ((i < path.BlueprintCount() - 1) && SpawnShapeCondition(path.BlueprintRooms[i], RoomShape.tallRoom, out rDir))
+                            else if (SpawnShapeCondition(path.BlueprintRooms[i], PathType.main, RoomShape.tallRoom, out rDir))
                             {
                                 //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                                 //   rType = RoomType.boss;
@@ -532,7 +537,7 @@ namespace RyansLibrary.Labyrinth
                                 MasterPath.Add(genRoom);
                             }
                             // else if can spawn L-Room & passed L-Room spawn chance && extra space for a 2x1x1 at end of trail
-                            else if ((i < path.BlueprintCount() - 1) && SpawnShapeCondition(path.BlueprintRooms[i], RoomShape.longRoom, out rDir))
+                            else if (SpawnShapeCondition(path.BlueprintRooms[i], PathType.main, RoomShape.longRoom, out rDir))
                             {
                                 //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                                 //    rType = RoomType.ToBoss;
@@ -563,14 +568,18 @@ namespace RyansLibrary.Labyrinth
                             RoomDirection rDir = RoomDirection.PosX;        // Default Room Case
                             RoomType rType = RoomType.general;                      // Default Room Type
 
-                            // TODO: Check and spawn B-Rooms
-                            if (false)  // if can spawn B-Room & passed B-Room spawn chance
+                            // Check and spawn B-Rooms
+                            if (SpawnShapeCondition(path.BlueprintRooms[i], PathType.prize, RoomShape.bigRoom, out rDir))  // if can spawn B-Room & passed B-Room spawn chance
                             {
                                 // spawn B-Room
                                 // Hook up blueprintRoom.entrancewayflags to new room
+                                Room genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, i, rDir); // Spawn T-Room
+                                path.Add(genRoom);              // Add new room to paths
+                                MasterPath.Add(genRoom);
+
                             }
                             // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2x1 at end of trail; SpawnShapeCondition() -> Yes, you can spawn a T-Room there and here's the direction
-                            else if ((i < path.BlueprintCount() - 1) && SpawnShapeCondition(path.BlueprintRooms[i], RoomShape.tallRoom, out rDir))
+                            else if (SpawnShapeCondition(path.BlueprintRooms[i], PathType.prize, RoomShape.tallRoom, out rDir))
                             {
                                 //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                                 //   rType = RoomType.boss;
@@ -579,7 +588,7 @@ namespace RyansLibrary.Labyrinth
                                 MasterPath.Add(genRoom);
                             }
                             // else if can spawn L-Room & passed L-Room spawn chance && extra space for a 2x1x1 at end of trail; SpawnShapeCondition() -> Yes, you can spawn a L-Room there and here's the direction
-                            else if ((i < path.BlueprintCount() - 1) && SpawnShapeCondition(path.BlueprintRooms[i], RoomShape.longRoom, out rDir))
+                            else if (SpawnShapeCondition(path.BlueprintRooms[i], PathType.prize, RoomShape.longRoom, out rDir))
                             {
                                 //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                                 //    rType = RoomType.ToBoss;
@@ -611,16 +620,93 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="roomPosition"></param>
         /// <returns></returns>
-        private bool SpawnShapeCondition(BlueprintRoom currRoom, RoomShape roomShape, out RoomDirection rDir)
+        private bool SpawnShapeCondition(BlueprintRoom currRoom, PathType pathType, RoomShape roomShape, out RoomDirection rDir)
         {
             float roomRoll = Random.Range(0, 1.01f);        // Roll for room based on it's % chance of spawning
 
-            BlueprintRoom[] availBlueRooms = CheckAvailableAdjacentRooms(currRoom);
+            BlueprintRoom[] availBlueRooms = CheckAvailableAdjacentRooms(currRoom, pathType);
 
             switch (roomShape)
             {
+                // *********** Big Room Conditions ***********
+                case RoomShape.bigRoom:
+                {
+                    if (roomRoll > _bigRoomSpawnChance)
+                    {
+                        rDir = 0;
+                        return false;
+                    }
+                    if (availBlueRooms[0] != null)      // 1.) If there is a room on the right
+                    {
+                        BlueprintRoom[] availBlueRoomsRight = CheckAvailableAdjacentRooms(availBlueRooms[0], pathType);
+
+                        if (availBlueRoomsRight[2] != null)     // a.) If there is a room forward
+                        {
+                            BlueprintRoom[] availBlueRoomsFwd = CheckAvailableAdjacentRooms(availBlueRoomsRight[2], pathType);
+
+                            if (availBlueRoomsFwd[1] != null)       // I.) If there is a room on the left
+                            {
+                                    availBlueRooms[0].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueRoomsRight[2].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueRoomsFwd[1].Available = false;        // Lock room right so it's not used in other checks
+                                    rDir = RoomDirection.PosX;
+                                    return true;
+                            }
+                        }
+                        if (availBlueRoomsRight[3] != null)     // b.) If there is a room backward
+                        {
+                            BlueprintRoom[] availBlueRoomsBwd = CheckAvailableAdjacentRooms(availBlueRoomsRight[3], pathType);
+
+                            if (availBlueRoomsBwd[1] != null)       // I.) If there is a room on the left
+                            {
+                                    availBlueRooms[0].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueRoomsRight[3].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueRoomsBwd[1].Available = false;        // Lock room right so it's not used in other checks
+                                    rDir = RoomDirection.PosZ;
+                                    return true;
+                            }
+                        }
+                    }
+
+                    if (availBlueRooms[1] != null)      // 2.) If there is a room on the left
+                    {
+                        BlueprintRoom[] availBlueRoomsLeft = CheckAvailableAdjacentRooms(availBlueRooms[1], pathType);
+
+                        if (availBlueRoomsLeft[2] != null)     // a.) If there is a room forward
+                        {
+                            BlueprintRoom[] availBlueRoomsFwd = CheckAvailableAdjacentRooms(availBlueRoomsLeft[2], pathType);
+
+                            if (availBlueRoomsFwd[0] != null)       // I.) If there is a room on the right
+                            {
+                                availBlueRooms[1].Available = false;        // Lock room right so it's not used in other checks
+                                availBlueRoomsLeft[2].Available = false;        // Lock room right so it's not used in other checks
+                                availBlueRoomsFwd[0].Available = false;        // Lock room right so it's not used in other checks
+                                rDir = RoomDirection.NegX;
+                                return true;
+                            }
+                        }
+                        if (availBlueRoomsLeft[3] != null)     // b.) If there is a room backward
+                        {
+                            BlueprintRoom[] availBlueRoomsBwd = CheckAvailableAdjacentRooms(availBlueRoomsLeft[3], pathType);
+
+                            if (availBlueRoomsBwd[0] != null)       // I.) If there is a room on the right
+                            {
+                                availBlueRooms[1].Available = false;        // Lock room right so it's not used in other checks
+                                availBlueRoomsLeft[3].Available = false;        // Lock room right so it's not used in other checks
+                                availBlueRoomsBwd[0].Available = false;        // Lock room right so it's not used in other checks
+                                rDir = RoomDirection.NegZ;
+                                return true;
+                            }
+                        }
+                    }
+
+                    // If none of these conditions hold then return fail
+                    rDir = 0;
+                    return false;
+                }
                 // *********** Tall Room Conditions ***********
                 case RoomShape.tallRoom:
+                {
                     // Return fail if room fails roll chance
                     if (roomRoll > _tallRoomSpawnChance)
                     {
@@ -642,14 +728,14 @@ namespace RyansLibrary.Labyrinth
                         rDir = RoomDirection.NegY;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                         return true;
                     }
+
                     // If none of these conditions hold then return fail
-                    else
-                    {
-                        rDir = 0;
-                        return false;
-                    }
+                    rDir = 0;
+                    return false;
+                }
                 // *********** Long Room Conditions ***********
                 case RoomShape.longRoom:
+                {
                     // Return fail if room fails roll chance
                     if (roomRoll > _longRoomSpawnChance)
                     {
@@ -685,17 +771,17 @@ namespace RyansLibrary.Labyrinth
                         rDir = RoomDirection.NegZ;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                         return true;
                     }
+
                     // If none of these conditions hold then return fail
-                    else
-                    {
-                        // If none of these conditions hold then return fail
-                        rDir = 0;
-                        return false;
-                    }
+                    rDir = 0;
+                    return false;
+                }
                 default:
+                {
                     Debug.LogError("Map Generator Error: Room condition checked wrong room shape.");
                     rDir = 0;
                     return false;
+                }
             }
         }
 
@@ -705,7 +791,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="room"></param>
         /// <returns></returns>
-        private BlueprintRoom[] CheckAvailableAdjacentRooms(BlueprintRoom room)
+        private BlueprintRoom[] CheckAvailableAdjacentRooms(BlueprintRoom room, PathType pathType)
         {
             // Store availRooms here and return. All possible avail rooms are up to the face count (F0 - F5)
             BlueprintRoom[] availBlueRooms = new BlueprintRoom[STAND_ROOM_FACE_COUNT];
@@ -719,17 +805,19 @@ namespace RyansLibrary.Labyrinth
             Vector3 botRoomPos = room.Position + (Vector3.down * _roomGridCellSize);        // F5: Bot
 
             // Test each position; if the room does not exist the space is null, otherwise it's set to the Blueprint room tied to the position
-            MasterDict.TryGetValue(rightRoomPos, out availBlueRooms[0]);
-            MasterDict.TryGetValue(leftRoomPos, out availBlueRooms[1]);
-            MasterDict.TryGetValue(fwdRoomPos, out availBlueRooms[2]);
-            MasterDict.TryGetValue(backRoomPos, out availBlueRooms[3]);
-            MasterDict.TryGetValue(topRoomPos, out availBlueRooms[4]);
-            MasterDict.TryGetValue(botRoomPos, out availBlueRooms[5]);
+            MasterDict.TryGetValue(rightRoomPos, out availBlueRooms[0]);        // F0
+            MasterDict.TryGetValue(leftRoomPos, out availBlueRooms[1]);         // F1
+            MasterDict.TryGetValue(fwdRoomPos, out availBlueRooms[2]);          // F2
+            MasterDict.TryGetValue(backRoomPos, out availBlueRooms[3]);         // F3
+            MasterDict.TryGetValue(topRoomPos, out availBlueRooms[4]);          // F4
+            MasterDict.TryGetValue(botRoomPos, out availBlueRooms[5]);          // F5
 
             // Loop through available room spaces and eliminate spaces that have already been taken up by other generated rooms
             for (int i = 0; i < availBlueRooms.Length; i++)
             {
-                if (availBlueRooms[i] != null && !availBlueRooms[i].Available)
+                // If the room is not available due to it being used by another generated room
+                // OR if it is not a part of the path in question then remove it from the availBlueRooms list.
+                if (availBlueRooms[i] != null && (!availBlueRooms[i].Available || availBlueRooms[i].pathType != pathType))
                 {
                     availBlueRooms[i] = null;
                 }
@@ -744,7 +832,7 @@ namespace RyansLibrary.Labyrinth
             Quaternion rotation = Quaternion.identity;      // Take the rotation of the room into account
             Vector3 eulerRotation = Vector3.zero;
 
-            BlueprintRoom startingRoom = path.BlueprintRooms[i];
+            BlueprintRoom startingRoom = path.BlueprintRooms[i];    // x_--
 
             int roomRoll = 0;
 
@@ -752,11 +840,69 @@ namespace RyansLibrary.Labyrinth
             {
                 // ********* Big Room **************
                 case RoomShape.bigRoom:
-                    // TODO: Generate Big Room
+                    roomRoll = Random.Range(0, rooms2x1x2.Count); // Choose a random 1x2x1-Room index from the prefab list of 1x2x1-Rooms
+
+                    // Generate Big Room
+                    if (rDir == RoomDirection.PosX)
+                    {
+                        BlueprintRoom rightRoom = MasterDict[startingRoom.Position + (Vector3.right * _roomGridCellSize)];      // _>--
+                        BlueprintRoom fwdRoom = MasterDict[rightRoom.Position + (Vector3.forward * _roomGridCellSize)];         // __-^
+                        BlueprintRoom leftRoom = MasterDict[fwdRoom.Position + (Vector3.left * _roomGridCellSize)];             // __<-
+
+                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(fwdRoom.entrancewayFlags, 2, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
+                        generatedRoom.Initialize(rType);
+                    }
+                    else if (rDir == RoomDirection.NegX)
+                    {
+                        BlueprintRoom leftRoom = MasterDict[startingRoom.Position + (Vector3.left * _roomGridCellSize)];        // <_--
+                        BlueprintRoom fwdRoom = MasterDict[leftRoom.Position + (Vector3.forward * _roomGridCellSize)];          // __^-
+                        BlueprintRoom rightRoom = MasterDict[fwdRoom.Position + (Vector3.right * _roomGridCellSize)];           // __->
+
+                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(fwdRoom.entrancewayFlags, 2, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
+                        generatedRoom.Initialize(rType);
+                    }
+                    else if (rDir == RoomDirection.PosZ)
+                    {
+                        BlueprintRoom rightRoom = MasterDict[startingRoom.Position + (Vector3.right * _roomGridCellSize)];      // __->
+                        BlueprintRoom backRoom = MasterDict[rightRoom.Position + (Vector3.back * _roomGridCellSize)];           // _v--
+                        BlueprintRoom leftRoom = MasterDict[backRoom.Position + (Vector3.left * _roomGridCellSize)];            // <_--
+
+                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(backRoom.entrancewayFlags, 2, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
+                        generatedRoom.Initialize(rType);
+                    }
+                    else if (rDir == RoomDirection.NegZ)
+                    {
+                        BlueprintRoom leftRoom = MasterDict[startingRoom.Position + (Vector3.left * _roomGridCellSize)];        // __<-
+                        BlueprintRoom backRoom = MasterDict[leftRoom.Position + (Vector3.back * _roomGridCellSize)];            // v_--
+                        BlueprintRoom rightRoom = MasterDict[backRoom.Position + (Vector3.right * _roomGridCellSize)];          // _>--
+
+                        generatedRoom = Instantiate(rooms2x1x2[roomRoll], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(backRoom.entrancewayFlags, 2, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintRoomEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
+                        generatedRoom.Initialize(rType);
+                    }
+                    else
+                    {
+                        Debug.LogError("Map Generator Error: Roomcase does not match any valid Tall-Room Cases.");
+                    }
                     break;
                 // ********* Tall Room **************
                 case RoomShape.tallRoom:
-                    roomRoll = Random.Range(0, rooms1x2x1.Count); // Choose a random 1x2x1-Room index from the prefab list of 1x2x1-Rooms\
+                    roomRoll = Random.Range(0, rooms1x2x1.Count); // Choose a random 1x2x1-Room index from the prefab list of 1x2x1-Rooms
 
                     if (rDir == RoomDirection.PosY)
                     {

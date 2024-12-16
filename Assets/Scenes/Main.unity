@@ -1357,10 +1357,10 @@ MonoBehaviour:
   - {fileID: 5986294591766773533, guid: 66fa60f0bde56fb4a9b03c2086aabf30, type: 3}
   rooms2x1x2:
   - {fileID: 2479775355766125897, guid: 5a78b852af992604daf765df5782b318, type: 3}
-  _tallRoomSpawnChance: 0.25
+  _tallRoomSpawnChance: 1
   _longRoomSpawnChance: 0.5
-  _bigRoomSpawnChance: 0
-  _debugAll: 0
+  _bigRoomSpawnChance: 1
+  _debugAll: 1
   _debugBlueprint: 0
   _debugRoomGen: 0
   _blueprintGizmoPrefab: {fileID: 346890499486270653, guid: 1e7aed37650f79e4f83703d767189d05,
@@ -2800,7 +2800,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Gen. Main Path
+  m_text: Generate Blueprint
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
