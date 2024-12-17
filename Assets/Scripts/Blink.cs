@@ -22,6 +22,9 @@ public class Blink : MonoBehaviour
         else
             InputManager.OnInteract1 += Teleport;
 
+        InputManager.OnInteract1 += ResetTP;
+        InputManager.OnInteract2 += ResetTP;
+
         _playerReference = PlayerController.Instance.gameObject;
         if (_debug) Debug.Log("Player reference set to " + _playerReference);
 
@@ -53,12 +56,17 @@ public class Blink : MonoBehaviour
         if (!_canBlink)
             return;
 
+        _canBlink = false;
+
         _playerReference.GetComponent<CharacterController>().enabled = false;
         _playerReference.transform.position = _targetPos;
         _playerReference.GetComponent<CharacterController>().enabled = true;
 
-        _canBlink = false;
-
         if (_debug) Debug.Log("Player has blinked to " + _targetPos);
+    }
+
+    private void ResetTP()
+    {
+        _canBlink = false;
     }
 }
