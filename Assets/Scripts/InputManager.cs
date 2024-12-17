@@ -11,10 +11,12 @@ namespace RyansLibrary.Input
 {
     public class InputManager : MonoBehaviour
     {
-        public static InputManager Instance;
+        public static InputManager Instance { get; private set; }
 
         public static event System.Action OnMove;
         public static event System.Action OnJump;
+        public static event System.Action OnInteract1;
+        public static event System.Action OnInteract2;
 
         [SerializeField] private bool debug = false;
 
@@ -43,6 +45,10 @@ namespace RyansLibrary.Input
             _playerControls.PlayerMovement.Move.canceled += context => OnMovementInput(context);
 
             _playerControls.PlayerMovement.Jump.started += context => OnJumpInput(context);
+
+
+            _playerControls.PlayerMovement.Interact1.started += context => OnInteract1Input(context);
+            _playerControls.PlayerMovement.Interact2.started += context => OnInteract2Input(context);
         }
 
         private void OnEnable()
@@ -68,6 +74,24 @@ namespace RyansLibrary.Input
                 return;
 
             OnJump?.Invoke();
+        }
+
+        private void OnInteract1Input(InputAction.CallbackContext context)
+        {
+            if (!context.started)
+                return;
+
+            OnInteract1?.Invoke();
+            if (debug) Debug.Log("Player has interacted");
+        }
+
+        private void OnInteract2Input(InputAction.CallbackContext context)
+        {
+            if (!context.started)
+                return;
+
+            OnInteract2?.Invoke();
+            if (debug) Debug.Log("Player has interacted");
         }
     }
 }

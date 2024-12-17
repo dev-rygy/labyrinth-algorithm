@@ -9,6 +9,8 @@ using RyansLibrary.Input;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance { get; private set; }
+
     [SerializeField] private float _speed = 1f;
     [SerializeField] private float _gravityMultiplier = 3;
     [SerializeField] private float _jumpPower = 1f;
@@ -22,9 +24,21 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGrounded() => _characterController.isGrounded;
 
+    private void Awake()
+    {
+        // Handle Singleton
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
     private void Start()
     {
         InputManager.OnJump += Jump;
+        InputManager.OnInteract1 += Interact;
 
         _inputManager = InputManager.Instance;
         _characterController = GetComponent<CharacterController>();
@@ -67,5 +81,10 @@ public class PlayerController : MonoBehaviour
             return;
 
         _velocity += _jumpPower;
+    }
+
+    private void Interact()
+    {
+
     }
 }
