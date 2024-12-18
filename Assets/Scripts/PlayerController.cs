@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2024
- * Last Modified:   12/17/2024 
+ * Last Modified:   12/18/2024 
  * Notes:           Player Controller
 */
 using UnityEngine;
@@ -13,14 +13,17 @@ public class PlayerController : MonoBehaviour
 
     [Header("Values")]
     [SerializeField] private float _speed = 1f;
+    [SerializeField] private float _lookSpeed = 1f;
     [SerializeField] private float _lookAngleIncrement = 90f;
     [SerializeField] private float _gravityMultiplier = 3;
     [SerializeField] private float _jumpPower = 1f;
 
+    [Header("Player Model")]
+    [SerializeField] private Animator _animator;
+    [SerializeField] private Transform _playerCharacter;
     private CharacterController _characterController;
     private InputManager _inputManager;
 
-    // private Vector3 _lookDirection;
     private Vector3 _moveDirection;
     private float _gravity = -9.81f;
     private float _velocity;
@@ -56,9 +59,8 @@ public class PlayerController : MonoBehaviour
     {
         ApplyGravity();
         ApplyMovement();
-        //ApplyLook();
+        ApplyLook();
         Move();
-        //Look();
     }
     
     private void ApplyGravity()
@@ -76,25 +78,12 @@ public class PlayerController : MonoBehaviour
     {
         // Move Player
         _characterController.Move(_moveDirection * _speed * Time.deltaTime);
+
+        if (_moveDirection.x != 0f || _moveDirection.z != 0f)
+            _animator.SetBool("isRunning", true);
+        else
+            _animator.SetBool("isRunning", false);
     }
-
-    /*      Smooth Look (UNUSED)
-    private void Look()
-    {
-        if (_cameraPivot == null)
-        {
-            Debug.LogError("Player Camera pivot is not assigned.");
-            return;
-        }
-
-        // Change the perspective of the camera
-        //float angle = _lookDirection.x * _lookSpeed * Time.deltaTime;
-        float angle = 90 * _lookDirection.x;
-        _cameraPivot.transform.Rotate(Vector3.up, angle);
-
-        if (debug) Debug.Log("Look angle change = " + angle);
-    }
-    */
 
     private void ApplyMovement()
     {
@@ -108,14 +97,15 @@ public class PlayerController : MonoBehaviour
         _moveDirection.z = input.z;
     }
 
-    /*
     private void ApplyLook()
     {
-        Vector3 input = _inputManager.LookInput;
-        _lookDirection.x = input.x;
-        _lookDirection.y = input.y;
+        // Ensure there is some horizontal movement when changing the direction of the model
+        if (_moveDirection.x != 0 || _moveDirection.z != 0)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(_moveDirection.x, 0, _moveDirection.z));
+            _playerCharacter.rotation = targetRotation;
+        }
     }
-    */
 
     private void Jump()
     {
