@@ -13,17 +13,14 @@ public class PlayerController : MonoBehaviour
 
     [Header("Values")]
     [SerializeField] private float _speed = 1f;
-    [SerializeField] private float _lookSpeed = 1f;
+    [SerializeField] private float _lookAngleIncrement = 90f;
     [SerializeField] private float _gravityMultiplier = 3;
     [SerializeField] private float _jumpPower = 1f;
-
-    [Header("References")]
-    [SerializeField] private GameObject _cameraPivot;
 
     private CharacterController _characterController;
     private InputManager _inputManager;
 
-    private Vector3 _lookDirection;
+    // private Vector3 _lookDirection;
     private Vector3 _moveDirection;
     private float _gravity = -9.81f;
     private float _velocity;
@@ -47,8 +44,8 @@ public class PlayerController : MonoBehaviour
     {
         InputManager.OnJump += Jump;
         InputManager.OnInteract1 += Interact;
-        InputManager.OnLookRight += LookRight;
-        InputManager.OnLookLeft += LookLeft;
+        InputManager.OnLookRight += () => transform.Rotate(Vector3.down, _lookAngleIncrement);
+        InputManager.OnLookLeft += () => transform.Rotate(Vector3.down, -(_lookAngleIncrement));
 
 
         _inputManager = InputManager.Instance;
@@ -81,6 +78,7 @@ public class PlayerController : MonoBehaviour
         _characterController.Move(_moveDirection * _speed * Time.deltaTime);
     }
 
+    /*      Smooth Look (UNUSED)
     private void Look()
     {
         if (_cameraPivot == null)
@@ -96,37 +94,28 @@ public class PlayerController : MonoBehaviour
 
         if (debug) Debug.Log("Look angle change = " + angle);
     }
-
-    private void LookRight()
-    {
-        float angle = 90;
-        _cameraPivot.transform.Rotate(Vector3.down, angle);
-    }
-
-    private void LookLeft()
-    {
-        float angle = -90;
-        _cameraPivot.transform.Rotate(Vector3.down, angle);
-    }
+    */
 
     private void ApplyMovement()
     {
         Vector3 input = new Vector3(_inputManager.MovementInput.x, 0, _inputManager.MovementInput.y);
         
         // Transform input to be relative to the camera's orientation
-        input = _cameraPivot.transform.TransformDirection(input);
+        input = transform.TransformDirection(input);
         input.y = 0;        // Ensure that the movement is strictly horizontal
 
         _moveDirection.x = input.x;
         _moveDirection.z = input.z;
     }
 
+    /*
     private void ApplyLook()
     {
         Vector3 input = _inputManager.LookInput;
         _lookDirection.x = input.x;
         _lookDirection.y = input.y;
     }
+    */
 
     private void Jump()
     {

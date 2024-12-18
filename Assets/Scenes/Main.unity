@@ -951,10 +951,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 5
-  _lookSpeed: 100
+  _lookAngleIncrement: 90
   _gravityMultiplier: 1
-  _jumpPower: 2.5
-  _cameraPivot: {fileID: 441195852}
+  _jumpPower: 3
   debug: 0
 --- !u!1 &645458080
 GameObject:
@@ -1844,7 +1843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c1e21cbf371d39409d79fa5f1a8420b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 1
+  debug: 0
 --- !u!4 &1441438938
 Transform:
   m_ObjectHideFlags: 0
