@@ -709,7 +709,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: -10}
+  m_LocalPosition: {x: 0, y: 0.5, z: -8.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -931,8 +931,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1558618310}
   - {fileID: 41891246}
@@ -950,7 +950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07bd8801186af2a40a4ffb27f6add7ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 8
+  _speed: 5
   _gravityMultiplier: 1
   _jumpPower: 2.5
 --- !u!1 &749311725
@@ -1351,13 +1351,15 @@ MonoBehaviour:
   _amountOfPrizePaths: 2
   rooms1x1x1:
   - {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135, type: 3}
+  - {fileID: 3976522045831409175, guid: 97b77282c8300254c99b62d88005655b, type: 3}
+  - {fileID: 3976522045831409175, guid: 637580674cafdaa40a6485399da6b2a4, type: 3}
   rooms2x1x1:
   - {fileID: 197979799327637701, guid: 302187ca606e5f5419cd4d080240de14, type: 3}
   rooms1x2x1:
   - {fileID: 5986294591766773533, guid: 66fa60f0bde56fb4a9b03c2086aabf30, type: 3}
   rooms2x1x2:
   - {fileID: 2479775355766125897, guid: 5a78b852af992604daf765df5782b318, type: 3}
-  _tallRoomSpawnChance: 0.2
+  _tallRoomSpawnChance: 0
   _longRoomSpawnChance: 0.5
   _bigRoomSpawnChance: 1
   _debugAll: 0
