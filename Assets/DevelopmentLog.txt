@@ -1,0 +1,38 @@
+### Blueprint Procedure
+1. Created Temp Rooms
+2. Labyrinth Alg (Blueprint)
+	- Namespace
+	- MapGenerator Class
+	- BlueprintRoom Class
+	- Path Class
+	- Master Path
+	- Main Path
+5. Added More Paths
+	- Prize Path
+
+### Room Generation
+3. Labyrinth Alg (Room Gen)
+	- Room Class
+	- RoomGenerationProcedure(), GenerateRooms(), and GenerateRoom() functions
+	- Room spawn conditions
+	- Small, Tall, Long, Big spawn 
+4. Labyrinth Alg (Entranceways)
+	- Blueprint Flags
+	- Copy into Rooms
+	- Handle Rotations
+5. Simple Bounding Box
+	- Lower and Upper Bound
+	- Gizmo
+6. Simple Player Controller
+	- Movement
+	- Jumping and Falling
+7. Change List Based Collision and Room Conditions to Hash Map-Based
+	- Collision Management
+	- Room Shape Conditions
+8. Implemented Big Room Generation
+
+### Improved Traversal
+9. Added Ladders and Trapdoors
+
+	
+	

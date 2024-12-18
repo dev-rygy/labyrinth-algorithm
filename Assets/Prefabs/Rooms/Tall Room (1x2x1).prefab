@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6292680328656905069}
+  - component: {fileID: 1434956951008455653}
   m_Layer: 0
   m_Name: Filler Wall Right
   m_TagString: Untagged
@@ -32,6 +33,27 @@ Transform:
   - {fileID: 3363878010629840393}
   m_Father: {fileID: 3391671700140113539}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!65 &1434956951008455653
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756676792807327179}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 13, y: 3.5000002, z: 1}
+  m_Center: {x: 0, y: 1.7500001, z: 0}
 --- !u!1 &2162184738831421684
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,8 +179,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8281370301198061012}
   m_Father: {fileID: 6292680328656905069}
@@ -258,8 +280,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5337634757704871047}
   m_Father: {fileID: 2414730102705476118}
@@ -378,6 +400,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4637915679183297006}
+  - component: {fileID: 1238441997732506896}
   m_Layer: 0
   m_Name: Filler Wall Left
   m_TagString: Untagged
@@ -401,6 +424,27 @@ Transform:
   - {fileID: 685931017123787351}
   m_Father: {fileID: 3391671700140113539}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!65 &1238441997732506896
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4903111617389504703}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 13, y: 3.5000002, z: 1}
+  m_Center: {x: 0, y: 1.7500001, z: 0}
 --- !u!1 &5082525841572853577
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,6 +494,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6091644625487990327}
+  - component: {fileID: 7079950495625698114}
   m_Layer: 0
   m_Name: Filler Wall Back
   m_TagString: Untagged
@@ -473,6 +518,27 @@ Transform:
   - {fileID: 427515657104793861}
   m_Father: {fileID: 3391671700140113539}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7079950495625698114
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5478436671582236957}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 13, y: 3.5000002, z: 1}
+  m_Center: {x: 0, y: 1.7500001, z: 0}
 --- !u!1 &5571969977928206430
 GameObject:
   m_ObjectHideFlags: 0
@@ -594,8 +660,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 932618222568236989}
   m_Father: {fileID: 4637915679183297006}
@@ -642,6 +708,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2414730102705476118}
+  - component: {fileID: 8846568348899037708}
   m_Layer: 0
   m_Name: Filler Wall Fwd
   m_TagString: Untagged
@@ -665,6 +732,27 @@ Transform:
   - {fileID: 1346158418809016530}
   m_Father: {fileID: 3391671700140113539}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!65 &8846568348899037708
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6646435916167151389}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 13, y: 3.5000002, z: 1}
+  m_Center: {x: 0, y: 1.7500001, z: 0}
 --- !u!1 &6989868716758818044
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,8 +843,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7921388037324859397}
   m_Father: {fileID: 6091644625487990327}

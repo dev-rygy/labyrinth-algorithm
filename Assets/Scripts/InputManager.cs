@@ -1,12 +1,13 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
-
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2024
- * Last Modified:   10/26/2024 
+ * Last Modified:   12/17/2024 
  * Notes:           Input Handler
 */
+
+using UnityEngine;
+using UnityEngine.InputSystem;
+
 namespace RyansLibrary.Input
 {
     public class InputManager : MonoBehaviour
@@ -65,6 +66,9 @@ namespace RyansLibrary.Input
         {
             // Read value from input and set the movementInput Vector to it
             MovementInput = context.ReadValue<Vector2>();
+
+            OnMove?.Invoke();
+
             if (debug) Debug.Log("The Movement Input read was = " + MovementInput);
         }
 
