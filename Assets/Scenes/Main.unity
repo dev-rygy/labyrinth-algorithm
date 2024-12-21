@@ -1100,7 +1100,7 @@ MonoBehaviour:
   _blueprintRoomContainer: {fileID: 128193136}
   _roomContainer: {fileID: 811539170}
   _lowerBound: {x: -1000, y: 0, z: -1000}
-  _upperBound: {x: 1000, y: 3, z: 1000}
+  _upperBound: {x: 1000, y: 2, z: 1000}
   _mainPathLength: 100
   _prizePathLength: 5
   _amountOfPrizePaths: 2
@@ -1114,7 +1114,7 @@ MonoBehaviour:
   - {fileID: 5986294591766773533, guid: 66fa60f0bde56fb4a9b03c2086aabf30, type: 3}
   rooms2x1x2:
   - {fileID: 2479775355766125897, guid: 5a78b852af992604daf765df5782b318, type: 3}
-  _tallRoomSpawnChance: 0
+  _tallRoomSpawnChance: 0.5
   _longRoomSpawnChance: 0.5
   _bigRoomSpawnChance: 1
   _debugAll: 0

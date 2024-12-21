@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Values")]
     [SerializeField] private float _speed = 1f;
-    [SerializeField] private float _lookSpeed = 1f;
     [SerializeField] private float _lookAngleIncrement = 90f;
     [SerializeField] private float _gravityMultiplier = 3;
     [SerializeField] private float _jumpPower = 1f;
@@ -117,6 +116,6 @@ public class PlayerController : MonoBehaviour
 
     private void Interact()
     {
-
+        // TODO: Interaction Logic
     }
 }

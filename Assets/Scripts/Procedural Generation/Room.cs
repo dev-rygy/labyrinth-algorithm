@@ -8,7 +8,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RyansLibrary
+namespace RyansLibrary.Labyrinth
 {
     // Determines how much grid space a room will ocupy.
     public enum RoomShape
@@ -17,7 +17,7 @@ namespace RyansLibrary
         longRoom,
         tallRoom,
         bigRoom,
-    };
+    }
 
     // Determines its gameplay and purpose.
     public enum RoomType
@@ -47,6 +47,10 @@ namespace RyansLibrary
         private void Awake()
         {
             // up to 4 possible unit spaces a room can take up; 6 possible faces on each unit
+            // Index 1 = Bot-Left Unit (Origin)
+            // Index 2 = Bot-Right Unit
+            // Index 3 = Top-Right Unit
+            // Index 4 = Top-Left Unit
             openEntracways = new bool[4, 6];
         }
 
