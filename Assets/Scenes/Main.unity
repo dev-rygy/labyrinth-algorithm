@@ -1100,7 +1100,7 @@ MonoBehaviour:
   _blueprintRoomContainer: {fileID: 128193136}
   _roomContainer: {fileID: 811539170}
   _lowerBound: {x: -1000, y: 0, z: -1000}
-  _upperBound: {x: 1000, y: 2, z: 1000}
+  _upperBound: {x: 1000, y: 1, z: 1000}
   _mainPathLength: 100
   _prizePathLength: 5
   _amountOfPrizePaths: 2
@@ -1114,12 +1114,12 @@ MonoBehaviour:
   - {fileID: 5986294591766773533, guid: 66fa60f0bde56fb4a9b03c2086aabf30, type: 3}
   rooms2x1x2:
   - {fileID: 2479775355766125897, guid: 5a78b852af992604daf765df5782b318, type: 3}
-  _tallRoomSpawnChance: 0.5
-  _longRoomSpawnChance: 0.5
+  _tallRoomSpawnChance: 0
+  _longRoomSpawnChance: 1
   _bigRoomSpawnChance: 1
   _debugAll: 0
-  _debugBlueprint: 0
-  _debugRoomGen: 0
+  _debugBlueprint: 1
+  _debugRoomGen: 1
   _blueprintGizmoPrefab: {fileID: 346890499486270653, guid: 1e7aed37650f79e4f83703d767189d05,
     type: 3}
   _boundingBoxColor: {r: 1, g: 0.31442907, b: 0, a: 1}

@@ -570,6 +570,7 @@ namespace RyansLibrary.Labyrinth
                                 Room genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, i, rDir); // Spawn T-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
+                                if (_debugAll || _debugRoomGen) Debug.Log("Main Path Generated Big Room: " + genRoom.name);
                             }
                             // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2x1 at end of trail
                             else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.tallRoom, path, out rDir))
@@ -579,23 +580,26 @@ namespace RyansLibrary.Labyrinth
                                 Room genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, i, rDir); // Spawn T-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
+                                if (_debugAll || _debugRoomGen) Debug.Log("Main Path Generated Tall Room: " + genRoom.name);
                             }
                             // else if can spawn L-Room & passed L-Room spawn chance && extra space for a 2x1x1 at end of trail
                             else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.longRoom, path, out rDir))
                             {
                                 //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                                 //    rType = RoomType.ToBoss;
-                                Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rDir); // Spawn H-Room
+                                Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rDir); // Spawn L-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
+                                if (_debugAll || _debugRoomGen) Debug.Log("Main Path Generated Long Room: " + genRoom.name);
                             }
                             else
                             {
                                 //if (i + 1 >= path.Length()) // if the next room to be generated is the last room in the trail
                                 //    rType = RoomType.ToBoss;
-                                Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, i, 0); // Spawn G-Room
+                                Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, i, 0); // Spawn S-Room
                                 path.Add(genRoom);
                                 _masterPath.Add(genRoom);
+                                if (_debugAll || _debugRoomGen) Debug.Log("Main Path Generated Small Room: " + genRoom.name);
                             }
                         }
                     }
@@ -620,7 +624,7 @@ namespace RyansLibrary.Labyrinth
                                 Room genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, i, rDir); // Spawn T-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
-
+                                if (_debugAll || _debugRoomGen) Debug.Log("Prize Path Generated Big Room: " + genRoom.name);
                             }
                             // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2x1 at end of trail; SpawnShapeCondition() -> Yes, you can spawn a T-Room there and here's the direction
                             else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.tallRoom, path, out rDir))
@@ -630,23 +634,26 @@ namespace RyansLibrary.Labyrinth
                                 Room genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, i, rDir); // Spawn T-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
+                                if (_debugAll || _debugRoomGen) Debug.Log("Prize Path Generated Tall Room: " + genRoom.name);
                             }
                             // else if can spawn L-Room & passed L-Room spawn chance && extra space for a 2x1x1 at end of trail; SpawnShapeCondition() -> Yes, you can spawn a L-Room there and here's the direction
                             else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.longRoom, path, out rDir))
                             {
                                 //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
                                 //    rType = RoomType.ToBoss;
-                                Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rDir); // Spawn H-Room
+                                Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rDir); // Spawn L-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
+                                if (_debugAll || _debugRoomGen) Debug.Log("Prize Path Generated Long Room: " + genRoom.name);
                             }
-                            else // If no condition holds then spawn a B-Room
+                            else // If no condition holds then spawn a S-Room
                             {
                                 //if (i + 1 >= path.Length()) // if the next room to be generated is the last room in the trail
                                 //    rType = RoomType.ToBoss;
-                                Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, i, 0); // Spawn G-Room
+                                Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, i, 0); // Spawn S-Room
                                 path.Add(genRoom);
                                 _masterPath.Add(genRoom);
+                                if (_debugAll || _debugRoomGen) Debug.Log("Prize Path Generated Small Room: " + genRoom.name);
                             }
                         }
                     }
@@ -861,7 +868,7 @@ namespace RyansLibrary.Labyrinth
             {
                 // If the room is not available due to it being used by another generated room
                 // OR if it is not a part of the path in question then remove it from the availBlueRooms list.
-                if (availBlueRooms[i] != null && (!availBlueRooms[i].Available || path.BlueprintRooms.Contains(availBlueRooms[i])))
+                if (availBlueRooms[i] != null && (!availBlueRooms[i].Available || !path.BlueprintRooms.Contains(availBlueRooms[i])))
                     availBlueRooms[i] = null;
             }
 
