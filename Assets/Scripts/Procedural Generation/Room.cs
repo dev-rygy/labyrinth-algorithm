@@ -25,6 +25,7 @@ namespace RyansLibrary.Labyrinth
         general,
         start,
         prize,
+        toBoss,
         boss
     }
 
@@ -52,6 +53,8 @@ namespace RyansLibrary.Labyrinth
             // Index 3 = Top-Right Unit
             // Index 4 = Top-Left Unit
             openEntracways = new bool[4, 6];
+
+            roomType = RoomType.general;
         }
 
         // Initialize the Room's entrances and loot

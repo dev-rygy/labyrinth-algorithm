@@ -619,7 +619,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8871467, g: 0.7913849, b: 0.9811321, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -663,7 +663,7 @@ Light:
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_ColorTemperature: 8018
+  m_ColorTemperature: 10260
   m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
@@ -1101,8 +1101,8 @@ MonoBehaviour:
   _roomContainer: {fileID: 811539170}
   _lowerBound: {x: -1000, y: 0, z: -1000}
   _upperBound: {x: 1000, y: 1, z: 1000}
-  _mainPathLength: 100
-  _prizePathLength: 5
+  _mainPathLength: 10
+  _prizePathLength: 3
   _amountOfPrizePaths: 2
   rooms1x1x1:
   - {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135, type: 3}
@@ -1115,11 +1115,11 @@ MonoBehaviour:
   rooms2x1x2:
   - {fileID: 2479775355766125897, guid: 5a78b852af992604daf765df5782b318, type: 3}
   _tallRoomSpawnChance: 0
-  _longRoomSpawnChance: 1
+  _longRoomSpawnChance: 0.55
   _bigRoomSpawnChance: 1
   _debugAll: 0
   _debugBlueprint: 1
-  _debugRoomGen: 1
+  _debugRoomGen: 0
   _blueprintGizmoPrefab: {fileID: 346890499486270653, guid: 1e7aed37650f79e4f83703d767189d05,
     type: 3}
   _boundingBoxColor: {r: 1, g: 0.31442907, b: 0, a: 1}

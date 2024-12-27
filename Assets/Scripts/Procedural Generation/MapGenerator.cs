@@ -257,9 +257,9 @@ namespace RyansLibrary.Labyrinth
         {
             // Main Path to boss
             // Initialize a new path at starting room if not null
-            int startMasterIdx = _masterPath.BlueprintCount() - 1;               // Start index in master path
-            int endMasterIdx = startMasterIdx + _mainPathLength;
-            _mainPath = new Path(MAIN_PATH_NAME, PathType.main, startMasterIdx, endMasterIdx);    // End index in master path
+            int startIndex = _masterPath.BlueprintCount() - 1;               // Start index in master path
+            int endIndex = startIndex + _mainPathLength;
+            _mainPath = new Path(MAIN_PATH_NAME, PathType.main, startIndex, endIndex);    // End index in master path
 
             RandomWalker(_mainPathLength, _mainPath);
             
@@ -273,10 +273,10 @@ namespace RyansLibrary.Labyrinth
         {
             // Path to prize room; choose a random start room
             // Initialize a new path at starting room if not null
-            int startMasterIdx = _masterPath.BlueprintCount() - 1;               // Start index in master path
-            int endMasterIdx = startMasterIdx + _prizePathLength;
+            int startIndex = _mainPath.BlueprintCount() - 1;               // Start index in master path
+            int endIndex = startIndex + _mainPathLength;
             BlueprintRoom startRoom = ChooseRandomRoom(_masterPath, 1); // start at index 1 as to not choose the starting room of the game
-            Path prizePath = new Path(PRIZE_PATH_NAME, PathType.prize, startMasterIdx, endMasterIdx);
+            Path prizePath = new Path(PRIZE_PATH_NAME, PathType.prize, startIndex, endIndex);
 
             RandomWalker(_prizePathLength, prizePath, startRoom);
             
@@ -548,6 +548,7 @@ namespace RyansLibrary.Labyrinth
                 // ********** Master Path **********
                 case PathType.master:
                     break;
+
                 // ********** Main Path **********
                 case PathType.main:
                     path.Rooms.Add(GenerateRoom(RoomShape.smallRoom, RoomType.start, path, 0, 0, 0));
@@ -565,6 +566,10 @@ namespace RyansLibrary.Labyrinth
 
                             if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.bigRoom, path, out rDir))  // if can spawn B-Room & passed B-Room spawn chance
                             {
+                                // if the next room to be generated is the last room in the trail then make it the toBoss room
+                                if ((i + 4) >= path.BlueprintCount())
+                                    rType = RoomType.toBoss;
+
                                 // spawn B-Room
                                 // Hook up blueprintRoom.entrancewayflags to new room
                                 Room genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, i, rDir); // Spawn T-Room
@@ -575,8 +580,10 @@ namespace RyansLibrary.Labyrinth
                             // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2x1 at end of trail
                             else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.tallRoom, path, out rDir))
                             {
-                                //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
-                                //   rType = RoomType.boss;
+                                // if the next room to be generated is the last room in the trail then make it the toBoss room
+                                if ((i + 2) >= path.BlueprintCount())
+                                    rType = RoomType.toBoss;
+
                                 Room genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, i, rDir); // Spawn T-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
@@ -585,8 +592,10 @@ namespace RyansLibrary.Labyrinth
                             // else if can spawn L-Room & passed L-Room spawn chance && extra space for a 2x1x1 at end of trail
                             else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.longRoom, path, out rDir))
                             {
-                                //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
-                                //    rType = RoomType.ToBoss;
+                                // if the next room to be generated is the last room in the trail then make it the toBoss room
+                                if ((i + 2) >= path.BlueprintCount())
+                                    rType = RoomType.toBoss;
+
                                 Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rDir); // Spawn L-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
@@ -594,8 +603,10 @@ namespace RyansLibrary.Labyrinth
                             }
                             else
                             {
-                                //if (i + 1 >= path.Length()) // if the next room to be generated is the last room in the trail
-                                //    rType = RoomType.ToBoss;
+                                // if the next room to be generated is the last room in the trail then make it the toBoss room
+                                if ((i + 1) >= path.BlueprintCount())
+                                    rType = RoomType.toBoss;
+
                                 Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, i, 0); // Spawn S-Room
                                 path.Add(genRoom);
                                 _masterPath.Add(genRoom);
@@ -604,6 +615,7 @@ namespace RyansLibrary.Labyrinth
                         }
                     }
                     break;
+
                 // ********** Prize Path **********
                 case PathType.prize:
                     // *** Loop through all blueprint rooms ***
@@ -619,6 +631,10 @@ namespace RyansLibrary.Labyrinth
                             // Check and spawn B-Rooms
                             if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.bigRoom, path, out rDir))  // if can spawn B-Room & passed B-Room spawn chance
                             {
+                                // if the next room to be generated is the last room in the trail then make it the prize room
+                                if ((i + 4) >= path.BlueprintCount())
+                                    rType = RoomType.prize;
+
                                 // spawn B-Room
                                 // Hook up blueprintRoom.entrancewayflags to new room
                                 Room genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, i, rDir); // Spawn T-Room
@@ -629,8 +645,10 @@ namespace RyansLibrary.Labyrinth
                             // else if can spawn T-Room & passed T-Room spawn chance && extra space for a 1x2x1 at end of trail; SpawnShapeCondition() -> Yes, you can spawn a T-Room there and here's the direction
                             else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.tallRoom, path, out rDir))
                             {
-                                //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
-                                //   rType = RoomType.boss;
+                                // if the next room to be generated is the last room in the trail then make it the prize room
+                                if ((i + 2) >= path.BlueprintCount())
+                                    rType = RoomType.prize;
+
                                 Room genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, i, rDir); // Spawn T-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
@@ -639,8 +657,10 @@ namespace RyansLibrary.Labyrinth
                             // else if can spawn L-Room & passed L-Room spawn chance && extra space for a 2x1x1 at end of trail; SpawnShapeCondition() -> Yes, you can spawn a L-Room there and here's the direction
                             else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.longRoom, path, out rDir))
                             {
-                                //if (i + 2 >= path.Length()) // if the next room to be generated is the last room in the trail
-                                //    rType = RoomType.ToBoss;
+                                // if the next room to be generated is the last room in the trail then make it the prize room
+                                if ((i + 2) >= path.BlueprintCount())
+                                    rType = RoomType.prize;
+
                                 Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, i, rDir); // Spawn L-Room
                                 path.Add(genRoom);              // Add new room to paths
                                 _masterPath.Add(genRoom);
@@ -648,8 +668,10 @@ namespace RyansLibrary.Labyrinth
                             }
                             else // If no condition holds then spawn a S-Room
                             {
-                                //if (i + 1 >= path.Length()) // if the next room to be generated is the last room in the trail
-                                //    rType = RoomType.ToBoss;
+                                // if the next room to be generated is the last room in the trail then make it the prize room
+                                if ((i + 1) >= path.BlueprintCount())
+                                    rType = RoomType.prize;
+
                                 Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, i, 0); // Spawn S-Room
                                 path.Add(genRoom);
                                 _masterPath.Add(genRoom);
@@ -658,6 +680,7 @@ namespace RyansLibrary.Labyrinth
                         }
                     }
                     break;
+
                 // ********** Error **********
                 default:
                     Debug.LogError("Map Generator Error: Undefinded Path Type");
