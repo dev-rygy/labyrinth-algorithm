@@ -1118,7 +1118,7 @@ MonoBehaviour:
   _longRoomSpawnChance: 0.55
   _bigRoomSpawnChance: 1
   _debugAll: 0
-  _debugBlueprint: 1
+  _debugBlueprint: 0
   _debugRoomGen: 0
   _blueprintGizmoPrefab: {fileID: 346890499486270653, guid: 1e7aed37650f79e4f83703d767189d05,
     type: 3}
@@ -1851,6 +1851,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1734524686}
   m_CullTransparentMesh: 1
+--- !u!1 &1782855314
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1782855315}
+  - component: {fileID: 1782855316}
+  m_Layer: 0
+  m_Name: Loot Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1782855315
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782855314}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1782855316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782855314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a0f672399ca3fc42bd2477e61eeb426, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debug: 0
 --- !u!1 &1843263247
 GameObject:
   m_ObjectHideFlags: 0
@@ -2350,6 +2395,7 @@ SceneRoots:
   - {fileID: 1093579849}
   - {fileID: 266706842}
   - {fileID: 981829861}
+  - {fileID: 1782855315}
   - {fileID: 1441438938}
   - {fileID: 1398471868}
   - {fileID: 987028921}

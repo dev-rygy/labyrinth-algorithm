@@ -14,6 +14,7 @@ namespace RyansLibrary.Input
     {
         public static InputManager Instance { get; private set; }
 
+        // Input Events
         public static event System.Action OnMove;
         public static event System.Action OnLook;
         public static event System.Action OnLookRight;

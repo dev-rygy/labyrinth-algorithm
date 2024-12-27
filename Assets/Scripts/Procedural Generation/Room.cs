@@ -31,17 +31,19 @@ namespace RyansLibrary.Labyrinth
 
     public class Room : MonoBehaviour
     {
-        [Header("Room Walls")]
-        [SerializeField] private List<Transform> roomWalls;
+        [Header("Room Components")]
+        [SerializeField] private List<Transform> _roomWalls;
+        [SerializeField] public List<SpawnPad> RoomSpawners;
 
         [Header("Room Properties")]
         [SerializeField] public RoomShape roomShape;
+        [SerializeField] private RoomType _roomType;     // Just to show in inspector
 
         [Header("debug")]
         [SerializeField] private bool debug = false;
 
         public Vector3 Position { get; private set; }
-        public RoomType roomType { get; private set; }
+        public RoomType RoomType { get; private set; }
 
         private bool[,] openEntracways;
 
@@ -54,13 +56,14 @@ namespace RyansLibrary.Labyrinth
             // Index 4 = Top-Left Unit
             openEntracways = new bool[4, 6];
 
-            roomType = RoomType.general;
+            RoomType = RoomType.general;
         }
 
         // Initialize the Room's entrances and loot
         public void Initialize(RoomType type)
         {
-            roomType = type;
+            RoomType = type;
+            _roomType = type;
             AcivateEntranceways();
         }
 
@@ -134,8 +137,8 @@ namespace RyansLibrary.Labyrinth
         /// <param name="entranceNum"></param>
         private void ActivateEntranceway(int entranceNum)
         {
-            roomWalls[entranceNum].GetChild(0).gameObject.SetActive(true);   // Activate Entranceway
-            roomWalls[entranceNum].GetChild(1).gameObject.SetActive(false);  // Deactivate Wall
+            _roomWalls[entranceNum].GetChild(0).gameObject.SetActive(true);   // Activate Entranceway
+            _roomWalls[entranceNum].GetChild(1).gameObject.SetActive(false);  // Deactivate Wall
         }
     }
 }
