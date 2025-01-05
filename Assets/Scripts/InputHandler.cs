@@ -10,9 +10,9 @@ using UnityEngine.InputSystem;
 
 namespace RyansLibrary.Input
 {
-    public class InputManager : MonoBehaviour
+    public class InputHandler : MonoBehaviour
     {
-        public static InputManager Instance { get; private set; }
+        public static InputHandler Instance { get; private set; }
 
         // Input Events
         public static event System.Action OnMove;

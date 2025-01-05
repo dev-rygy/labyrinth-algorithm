@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private Transform _playerCharacter;
     private CharacterController _characterController;
-    private InputManager _inputManager;
+    private InputHandler _inputManager;
 
     private Vector3 _moveDirection;
     private float _gravity = -9.81f;
@@ -44,13 +44,13 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        InputManager.OnJump += Jump;
-        InputManager.OnInteract1 += Interact;
-        InputManager.OnLookRight += () => transform.Rotate(Vector3.down, _lookAngleIncrement);
-        InputManager.OnLookLeft += () => transform.Rotate(Vector3.down, -(_lookAngleIncrement));
+        InputHandler.OnJump += Jump;
+        InputHandler.OnInteract1 += Interact;
+        InputHandler.OnLookRight += () => transform.Rotate(Vector3.down, _lookAngleIncrement);
+        InputHandler.OnLookLeft += () => transform.Rotate(Vector3.down, -(_lookAngleIncrement));
 
 
-        _inputManager = InputManager.Instance;
+        _inputManager = InputHandler.Instance;
         _characterController = GetComponent<CharacterController>();
     }
 
