@@ -2,17 +2,18 @@
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2024
  * Last Modified:   12/17/2024 
- * Notes:           Input Handler
+ * Notes:           Old Input Handler (DEPRICATED)
 */
 
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace RyansLibrary.Input
 {
-    public class InputHandler : MonoBehaviour
+    public class OldInputhandler : MonoBehaviour
     {
-        public static InputHandler Instance { get; private set; }
+        public static OldInputhandler Instance { get; private set; }
 
         // Input Events
         public static event System.Action OnMove;
@@ -47,29 +48,29 @@ namespace RyansLibrary.Input
                 _playerControls = new PlayerControls();
             }
 
-            _playerControls.PlayerMovement.Move.performed += context => OnMovementInput(context);
-            _playerControls.PlayerMovement.Move.canceled += context => OnMovementInput(context);
+            _playerControls.Player.Move.performed += context => OnMovementInput(context);
+            _playerControls.Player.Move.canceled += context => OnMovementInput(context);
 
-            _playerControls.PlayerMovement.Look.performed += context => OnLookInput(context);
-            _playerControls.PlayerMovement.Look.canceled += context => OnLookInput(context);
-            _playerControls.PlayerMovement.LookRight.started += context => OnLookRightInput(context);
-            _playerControls.PlayerMovement.LookLeft.started += context => OnLookLeftInput(context);
+            _playerControls.Player.Look.performed += context => OnLookInput(context);
+            _playerControls.Player.Look.canceled += context => OnLookInput(context);
+            _playerControls.Player.LookRight.started += context => OnLookRightInput(context);
+            _playerControls.Player.LookLeft.started += context => OnLookLeftInput(context);
 
-            _playerControls.PlayerMovement.Jump.started += context => OnJumpInput(context);
+            _playerControls.Player.Jump.started += context => OnJumpInput(context);
 
 
-            _playerControls.PlayerMovement.Interact1.started += context => OnInteract1Input(context);
-            _playerControls.PlayerMovement.Interact2.started += context => OnInteract2Input(context);
+            _playerControls.Player.Interact1.started += context => OnInteract1Input(context);
+            _playerControls.Player.Interact2.started += context => OnInteract2Input(context);
         }
 
         private void OnEnable()
         {
-            _playerControls.PlayerMovement.Enable();
+            _playerControls.Player.Enable();
         }
 
         private void OnDisable()
         {
-            _playerControls.PlayerMovement.Disable();
+            _playerControls.Player.Disable();
         }
 
         private void OnMovementInput(InputAction.CallbackContext context)

@@ -2,14 +2,14 @@
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2024
  * Last Modified:   12/18/2024 
- * Notes:           Player Controller
+ * Notes:           Old Player Controller (DEPRICATED)
 */
 using UnityEngine;
 using RyansLibrary.Input;
 
-public class PlayerController : MonoBehaviour
+public class OldPlayerController : MonoBehaviour
 {
-    public static PlayerController Instance { get; private set; }
+    public static OldPlayerController Instance { get; private set; }
 
     [Header("Values")]
     [SerializeField] private float _speed = 1f;
@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private Transform _playerCharacter;
     private CharacterController _characterController;
-    private InputHandler _inputManager;
+    private OldInputhandler _inputManager;
 
     private Vector3 _moveDirection;
     private float _gravity = -9.81f;
@@ -44,13 +44,13 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        InputHandler.OnJump += Jump;
-        InputHandler.OnInteract1 += Interact;
-        InputHandler.OnLookRight += () => transform.Rotate(Vector3.down, _lookAngleIncrement);
-        InputHandler.OnLookLeft += () => transform.Rotate(Vector3.down, -(_lookAngleIncrement));
+        OldInputhandler.OnJump += Jump;
+        OldInputhandler.OnInteract1 += Interact;
+        OldInputhandler.OnLookRight += () => transform.Rotate(Vector3.down, _lookAngleIncrement);
+        OldInputhandler.OnLookLeft += () => transform.Rotate(Vector3.down, -(_lookAngleIncrement));
 
 
-        _inputManager = InputHandler.Instance;
+        _inputManager = OldInputhandler.Instance;
         _characterController = GetComponent<CharacterController>();
     }
 

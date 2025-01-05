@@ -28,14 +28,14 @@ namespace RyansLibrary
         private void Start()
         {
             if (useAltInteract)
-                InputHandler.OnInteract2 += Teleport;
+                OldInputhandler.OnInteract2 += Teleport;
             else
-                InputHandler.OnInteract1 += Teleport;
+                OldInputhandler.OnInteract1 += Teleport;
 
-            InputHandler.OnInteract1 += ResetTP;
-            InputHandler.OnInteract2 += ResetTP;
+            OldInputhandler.OnInteract1 += ResetTP;
+            OldInputhandler.OnInteract2 += ResetTP;
 
-            _playerReference = PlayerController.Instance.gameObject;
+            _playerReference = OldPlayerController.Instance.gameObject;
             if (_debug) Debug.Log("Player reference set to " + _playerReference);
 
             _targetPos = transform.position + blinkDistance;
