@@ -41,7 +41,7 @@ public class PlayerStateMachine : StateMachine
 
         Input = InputHandler.Instance;
         Controller = GetComponent<CharacterController>();
-        Animator = GetComponent<Animator>();
+        Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
 
         // Transition to the first state
         SwitchState(new PlayerIdleState(this)); 

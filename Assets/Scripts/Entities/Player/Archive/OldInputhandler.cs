@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2024
- * Last Modified:   12/17/2024 
+ * Last Modified:   01/06/2024 
  * Notes:           Old Input Handler (DEPRICATED)
 */
 
@@ -53,8 +53,8 @@ namespace RyansLibrary.Input
 
             _playerControls.Player.Look.performed += context => OnLookInput(context);
             _playerControls.Player.Look.canceled += context => OnLookInput(context);
-            _playerControls.Player.LookRight.started += context => OnLookRightInput(context);
-            _playerControls.Player.LookLeft.started += context => OnLookLeftInput(context);
+            //_playerControls.Player.LookRight.started += context => OnLookRightInput(context);
+            //_playerControls.Player.LookLeft.started += context => OnLookLeftInput(context);
 
             _playerControls.Player.Jump.started += context => OnJumpInput(context);
 
@@ -93,6 +93,7 @@ namespace RyansLibrary.Input
             if (debug) Debug.Log("The Look Input read was = " + LookInput);
         }
 
+        /*
         private void OnLookRightInput(InputAction.CallbackContext context)
         {
             if (!context.started)
@@ -112,7 +113,7 @@ namespace RyansLibrary.Input
 
             if (debug) Debug.Log("Player pressed look left button");
         }
-
+        */
         private void OnJumpInput(InputAction.CallbackContext context)
         {
             if (!context.started) 

@@ -73,18 +73,63 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""LookRight"",
+                    ""name"": ""ComboAttackPrimary"",
                     ""type"": ""Button"",
-                    ""id"": ""8a1cd611-50c0-4ecd-aa38-4592d5d35239"",
+                    ""id"": ""87891327-c5d6-4273-ac00-a363556386d6"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""LookLeft"",
+                    ""name"": ""PowerAttackPrimary"",
                     ""type"": ""Button"",
-                    ""id"": ""2745823c-ca0f-4438-8032-b0873a5aa1b4"",
+                    ""id"": ""78d45e12-8dce-4031-a338-b27d2e34596d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ComboAttackSecondary"",
+                    ""type"": ""Button"",
+                    ""id"": ""2d1ffd02-740f-40ec-8811-752e84d9d4bc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PowerAttackSecondary"",
+                    ""type"": ""Button"",
+                    ""id"": ""54ef9202-3f2f-4991-819c-3d87433de422"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""0442d9df-d10e-41b3-a731-a6f8cb15889d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TwoHand"",
+                    ""type"": ""Button"",
+                    ""id"": ""a9a50348-bc46-4046-8fda-a517ed6992f4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Sheathe"",
+                    ""type"": ""Button"",
+                    ""id"": ""e876bd8a-88dd-41d8-8c4d-669d5755777c"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -160,22 +205,22 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4b5afa6f-2b89-493b-8332-328804938a46"",
-                    ""path"": ""<Keyboard>/space"",
+                    ""id"": ""c4b58436-0d83-417b-b655-3c11dd0a2465"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Desktop"",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""c4b58436-0d83-417b-b655-3c11dd0a2465"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""id"": ""4b5afa6f-2b89-493b-8332-328804938a46"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Gamepad"",
+                    ""groups"": "";Desktop"",
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -303,23 +348,199 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""17825e7f-4327-4ee1-86b8-3954141054f1"",
-                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""id"": ""11ceaad3-eefb-41d5-b71d-ed979f21a027"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""LookRight"",
+                    ""action"": ""ComboAttackPrimary"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""0867f142-f338-49f4-b416-40c8d7d461b2"",
-                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""id"": ""02998995-646f-41c9-aa66-59c8fa1c02f2"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""ComboAttackPrimary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4d497f6f-e99d-4a0d-9886-d62f688eb13b"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""LookLeft"",
+                    ""action"": ""PowerAttackPrimary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""5017eb53-7cda-4045-9376-f025f60a1152"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PowerAttackPrimary"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""60353e0d-fdd3-4281-abcb-fcdb880918f0"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""PowerAttackPrimary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""42357986-d486-49c1-8bee-63f76a7eff3a"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""PowerAttackPrimary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5b848d86-bffe-4719-bceb-4343ee749654"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ComboAttackSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2a1415f-6765-4405-a5ad-2dc8e443ac4e"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""ComboAttackSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ef0f1ce-b638-4a1f-8161-7aa44911ba0c"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""PowerAttackSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""01e034f5-e3c7-4b91-bd87-a139488c8777"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PowerAttackSecondary"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""33a8995c-3e6f-4c1e-8ae6-3e93fb0c9470"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""PowerAttackSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""1eced37c-53f2-4a88-b507-2c7071de2dc0"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""PowerAttackSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b5bca900-74ff-4409-b645-69242a911c88"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a957ad81-0f70-4e93-ad45-346fd0fb2498"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b5dcfa7c-dc92-4337-a0d9-31f19fea4c8a"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""TwoHand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""061c44ca-5f2e-4261-90f0-a078d2c3d27a"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""TwoHand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""47e8cef9-c4c0-450e-89ac-0d9fbc8ba404"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Sheathe"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2e84cbc-3b14-4032-aeb7-62732c7f9728"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Sheathe"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -363,8 +584,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact1 = m_Player.FindAction("Interact1", throwIfNotFound: true);
         m_Player_Interact2 = m_Player.FindAction("Interact2", throwIfNotFound: true);
-        m_Player_LookRight = m_Player.FindAction("LookRight", throwIfNotFound: true);
-        m_Player_LookLeft = m_Player.FindAction("LookLeft", throwIfNotFound: true);
+        m_Player_ComboAttackPrimary = m_Player.FindAction("ComboAttackPrimary", throwIfNotFound: true);
+        m_Player_PowerAttackPrimary = m_Player.FindAction("PowerAttackPrimary", throwIfNotFound: true);
+        m_Player_ComboAttackSecondary = m_Player.FindAction("ComboAttackSecondary", throwIfNotFound: true);
+        m_Player_PowerAttackSecondary = m_Player.FindAction("PowerAttackSecondary", throwIfNotFound: true);
+        m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_TwoHand = m_Player.FindAction("TwoHand", throwIfNotFound: true);
+        m_Player_Sheathe = m_Player.FindAction("Sheathe", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -436,8 +662,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Interact1;
     private readonly InputAction m_Player_Interact2;
-    private readonly InputAction m_Player_LookRight;
-    private readonly InputAction m_Player_LookLeft;
+    private readonly InputAction m_Player_ComboAttackPrimary;
+    private readonly InputAction m_Player_PowerAttackPrimary;
+    private readonly InputAction m_Player_ComboAttackSecondary;
+    private readonly InputAction m_Player_PowerAttackSecondary;
+    private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_TwoHand;
+    private readonly InputAction m_Player_Sheathe;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -447,8 +678,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Interact1 => m_Wrapper.m_Player_Interact1;
         public InputAction @Interact2 => m_Wrapper.m_Player_Interact2;
-        public InputAction @LookRight => m_Wrapper.m_Player_LookRight;
-        public InputAction @LookLeft => m_Wrapper.m_Player_LookLeft;
+        public InputAction @ComboAttackPrimary => m_Wrapper.m_Player_ComboAttackPrimary;
+        public InputAction @PowerAttackPrimary => m_Wrapper.m_Player_PowerAttackPrimary;
+        public InputAction @ComboAttackSecondary => m_Wrapper.m_Player_ComboAttackSecondary;
+        public InputAction @PowerAttackSecondary => m_Wrapper.m_Player_PowerAttackSecondary;
+        public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        public InputAction @TwoHand => m_Wrapper.m_Player_TwoHand;
+        public InputAction @Sheathe => m_Wrapper.m_Player_Sheathe;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -473,12 +709,27 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Interact2.started += instance.OnInteract2;
             @Interact2.performed += instance.OnInteract2;
             @Interact2.canceled += instance.OnInteract2;
-            @LookRight.started += instance.OnLookRight;
-            @LookRight.performed += instance.OnLookRight;
-            @LookRight.canceled += instance.OnLookRight;
-            @LookLeft.started += instance.OnLookLeft;
-            @LookLeft.performed += instance.OnLookLeft;
-            @LookLeft.canceled += instance.OnLookLeft;
+            @ComboAttackPrimary.started += instance.OnComboAttackPrimary;
+            @ComboAttackPrimary.performed += instance.OnComboAttackPrimary;
+            @ComboAttackPrimary.canceled += instance.OnComboAttackPrimary;
+            @PowerAttackPrimary.started += instance.OnPowerAttackPrimary;
+            @PowerAttackPrimary.performed += instance.OnPowerAttackPrimary;
+            @PowerAttackPrimary.canceled += instance.OnPowerAttackPrimary;
+            @ComboAttackSecondary.started += instance.OnComboAttackSecondary;
+            @ComboAttackSecondary.performed += instance.OnComboAttackSecondary;
+            @ComboAttackSecondary.canceled += instance.OnComboAttackSecondary;
+            @PowerAttackSecondary.started += instance.OnPowerAttackSecondary;
+            @PowerAttackSecondary.performed += instance.OnPowerAttackSecondary;
+            @PowerAttackSecondary.canceled += instance.OnPowerAttackSecondary;
+            @Dash.started += instance.OnDash;
+            @Dash.performed += instance.OnDash;
+            @Dash.canceled += instance.OnDash;
+            @TwoHand.started += instance.OnTwoHand;
+            @TwoHand.performed += instance.OnTwoHand;
+            @TwoHand.canceled += instance.OnTwoHand;
+            @Sheathe.started += instance.OnSheathe;
+            @Sheathe.performed += instance.OnSheathe;
+            @Sheathe.canceled += instance.OnSheathe;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -498,12 +749,27 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Interact2.started -= instance.OnInteract2;
             @Interact2.performed -= instance.OnInteract2;
             @Interact2.canceled -= instance.OnInteract2;
-            @LookRight.started -= instance.OnLookRight;
-            @LookRight.performed -= instance.OnLookRight;
-            @LookRight.canceled -= instance.OnLookRight;
-            @LookLeft.started -= instance.OnLookLeft;
-            @LookLeft.performed -= instance.OnLookLeft;
-            @LookLeft.canceled -= instance.OnLookLeft;
+            @ComboAttackPrimary.started -= instance.OnComboAttackPrimary;
+            @ComboAttackPrimary.performed -= instance.OnComboAttackPrimary;
+            @ComboAttackPrimary.canceled -= instance.OnComboAttackPrimary;
+            @PowerAttackPrimary.started -= instance.OnPowerAttackPrimary;
+            @PowerAttackPrimary.performed -= instance.OnPowerAttackPrimary;
+            @PowerAttackPrimary.canceled -= instance.OnPowerAttackPrimary;
+            @ComboAttackSecondary.started -= instance.OnComboAttackSecondary;
+            @ComboAttackSecondary.performed -= instance.OnComboAttackSecondary;
+            @ComboAttackSecondary.canceled -= instance.OnComboAttackSecondary;
+            @PowerAttackSecondary.started -= instance.OnPowerAttackSecondary;
+            @PowerAttackSecondary.performed -= instance.OnPowerAttackSecondary;
+            @PowerAttackSecondary.canceled -= instance.OnPowerAttackSecondary;
+            @Dash.started -= instance.OnDash;
+            @Dash.performed -= instance.OnDash;
+            @Dash.canceled -= instance.OnDash;
+            @TwoHand.started -= instance.OnTwoHand;
+            @TwoHand.performed -= instance.OnTwoHand;
+            @TwoHand.canceled -= instance.OnTwoHand;
+            @Sheathe.started -= instance.OnSheathe;
+            @Sheathe.performed -= instance.OnSheathe;
+            @Sheathe.canceled -= instance.OnSheathe;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -546,7 +812,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnInteract1(InputAction.CallbackContext context);
         void OnInteract2(InputAction.CallbackContext context);
-        void OnLookRight(InputAction.CallbackContext context);
-        void OnLookLeft(InputAction.CallbackContext context);
+        void OnComboAttackPrimary(InputAction.CallbackContext context);
+        void OnPowerAttackPrimary(InputAction.CallbackContext context);
+        void OnComboAttackSecondary(InputAction.CallbackContext context);
+        void OnPowerAttackSecondary(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
+        void OnTwoHand(InputAction.CallbackContext context);
+        void OnSheathe(InputAction.CallbackContext context);
     }
 }

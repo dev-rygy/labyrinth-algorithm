@@ -23,6 +23,14 @@ namespace RyansLibrary.Input
         public static event System.Action OnJump;
         public static event System.Action OnInteract1;
         public static event System.Action OnInteract2;
+        public static event System.Action OnComboPrimary;
+        public static event System.Action OnComboSecondary;
+        public static event System.Action OnPowerPrimary;
+        public static event System.Action OnPowerSecondary;
+        public static event System.Action OnDash;
+        public static event System.Action OnTwoHand;
+        public static event System.Action OnSheathe;
+
 
         [SerializeField] private bool _debug = false;
         public Vector2 MovementInput { get; private set; }
@@ -43,9 +51,7 @@ namespace RyansLibrary.Input
 
             // Initialize
             if (_playerControls == null)
-            {
                 _playerControls = new PlayerControls();
-            }
 
             SubscribeToInputEvents();
             TogglePlayerInput(true);
@@ -69,6 +75,15 @@ namespace RyansLibrary.Input
             // Player Interaction Events
             _playerControls.Player.Interact1.started += context => OnInteract1Input(context);
             _playerControls.Player.Interact2.started += context => OnInteract2Input(context);
+
+            _playerControls.Player.ComboAttackPrimary.performed += context => OnComboPrimary?.Invoke();
+            _playerControls.Player.ComboAttackSecondary.performed += context => OnComboSecondary?.Invoke();
+            _playerControls.Player.PowerAttackPrimary.performed += context => OnPowerPrimary?.Invoke();
+            _playerControls.Player.PowerAttackSecondary.performed += context => OnPowerSecondary?.Invoke();
+
+            _playerControls.Player.Dash.performed += context => OnDash?.Invoke();
+            _playerControls.Player.TwoHand.performed += context => OnTwoHand?.Invoke();
+            _playerControls.Player.Sheathe.performed += context => OnSheathe?.Invoke();
         }
 
         private void OnEnable()

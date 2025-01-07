@@ -41,7 +41,7 @@ public class PlayerIdleState : PlayerState
         // If the player has no movement input enter the idle animation
         if (moveInput == Vector3.zero)
         {
-            stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, 0f, ANIMATOR_DAMP_TIME, deltaTime);
+            stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, 0f, ANIMATOR_DAMP_TIME, deltaTime);    // Idle Animation
             return;
         }
 
@@ -49,7 +49,8 @@ public class PlayerIdleState : PlayerState
         ApplyCharacterRotation(moveInput, deltaTime);
 
         // If the player has movement then play movement animation
-        stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, 1f, ANIMATOR_DAMP_TIME, deltaTime);    }
+        stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, 1f, ANIMATOR_DAMP_TIME, deltaTime);    // Run Animation
+    }
 
     public override void Exit()
     {
