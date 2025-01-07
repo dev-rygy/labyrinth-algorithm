@@ -8,8 +8,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RyansLibrary.StateMachine;
 
 public interface IAbility
 {
-    public void Execute(CharacterController playerController);
+    public void Execute(StateMachine stateMachine);
 }

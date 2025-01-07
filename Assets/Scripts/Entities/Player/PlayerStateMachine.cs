@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   01/04/2025
+ * Last Modified:   01/07/2025
  * Notes:           The Player's State Machine
 */
 using System.Collections;
@@ -23,12 +23,21 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public float MovementSpeed { get; private set; } = 5;
     [field: SerializeField] public float GravityMultiplier { get; private set; } = -9.81f;
     [field: SerializeField] public float MoveRotationDampValue { get; private set; }
+    [field: SerializeField] public Weapon PrimaryWeapon { get; private set; }
+    [field: SerializeField] public Weapon SecondaryWeapon { get; private set; }
+
     public InputHandler Input { get; private set; } // reference to the input handler
     public CharacterController Controller { get; private set; } // reference to the player's controller
     public Animator Animator { get; private set; }  // reference to the player's animator
 
     // Can be used to check if the player is grounded
     public bool IsGrounded() => Controller.isGrounded;
+
+    // Player Abilities
+    public Ability ComboAttackPrimary { get; private set; }
+    public Ability ComboAttackSecondary { get; private set; }
+    public Ability PowerAttackPrimary { get; private set; }
+    public Ability PowerAttackSecondary { get; private set; }
 
     // Start is called before the first frame update
     void Start()
@@ -44,6 +53,77 @@ public class PlayerStateMachine : StateMachine
         Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
 
         // Transition to the first state
-        SwitchState(new PlayerIdleState(this)); 
+        SwitchState(new PlayerIdleState(this));
+
+        // Equip Weapons
+        EquipPrimaryWeapon(PrimaryWeapon);
+        EquipSecondaryWeapon(SecondaryWeapon);
+    }
+
+    public void EquipPrimaryWeapon(Weapon weapon)
+    {
+        if (weapon == null)
+            return;
+
+        PrimaryWeapon = weapon;
+        Ability ability = null;
+
+        // Set Combo Attack Primary
+        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
+        SetAbility(ability, AbilityType.ComboAttackPrimary);
+
+        // Set Power Attack Primary
+        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
+        SetAbility(ability, AbilityType.ComboAttackPrimary);
+
+        // If there is a secondary weapon equipped then do not replace the secondary abilitites
+        if (SecondaryWeapon != null)
+            return;
+
+        // Set Combo Attack Secondary
+        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
+        SetAbility(ability, AbilityType.ComboAttackPrimary);
+
+        // Set Power Attack Secondary
+        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
+        SetAbility(ability, AbilityType.ComboAttackPrimary);
+    }
+
+    public void EquipSecondaryWeapon(Weapon weapon)
+    {
+        if (weapon == null)
+            return;
+
+        SecondaryWeapon = weapon;
+        Ability ability = null;
+
+        // Set Combo Attack Secondary
+        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
+        SetAbility(ability, AbilityType.ComboAttackPrimary);
+
+        // Set Power Attack Secondary
+        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
+        SetAbility(ability, AbilityType.ComboAttackPrimary);
+    }
+
+    public void SetAbility(Ability ability, AbilityType type)
+    {
+        switch(type)
+        {
+            case AbilityType.ComboAttackPrimary:
+                ComboAttackPrimary = ability;
+                break;
+            case AbilityType.ComboAttackSecondary:
+                ComboAttackSecondary = ability;
+                break;
+            case AbilityType.PowerAttackPrimary:
+                PowerAttackPrimary = ability;
+                break;
+            case AbilityType.PowerAttackSecondary:
+                PowerAttackSecondary = ability;
+                break;
+            default:
+                return;
+        }
     }
 }

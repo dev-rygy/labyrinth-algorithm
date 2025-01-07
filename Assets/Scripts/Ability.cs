@@ -8,6 +8,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RyansLibrary.StateMachine;
 
 public enum AbilityType
 {
@@ -25,7 +26,7 @@ public enum AbilityType
 
 public class Ability : IAbility
 {
-    public virtual void Execute(CharacterController playerController)
+    public virtual void Execute(StateMachine stateMachine)
     {
         Debug.Log("Ability Executed.");
     }

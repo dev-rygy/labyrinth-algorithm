@@ -7,12 +7,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RyansLibrary.StateMachine;
 
 public class Broadsword : Weapon
 {
     private class BroadswordComboAttackPrimary : Ability
     {
-        public override void Execute(CharacterController playerController)
+        public override void Execute(StateMachine playerController)
         {
             Debug.Log("Broadsword Primary Combo Attack Performed.");
         }
@@ -20,7 +21,7 @@ public class Broadsword : Weapon
 
     private class BroadswordPowerAttackPrimary : Ability
     {
-        public override void Execute(CharacterController playerController)
+        public override void Execute(StateMachine stateMachine)
         {
             Debug.Log("Broadsword Primary Power Attack Performed.");
         }
@@ -28,7 +29,7 @@ public class Broadsword : Weapon
 
     private class BroadswordComboAttackSecondary : Ability
     {
-        public override void Execute(CharacterController playerController)
+        public override void Execute(StateMachine stateMachine)
         {
             Debug.Log("Broadsword Secondary Combo Attack Performed.");
         }
@@ -36,7 +37,7 @@ public class Broadsword : Weapon
 
     private class BroadswordPowerAttackSecondary : Ability
     {
-        public override void Execute(CharacterController playerController)
+        public override void Execute(StateMachine stateMachine)
         {
             Debug.Log("Broadsword Secondary Power Attack Performed.");
         }
@@ -48,7 +49,7 @@ public class Broadsword : Weapon
     /// </summary>
     /// <param name="type">The ability key/category</param>
     /// <returns>A new instance of the ability</returns>
-    public override Ability EquipAbility(AbilityType type)
+    public override Ability GetAbility(AbilityType type)
     {
         switch (type)
         {

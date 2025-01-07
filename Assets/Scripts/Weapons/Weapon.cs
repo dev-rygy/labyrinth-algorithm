@@ -11,5 +11,5 @@ using UnityEngine;
 
 public abstract class Weapon : MonoBehaviour
 {
-    public abstract Ability EquipAbility(AbilityType type);
+    public abstract Ability GetAbility(AbilityType type);
 }

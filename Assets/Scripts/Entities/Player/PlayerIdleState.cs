@@ -7,6 +7,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RyansLibrary.Input;
 
 /// <summary>
 /// This is the default state for the player. Every state the player transitions to
@@ -27,13 +28,20 @@ public class PlayerIdleState : PlayerState
 
     public override void Enter()
     {
+        // Subscribe to transition events
+        InputHandler.OnComboPrimary += OnComboPrimary;
+        InputHandler.OnComboSecondary += OnComboSecondary;
+        InputHandler.OnPowerPrimary += OnPoweredPrimary;
+        InputHandler.OnPowerSecondary += OnPoweredSecondary;
+
         // Play the Running blend tree animations
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, 0.1f);
+
+        Debug.Log("Entered PlayerIdleState");
     }
 
     public override void Tick(float deltaTime)
     {
-        // TODO: Transition to different states through events
 
         // Translate the movement input to the correct world plane and move the player 
         Vector3 moveInput = new Vector3(stateMachine.Input.MovementInput.x, 0, stateMachine.Input.MovementInput.y);
@@ -56,6 +64,30 @@ public class PlayerIdleState : PlayerState
 
     public override void Exit()
     {
+        // Unsubscribe to transition events
+        InputHandler.OnComboPrimary -= OnComboPrimary;
+        InputHandler.OnComboSecondary -= OnComboSecondary;
+        InputHandler.OnPowerPrimary -= OnPoweredPrimary;
+        InputHandler.OnPowerSecondary -= OnPoweredSecondary;
 
+        Debug.Log("Exited PlayerIdleState");
+    }
+
+    // Transition Functions
+    private void OnComboPrimary()
+    {
+        stateMachine.SwitchState(new PlayerComboPrimaryState(stateMachine));
+    }
+
+    private void OnComboSecondary()
+    {
+    }
+
+    private void OnPoweredPrimary()
+    {
+    }
+
+    private void OnPoweredSecondary()
+    {
     }
 }
