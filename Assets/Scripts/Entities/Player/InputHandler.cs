@@ -70,20 +70,20 @@ namespace RyansLibrary.Input
             // _playerControls.Player.LookLeft.started += context => OnLookLeftInput(context);
 
             // Jump Input Events
-            _playerControls.Player.Jump.started += context => OnJumpInput(context);
+            _playerControls.Player.Jump.started += _ => OnJump?.Invoke();
 
             // Player Interaction Events
-            _playerControls.Player.Interact1.started += context => OnInteract1Input(context);
-            _playerControls.Player.Interact2.started += context => OnInteract2Input(context);
+            _playerControls.Player.Interact1.started += _ => OnInteract1?.Invoke();
+            _playerControls.Player.Interact2.started += _ => OnInteract2?.Invoke();
 
-            _playerControls.Player.ComboAttackPrimary.performed += context => OnComboPrimary?.Invoke();
-            _playerControls.Player.ComboAttackSecondary.performed += context => OnComboSecondary?.Invoke();
-            _playerControls.Player.PowerAttackPrimary.performed += context => OnPowerPrimary?.Invoke();
-            _playerControls.Player.PowerAttackSecondary.performed += context => OnPowerSecondary?.Invoke();
+            _playerControls.Player.ComboAttackPrimary.performed += _ => OnComboPrimary?.Invoke();
+            _playerControls.Player.ComboAttackSecondary.performed += _ => OnComboSecondary?.Invoke();
+            _playerControls.Player.PowerAttackPrimary.performed += _ => OnPowerPrimary?.Invoke();
+            _playerControls.Player.PowerAttackSecondary.performed += _ => OnPowerSecondary?.Invoke();
 
-            _playerControls.Player.Dash.performed += context => OnDash?.Invoke();
-            _playerControls.Player.TwoHand.performed += context => OnTwoHand?.Invoke();
-            _playerControls.Player.Sheathe.performed += context => OnSheathe?.Invoke();
+            _playerControls.Player.Dash.performed += _ => OnDash?.Invoke();
+            _playerControls.Player.TwoHand.performed += _ => OnTwoHand?.Invoke();
+            _playerControls.Player.Sheathe.performed += _ => OnSheathe?.Invoke();
         }
 
         private void OnEnable()
@@ -118,7 +118,17 @@ namespace RyansLibrary.Input
             if (_debug) Debug.Log("The Movement Input read was = " + MovementInput);
         }
 
-        /*  Look input (DEPRICATED)
+        /* Jump Input (DEPRICATED)
+        private void OnJumpInput(InputAction.CallbackContext context)
+        {
+            if (!context.started)
+                return;
+
+            OnJump?.Invoke();
+        }
+        */
+
+        /*  Look Input (DEPRICATED)
         private void OnLookInput(InputAction.CallbackContext context)
         {
             // Read value from input and set the movementInput Vector to it
@@ -149,14 +159,7 @@ namespace RyansLibrary.Input
         }
         */
 
-        private void OnJumpInput(InputAction.CallbackContext context)
-        {
-            if (!context.started)
-                return;
-
-            OnJump?.Invoke();
-        }
-
+        /*      Interact Input Functions (DEPRICATED)
         private void OnInteract1Input(InputAction.CallbackContext context)
         {
             if (!context.started)
@@ -174,5 +177,6 @@ namespace RyansLibrary.Input
             OnInteract2?.Invoke();
             if (_debug) Debug.Log("Player has interacted");
         }
+        */
     }
 }

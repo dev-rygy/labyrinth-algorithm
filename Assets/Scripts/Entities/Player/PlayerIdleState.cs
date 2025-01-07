@@ -33,6 +33,8 @@ public class PlayerIdleState : PlayerState
 
     public override void Tick(float deltaTime)
     {
+        // TODO: Transition to different states through events
+
         // Translate the movement input to the correct world plane and move the player 
         Vector3 moveInput = new Vector3(stateMachine.Input.MovementInput.x, 0, stateMachine.Input.MovementInput.y);
         Move(moveInput * stateMachine.MovementSpeed, deltaTime);
