@@ -19,16 +19,23 @@ public class PlayerStateMachine : StateMachine
 {
     // TODO: Implement static states to save on memory
 
+    [field: Header("References")]
     [field: SerializeField] public Transform PlayerCharacter { get; private set; }
+
+    [field: Header("Movement")]
     [field: SerializeField] public float MovementSpeed { get; private set; } = 5;
     [field: SerializeField] public float GravityMultiplier { get; private set; } = -9.81f;
     [field: SerializeField] public float MoveRotationDampValue { get; private set; }
+
+    [field: Header("Equipped")]
     [field: SerializeField] public Weapon PrimaryWeapon { get; private set; }
     [field: SerializeField] public Weapon SecondaryWeapon { get; private set; }
 
+    // References
     public InputHandler Input { get; private set; } // reference to the input handler
     public CharacterController Controller { get; private set; } // reference to the player's controller
     public Animator Animator { get; private set; }  // reference to the player's animator
+    public AnimationTimestamps AnimationTimestamps { get; private set; }
 
     // Can be used to check if the player is grounded
     public bool IsGrounded() => Controller.isGrounded;
@@ -51,6 +58,7 @@ public class PlayerStateMachine : StateMachine
         Input = InputHandler.Instance;
         Controller = GetComponent<CharacterController>();
         Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
+        AnimationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
 
         // Transition to the first state
         SwitchState(new PlayerIdleState(this));

@@ -24,10 +24,15 @@ public enum AbilityType
     CastAttack
 }
 
-public class Ability : IAbility
+public abstract class Ability : IAbility
 {
-    public virtual void Execute(StateMachine stateMachine)
-    {
-        Debug.Log("Ability Executed.");
-    }
+    public string AnimationName { get; protected set; }
+
+    public float TransitionDuration { get; protected set; } = 0.1f;
+
+    public abstract void Enter(PlayerStateMachine stateMachine);
+
+    public abstract void Tick(float deltaTime, PlayerStateMachine stateMachine);
+
+    public abstract void Exit(PlayerStateMachine stateMachine);
 }

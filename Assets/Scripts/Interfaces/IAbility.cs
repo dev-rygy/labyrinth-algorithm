@@ -12,5 +12,9 @@ using RyansLibrary.StateMachine;
 
 public interface IAbility
 {
-    public void Execute(StateMachine stateMachine);
+    public void Enter(PlayerStateMachine stateMachine);
+
+    public void Tick(float deltaTime, PlayerStateMachine stateMachine);
+
+    public void Exit(PlayerStateMachine stateMachine);
 }

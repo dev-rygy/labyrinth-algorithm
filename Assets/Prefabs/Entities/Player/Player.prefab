@@ -33094,7 +33094,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 4d1b1108936098f439d8c9742a931a25, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -69542,6 +69542,8 @@ MonoBehaviour:
   <MovementSpeed>k__BackingField: 5
   <GravityMultiplier>k__BackingField: -9.81
   <MoveRotationDampValue>k__BackingField: 10
+  <PrimaryWeapon>k__BackingField: {fileID: 1308116680162793220}
+  <SecondaryWeapon>k__BackingField: {fileID: 0}
 --- !u!1001 &308056685214840841
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69610,6 +69612,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f817d3751429dab459aca65ab057b05b, type: 3}
+--- !u!114 &1308116680162793220 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1612626065559645965, guid: f817d3751429dab459aca65ab057b05b,
+    type: 3}
+  m_PrefabInstance: {fileID: 308056685214840841}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c8a0ef6af334c640b6254dbe75704f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8488911432160082417 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8181004317177496056, guid: f817d3751429dab459aca65ab057b05b,

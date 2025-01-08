@@ -13,33 +13,79 @@ public class Broadsword : Weapon
 {
     private class BroadswordComboAttackPrimary : Ability
     {
-        public override void Execute(StateMachine playerController)
+        public override void Enter(PlayerStateMachine stateMachine)
         {
-            Debug.Log("Broadsword Primary Combo Attack Performed.");
+            AnimationName = "Sword Combo Primary";
+
+            stateMachine.AnimationTimestamps.OnComboPrimColliderEnable += stateMachine.PrimaryWeapon.EnableWeaponCollider;
+            stateMachine.AnimationTimestamps.OnComboPrimColliderDisable += stateMachine.PrimaryWeapon.DisableWeaponCollider;
+            Debug.Log("Broadsword Primary Combo Entered.");
+        }
+
+        public override void Tick(float deltaTime, PlayerStateMachine stateMachine) 
+        {
+            Debug.Log("Broadsword Primary Combo Ticked.");
+        }
+
+        public override void Exit(PlayerStateMachine stateMachine)
+        {
+            stateMachine.AnimationTimestamps.OnComboPrimColliderEnable -= stateMachine.PrimaryWeapon.EnableWeaponCollider;
+            stateMachine.AnimationTimestamps.OnComboPrimColliderDisable -= stateMachine.PrimaryWeapon.DisableWeaponCollider;
+            Debug.Log("Broadsword Primary Combo Exited.");
         }
     }
 
     private class BroadswordPowerAttackPrimary : Ability
     {
-        public override void Execute(StateMachine stateMachine)
+        public override void Enter(PlayerStateMachine stateMachine)
         {
-            Debug.Log("Broadsword Primary Power Attack Performed.");
+            throw new System.NotImplementedException();
+        }
+
+        public override void Exit(PlayerStateMachine stateMachine)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Tick(float deltaTime, PlayerStateMachine stateMachine)
+        {
+            throw new System.NotImplementedException();
         }
     }
 
     private class BroadswordComboAttackSecondary : Ability
     {
-        public override void Execute(StateMachine stateMachine)
+        public override void Enter(PlayerStateMachine stateMachine)
         {
-            Debug.Log("Broadsword Secondary Combo Attack Performed.");
+            throw new System.NotImplementedException();
+        }
+
+        public override void Exit(PlayerStateMachine stateMachine)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Tick(float deltaTime, PlayerStateMachine stateMachine)
+        {
+            throw new System.NotImplementedException();
         }
     }
 
     private class BroadswordPowerAttackSecondary : Ability
     {
-        public override void Execute(StateMachine stateMachine)
+        public override void Enter(PlayerStateMachine stateMachine)
         {
-            Debug.Log("Broadsword Secondary Power Attack Performed.");
+            throw new System.NotImplementedException();
+        }
+
+        public override void Exit(PlayerStateMachine stateMachine)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Tick(float deltaTime, PlayerStateMachine stateMachine)
+        {
+            throw new System.NotImplementedException();
         }
     }
 

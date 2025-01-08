@@ -28,7 +28,7 @@ public class PlayerIdleState : PlayerState
 
     public override void Enter()
     {
-        // Subscribe to transition events
+        // Input Events
         InputHandler.OnComboPrimary += OnComboPrimary;
         InputHandler.OnComboSecondary += OnComboSecondary;
         InputHandler.OnPowerPrimary += OnPoweredPrimary;

@@ -11,5 +11,17 @@ using UnityEngine;
 
 public abstract class Weapon : MonoBehaviour
 {
+    [field: SerializeField] public GameObject WeaponColliderObject { get; private set; }
+
     public abstract Ability GetAbility(AbilityType type);
+
+    public void EnableWeaponCollider()
+    {
+        WeaponColliderObject.SetActive(true);
+    }
+
+    public void DisableWeaponCollider()
+    {
+        WeaponColliderObject.SetActive(false);
+    }
 }
