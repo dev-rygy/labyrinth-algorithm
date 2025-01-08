@@ -36,6 +36,8 @@ namespace RyansLibrary.Input
         public Vector2 MovementInput { get; private set; }
         // public Vector3 LookInput { get; private set; }   DEPRICATED
         // public bool JumpKeyPressed { get; private set; } DEPRICATED
+        public bool IsHoldingPrimaryCombo { get; private set; }
+        public bool IsHoldingSecondaryCombo { get; private set; }
 
         private PlayerControls _playerControls;
 
@@ -76,8 +78,10 @@ namespace RyansLibrary.Input
             _playerControls.Player.Interact1.started += _ => OnInteract1?.Invoke();
             _playerControls.Player.Interact2.started += _ => OnInteract2?.Invoke();
 
-            _playerControls.Player.ComboAttackPrimary.performed += _ => OnComboPrimary?.Invoke();
-            _playerControls.Player.ComboAttackSecondary.performed += _ => OnComboSecondary?.Invoke();
+            _playerControls.Player.ComboAttackPrimary.performed += context => OnPrimaryComboInput(context);
+            _playerControls.Player.ComboAttackPrimary.canceled += context => OnPrimaryComboInput(context);
+            _playerControls.Player.ComboAttackSecondary.performed += context => OnSecondaryComboInput(context);
+            _playerControls.Player.ComboAttackSecondary.canceled += context => OnSecondaryComboInput(context);
             _playerControls.Player.PowerAttackPrimary.performed += _ => OnPowerPrimary?.Invoke();
             _playerControls.Player.PowerAttackSecondary.performed += _ => OnPowerSecondary?.Invoke();
 
@@ -116,6 +120,28 @@ namespace RyansLibrary.Input
             OnMove?.Invoke();
 
             if (_debug) Debug.Log("The Movement Input read was = " + MovementInput);
+        }
+
+        private void OnPrimaryComboInput(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                OnComboPrimary?.Invoke();
+                IsHoldingPrimaryCombo = true;
+            }
+            if (context.canceled)
+                IsHoldingPrimaryCombo = false;
+        }
+
+        private void OnSecondaryComboInput(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                OnComboSecondary?.Invoke();
+                IsHoldingSecondaryCombo = true;
+            }
+            if (context.canceled)
+                IsHoldingSecondaryCombo = false;
         }
 
         /* Jump Input (DEPRICATED)

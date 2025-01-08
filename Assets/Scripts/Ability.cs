@@ -26,10 +26,6 @@ public enum AbilityType
 
 public abstract class Ability : IAbility
 {
-    public string AnimationName { get; protected set; }
-
-    public float TransitionDuration { get; protected set; } = 0.1f;
-
     public abstract void Enter(PlayerStateMachine stateMachine);
 
     public abstract void Tick(float deltaTime, PlayerStateMachine stateMachine);

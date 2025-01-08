@@ -542,6 +542,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cdbe60778ff0744ebda66fdc2f5208d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1694385985 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8062277938888940513, guid: 3a55df7c24309c74798865a78e36de5f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1185064645275957466}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1694385987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694385985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd9184e8737d2da4f8302019f08dd831, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <WeaponColliderObject>k__BackingField: {fileID: 0}
+--- !u!1 &1816908409 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6288163642289274413, guid: 3a55df7c24309c74798865a78e36de5f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1185064645275957466}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1816908413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816908409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 577e72c96fe084a46859780c70523837, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1185064645275957466
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -550,6 +587,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      propertyPath: <SecondaryWeapon>k__BackingField
+      value: 
+      objectReference: {fileID: 1694385987}
     - target: {fileID: 4417549369138805797, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -600,6 +642,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6067742143204909704, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      propertyPath: m_Name
+      value: Weapon Collider
+      objectReference: {fileID: 0}
     - target: {fileID: 6288163642289274413, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}
       propertyPath: m_Name
@@ -609,10 +656,18 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6288163642289274413, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1816908413}
     - targetCorrespondingSourceObject: {fileID: 5324976127739240434, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1189741845}
+    - targetCorrespondingSourceObject: {fileID: 8062277938888940513, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1694385987}
   m_SourcePrefab: {fileID: 100100000, guid: 3a55df7c24309c74798865a78e36de5f, type: 3}
 --- !u!20 &1185064645275957467 stripped
 Camera:

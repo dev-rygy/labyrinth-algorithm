@@ -89,12 +89,12 @@ public class PlayerStateMachine : StateMachine
             return;
 
         // Set Combo Attack Secondary
-        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
-        SetAbility(ability, AbilityType.ComboAttackPrimary);
+        ability = weapon.GetAbility(AbilityType.ComboAttackSecondary);
+        SetAbility(ability, AbilityType.ComboAttackSecondary);
 
         // Set Power Attack Secondary
-        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
-        SetAbility(ability, AbilityType.ComboAttackPrimary);
+        ability = weapon.GetAbility(AbilityType.PowerAttackSecondary);
+        SetAbility(ability, AbilityType.PowerAttackSecondary);
     }
 
     public void EquipSecondaryWeapon(Weapon weapon)
@@ -106,12 +106,12 @@ public class PlayerStateMachine : StateMachine
         Ability ability = null;
 
         // Set Combo Attack Secondary
-        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
-        SetAbility(ability, AbilityType.ComboAttackPrimary);
+        ability = weapon.GetAbility(AbilityType.ComboAttackSecondary);
+        SetAbility(ability, AbilityType.ComboAttackSecondary);
 
         // Set Power Attack Secondary
-        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
-        SetAbility(ability, AbilityType.ComboAttackPrimary);
+        ability = weapon.GetAbility(AbilityType.PowerAttackSecondary);
+        SetAbility(ability, AbilityType.PowerAttackSecondary);
     }
 
     public void SetAbility(Ability ability, AbilityType type)

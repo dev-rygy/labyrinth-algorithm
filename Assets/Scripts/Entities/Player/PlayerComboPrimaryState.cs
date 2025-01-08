@@ -5,24 +5,10 @@ using UnityEngine;
 
 public class PlayerComboPrimaryState : PlayerState
 {
-    private bool _hasPressedAttack;
-    private bool _canContinue;
-
     public PlayerComboPrimaryState(PlayerStateMachine stateMachine) : base(stateMachine) { }
 
     public override void Enter()
     {
-        _canContinue = false;
-        _hasPressedAttack = false;
-
-        // Input Events
-        InputHandler.OnComboPrimary += OnComboPrimary;
-
-        // When the combo is finished or if the player does not press the attack button again then exit the state
-        stateMachine.AnimationTimestamps.OnComboPrimEnter += ComboEnter;
-        stateMachine.AnimationTimestamps.OnComboPrimContinue += ComboContinue;
-        stateMachine.AnimationTimestamps.OnComboPrimExit += ComboExit;
-
         if (stateMachine.ComboAttackPrimary == null)
         {
             // TODO: Enter Default Combo
@@ -31,9 +17,6 @@ public class PlayerComboPrimaryState : PlayerState
         }
 
         stateMachine.ComboAttackPrimary?.Enter(stateMachine);
-
-        // Play the attack's animation
-        stateMachine.Animator.CrossFadeInFixedTime(stateMachine.ComboAttackPrimary.AnimationName, stateMachine.ComboAttackPrimary.TransitionDuration);
     }
 
     public override void Tick(float deltaTime)
@@ -60,38 +43,6 @@ public class PlayerComboPrimaryState : PlayerState
             return;
         }
 
-        // Input Events
-        InputHandler.OnComboPrimary -= OnComboPrimary;
-
-        // When the combo is finished or if the player does not press the attack button again then exit the state
-        stateMachine.AnimationTimestamps.OnComboPrimEnter -= ComboEnter;
-        stateMachine.AnimationTimestamps.OnComboPrimContinue -= ComboContinue;
-        stateMachine.AnimationTimestamps.OnComboPrimExit -= ComboExit;
-
         stateMachine.ComboAttackPrimary?.Exit(stateMachine);
-    }
-
-    // The player presses the primary combo key
-    private void OnComboPrimary()
-    {
-        if (_canContinue)
-            _hasPressedAttack = true;
-    }
-
-    private void ComboEnter()
-    {
-        _canContinue = false;
-        _hasPressedAttack = false;
-    }
-
-    private void ComboContinue()
-    {
-        _canContinue = true;
-    }
-
-    private void ComboExit()
-    {
-        if (!_hasPressedAttack)
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
     }
 }

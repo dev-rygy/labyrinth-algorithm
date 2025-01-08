@@ -81,6 +81,7 @@ public class PlayerIdleState : PlayerState
 
     private void OnComboSecondary()
     {
+        stateMachine.SwitchState(new PlayerComboSecondaryState(stateMachine));
     }
 
     private void OnPoweredPrimary()
