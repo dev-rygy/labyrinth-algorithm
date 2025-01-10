@@ -26,9 +26,16 @@ public enum AbilityType
 
 public abstract class Ability : IAbility
 {
-    public abstract void Enter(PlayerStateMachine stateMachine);
+    protected PlayerStateMachine stateMachine;
 
-    public abstract void Tick(float deltaTime, PlayerStateMachine stateMachine);
+    public Ability(PlayerStateMachine stateMachine) 
+    {
+        this.stateMachine = stateMachine;
+    }
 
-    public abstract void Exit(PlayerStateMachine stateMachine);
+    public abstract void Enter();
+
+    public abstract void Tick(float deltaTime);
+
+    public abstract void Exit();
 }

@@ -27,7 +27,7 @@ public class PlayerIdleState : PlayerState
     public PlayerIdleState(PlayerStateMachine stateMachine) : base(stateMachine) { }
 
     public override void Enter()
-    {
+    {   
         // Input Events
         InputHandler.OnComboPrimary += OnComboPrimary;
         InputHandler.OnComboSecondary += OnComboSecondary;
@@ -37,29 +37,35 @@ public class PlayerIdleState : PlayerState
         // Play the Running blend tree animations
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, 0.1f);
 
-        Debug.Log("Entered PlayerIdleState");
+        // Switch state immediately if holding down combo button
+        if (stateMachine.Input.IsHoldingPrimaryCombo)
+            OnComboPrimary();
+        else if (stateMachine.Input.IsHoldingSecondaryCombo)
+            OnComboSecondary();
+        else if (stateMachine.Input.IsHoldingPrimaryPower)
+            OnPoweredPrimary();
+        else if (stateMachine.Input.IsHoldingSecondaryPower)
+            OnPoweredSecondary();
     }
 
     public override void Tick(float deltaTime)
     {
-
         // Translate the movement input to the correct world plane and move the player 
         Vector3 moveInput = new Vector3(stateMachine.Input.MovementInput.x, 0, stateMachine.Input.MovementInput.y);
-        Move(moveInput * stateMachine.MovementSpeed, deltaTime);
-        ApplyGravity(deltaTime);
+        stateMachine.Move(moveInput * stateMachine.MovementSpeed, deltaTime);
 
-        // If the player has no movement input enter the idle animation
-        if (moveInput == Vector3.zero)
-        {
-            stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, 0f, ANIMATOR_DAMP_TIME, deltaTime);    // Idle Animation
+        // The value that transitions the player to and from the idle/walking/running animations
+        float playerActualSpeed = moveInput.magnitude;
+
+        // If the player has movement then play running animation 
+        stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, playerActualSpeed, ANIMATOR_DAMP_TIME, deltaTime);    // Run Animation
+
+        if (moveInput == Vector3.zero)  // Code below only needed if the player is moving
             return;
-        }
 
-        // Rotate the player character in the direction of movement
-        ApplyCharacterRotation(moveInput, deltaTime);
-
-        // If the player has movement then play movement animation
-        stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, 1f, ANIMATOR_DAMP_TIME, deltaTime);    // Run Animation
+        // Rotate the player character in the normalized direction of movement
+        Vector3 moveInputNormalized = new Vector3(stateMachine.Input.MovementInputNormalized.x, 0, stateMachine.Input.MovementInputNormalized.y);
+        stateMachine.ApplyCharacterRotation(moveInputNormalized, deltaTime);
     }
 
     public override void Exit()
@@ -69,8 +75,6 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnComboSecondary -= OnComboSecondary;
         InputHandler.OnPowerPrimary -= OnPoweredPrimary;
         InputHandler.OnPowerSecondary -= OnPoweredSecondary;
-
-        Debug.Log("Exited PlayerIdleState");
     }
 
     // Transition Functions
@@ -86,9 +90,11 @@ public class PlayerIdleState : PlayerState
 
     private void OnPoweredPrimary()
     {
+        stateMachine.SwitchState(new PlayerPowerPrimaryState(stateMachine));
     }
 
     private void OnPoweredSecondary()
     {
+        stateMachine.SwitchState(new PlayerPowerSecondaryState(stateMachine));
     }
 }

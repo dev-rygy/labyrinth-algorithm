@@ -5,18 +5,29 @@ using UnityEngine;
 
 public class Buckler : Weapon
 {
+    // Animator Hash Codes
+    private readonly int ANIM_COMBO_SEC_HASH = Animator.StringToHash("Shield Block");
+    private readonly int ANIM_POWER_SEC_HASH = Animator.StringToHash("Shield Bash");
+
     private class BucklerComboAttackSecondary : Ability
     {
-        private string animationName = "Shield Block";
+        private int animHash;
 
-        public override void Enter(PlayerStateMachine stateMachine)
+        public BucklerComboAttackSecondary(PlayerStateMachine stateMachine, int animHash) : base(stateMachine) 
         {
-            // Play the attack's animation
-            stateMachine.Animator.CrossFadeInFixedTime(animationName, 0.1f);
+            this.animHash = animHash;
         }
 
-        public override void Tick(float deltaTime, PlayerStateMachine stateMachine)
+        public override void Enter()
         {
+            // Play the attack's animation
+            stateMachine.Animator.CrossFadeInFixedTime(animHash, 0.1f);
+        }
+
+        public override void Tick(float deltaTime)
+        {
+            stateMachine.Move(Vector3.zero, deltaTime);
+
             if (!stateMachine.Input.IsHoldingSecondaryCombo)
             {
                 stateMachine.SwitchState(new PlayerIdleState(stateMachine));
@@ -24,27 +35,39 @@ public class Buckler : Weapon
             }
         }
 
-        public override void Exit(PlayerStateMachine stateMachine)
-        {
-
-        }
+        public override void Exit() { }
     }
 
     private class BucklerPowerAttackSecondary : Ability
     {
-        public override void Enter(PlayerStateMachine stateMachine)
+        private int animHash;
+
+        public BucklerPowerAttackSecondary(PlayerStateMachine stateMachine, int animHash) : base(stateMachine) 
         {
-            throw new System.NotImplementedException();
+            this.animHash = animHash;
         }
 
-        public override void Tick(float deltaTime, PlayerStateMachine stateMachine)
+        public override void Enter()
         {
-            throw new System.NotImplementedException();
+            stateMachine.AnimationTimestamps.OnComboPrimExit += PowerExit;
+
+            // Play the attack's animation
+            stateMachine.Animator.CrossFadeInFixedTime(animHash, 0.1f);
         }
 
-        public override void Exit(PlayerStateMachine stateMachine)
+        public override void Tick(float deltaTime)
         {
-            throw new System.NotImplementedException();
+            stateMachine.Move(Vector3.zero, deltaTime);
+        }
+
+        public override void Exit()
+        {
+            stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
+        }
+
+        private void PowerExit()
+        {
+            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
         }
     }
 
@@ -54,14 +77,14 @@ public class Buckler : Weapon
     /// </summary>
     /// <param name="type">The ability key/category</param>
     /// <returns>A new instance of the ability</returns>
-    public override Ability GetAbility(AbilityType type)
+    public override Ability GetAbility(AbilityType type, PlayerStateMachine stateMachine)
     {
         switch (type)
         {
             case AbilityType.ComboAttackSecondary:
-                return new BucklerComboAttackSecondary();
+                return new BucklerComboAttackSecondary(stateMachine, ANIM_COMBO_SEC_HASH);
             case AbilityType.PowerAttackSecondary:
-                return new BucklerPowerAttackSecondary();
+                return new BucklerPowerAttackSecondary(stateMachine, ANIM_POWER_SEC_HASH);
             default:
                 return null;
         }

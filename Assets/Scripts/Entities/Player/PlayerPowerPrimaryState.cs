@@ -2,17 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerPowerPrimaryState : MonoBehaviour
+public class PlayerPowerPrimaryState : PlayerState
 {
-    // Start is called before the first frame update
-    void Start()
+    public PlayerPowerPrimaryState(PlayerStateMachine stateMachine) : base(stateMachine) { }
+
+    public override void Enter()
     {
-        
+        if (stateMachine.PowerAttackPrimary == null)
+        {
+            Debug.Log("Power Primary: Ability not assigned.");
+            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            return;
+        }
+
+        stateMachine.PowerAttackPrimary?.Enter();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void Tick(float deltaTime)
     {
-        
+        stateMachine.PowerAttackPrimary?.Tick(deltaTime);
+    }
+
+    public override void Exit()
+    {
+        stateMachine.PowerAttackPrimary?.Exit();
     }
 }

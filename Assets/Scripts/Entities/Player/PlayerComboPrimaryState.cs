@@ -11,38 +11,21 @@ public class PlayerComboPrimaryState : PlayerState
     {
         if (stateMachine.ComboAttackPrimary == null)
         {
-            // TODO: Enter Default Combo
-            Debug.Log("Default Combo Entered.");
+            Debug.Log("Combo Primary: Ability not assigned.");
+            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
             return;
         }
 
-        stateMachine.ComboAttackPrimary?.Enter(stateMachine);
+        stateMachine.ComboAttackPrimary?.Enter();
     }
 
     public override void Tick(float deltaTime)
     {
-        ApplyGravity(deltaTime);
-
-        if (stateMachine.ComboAttackPrimary == null)
-        {
-            // TODO: Tick Default Combo
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
-            Debug.Log("Default Combo Ticked.");
-            return;
-        }
-
-        stateMachine.ComboAttackPrimary?.Tick(deltaTime, stateMachine);
+        stateMachine.ComboAttackPrimary?.Tick(deltaTime);
     }
 
     public override void Exit()
     {
-        if (stateMachine.ComboAttackPrimary == null)
-        {
-            // TODO: Exit Default Combo
-            Debug.Log("Default Combo Exited.");
-            return;
-        }
-
-        stateMachine.ComboAttackPrimary?.Exit(stateMachine);
+        stateMachine.ComboAttackPrimary?.Exit();
     }
 }

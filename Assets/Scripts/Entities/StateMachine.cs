@@ -22,6 +22,9 @@ namespace RyansLibrary.StateMachine
         // A reference to the current state the player is in
         private State _currentState;
 
+        [field: Header("Debug")]
+        [field: SerializeField] public bool DebugStateMachine { get; protected set; }
+
         // Update is called once per frame
         void Update()
         {
@@ -34,12 +37,14 @@ namespace RyansLibrary.StateMachine
         /// 2.) Switch the state to the new state
         /// 3.) Call the Enter method of the new state
         /// </summary>
-        /// <param name="newState"></param>
+        /// <param name="newState">The state to switch to</param>
         public void SwitchState(State newState)
         {
             _currentState?.Exit();
+            if (DebugStateMachine && _currentState != null) Debug.Log("State " + _currentState + " Exited");
             _currentState = newState;
             _currentState?.Enter();
+            if (DebugStateMachine && _currentState != null) Debug.Log("State " + _currentState + " Entered");
         }
     }
 }

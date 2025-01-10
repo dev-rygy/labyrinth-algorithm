@@ -33,11 +33,17 @@ namespace RyansLibrary.Input
 
 
         [SerializeField] private bool _debug = false;
+
+        // The player's Unnormalized Input
         public Vector2 MovementInput { get; private set; }
+        // The player's Normalized Input
+        public Vector2 MovementInputNormalized { get; private set; }
         // public Vector3 LookInput { get; private set; }   DEPRICATED
         // public bool JumpKeyPressed { get; private set; } DEPRICATED
-        public bool IsHoldingPrimaryCombo { get; private set; }
-        public bool IsHoldingSecondaryCombo { get; private set; }
+        [field: SerializeField] public bool IsHoldingPrimaryCombo { get; private set; }
+        [field: SerializeField] public bool IsHoldingSecondaryCombo { get; private set; }
+        [field: SerializeField] public bool IsHoldingPrimaryPower { get; private set; }
+        [field: SerializeField] public bool IsHoldingSecondaryPower { get; private set; }
 
         private PlayerControls _playerControls;
 
@@ -82,8 +88,10 @@ namespace RyansLibrary.Input
             _playerControls.Player.ComboAttackPrimary.canceled += context => OnPrimaryComboInput(context);
             _playerControls.Player.ComboAttackSecondary.performed += context => OnSecondaryComboInput(context);
             _playerControls.Player.ComboAttackSecondary.canceled += context => OnSecondaryComboInput(context);
-            _playerControls.Player.PowerAttackPrimary.performed += _ => OnPowerPrimary?.Invoke();
-            _playerControls.Player.PowerAttackSecondary.performed += _ => OnPowerSecondary?.Invoke();
+            _playerControls.Player.PowerAttackPrimary.performed += context => OnPrimaryPowerInput(context);
+            _playerControls.Player.PowerAttackPrimary.canceled += context => OnPrimaryPowerInput(context);
+            _playerControls.Player.PowerAttackSecondary.performed += context => OnSecondaryPowerInput(context);
+            _playerControls.Player.PowerAttackSecondary.canceled += context => OnSecondaryPowerInput(context);
 
             _playerControls.Player.Dash.performed += _ => OnDash?.Invoke();
             _playerControls.Player.TwoHand.performed += _ => OnTwoHand?.Invoke();
@@ -116,10 +124,12 @@ namespace RyansLibrary.Input
         private void OnMovementInput(InputAction.CallbackContext context)
         {
             // Read value from input and set the movementInput Vector to it
-            MovementInput = context.ReadValue<Vector2>();
+            MovementInput = context.ReadValue<Vector2>();       // This is an unnormalized Input
+            MovementInputNormalized = (context.ReadValue<Vector2>()).normalized;
             OnMove?.Invoke();
 
             if (_debug) Debug.Log("The Movement Input read was = " + MovementInput);
+            if (_debug) Debug.Log("The Normalized Movement Input read was = " + MovementInputNormalized);
         }
 
         private void OnPrimaryComboInput(InputAction.CallbackContext context)
@@ -142,6 +152,28 @@ namespace RyansLibrary.Input
             }
             if (context.canceled)
                 IsHoldingSecondaryCombo = false;
+        }
+
+        private void OnPrimaryPowerInput(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                OnPowerPrimary?.Invoke();
+                IsHoldingPrimaryPower = true;
+            }
+            if (context.canceled)
+                IsHoldingPrimaryPower = false;
+        }
+
+        private void OnSecondaryPowerInput(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                OnPowerSecondary?.Invoke();
+                IsHoldingSecondaryPower = true;
+            }
+            if (context.canceled)
+                IsHoldingSecondaryPower = false;
         }
 
         /* Jump Input (DEPRICATED)
