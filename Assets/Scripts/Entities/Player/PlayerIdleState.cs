@@ -63,12 +63,18 @@ public class PlayerIdleState : PlayerState
         // If the player has movement then play running animation 
         stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, playerActualSpeed, ANIMATOR_DAMP_TIME, deltaTime);    // Run Animation
 
-        if (moveInput == Vector3.zero)  // Code below only needed if the player is moving
-            return;
+        if (moveInput != Vector3.zero)  // Code below only needed if the player is moving
+        {
+            // Rotate the player character in the normalized direction of movement
+            Vector3 moveInputNormalized = new Vector3(stateMachine.Input.MovementInputNormalized.x, 0, stateMachine.Input.MovementInputNormalized.y);
+            stateMachine.ApplyCharacterRotation(moveInputNormalized, deltaTime);
+        }
 
-        // Rotate the player character in the normalized direction of movement
-        Vector3 moveInputNormalized = new Vector3(stateMachine.Input.MovementInputNormalized.x, 0, stateMachine.Input.MovementInputNormalized.y);
-        stateMachine.ApplyCharacterRotation(moveInputNormalized, deltaTime);
+        // Falling state if the player is not grounded
+        if (!stateMachine.ForceReciever.IsGrounded())
+        {
+            stateMachine.SwitchState(new PlayerFallState(stateMachine));
+        }
     }
 
     public override void Exit()

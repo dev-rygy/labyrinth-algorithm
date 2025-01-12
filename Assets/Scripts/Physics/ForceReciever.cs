@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 /// <summary>
 /// Returns the movement when the forces are applied to an object. Essetially
@@ -10,6 +11,7 @@ public class ForceReciever : MonoBehaviour
 {
     [field: SerializeField] public float GravityMultiplier { get; private set; } = -9.81f;
     [field: SerializeField] public bool HasGravity { get; set; } = true;
+    [SerializeField] private float _groundCheckDistance = 0.1f;
 
     [SerializeField] private bool _debug = false;
 
@@ -24,7 +26,7 @@ public class ForceReciever : MonoBehaviour
     private float drag;
 
     public Vector3 Movement => _impact + Vector3.up * VelocityY;
-    public bool IsGrounded() => _characterController.isGrounded;
+    //public bool IsGrounded() => _characterController.isGrounded;
 
     public void Start()
     {
@@ -66,5 +68,11 @@ public class ForceReciever : MonoBehaviour
     {
         this.drag = drag;
         _impact += force;
+    }
+    
+    public bool IsGrounded()
+    {
+        RaycastHit hit;
+        return Physics.Raycast(transform.position, -Vector3.up, out hit, _groundCheckDistance);
     }
 }

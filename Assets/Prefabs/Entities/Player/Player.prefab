@@ -69575,6 +69575,7 @@ MonoBehaviour:
   <ClimbSpeed>k__BackingField: 3
   <ClimbTriggerOffset>k__BackingField: 0.1
   <ClimbInteractDistance>k__BackingField: 0.4
+  _climbAngleRange: 0.85
   <PrimaryWeapon>k__BackingField: {fileID: 1308116680162793220}
   <SecondaryWeapon>k__BackingField: {fileID: 2606377799642151664}
 --- !u!114 &7359390006632431785
@@ -69591,6 +69592,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <GravityMultiplier>k__BackingField: -9.81
   <HasGravity>k__BackingField: 1
+  _groundCheckDistance: 0.1
   _debug: 0
 --- !u!1001 &308056685214840841
 PrefabInstance:
