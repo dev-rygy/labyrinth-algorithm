@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &411226474580056239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7567666224496885868}
+  m_Layer: 0
+  m_Name: Sword Sheathe Attach Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7567666224496885868
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411226474580056239}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.69704264, y: 0.11887631, z: -0.7040589, w: -0.06558184}
+  m_LocalPosition: {x: 6.100002, y: 4.2915764, z: -0.26258564}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5326989227265214720}
+  m_LocalEulerAnglesHint: {x: 1.127, y: 14.959, z: -89.852}
 --- !u!1 &1423719534093289886
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,6 +232,37 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &2913465341575883105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4872363222399478353}
+  m_Layer: 0
+  m_Name: Shield Sheathe Attach Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4872363222399478353
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2913465341575883105}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.6797191, y: 0.7334726, z: -0.000002592802, w: 0.0000023767352}
+  m_LocalPosition: {x: 0, y: -24.23433, z: -3.6392465}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5326989227265214720}
+  m_LocalEulerAnglesHint: {x: -85.644, y: 89.996, z: -85.639}
 --- !u!1 &4876990063368453667
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +273,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2347582765746272543}
   m_Layer: 0
-  m_Name: LH Weapon Attach Point
+  m_Name: Secondary Weapon Attach Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38233,6 +38295,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5328830009009529944}
+  - {fileID: 4872363222399478353}
+  - {fileID: 7567666224496885868}
   m_Father: {fileID: 5328622522774362080}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5325052378104230038
@@ -69456,7 +69520,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2717451356006317172}
   m_Layer: 0
-  m_Name: RH Weapon Attach Point
+  m_Name: Primary Weapon Attach Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69578,6 +69642,10 @@ MonoBehaviour:
   _climbAngleRange: 0.85
   <PrimaryWeapon>k__BackingField: {fileID: 1308116680162793220}
   <SecondaryWeapon>k__BackingField: {fileID: 2606377799642151664}
+  <PrimaryWeaponAttachPoint>k__BackingField: {fileID: 2717451356006317172}
+  <SecondaryWeaponAttachPoint>k__BackingField: {fileID: 2347582765746272543}
+  <ShieldSheatheAttachPoint>k__BackingField: {fileID: 4872363222399478353}
+  <SwordSheatheAttachPoint>k__BackingField: {fileID: 7567666224496885868}
 --- !u!114 &7359390006632431785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69592,7 +69660,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <GravityMultiplier>k__BackingField: -9.81
   <HasGravity>k__BackingField: 1
-  _groundCheckDistance: 0.1
+  _groundCheckDistance: 0.2
   _debug: 0
 --- !u!1001 &308056685214840841
 PrefabInstance:
@@ -69832,17 +69900,17 @@ PrefabInstance:
     - target: {fileID: 6763741746292073147, guid: a2f9afbc265c1f141be156bc5874af8c,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.00000017881389
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6763741746292073147, guid: a2f9afbc265c1f141be156bc5874af8c,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00000017881389
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6763741746292073147, guid: a2f9afbc265c1f141be156bc5874af8c,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.00000013411042
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6763741746292073147, guid: a2f9afbc265c1f141be156bc5874af8c,
         type: 3}

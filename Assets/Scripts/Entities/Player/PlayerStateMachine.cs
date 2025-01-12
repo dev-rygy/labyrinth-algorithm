@@ -33,6 +33,12 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public Weapon PrimaryWeapon { get; private set; }
     [field: SerializeField] public Weapon SecondaryWeapon { get; private set; }
 
+    [field: Header("Attach Points")]
+    [field: SerializeField] public Transform PrimaryWeaponAttachPoint { get; private set; }
+    [field: SerializeField] public Transform SecondaryWeaponAttachPoint { get; private set; }
+    [field: SerializeField] public Transform ShieldSheatheAttachPoint { get; private set; }
+    [field: SerializeField] public Transform SwordSheatheAttachPoint { get; private set; }
+
     // References
     public InputHandler Input { get; private set; } // reference to the input handler
     public CharacterController Controller { get; private set; } // reference to the player's controller
@@ -91,7 +97,6 @@ public class PlayerStateMachine : StateMachine
             weapon = UnarmedWeapon;
 
         PrimaryWeapon = weapon;
-
         Ability ability = null;
 
         // Set Combo Attack Primary
@@ -125,8 +130,6 @@ public class PlayerStateMachine : StateMachine
         // If the weapon passed in was null then equip the unarmed weapon
         if (weapon == null)
             weapon = UnarmedWeapon;
-
-        PrimaryWeapon = weapon;
 
         SecondaryWeapon = weapon;
         Ability ability = null;
@@ -204,5 +207,47 @@ public class PlayerStateMachine : StateMachine
         PlayerCharacter.rotation = Quaternion.Lerp(PlayerCharacter.rotation,
             Quaternion.LookRotation(direction),
             deltaTime * MoveRotationDampValue);
+    }
+
+    public void SheatheWeapons()
+    {
+        SheathePrimaryWeapon();
+        SheatheSecondaryWeapon();
+    }
+
+    public void SheathePrimaryWeapon()
+    {
+        AttachObject(PrimaryWeapon.gameObject, SwordSheatheAttachPoint);
+    }
+
+    public void SheatheSecondaryWeapon()
+    {
+        AttachObject(SecondaryWeapon.gameObject, ShieldSheatheAttachPoint);
+    }
+
+    public void UnsheatheWeapons()
+    {
+        UnsheathePrimaryWeapon();
+        UnsheatheSecondaryWeapon();
+    }
+
+    public void UnsheathePrimaryWeapon()
+    {
+        AttachObject(PrimaryWeapon.gameObject, PrimaryWeaponAttachPoint);
+    }
+
+    public void UnsheatheSecondaryWeapon()
+    {
+        AttachObject(SecondaryWeapon.gameObject, SecondaryWeaponAttachPoint);
+    }
+
+    private void AttachObject(GameObject obj, Transform attachpoint)
+    {
+        if (obj == null) 
+            return;
+
+        obj.transform.parent = attachpoint.transform;
+        obj.transform.localPosition = Vector3.zero;
+        obj.transform.localRotation = Quaternion.identity;
     }
 }

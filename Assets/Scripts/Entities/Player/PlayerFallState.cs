@@ -48,17 +48,11 @@ public class PlayerFallState : PlayerState
         // Start the landing animation
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_LANDING_HASH, 0.1f);
 
-        Debug.Log("transitioning");
-
         // Wait until the animator is fully in the landing animation state
         yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).shortNameHash == ANIM_LANDING_HASH);
 
-        Debug.Log("on anim");
-
         // Now wait until this specific animation has finished
         yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f < 0.01f && !stateMachine.Animator.IsInTransition(0));
-
-        Debug.Log("finished anim");
 
         stateMachine.SwitchState(new PlayerIdleState(stateMachine));
     }

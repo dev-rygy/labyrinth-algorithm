@@ -28,6 +28,8 @@ public class PlayerClimbState : PlayerState
         // Turn off gravity
         stateMachine.ForceReciever.HasGravity = false;
 
+        stateMachine.SheatheWeapons();
+
         // Play the Running blend tree animations
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_CLIMB_BLEND_TREE_HASH, 0.1f);
     }
@@ -66,6 +68,8 @@ public class PlayerClimbState : PlayerState
     {
         // Turn gravity back on
         stateMachine.ForceReciever.HasGravity = true;
+
+        stateMachine.UnsheatheWeapons();
 
         InputHandler.OnInteract1 -= CancelClimb;
     }
