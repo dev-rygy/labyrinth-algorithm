@@ -13,6 +13,8 @@ using RyansLibrary.Input;
 /// <summary> Player Controls Manager that stores references and data for the different states to use. </summary>
 public class PlayerStateMachine : StateMachine
 {
+    public static PlayerStateMachine Instance { get; private set; }
+
     // TODO: Implement static states to save on memory
 
     [field: Header("Required References")]
@@ -20,8 +22,11 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public Weapon UnarmedWeapon { get; private set; }
 
     [field: Header("Movement")]
-    [field: SerializeField] public float MovementSpeed { get; private set; } = 5;
+    [field: SerializeField] public float MovementSpeed { get; private set; } = 5f;
     [field: SerializeField] public float MoveRotationDampValue { get; private set; }
+    [field: SerializeField] public float ClimbSpeed { get; private set; } = 3f;
+    [field: SerializeField] public float ClimbTriggerOffset { get; private set; } = 0.1f;
+    [field: SerializeField] public float ClimbInteractDistance { get; private set; } = 0.4f;
 
     [field: Header("Equipped")]
     [field: SerializeField] public Weapon PrimaryWeapon { get; private set; }
@@ -34,14 +39,20 @@ public class PlayerStateMachine : StateMachine
     public AnimationTimestamps AnimationTimestamps { get; private set; }
     public ForceReciever ForceReciever { get; private set; }
 
-    // Can be used to check if the player is grounded
-    public bool IsGrounded() => Controller.isGrounded;
-
     // Player Abilities
     public Ability ComboAttackPrimary { get; private set; }
     public Ability ComboAttackSecondary { get; private set; }
     public Ability PowerAttackPrimary { get; private set; }
     public Ability PowerAttackSecondary { get; private set; }
+
+    private void Awake()
+    {
+        // Handle singleton
+        if (Instance && Instance != this)
+            Destroy(gameObject);
+        else
+            Instance = this;
+    }
 
     void Start()
     {
@@ -78,7 +89,7 @@ public class PlayerStateMachine : StateMachine
         if (weapon == null)
             weapon = UnarmedWeapon;
 
-         PrimaryWeapon = weapon;
+        PrimaryWeapon = weapon;
 
         Ability ability = null;
 
@@ -161,14 +172,19 @@ public class PlayerStateMachine : StateMachine
     /// <param name="deltaTime">Time per frame</param>
     public void Move(Vector3 motion, float deltaTime)
     {
-        // Handle Gravity; IsGrounded is unique to humanoid entities with a CharacterController
-        if (IsGrounded() && ForceReciever.VelocityY < 0.0f)
-            ForceReciever.hasGravity = false;
-        else
-            ForceReciever.hasGravity = true;
-
         // Handle Movement
         Controller.Move((motion + ForceReciever.Movement) * deltaTime);
+    }
+
+    public bool CanClimb()
+    {
+        Vector3 rayOrigin = transform.position + Vector3.up * ClimbTriggerOffset;
+        Vector3 moveDirection = PlayerCharacter.transform.forward;
+
+        if (!Physics.Raycast(rayOrigin, moveDirection, out RaycastHit raycastHit, ClimbInteractDistance))
+            return false;
+
+        return raycastHit.transform.gameObject.CompareTag("Climbable");
     }
 
     /// <summary> Face the player character towards the direction they are moving </summary>

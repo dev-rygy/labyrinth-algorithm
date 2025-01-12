@@ -17,11 +17,17 @@ public abstract class Weapon : MonoBehaviour
 
     public void EnableWeaponCollider()
     {
+        if (WeaponColliderObject == null)
+            return;
+
         WeaponColliderObject.SetActive(true);
     }
 
     public void DisableWeaponCollider()
     {
+        if (WeaponColliderObject == null)
+            return;
+
         WeaponColliderObject.SetActive(false);
     }
 }

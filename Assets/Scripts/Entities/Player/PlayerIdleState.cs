@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RyansLibrary.Input;
+using System.Xml.Serialization;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// This is the default state for the player. Every state the player transitions to
@@ -33,6 +35,7 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnComboSecondary += OnComboSecondary;
         InputHandler.OnPowerPrimary += OnPoweredPrimary;
         InputHandler.OnPowerSecondary += OnPoweredSecondary;
+        InputHandler.OnInteract1 += OnInteract1;
 
         // Play the Running blend tree animations
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, 0.1f);
@@ -75,6 +78,7 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnComboSecondary -= OnComboSecondary;
         InputHandler.OnPowerPrimary -= OnPoweredPrimary;
         InputHandler.OnPowerSecondary -= OnPoweredSecondary;
+        InputHandler.OnInteract1 -= OnInteract1;
     }
 
     // Transition Functions
@@ -96,5 +100,13 @@ public class PlayerIdleState : PlayerState
     private void OnPoweredSecondary()
     {
         stateMachine.SwitchState(new PlayerPowerSecondaryState(stateMachine));
+    }
+
+    private void OnInteract1()
+    {
+        if (stateMachine.CanClimb())
+        {
+            stateMachine.SwitchState(new PlayerClimbState(stateMachine));
+        }
     }
 }

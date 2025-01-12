@@ -19,7 +19,7 @@ namespace RyansLibrary
         [SerializeField] private Vector3 blinkDistance;
         [SerializeField] private bool useAltInteract;
 
-        private GameObject _playerReference;
+        private PlayerStateMachine _playerReference;
         private Vector3 _targetPos;
         private bool _canBlink = false;
 
@@ -35,7 +35,7 @@ namespace RyansLibrary
             OldInputhandler.OnInteract1 += ResetTP;
             OldInputhandler.OnInteract2 += ResetTP;
 
-            _playerReference = OldPlayerController.Instance.gameObject;
+            _playerReference = PlayerStateMachine.Instance;
             if (_debug) Debug.Log("Player reference set to " + _playerReference);
 
             _targetPos = transform.position + blinkDistance;

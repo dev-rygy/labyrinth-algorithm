@@ -69488,8 +69488,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4417549369138805797}
   - component: {fileID: 768937007373540236}
-  - component: {fileID: 3621612921342865075}
   - component: {fileID: 7306716799446914742}
+  - component: {fileID: 3621612921342865075}
   - component: {fileID: 7359390006632431785}
   m_Layer: 3
   m_Name: Player
@@ -69542,25 +69542,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &3621612921342865075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6288163642289274413}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cc30e411e294fb46b8c3caf0efafaa2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DebugStateMachine>k__BackingField: 1
-  <PlayerCharacter>k__BackingField: {fileID: 5327056992418592808}
-  <UnarmedWeapon>k__BackingField: {fileID: 3062990498899931575}
-  <MovementSpeed>k__BackingField: 5
-  <MoveRotationDampValue>k__BackingField: 10
-  <PrimaryWeapon>k__BackingField: {fileID: 1308116680162793220}
-  <SecondaryWeapon>k__BackingField: {fileID: 2606377799642151664}
 --- !u!114 &7306716799446914742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69573,6 +69554,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 577e72c96fe084a46859780c70523837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <MaxHealth>k__BackingField: 500
+--- !u!114 &3621612921342865075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6288163642289274413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cc30e411e294fb46b8c3caf0efafaa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <DebugStateMachine>k__BackingField: 0
+  <PlayerCharacter>k__BackingField: {fileID: 5327056992418592808}
+  <UnarmedWeapon>k__BackingField: {fileID: 3062990498899931575}
+  <MovementSpeed>k__BackingField: 5
+  <MoveRotationDampValue>k__BackingField: 10
+  <ClimbSpeed>k__BackingField: 3
+  <ClimbTriggerOffset>k__BackingField: 0.1
+  <ClimbInteractDistance>k__BackingField: 0.4
+  <PrimaryWeapon>k__BackingField: {fileID: 1308116680162793220}
+  <SecondaryWeapon>k__BackingField: {fileID: 2606377799642151664}
 --- !u!114 &7359390006632431785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69586,7 +69590,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <GravityMultiplier>k__BackingField: -9.81
-  hasGravity: 1
+  <HasGravity>k__BackingField: 1
+  _debug: 0
 --- !u!1001 &308056685214840841
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69686,6 +69691,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4417549369138805797}
     m_Modifications:
+    - target: {fileID: 323110394847867578, guid: 93268a536dd5c3f49a853b99e887efc5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1212062001675890958, guid: 93268a536dd5c3f49a853b99e887efc5,
         type: 3}
       propertyPath: m_Name

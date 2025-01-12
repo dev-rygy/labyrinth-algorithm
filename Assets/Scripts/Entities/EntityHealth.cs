@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EntityHealth : MonoBehaviour, IDamagable
 {
-    public int MaxHealth { get; protected set; }
+    [field: SerializeField] public int MaxHealth { get; protected set; }
     public int Health { get; protected set; }
     public bool Invulnerable { get; protected set; }
 
