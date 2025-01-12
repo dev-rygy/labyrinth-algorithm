@@ -44,6 +44,8 @@ public class ForceReciever : MonoBehaviour
 
         if (_debug) Debug.Log("ForceReciever Impact: " + _impact);
 
+        if (_debug) Debug.Log("Velocity Y: " + VelocityY);
+
         // Handle gravity below
         if (!HasGravity)
             return;

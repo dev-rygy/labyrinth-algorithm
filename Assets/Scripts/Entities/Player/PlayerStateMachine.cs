@@ -27,6 +27,7 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public float ClimbSpeed { get; private set; } = 3f;
     [field: SerializeField] public float ClimbTriggerOffset { get; private set; } = 0.1f;
     [field: SerializeField] public float ClimbInteractDistance { get; private set; } = 0.4f;
+    [field: SerializeField] [Range(0, 1)] private float _climbAngleRange = 0.85f;
 
     [field: Header("Equipped")]
     [field: SerializeField] public Weapon PrimaryWeapon { get; private set; }
@@ -181,9 +182,15 @@ public class PlayerStateMachine : StateMachine
         Vector3 rayOrigin = transform.position + Vector3.up * ClimbTriggerOffset;
         Vector3 moveDirection = PlayerCharacter.transform.forward;
 
+        // If the raycast does not hit an object with a collider; can not climb
         if (!Physics.Raycast(rayOrigin, moveDirection, out RaycastHit raycastHit, ClimbInteractDistance))
             return false;
 
+        // If the player is not facing towards the object; can not climb
+        if ((Vector3.Dot(PlayerCharacter.transform.forward, raycastHit.transform.forward)) < _climbAngleRange)
+            return false;
+
+        // If the player is facing an object of type "Climbable"; can climb
         return raycastHit.transform.gameObject.CompareTag("Climbable");
     }
 
