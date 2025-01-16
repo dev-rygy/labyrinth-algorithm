@@ -17,9 +17,8 @@ namespace RyansLibrary
     {
         [SerializeField] private LayerMask playerLayer;
         [SerializeField] private Vector3 blinkDistance;
-        [SerializeField] private bool useAltInteract;
 
-        private GameObject _playerReference;
+        private PlayerStateMachine _playerReference;
         private Vector3 _targetPos;
         private bool _canBlink = false;
 
@@ -27,15 +26,9 @@ namespace RyansLibrary
 
         private void Start()
         {
-            if (useAltInteract)
-                InputHandler.OnInteract2 += Teleport;
-            else
-                InputHandler.OnInteract1 += Teleport;
+            InputHandler.OnInteract1 += Teleport;
 
-            InputHandler.OnInteract1 += ResetTP;
-            InputHandler.OnInteract2 += ResetTP;
-
-            _playerReference = PlayerController.Instance.gameObject;
+            _playerReference = PlayerStateMachine.Instance;
             if (_debug) Debug.Log("Player reference set to " + _playerReference);
 
             _targetPos = transform.position + blinkDistance;
@@ -73,11 +66,6 @@ namespace RyansLibrary
             _playerReference.GetComponent<CharacterController>().enabled = true;
 
             if (_debug) Debug.Log("Player has blinked to " + _targetPos);
-        }
-
-        private void ResetTP()
-        {
-            _canBlink = false;
         }
     }
 }
