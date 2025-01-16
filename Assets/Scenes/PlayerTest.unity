@@ -929,6 +929,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 140478056}
     m_Modifications:
+    - target: {fileID: 2711275431658420499, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      propertyPath: <PrimaryWeapon>k__BackingField
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      propertyPath: <SecondaryWeapon>k__BackingField
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4417549369138805797, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -983,6 +998,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8062277938888940513, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

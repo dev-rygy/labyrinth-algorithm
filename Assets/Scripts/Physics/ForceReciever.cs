@@ -73,6 +73,6 @@ public class ForceReciever : MonoBehaviour
     public bool IsGrounded()
     {
         RaycastHit hit;
-        return Physics.Raycast(transform.position, -Vector3.up, out hit, _groundCheckDistance);
+        return Physics.Raycast(transform.position, Vector3.down, out hit, _groundCheckDistance);
     }
 }
