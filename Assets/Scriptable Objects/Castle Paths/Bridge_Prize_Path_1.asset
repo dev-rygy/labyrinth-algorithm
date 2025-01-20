@@ -10,13 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab2be37bdc730874bbc2eaa4348fa132, type: 3}
-  m_Name: Bridge_Path
+  m_Name: Bridge_Prize_Path_1
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Bridge Path
-  <Type>k__BackingField: 0
-  <PathLength>k__BackingField: 0
+  <Type>k__BackingField: 2
+  <PathLength>k__BackingField: 3
   <rooms1x1x1>k__BackingField:
   - {fileID: 3555212718981034981, guid: b86e88855a4601a4abacc43f8c8a24c5, type: 3}
   <rooms2x1x1>k__BackingField: []
   <rooms1x2x1>k__BackingField: []
   <rooms2x1x2>k__BackingField: []
+  <TallRoomSpawnChance>k__BackingField: 0
+  <LongRoomSpawnChance>k__BackingField: 0
+  <BigRoomSpawnChance>k__BackingField: 0

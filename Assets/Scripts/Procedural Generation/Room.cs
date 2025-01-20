@@ -24,6 +24,7 @@ namespace RyansLibrary.Labyrinth
     {
         general,
         start,
+        end,
         prize,
         toBoss,
         boss

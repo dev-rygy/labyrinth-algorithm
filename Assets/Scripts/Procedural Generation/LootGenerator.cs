@@ -7,8 +7,6 @@
  *                      Parse through the Master Path and spawn loot where
  *                      applicable.
 */
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth

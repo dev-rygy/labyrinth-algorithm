@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab2be37bdc730874bbc2eaa4348fa132, type: 3}
-  m_Name: Prize_Path
+  m_Name: Castle_Main_Path
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Prize Path
-  <Type>k__BackingField: 2
-  <PathLength>k__BackingField: 5
+  <Name>k__BackingField: Main Path
+  <Type>k__BackingField: 1
+  <PathLength>k__BackingField: 20
+  <startingRooms>k__BackingField:
+  - {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9, type: 3}
   <rooms1x1x1>k__BackingField:
   - {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9, type: 3}
   - {fileID: 8442890415963642155, guid: f59345db454d7e546a03c68f1411c0c6, type: 3}
@@ -35,3 +37,7 @@ MonoBehaviour:
   - {fileID: 6027888391234501586, guid: e52f4cf6ea1e07e4dbab1ee3fda68bf8, type: 3}
   <rooms2x1x2>k__BackingField:
   - {fileID: 1009674509223472008, guid: ce649a3a4abca8d4aa4eaf045ce9bc08, type: 3}
+  <endingRooms>k__BackingField: []
+  <TallRoomSpawnChance>k__BackingField: 0.55
+  <LongRoomSpawnChance>k__BackingField: 0.45
+  <BigRoomSpawnChance>k__BackingField: 1
