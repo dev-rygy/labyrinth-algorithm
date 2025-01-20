@@ -665,7 +665,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.6
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -1197,25 +1197,41 @@ MonoBehaviour:
   _roomGridCellSize: 13
   _blueprintRoomContainer: {fileID: 128193136}
   _roomContainer: {fileID: 811539170}
-  _lowerBound: {x: -1000, y: -1000, z: -1000}
-  _upperBound: {x: 1000, y: 1000, z: 1000}
-  _mainPathLength: 10
+  _lowerBound: {x: -1000, y: 0, z: -1000}
+  _upperBound: {x: 1000, y: 2, z: 1000}
+  _mainPathLength: 50
   _prizePathLength: 3
   _amountOfPrizePaths: 2
   rooms1x1x1:
-  - {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135, type: 3}
+  - {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9, type: 3}
+  - {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9, type: 3}
+  - {fileID: 8811286029017227820, guid: 82f98e3acdce9c7489b956480f8ab420, type: 3}
+  - {fileID: 8811286029017227820, guid: 82f98e3acdce9c7489b956480f8ab420, type: 3}
+  - {fileID: 5605091579590096114, guid: cf8192f63919561478bff7e86d5dc924, type: 3}
   - {fileID: 5605091579590096114, guid: cf8192f63919561478bff7e86d5dc924, type: 3}
   - {fileID: 5605091579590096114, guid: 874b214a1d23ac34bad6f09ebf089976, type: 3}
-  - {fileID: 4893969360162040778, guid: effa6573bf25f7946a1e39fbed09f755, type: 3}
+  - {fileID: 5605091579590096114, guid: 874b214a1d23ac34bad6f09ebf089976, type: 3}
+  - {fileID: 1701211795217291981, guid: 4c4df00e032e2904da364d6c964936c0, type: 3}
+  - {fileID: 1701211795217291981, guid: 4c4df00e032e2904da364d6c964936c0, type: 3}
   - {fileID: 8442890415963642155, guid: f59345db454d7e546a03c68f1411c0c6, type: 3}
+  - {fileID: 3917301741960757947, guid: 1c1f3b363a0fad0449c2aa4381468523, type: 3}
+  - {fileID: 4893969360162040778, guid: effa6573bf25f7946a1e39fbed09f755, type: 3}
   rooms2x1x1:
-  - {fileID: 197979799327637701, guid: 302187ca606e5f5419cd4d080240de14, type: 3}
+  - {fileID: 8231918834746265767, guid: a0554d0270bbad7429e3e9977eae44ed, type: 3}
+  - {fileID: 8231918834746265767, guid: a0554d0270bbad7429e3e9977eae44ed, type: 3}
+  - {fileID: 8231918834746265767, guid: a0554d0270bbad7429e3e9977eae44ed, type: 3}
+  - {fileID: 8231918834746265767, guid: a3e44fab240f9014489105150c8f9c21, type: 3}
+  - {fileID: 8231918834746265767, guid: a3e44fab240f9014489105150c8f9c21, type: 3}
+  - {fileID: 8231918834746265767, guid: 619fb6c2b1202d04197230ad39f7d935, type: 3}
   rooms1x2x1:
   - {fileID: 6027888391234501586, guid: a2feac5613953ae46bc38aa970e1a76c, type: 3}
+  - {fileID: 6027888391234501586, guid: f4368b5a569c2054989e5929c4933cbd, type: 3}
+  - {fileID: 6027888391234501586, guid: c7d5e6580b36f124c9ef44dc3b4cdc3d, type: 3}
+  - {fileID: 6027888391234501586, guid: e52f4cf6ea1e07e4dbab1ee3fda68bf8, type: 3}
   rooms2x1x2:
-  - {fileID: 2479775355766125897, guid: 5a78b852af992604daf765df5782b318, type: 3}
-  _tallRoomSpawnChance: 1
-  _longRoomSpawnChance: 0.55
+  - {fileID: 1009674509223472008, guid: ce649a3a4abca8d4aa4eaf045ce9bc08, type: 3}
+  _tallRoomSpawnChance: 0.75
+  _longRoomSpawnChance: 0.5
   _bigRoomSpawnChance: 1
   _debugAll: 0
   _debugBlueprint: 0
