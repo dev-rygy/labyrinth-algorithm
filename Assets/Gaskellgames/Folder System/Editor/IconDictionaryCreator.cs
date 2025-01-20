@@ -42,7 +42,7 @@ namespace Gaskellgames.FolderSystem
         {
             for (int i = 0; i < assets.Length; i++)
             {
-                if (FixStringSeparators(Path.GetDirectoryName(assets[i])) == filePath)
+                if (FixStringSeparators(System.IO.Path.GetDirectoryName(assets[i])) == filePath)
                 {
                     return true;
                 }
@@ -71,7 +71,7 @@ namespace Gaskellgames.FolderSystem
             {
                 string path = filePath + "/" + info[i].Name;
                 Texture texture = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture;
-                dictionary.Add(Path.GetFileNameWithoutExtension(info[i].Name),texture);
+                dictionary.Add(System.IO.Path.GetFileNameWithoutExtension(info[i].Name),texture);
             }
 
             // get asset info for custom icons

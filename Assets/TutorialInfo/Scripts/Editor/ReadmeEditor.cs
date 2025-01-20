@@ -71,7 +71,7 @@ public class ReadmeEditor : Editor
         var assembly = typeof(EditorApplication).Assembly;
         var windowLayoutType = assembly.GetType("UnityEditor.WindowLayout", true);
         var method = windowLayoutType.GetMethod("LoadWindowLayout", BindingFlags.Public | BindingFlags.Static);
-        method.Invoke(null, new object[] { Path.Combine(Application.dataPath, "TutorialInfo/Layout.wlt"), false });
+        method.Invoke(null, new object[] { System.IO.Path.Combine(Application.dataPath, "TutorialInfo/Layout.wlt"), false });
     }
 
     static Readme SelectReadme()

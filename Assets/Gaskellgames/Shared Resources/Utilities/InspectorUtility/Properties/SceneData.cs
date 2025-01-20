@@ -236,7 +236,7 @@ namespace Gaskellgames.SceneManagement
                 this.guid = AssetDatabase.AssetPathToGUID(filePath);
 #endif
                 this.buildIndex = SceneUtility.GetBuildIndexByScenePath(filePath);
-                this.sceneName = Path.GetFileNameWithoutExtension(filePath);
+                this.sceneName = System.IO.Path.GetFileNameWithoutExtension(filePath);
                 this.sceneFilePath = filePath;
             }
             else
@@ -262,7 +262,7 @@ namespace Gaskellgames.SceneManagement
                 this.guid = AssetDatabase.AssetPathToGUID(filePath);
 #endif
                 this.buildIndex = buildIndex;
-                this.sceneName = Path.GetFileNameWithoutExtension(filePath);
+                this.sceneName = System.IO.Path.GetFileNameWithoutExtension(filePath);
                 this.sceneFilePath = filePath;
             }
             else
@@ -287,7 +287,7 @@ namespace Gaskellgames.SceneManagement
                 this.guid = AssetDatabase.AssetPathToGUID(sceneFilePath);
 #endif
                 this.buildIndex = SceneUtility.GetBuildIndexByScenePath(sceneFilePath);
-                this.sceneName = Path.GetFileNameWithoutExtension(sceneFilePath);
+                this.sceneName = System.IO.Path.GetFileNameWithoutExtension(sceneFilePath);
                 this.sceneFilePath = sceneFilePath;
             }
             else

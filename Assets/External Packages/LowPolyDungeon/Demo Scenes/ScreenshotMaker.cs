@@ -13,7 +13,7 @@ public class ScreenshotMaker : MonoBehaviour
             int counter = 0;
             while (true)
             {
-                var path = Path.Combine(dir, $"Screenshot_{counter}.png");
+                var path = System.IO.Path.Combine(dir, $"Screenshot_{counter}.png");
                 if (File.Exists(path))
                 {
                     counter++;

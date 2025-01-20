@@ -36,7 +36,7 @@ namespace Gaskellgames.FolderSystem
             // check for valid draw
             if (path == "") { return; }
             if (Event.current.type != EventType.Repaint) { return; }
-            if (!iconDictionary.ContainsKey(Path.GetFileName(path))) { return; }
+            if (!iconDictionary.ContainsKey(System.IO.Path.GetFileName(path))) { return; }
             if (!File.GetAttributes(path).HasFlag(FileAttributes.Directory)) { return; }
 
             // get image position
@@ -56,7 +56,7 @@ namespace Gaskellgames.FolderSystem
             Rect imagePosition = new Rect(positionX, positionY, positionWidth, positionHeight);
 
             // get image texture
-            Texture texture = IconDictionaryCreator.iconDictionary[Path.GetFileName(path)];
+            Texture texture = IconDictionaryCreator.iconDictionary[System.IO.Path.GetFileName(path)];
             if (texture == null) { return; }
 
             // draw image texture at image position
