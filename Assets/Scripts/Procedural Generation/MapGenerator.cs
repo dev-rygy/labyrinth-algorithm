@@ -1217,7 +1217,7 @@ namespace RyansLibrary.Labyrinth
                     roomIndex = prefabIndex;
 
                 // Generate Small Room; no direction condition needed
-                generatedRoom = Instantiate(path.startingRooms[roomIndex], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
+                generatedRoom = Instantiate(path.startingRooms[roomIndex].RoomPrefab, startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
                 generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);   // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
                 generatedRoom.Initialize(rType);
                 return generatedRoom;
@@ -1232,7 +1232,7 @@ namespace RyansLibrary.Labyrinth
                     roomIndex = prefabIndex;
 
                 // Generate Small Room; no direction condition needed
-                generatedRoom = Instantiate(path.rooms1x1x1[roomIndex], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
+                generatedRoom = Instantiate(path.rooms1x1x1[roomIndex].RoomPrefab, startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
                 generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);   // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
                 generatedRoom.Initialize(rType);
                 return generatedRoom;
@@ -1255,7 +1255,7 @@ namespace RyansLibrary.Labyrinth
                         BlueprintRoom fwdRoom = MasterDictionary[rightRoom.Position + (Vector3.forward * _roomGridCellSize)];         // __-^
                         BlueprintRoom leftRoom = MasterDictionary[fwdRoom.Position + (Vector3.left * _roomGridCellSize)];             // __<-
 
-                        generatedRoom = Instantiate(path.rooms2x1x2[roomIndex], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom = Instantiate(path.rooms2x1x2[roomIndex].RoomPrefab, startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(fwdRoom.entrancewayFlags, 2, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
@@ -1268,7 +1268,7 @@ namespace RyansLibrary.Labyrinth
                         BlueprintRoom fwdRoom = MasterDictionary[leftRoom.Position + (Vector3.forward * _roomGridCellSize)];          // __^-
                         BlueprintRoom rightRoom = MasterDictionary[fwdRoom.Position + (Vector3.right * _roomGridCellSize)];           // __->
                         
-                        generatedRoom = Instantiate(path.rooms2x1x2[roomIndex], leftRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom = Instantiate(path.rooms2x1x2[roomIndex].RoomPrefab, leftRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 6 - 11)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 2, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 12 - 17)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(fwdRoom.entrancewayFlags, 3, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 18 - 23)
@@ -1281,7 +1281,7 @@ namespace RyansLibrary.Labyrinth
                         BlueprintRoom backRoom = MasterDictionary[rightRoom.Position + (Vector3.back * _roomGridCellSize)];           // _v--
                         BlueprintRoom leftRoom = MasterDictionary[backRoom.Position + (Vector3.left * _roomGridCellSize)];            // <_--
 
-                        generatedRoom = Instantiate(path.rooms2x1x2[roomIndex], leftRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom = Instantiate(path.rooms2x1x2[roomIndex].RoomPrefab, leftRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 3, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 18 - 23)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 2, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 12 - 17)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(backRoom.entrancewayFlags, 1, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 6 - 11)
@@ -1294,7 +1294,7 @@ namespace RyansLibrary.Labyrinth
                         BlueprintRoom backRoom = MasterDictionary[leftRoom.Position + (Vector3.back * _roomGridCellSize)];            // v_--
                         BlueprintRoom rightRoom = MasterDictionary[backRoom.Position + (Vector3.right * _roomGridCellSize)];          // _>--
 
-                        generatedRoom = Instantiate(path.rooms2x1x2[roomIndex], backRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom = Instantiate(path.rooms2x1x2[roomIndex].RoomPrefab, backRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 2, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(backRoom.entrancewayFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
@@ -1317,7 +1317,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         BlueprintRoom nextRoom = MasterDictionary[startingRoom.Position + (Vector3.up * _roomGridCellSize)];
 
-                        generatedRoom = Instantiate(path.rooms1x2x1[roomIndex], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
+                        generatedRoom = Instantiate(path.rooms1x2x1[roomIndex].RoomPrefab, startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(nextRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                             // Activate new rooms entranceways
@@ -1326,7 +1326,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         BlueprintRoom nextRoom = MasterDictionary[startingRoom.Position + (Vector3.down * _roomGridCellSize)];
 
-                        generatedRoom = Instantiate(path.rooms1x2x1[roomIndex], nextRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
+                        generatedRoom = Instantiate(path.rooms1x2x1[roomIndex].RoomPrefab, nextRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 1, eulerRotation);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(nextRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                             // Activate new rooms entranceways
@@ -1349,7 +1349,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         BlueprintRoom nextRoom = MasterDictionary[startingRoom.Position + (Vector3.right * _roomGridCellSize)];
 
-                        generatedRoom = Instantiate(path.rooms2x1x1[roomIndex], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
+                        generatedRoom = Instantiate(path.rooms2x1x1[roomIndex].RoomPrefab, startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);                          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(nextRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                            // Activate new rooms entranceways
@@ -1358,7 +1358,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         BlueprintRoom nextRoom = MasterDictionary[startingRoom.Position + (Vector3.left * _roomGridCellSize)];
 
-                        generatedRoom = Instantiate(path.rooms2x1x1[roomIndex], nextRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
+                        generatedRoom = Instantiate(path.rooms2x1x1[roomIndex].RoomPrefab, nextRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 1, eulerRotation);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(nextRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                            // Activate new rooms entranceways
@@ -1369,7 +1369,7 @@ namespace RyansLibrary.Labyrinth
 
                         rotation.SetFromToRotation(Vector3.right, Vector3.forward);
                         eulerRotation = new Vector3(0, 90, 0);
-                        generatedRoom = Instantiate(path.rooms2x1x1[roomIndex], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom = Instantiate(path.rooms2x1x1[roomIndex].RoomPrefab, startingRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(nextRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);
@@ -1380,7 +1380,7 @@ namespace RyansLibrary.Labyrinth
 
                         rotation.SetFromToRotation(Vector3.right, Vector3.forward);
                         eulerRotation = new Vector3(0, 90, 0);
-                        generatedRoom = Instantiate(path.rooms2x1x1[roomIndex], nextRoom.Position, rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom = Instantiate(path.rooms2x1x1[roomIndex].RoomPrefab, nextRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 1, eulerRotation);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
                         generatedRoom.CopyBlueprintRoomEntranceFlags(nextRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);
@@ -1403,7 +1403,7 @@ namespace RyansLibrary.Labyrinth
                         roomIndex = prefabIndex;
 
                     // Generate Small Room; no direction condition needed
-                    generatedRoom = Instantiate(path.rooms1x1x1[roomIndex], startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
+                    generatedRoom = Instantiate(path.rooms1x1x1[roomIndex].RoomPrefab, startingRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
                     generatedRoom.CopyBlueprintRoomEntranceFlags(startingRoom.entrancewayFlags, 0, eulerRotation);   // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
                     generatedRoom.Initialize(rType);                                                                // Activate new rooms entranceways
                     break;

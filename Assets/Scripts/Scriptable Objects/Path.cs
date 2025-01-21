@@ -4,6 +4,7 @@
  * Last Modified:   01/20/2025 
  * Notes:           Path in a scriptable object
 */
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,18 +17,25 @@ namespace RyansLibrary.Labyrinth
         prize
     }
 
+    [System.Serializable]
+    public struct PathEntry
+    {
+        public GameObject RoomPrefab;
+        [Range(0, 1)] public float RoomSpawnChance;
+    }
+
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Path", order = 1)]
     public class Path : ScriptableObject
     {
         [field: SerializeField] public string Name { get; set; }
         [field: SerializeField] public PathType Type { get; private set; }
         [field: SerializeField] public int PathLength { get; private set; }
-        [field: SerializeField] public List<GameObject> startingRooms { get; private set; }
-        [field: SerializeField] public List<GameObject> rooms1x1x1 { get; private set; }
-        [field: SerializeField] public List<GameObject> rooms2x1x1 { get; private set; }
-        [field: SerializeField] public List<GameObject> rooms1x2x1 { get; private set; }
-        [field: SerializeField] public List<GameObject> rooms2x1x2 { get; private set; }
-        [field: SerializeField] public List<GameObject> endingRooms { get; private set; }
+        [field: SerializeField] public List<PathEntry> startingRooms { get; private set; }
+        [field: SerializeField] public List<PathEntry> rooms1x1x1 { get; private set; }
+        [field: SerializeField] public List<PathEntry> rooms2x1x1 { get; private set; }
+        [field: SerializeField] public List<PathEntry> rooms1x2x1 { get; private set; }
+        [field: SerializeField] public List<PathEntry> rooms2x1x2 { get; private set; }
+        [field: SerializeField] public List<PathEntry> endingRooms { get; private set; }
             
         [field: Header("Room Generation Chance")]
         [Tooltip("The percent chance for a room with a tall shape to spawn when the conditions are met.")]

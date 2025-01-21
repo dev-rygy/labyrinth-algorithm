@@ -2045,10 +2045,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 41321945520136259, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 197979799327637701, guid: 302187ca606e5f5419cd4d080240de14,
         type: 3}
       propertyPath: m_Name
       value: Long Room (2x1x1) Pillars 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 279986192555571845, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 443383122127471535, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1256737396707402876, guid: 302187ca606e5f5419cd4d080240de14,
         type: 3}
@@ -2059,6 +2074,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.x
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1782807556659652130, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2259198055666975836, guid: 302187ca606e5f5419cd4d080240de14,
         type: 3}
@@ -2110,6 +2130,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6643656439401898683, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7583001579086333053, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8079131515813454783, guid: 302187ca606e5f5419cd4d080240de14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2139,6 +2169,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8299882433334370999, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8702926540994781225, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
