@@ -21,7 +21,7 @@ namespace RyansLibrary.Labyrinth
     public struct PathEntry
     {
         public GameObject Prefab;
-        [Range(0, 1)] public float Probability;
+        [Range(0, 100)] public int Probability;
     }
 
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Path", order = 1)]

@@ -1,3 +1,9 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    01/04/2025
+ * Last Modified:   01/22/2025 (Ryan)
+ * Notes:           Player Fall State
+*/
 using System.Collections;
 using UnityEngine;
 
@@ -48,6 +54,7 @@ public class PlayerFallState : PlayerState
 
     private IEnumerator LandCo()
     {
+        // Disable the ground check to reset to the ground properly
         stateMachine.ForceReciever.EnableGroundCheck = false;
 
         // Start the landing animation
