@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/20/2025
- * Last Modified:   01/20/2025 
+ * Last Modified:   01/20/2025 (Ryan)
  * Notes:           Path in a scriptable object
 */
 using System;
@@ -20,8 +20,8 @@ namespace RyansLibrary.Labyrinth
     [System.Serializable]
     public struct PathEntry
     {
-        public GameObject RoomPrefab;
-        [Range(0, 1)] public float RoomSpawnChance;
+        public GameObject Prefab;
+        [Range(0, 1)] public float Probability;
     }
 
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Path", order = 1)]

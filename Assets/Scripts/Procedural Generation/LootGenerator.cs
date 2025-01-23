@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    12/26/2024
- * Last Modified:   12/26/2024 
+ * Last Modified:   12/26/2024 (Ryan)
  * Notes:           Loot Generator
  *                      Procedure starts after the Map Generation Procedure
  *                      Parse through the Master Path and spawn loot where

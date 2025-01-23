@@ -69636,12 +69636,13 @@ MonoBehaviour:
   <UnarmedWeapon>k__BackingField: {fileID: 3062990498899931575}
   <MovementSpeed>k__BackingField: 5
   <MoveRotationDampValue>k__BackingField: 10
+  <FallTimeToLand>k__BackingField: 0.35
   <ClimbSpeed>k__BackingField: 3
   <ClimbTriggerOffset>k__BackingField: 0.1
   <ClimbInteractDistance>k__BackingField: 0.4
   _climbAngleRange: 0.85
-  <PrimaryWeapon>k__BackingField: {fileID: 1308116680162793220}
-  <SecondaryWeapon>k__BackingField: {fileID: 2606377799642151664}
+  <PrimaryWeapon>k__BackingField: {fileID: 0}
+  <SecondaryWeapon>k__BackingField: {fileID: 0}
   <PrimaryWeaponAttachPoint>k__BackingField: {fileID: 2717451356006317172}
   <SecondaryWeaponAttachPoint>k__BackingField: {fileID: 2347582765746272543}
   <ShieldSheatheAttachPoint>k__BackingField: {fileID: 4872363222399478353}
@@ -69660,7 +69661,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <GravityMultiplier>k__BackingField: -9.81
   <HasGravity>k__BackingField: 1
-  _groundCheckDistance: 0.2
+  _groundRayFanAngleX: 60
+  _groundRayCount: 5
+  _groundCheckDistance: 0.3
+  _terminalVelocity: 50
   _debug: 0
 --- !u!1001 &308056685214840841
 PrefabInstance:
@@ -69735,18 +69739,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f817d3751429dab459aca65ab057b05b, type: 3}
---- !u!114 &1308116680162793220 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1612626065559645965, guid: f817d3751429dab459aca65ab057b05b,
-    type: 3}
-  m_PrefabInstance: {fileID: 308056685214840841}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c8a0ef6af334c640b6254dbe75704f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &8488911432160082417 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8181004317177496056, guid: f817d3751429dab459aca65ab057b05b,
@@ -69932,18 +69924,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a2f9afbc265c1f141be156bc5874af8c, type: 3}
---- !u!114 &2606377799642151664 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5739527513836384134, guid: a2f9afbc265c1f141be156bc5874af8c,
-    type: 3}
-  m_PrefabInstance: {fileID: 7749941870061294966}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd9184e8737d2da4f8302019f08dd831, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &3913892344160991181 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6763741746292073147, guid: a2f9afbc265c1f141be156bc5874af8c,
