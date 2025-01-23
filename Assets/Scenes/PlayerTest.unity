@@ -738,36 +738,12 @@ Transform:
   - {fileID: 832575519}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1223592533 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2606377799642151664, guid: 3a55df7c24309c74798865a78e36de5f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1185064645275957466}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd9184e8737d2da4f8302019f08dd831, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1501460684 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3420326846254334816, guid: c7d5e6580b36f124c9ef44dc3b4cdc3d,
     type: 3}
   m_PrefabInstance: {fileID: 510295743}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1582658617 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1308116680162793220, guid: 3a55df7c24309c74798865a78e36de5f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1185064645275957466}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c8a0ef6af334c640b6254dbe75704f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1663984814
 GameObject:
   m_ObjectHideFlags: 0
@@ -900,26 +876,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 140478056}
     m_Modifications:
-    - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
-        type: 3}
-      propertyPath: <PrimaryWeapon>k__BackingField
-      value: 
-      objectReference: {fileID: 1582658617}
-    - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
-        type: 3}
-      propertyPath: <FallTimeToLand>k__BackingField
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
-        type: 3}
-      propertyPath: <SecondaryWeapon>k__BackingField
-      value: 
-      objectReference: {fileID: 1223592533}
-    - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
-        type: 3}
-      propertyPath: <DebugStateMachine>k__BackingField
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4417549369138805797, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -974,26 +930,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 7359390006632431785, guid: 3a55df7c24309c74798865a78e36de5f,
-        type: 3}
-      propertyPath: _debug
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7359390006632431785, guid: 3a55df7c24309c74798865a78e36de5f,
-        type: 3}
-      propertyPath: _groundRayFanAngleX
-      value: 70
-      objectReference: {fileID: 0}
-    - target: {fileID: 7359390006632431785, guid: 3a55df7c24309c74798865a78e36de5f,
-        type: 3}
-      propertyPath: _groundFanCheckDistance
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7359390006632431785, guid: 3a55df7c24309c74798865a78e36de5f,
-        type: 3}
-      propertyPath: _groundDownCheckDistance
-      value: 0.085
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

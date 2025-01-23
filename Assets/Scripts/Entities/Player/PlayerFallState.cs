@@ -20,7 +20,10 @@ public class PlayerFallState : PlayerState
     public override void Tick(float deltaTime)
     {
         if (_isLanding)
+        {
+            stateMachine.Move(Vector3.zero, deltaTime); // Just fall with gravity
             return;
+        }
 
         // The play can move the character very slowly while falling
         Vector3 moveInput = new Vector3(stateMachine.Input.MovementInput.x, 0, stateMachine.Input.MovementInput.y);
@@ -45,6 +48,8 @@ public class PlayerFallState : PlayerState
 
     private IEnumerator LandCo()
     {
+        stateMachine.ForceReciever.EnableGroundCheck = false;
+
         // Start the landing animation
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_LANDING_HASH, 0.1f);
 
@@ -53,6 +58,8 @@ public class PlayerFallState : PlayerState
 
         // Now wait until this specific animation has finished
         yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f < 0.01f && !stateMachine.Animator.IsInTransition(0));
+
+        stateMachine.ForceReciever.EnableGroundCheck = true;
 
         stateMachine.SwitchState(new PlayerIdleState(stateMachine));
     }

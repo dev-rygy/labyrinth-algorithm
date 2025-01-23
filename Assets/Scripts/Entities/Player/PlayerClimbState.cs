@@ -65,8 +65,10 @@ public class PlayerClimbState : PlayerState
     }
 
     private IEnumerator FinishCo()
-    { 
+    {
+        stateMachine.ForceReciever.EnableGroundCheck = false;
         yield return new WaitForSeconds(FINAL_PUSH_TIME);
+        stateMachine.ForceReciever.EnableGroundCheck = true;
         CancelClimb();
     }
 

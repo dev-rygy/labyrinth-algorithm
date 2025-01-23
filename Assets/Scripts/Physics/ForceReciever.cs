@@ -7,6 +7,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 
@@ -19,6 +20,8 @@ public class ForceReciever : MonoBehaviour
     [field: Header("Falling and Grounded")]
     [field: SerializeField] public float GravityMultiplier { get; private set; } = -9.81f;
     [field: SerializeField] public bool HasGravity { get; set; } = true;
+    [field: SerializeField] public bool EnableGroundCheck = true;
+
     [SerializeField] private float _groundRayFanAngleX = 45;
     [SerializeField] private float _groundRayCount = 5;
     [SerializeField] private float _groundFanCheckDistance = 0.1f;
@@ -77,6 +80,8 @@ public class ForceReciever : MonoBehaviour
     
     public bool IsGrounded()
     {
+        if (!EnableGroundCheck) return false;
+
         Vector3 rayOrigin = transform.position;
         RaycastHit hit;
 
