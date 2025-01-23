@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   01/07/2025
+ * Last Modified:   01/07/2025 (Ryan)
  * Notes:           The Player's State Machine
 */
 using System.Collections;
@@ -24,6 +24,7 @@ public class PlayerStateMachine : StateMachine
     [field: Header("Movement")]
     [field: SerializeField] public float MovementSpeed { get; private set; } = 5f;
     [field: SerializeField] public float MoveRotationDampValue { get; private set; }
+    [field: SerializeField] public float FallTimeToLand { get; private set; } = 1.85f;
     [field: SerializeField] public float ClimbSpeed { get; private set; } = 3f;
     [field: SerializeField] public float ClimbTriggerOffset { get; private set; } = 0.1f;
     [field: SerializeField] public float ClimbInteractDistance { get; private set; } = 0.4f;
@@ -184,6 +185,8 @@ public class PlayerStateMachine : StateMachine
     {
         Vector3 rayOrigin = transform.position + Vector3.up * ClimbTriggerOffset;
         Vector3 moveDirection = PlayerCharacter.transform.forward;
+
+        if (DebugStateMachine) Debug.DrawRay(rayOrigin, moveDirection, Color.green);
 
         // If the raycast does not hit an object with a collider; can not climb
         if (!Physics.Raycast(rayOrigin, moveDirection, out RaycastHit raycastHit, ClimbInteractDistance))

@@ -69603,7 +69603,7 @@ CharacterController:
   m_Radius: 0.2
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.01
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &7306716799446914742
@@ -69636,6 +69636,7 @@ MonoBehaviour:
   <UnarmedWeapon>k__BackingField: {fileID: 3062990498899931575}
   <MovementSpeed>k__BackingField: 5
   <MoveRotationDampValue>k__BackingField: 10
+  <FallTimeToLand>k__BackingField: 0.1
   <ClimbSpeed>k__BackingField: 3
   <ClimbTriggerOffset>k__BackingField: 0.1
   <ClimbInteractDistance>k__BackingField: 0.4
@@ -69660,8 +69661,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <GravityMultiplier>k__BackingField: -9.81
   <HasGravity>k__BackingField: 1
-  _groundCheckDistance: 0.2
+  EnableGroundCheck: 1
+  _groundRayFanAngleX: 70
+  _groundRayCount: 5
+  _groundFanCheckDistance: 0.25
+  _groundDownCheckDistance: 0.1
+  _terminalVelocity: 50
   _debug: 0
+  _log: 0
 --- !u!1001 &308056685214840841
 PrefabInstance:
   m_ObjectHideFlags: 0

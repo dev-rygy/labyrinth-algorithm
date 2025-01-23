@@ -1,3 +1,12 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    01/04/2025
+ * Last Modified:   01/04/2025 (Ryan)
+ * Notes:           Entity Health Component 
+ *                  - Take Damage
+ *                  - Heal
+ *                  - Death
+*/
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

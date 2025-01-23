@@ -5,6 +5,7 @@
  * Notes:           Old Input Handler (DEPRICATED)
 */
 
+/*  OLD INPUT HANDLER (Depricated)
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -93,7 +94,7 @@ namespace RyansLibrary.Input
             if (debug) Debug.Log("The Look Input read was = " + LookInput);
         }
 
-        /*
+
         private void OnLookRightInput(InputAction.CallbackContext context)
         {
             if (!context.started)
@@ -113,7 +114,7 @@ namespace RyansLibrary.Input
 
             if (debug) Debug.Log("Player pressed look left button");
         }
-        */
+
         private void OnJumpInput(InputAction.CallbackContext context)
         {
             if (!context.started) 
@@ -141,3 +142,4 @@ namespace RyansLibrary.Input
         }
     }
 }
+*/

@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   10/26/2024 
+ * Last Modified:   10/26/2024 (Ryan)
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
@@ -24,6 +24,7 @@ namespace RyansLibrary.Labyrinth
     {
         general,
         start,
+        end,
         prize,
         toBoss,
         boss

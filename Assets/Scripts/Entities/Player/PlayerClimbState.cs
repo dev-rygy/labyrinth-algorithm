@@ -1,3 +1,9 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    01/04/2025
+ * Last Modified:   01/04/2025 (Ryan)
+ * Notes:           Player Climbing State
+*/
 using RyansLibrary.Input;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +19,7 @@ public class PlayerClimbState : PlayerState
     // Time to transition between animtions
     private const float ANIMATOR_DAMP_TIME = 0f;
 
-    private const float FINAL_PUSH_FORCE = 2f;
+    private const float FINAL_PUSH_FORCE = 3f;
     private const float FINAL_PUSH_TIME = 0.3f;
 
     private bool _doneClimbing = false;
@@ -60,7 +66,9 @@ public class PlayerClimbState : PlayerState
 
     private IEnumerator FinishCo()
     {
+        stateMachine.ForceReciever.EnableGroundCheck = false;
         yield return new WaitForSeconds(FINAL_PUSH_TIME);
+        stateMachine.ForceReciever.EnableGroundCheck = true;
         CancelClimb();
     }
 

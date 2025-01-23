@@ -4,6 +4,8 @@
  * Last Modified:   12/18/2024 
  * Notes:           Old Player Controller (DEPRICATED)
 */
+
+/* OLD PLAYERCONTROLLER (Depricated)
 using UnityEngine;
 using RyansLibrary.Input;
 
@@ -119,3 +121,4 @@ public class OldPlayerController : MonoBehaviour
         // TODO: Interaction Logic
     }
 }
+*/

@@ -1,3 +1,9 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    01/04/2025
+ * Last Modified:   01/04/2025 (Ryan)
+ * Notes:           Player Combo Primary State
+*/
 using RyansLibrary.Input;
 using System.Collections;
 using System.Collections.Generic;
