@@ -4,12 +4,6 @@
  * Last Modified:   10/26/2024 
  * Notes:           Custom Math Library
 */
-/*
- * Created By:      Ryan Carpenter
- * Date Created:    10/26/2024
- * Last Modified:   10/26/2024 
- * Notes:           Mathmatical helper functions
-*/
 
 using System.Collections;
 using System.Collections.Generic;
