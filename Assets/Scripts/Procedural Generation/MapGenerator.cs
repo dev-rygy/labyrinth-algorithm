@@ -123,18 +123,6 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Areas")]
         [SerializeField] private Area _castleArea;
-        
-        /* OLD VALUES FOR PATHS NOW HELD IN AREAS SCRIPTABLE OBJECT (Depricated)
-        [Header("Bounding Box")]
-        [Tooltip("No rooms can spawn past this coordinate point.")]
-        [SerializeField] private Vector3 _lowerBound = new Vector3(-1000, -1000, -1000);    // Lower bound; no rooms can spawn beyond this point
-        [Tooltip("No rooms can spawn past this coordinate point.")]
-        [SerializeField] private Vector3 _upperBound = new Vector3(1000, 1000, 1000);       // Upper bound; no rooms can spawn beyond this point
-
-        [Header("Paths")]
-        [SerializeField] public Path MainPath;      // The Main Path is required; Leads to the boss room
-        [SerializeField] public List<Path> Paths;   // Alternative paths that branch out from the main path
-        */
 
         [Header("Debuging")]
         [SerializeField] private bool _debugAll;
