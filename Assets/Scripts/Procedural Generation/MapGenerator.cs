@@ -121,6 +121,10 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Transform _blueprintRoomContainer;     // GameObject that holds the spawned blueprint rooms if debug is on
         [SerializeField] private Transform _roomContainer;              // GameObject that holds the spawned rooms
 
+        [Header("Areas")]
+        [SerializeField] private Area _castleArea;
+        
+        /* OLD VALUES FOR PATHS NOW HELD IN AREAS SCRIPTABLE OBJECT (Depricated)
         [Header("Bounding Box")]
         [Tooltip("No rooms can spawn past this coordinate point.")]
         [SerializeField] private Vector3 _lowerBound = new Vector3(-1000, -1000, -1000);    // Lower bound; no rooms can spawn beyond this point
@@ -130,6 +134,7 @@ namespace RyansLibrary.Labyrinth
         [Header("Paths")]
         [SerializeField] public Path MainPath;      // The Main Path is required; Leads to the boss room
         [SerializeField] public List<Path> Paths;   // Alternative paths that branch out from the main path
+        */
 
         [Header("Debuging")]
         [SerializeField] private bool _debugAll;
@@ -139,6 +144,9 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _mainPathColor;
         [SerializeField] private Color _prizePathColor;
+
+        private Vector3 _currentUpperBound;
+        private Vector3 _currentLowerBound;
         #endregion
 
         #region Mono
@@ -153,16 +161,6 @@ namespace RyansLibrary.Labyrinth
 
         private void Start()
         {
-            if (!CheckBoundedVolume())
-            {
-                Debug.LogError("Map Generator Error: The amount of rooms to generate exceeds the bounding box's volume or the bounding box is inverted.");
-                return;
-            }
-
-            // Update bounds to the actual size of the map in Unity Units
-            _upperBound *= _roomGridCellSize;
-            _lowerBound *= _roomGridCellSize;
-
             // If debug is active; step through procedures with UI buttons
             if (_debugAll)
                 return;
@@ -184,14 +182,14 @@ namespace RyansLibrary.Labyrinth
             if (!_enabled) 
                 return;
 
-            if (MainPath == null)
+            if (_castleArea == null)
             {
-                Debug.LogError("Map Generator Error: The main path must not be missing.");
+                Debug.LogError($"Map Generator Error: The {_castleArea.Name} area is missing.");
                 return;
             }
 
             // Take the volume of the bounding cuboid and return an error if the amount of rooms to spawn is larger than that volume
-            if (!CheckBoundedVolume())
+            if (!CheckBoundedVolume(_castleArea))
             {
                 Debug.LogError("Map Generator Error: The amount of rooms to generate exceeds the bounding box's volume or the bounding box is inverted.");
                 return;
@@ -203,11 +201,16 @@ namespace RyansLibrary.Labyrinth
             MasterPath.Initialize(0, 0);
             MasterPath.Name = MASTER_PATH_NAME;
 
+            // Update bounds to the actual size of the map in Unity Units
+
+            _currentUpperBound = _castleArea.UpperBound * _roomGridCellSize;
+            _currentLowerBound = _castleArea.LowerBound * _roomGridCellSize;
+
             // Generate blueprint map
-            BlueprintProcedure();
+            BlueprintProcedure(_castleArea);
 
             // Check room conditions and generate rooms using the blueprint map
-            RoomGenerationProcedure();
+            RoomGenerationProcedure(_castleArea);
 
             // TODO: Implement perlin noise height and type Map
 
@@ -226,49 +229,51 @@ namespace RyansLibrary.Labyrinth
         /// the actual rooms later. It is called blueprint because it is a pre-map layout before placing the
         /// actual rooms.
         /// </summary>
-        public void BlueprintProcedure()     // 1. Generate Blueprint Paths
+        public void BlueprintProcedure(Area area)     // 1. Generate Blueprint Paths
         {
+            // ******* Generate Castle Area Blueprint *******
             // Main Path to boss
-            GenerateMainPathBlueprint();
+            GenerateMainPathBlueprint(area);
 
             // Alternative paths
-            foreach (Path path in Paths)
-                GeneratePathBlueprint(path);
+            GeneratePathBlueprint(area);
         }
 
         /// <summary>
         /// Helper function for generating the main path
         /// </summary>
-        public void GenerateMainPathBlueprint()
+        public void GenerateMainPathBlueprint(Area area)
         {
             // Main Path to boss
             // Initialize a new path at starting room if not null
             int startIndex = MasterPath.BlueprintCount() - 1;               // Start index in master path
-            int endIndex = startIndex + MainPath.PathLength;
-            MainPath.Initialize(startIndex, endIndex);      // End index in master path
+            int endIndex = startIndex + area.MainPath.PathLength;
+            area.MainPath.Initialize(startIndex, endIndex);      // End index in master path
 
-            RandomWalker(MainPath);
+            RandomWalker(area.MainPath);
             
-            if (_debugAll || _debugBlueprint) Debug.Log($"Map Generator: {MainPath.name} generated with {MainPath.BlueprintCount()} rooms.");
+            if (_debugAll || _debugBlueprint) Debug.Log($"Map Generator: {area.MainPath.name} generated with {area.MainPath.BlueprintCount()} rooms.");
         }
 
         /// <summary>
         /// Helper function for generating the prize path
         /// </summary>
-        public Path GeneratePathBlueprint(Path path)
+        public void GeneratePathBlueprint(Area area)
         {
             // Path to prize room; choose a random start room
             // Initialize a new path at starting room if not null
-            int startIndex = MainPath.BlueprintCount() - 1;               // Start index in master path
-            int endIndex = startIndex + MainPath.PathLength;
-            BlueprintRoom startRoom = ChooseRandomRoom(MasterPath, 1); // start at index 1 as to not choose the starting room of the game
-            path.Initialize(startIndex, endIndex);
+            int startIndex = area.MainPath.BlueprintCount() - 1;               // Start index in master path
+            int endIndex = startIndex + area.MainPath.PathLength;
 
-            RandomWalker(path, startRoom);
-            
-            if (_debugAll || _debugBlueprint) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
+            foreach (Path path in area.Paths)
+            {
+                BlueprintRoom startRoom = ChooseRandomRoom(area.MainPath, 1); // start at index 1 as to not choose the starting room of the game
+                path.Initialize(startIndex, endIndex);
 
-            return path;
+                RandomWalker(path, startRoom);
+
+                if (_debugAll || _debugBlueprint) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
+            }
         }
 
         /// <summary>
@@ -463,8 +468,8 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Returns true if the space is out of bounds and false otherwise.</returns>
         private bool CheckBounds(Vector3 desiredPos)
         {
-            Vector3 differenceUpper = _upperBound - desiredPos;
-            Vector3 differenceLower = _lowerBound - desiredPos;
+            Vector3 differenceUpper = _currentUpperBound - desiredPos;
+            Vector3 differenceLower = _currentLowerBound - desiredPos;
             if (differenceUpper.x <= 0 || differenceUpper.y <= 0 || differenceUpper.z <= 0)        // Valid space
                 return false;
             if (differenceLower.x > 0 || differenceLower.y > 0 || differenceLower.z > 0)        // Valid space
@@ -500,13 +505,13 @@ namespace RyansLibrary.Labyrinth
         /// the room is a part of. It will also activate the entranceways of rooms based on
         /// the path's trail.
         /// </summary>
-        public void RoomGenerationProcedure()  // 2. Generate Rooms
+        public void RoomGenerationProcedure(Area area)  // 2. Generate Rooms
         {
             // Generate Rooms along main path
-            GenerateRooms(MainPath);
+            GenerateRooms(area.MainPath);
 
             // Generator Rooms along alt. paths
-            foreach (Path path in Paths)
+            foreach (Path path in area.Paths)
                 GenerateRooms(path);
         }
 
@@ -1203,9 +1208,6 @@ namespace RyansLibrary.Labyrinth
 
             BlueprintRoom startingRoom = path.BlueprintRooms[i];    // x_--
 
-            // The index of variant room in the respective room prefab index
-            int roomIndex = 0;
-
             // If starting room then spawn starting room and return
             if (rType == RoomType.start)
             {
@@ -1730,22 +1732,23 @@ namespace RyansLibrary.Labyrinth
         /// Checks if the total amount of rooms is valid in a bounded range.
         /// </summary>
         /// <returns>The test success or fail</returns>
-        private bool CheckBoundedVolume()
+        private bool CheckBoundedVolume(Area area)
         {
-            float totalRooms = 0;
+            // Initialize the total to the MainPath's length first
+            float totalCellOcupancy = area.MainPath.PathLength;
             // float totalRooms = _mainPathLength + (_prizePathLength * _amountOfPrizePaths);
 
-            foreach(Path path in Paths)
-            {
-                totalRooms += path.PathLength;
-            }
+            // Add alt. paths
+            foreach(Path path in area.Paths)
+                totalCellOcupancy += path.PathLength;
 
-            float xSize = (_upperBound.x - _lowerBound.x);
-            float ySize = (_upperBound.y - _lowerBound.y);
-            float zSize = (_upperBound.z - _lowerBound.z);
+            // Calculate the bounded volume and check if amount of room cells taken up exceeds that amount
+            float xSize = (area.UpperBound.x - area.LowerBound.x);
+            float ySize = (area.UpperBound.y - area.LowerBound.y);
+            float zSize = (area.UpperBound.z - area.LowerBound.z);
             float volume = Math.RectangularVolume(xSize, ySize, zSize);
 
-            if (volume < totalRooms)
+            if (volume < totalCellOcupancy)
                 return false;
 
             return true;
@@ -1836,15 +1839,15 @@ namespace RyansLibrary.Labyrinth
                 return;
 
             // Find the centerpoint of the box
-            float xPos = (_lowerBound.x + _upperBound.x - _roomGridCellSize) / 2;
-            float yPos = (_lowerBound.y + _upperBound.y - _roomGridCellSize) / 2;
-            float zPos = (_lowerBound.z + _upperBound.z - _roomGridCellSize) / 2;
+            float xPos = (_currentLowerBound.x + _currentUpperBound.x - _roomGridCellSize) / 2;
+            float yPos = (_currentLowerBound.y + _currentUpperBound.y - _roomGridCellSize) / 2;
+            float zPos = (_currentLowerBound.z + _currentUpperBound.z - _roomGridCellSize) / 2;
             Vector3 centerPoint = new Vector3(xPos, yPos, zPos);
 
             // Find the size of the box
-            float xSize = (_upperBound.x - _lowerBound.x);
-            float ySize = (_upperBound.y - _lowerBound.y);
-            float zSize = (_upperBound.z - _lowerBound.z);
+            float xSize = (_currentUpperBound.x - _currentLowerBound.x);
+            float ySize = (_currentUpperBound.y - _currentLowerBound.y);
+            float zSize = (_currentUpperBound.z - _currentLowerBound.z);
             Vector3 size = new Vector3(xSize, ySize, zSize);
 
 

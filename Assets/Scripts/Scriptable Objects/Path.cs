@@ -24,7 +24,7 @@ namespace RyansLibrary.Labyrinth
         [Range(0, 100)] public int Probability;
     }
 
-    [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Path", order = 1)]
+    [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Path", order = 2)]
     public class Path : ScriptableObject
     {
         [field: SerializeField] public string Name { get; set; }

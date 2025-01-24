@@ -13,7 +13,6 @@ namespace RyansLibrary.Labyrinth
 {
     public class LootGenerator : MonoBehaviour
     {
-
         [Header("Debug")]
         [SerializeField] private bool debug;
 
