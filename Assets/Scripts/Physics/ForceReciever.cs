@@ -19,6 +19,7 @@ public class ForceReciever : MonoBehaviour
 {
     [field: Header("Falling and Grounded")]
     [field: SerializeField] public float GravityMultiplier { get; private set; } = -9.81f;
+    [field: SerializeField] public float StaticVerticalVelocity { get; private set; } = -2f;
     [field: SerializeField] public bool HasGravity { get; set; } = true;
     [field: SerializeField] public bool EnableGroundCheck = true;
 
@@ -58,11 +59,14 @@ public class ForceReciever : MonoBehaviour
 
         // Handle gravity below
         if (!HasGravity)
+        {
+            VelocityY = 0;
             return;
+        }
 
         // Conditionally Handle Gravity; IsGrounded is unique to humanoid entities with a CharacterController
         if (IsGrounded() && VelocityY < 0.0f)
-            VelocityY = 0f;                         // Does not have gravity
+            VelocityY = StaticVerticalVelocity;                         // Does not have gravity
         else
         {
             if (VelocityY > -(_terminalVelocity))   // If terminal velocity has not been reached
