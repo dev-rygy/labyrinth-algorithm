@@ -73,7 +73,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="bluePrintArray">The blueprint room's entranceway array (6 possible entrances)</param>
         /// <param name="unitIndex">A specific unit space of the room in question</param>
-        public void CopyBlueprintRoomEntranceFlags(bool[] bluePrintArray, int unitIndex, Vector3 rotation)
+        public void CopyBlueprintEntranceFlags(bool[] bluePrintArray, int unitIndex, Vector3 rotation)
         {
             bluePrintArray = HandleRotation(bluePrintArray, rotation);
 

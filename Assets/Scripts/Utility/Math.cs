@@ -1,10 +1,9 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2024
- * Last Modified:   10/26/2024 
+ * Last Modified:   01/26/2024 
  * Notes:           Custom Math Library
 */
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,6 +32,16 @@ namespace RyansLibrary
         public static float RectangularVolume(float length, float width, float height)
         {
             return length * width * height;
+        }
+
+        /// <summary>
+        /// Checks if a number is even or odd.
+        /// </summary>
+        /// <param name="n">Number to check</param>
+        /// <returns>True if the argument passed in is an even number.</returns>
+        public static bool IsEven(int n)
+        {
+            return (n % 2 == 0);
         }
     }
 }

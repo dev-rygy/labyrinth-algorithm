@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/20/2025
- * Last Modified:   01/20/2025 (Ryan)
+ * Last Modified:   01/26/2025 (Ryan)
  * Notes:           Path in a scriptable object
 */
 using System;
@@ -60,26 +60,42 @@ namespace RyansLibrary.Labyrinth
             endMasterIdx = endIdx;
         }
 
+        /// <summary>
+        /// Return the number of blueprint rooms along this path.
+        /// </summary>
         public int BlueprintCount()
         {
             return BlueprintRooms.Count;
         }
 
+        /// <summary>
+        /// Return the number of rooms along this path.
+        /// </summary>
         public int RoomCount()
         {
             return Rooms.Count;
         }
 
+        /// <summary>
+        /// Add a blueprint room to the path.
+        /// </summary>
         public void Add(BlueprintRoom room)
         {
             BlueprintRooms.Add(room);
         }
 
+        /// <summary>
+        /// Add a room to the path.
+        /// </summary>
         public void Add(Room room)
         {
             Rooms.Add(room);
         }
 
+        /// <summary>
+        /// Clear the referenced blueprint rooms in this path.
+        /// Warning: Dangerous unless you know what you're doing
+        /// </summary>
         public void ClearBluePrintRooms()
         {
             BlueprintRooms.Clear();
