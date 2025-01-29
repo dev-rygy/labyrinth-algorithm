@@ -20,8 +20,8 @@ namespace RyansLibrary.Labyrinth
     [System.Serializable]
     public struct PathEntry
     {
-        public GameObject Prefab;
-        [Range(0, 100)] public int Probability;
+        [SerializeField] public GameObject Prefab;
+        [SerializeField] [Range(0, 100)] public int Probability;
     }
 
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Path", order = 2)]
