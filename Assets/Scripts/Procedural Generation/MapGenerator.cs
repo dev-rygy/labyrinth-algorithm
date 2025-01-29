@@ -6,6 +6,7 @@
 */
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
@@ -117,7 +118,7 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Settings")]
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
-        [SerializeField] private float _roomGridCellSize = 13;          // The unit size of the room grid's cell
+        [SerializeField] private float _gridUnitSize = 13;          // The unit size of the room grid's cell
         [SerializeField] private Transform _blueprintRoomContainer;     // Parent transform that contains all the spawned blueprint rooms if debug is on
         [SerializeField] private Transform _roomContainer;              // Parent transform that contains all the spawned rooms
 
@@ -183,7 +184,7 @@ namespace RyansLibrary.Labyrinth
             BlueprintProcedure(_castleArea);
 
             // Check room conditions and generate rooms using the blueprint map of the area
-            RoomGenerationProcedure(_castleArea);
+            // RoomGenerationProcedure(_castleArea);
 
             // TODO: Implement perlin noise height and type Map
 
@@ -219,22 +220,42 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Update current area bounds to the actual size of the map in Unity Units
-            _currentUpperBound = area.UpperBound * _roomGridCellSize;
-            _currentLowerBound = area.LowerBound * _roomGridCellSize;
+            _currentUpperBound = area.UpperBound * _gridUnitSize;
+            _currentLowerBound = area.LowerBound * _gridUnitSize;
 
             // ******* Generate Area Blueprint *******
             // Generate Main Path to boss
             GenerateMainPathBlueprint(area);
 
+            //GenerateMainPathBlueprintOld(area);
+
             // Ganerate Alternative paths
-            GeneratePathBlueprint(area);
+            //GeneratePathBlueprint(area);
+        }
+
+        public void GenerateMainPathBlueprint(Area area)
+        {
+            if (area.MainPath == null)      // Throw error if MainPath for area does not exist
+            {
+                Debug.LogError($"Map Generator Error: The Main Path for area {area.name} is not assigned.");
+                return;
+            }
+
+            // Initialize a new path at starting room if not null
+            int startIndex = MasterPath.BlueprintCount() - 1;               // Start index in master path
+            int endIndex = startIndex + area.MainPath.PathLength;
+            area.MainPath.Initialize(startIndex, endIndex);      // End index in master path
+
+            // TODO: Use Simple Room Placement and Bowyer–Watson Algorithm
+            UniqueRoomPlacement(area);
+            // RandomRoomPlacement(area.MainPath)
         }
 
         /// <summary>
         /// Helper function for generating the main path.
         /// The main path is the path to the area boss and to traversal rooms to other areas
         /// </summary>
-        public void GenerateMainPathBlueprint(Area area)
+        public void GenerateMainPathBlueprintOld(Area area)
         {
             if (area.MainPath == null)      // Throw error if MainPath for area does not exist
             {
@@ -250,6 +271,43 @@ namespace RyansLibrary.Labyrinth
             DrunkardWalk(area.MainPath);
             
             if (_debugAll || _debugBlueprint) Debug.Log($"Map Generator: {area.Name} generated path {area.MainPath.name} with {area.MainPath.BlueprintCount()} rooms.");
+        }
+
+        private void UniqueRoomPlacement(Area area)
+        {
+            // 1.) Spawn Static Rooms
+            foreach (RoomEntry entry in area.UniqueRooms)
+            {
+                if (entry.Type == RoomPlacementType.Static)
+                {
+                    Vector3 worldCoordinates = entry.SpawnPosition * _gridUnitSize;
+                    // Update current area bounds to the actual size of the map in Unity Units
+                    GenerateSpecificRoom(entry.Prefab, worldCoordinates);
+                }
+            }
+
+            // 2.) Spawn Kinematic Rooms
+            foreach (RoomEntry entry in area.UniqueRooms)
+            {
+                if (entry.Type == RoomPlacementType.Kinematic)
+                {
+
+                }
+            }
+
+            // 3.) Spawn Dynamic Rooms
+            foreach (RoomEntry entry in area.UniqueRooms)
+            {
+                if (entry.Type == RoomPlacementType.Dynamic)
+                {
+
+                }
+            }
+        }
+
+        private void RandomRoomPlacement(Path path, int numOfUnitSpaces)
+        {
+            // TODO: random room placement
         }
 
         /// <summary>
@@ -377,27 +435,27 @@ namespace RyansLibrary.Labyrinth
                 {
                     // E0 - E5 is the face count for a unit room, this will be used later for entranceways
                     case 0:
-                        tempPos += Vector3.right * _roomGridCellSize;    // F0 : (1, 0, 0) * Cell Unit Size; Wall Right
+                        tempPos += Vector3.right * _gridUnitSize;    // F0 : (1, 0, 0) * Cell Unit Size; Wall Right
                         entrFlagIdx = 0;
                         break;
                     case 1:
-                        tempPos += Vector3.left * _roomGridCellSize;     // F1 : (-1, 0, 0) * Cell Unit Size; Wall Left
+                        tempPos += Vector3.left * _gridUnitSize;     // F1 : (-1, 0, 0) * Cell Unit Size; Wall Left
                         entrFlagIdx = 1;
                         break;
                     case 2:
-                        tempPos += Vector3.forward * _roomGridCellSize;  // F2 : (0, 0, 1) * Cell Unit Size; Wall Forward
+                        tempPos += Vector3.forward * _gridUnitSize;  // F2 : (0, 0, 1) * Cell Unit Size; Wall Forward
                         entrFlagIdx = 2;
                         break;
                     case 3:
-                        tempPos += Vector3.back * _roomGridCellSize;     // F3 : (0, 0, -1) * Cell Unit Size; Wall Back
+                        tempPos += Vector3.back * _gridUnitSize;     // F3 : (0, 0, -1) * Cell Unit Size; Wall Back
                         entrFlagIdx = 3;
                         break;
                     case 4:
-                        tempPos += Vector3.up * _roomGridCellSize;       // F4 : (0, 1, 0) * Cell Unit Size; Wall Top
+                        tempPos += Vector3.up * _gridUnitSize;       // F4 : (0, 1, 0) * Cell Unit Size; Wall Top
                         entrFlagIdx = 4;
                         break;
                     case 5:
-                        tempPos += Vector3.down * _roomGridCellSize;     // F5 : (0, 1, 0) * Cell Unit Size; Wall Bot
+                        tempPos += Vector3.down * _gridUnitSize;     // F5 : (0, 1, 0) * Cell Unit Size; Wall Bot
                         entrFlagIdx = 5;
                         break;
                     default:
@@ -531,11 +589,11 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Generate Rooms along main path
-            GenerateRooms(area.MainPath);
+            GenerateRoomsOnPath(area.MainPath);
 
             // Generator Rooms along alt. paths
             foreach (Path path in area.Paths)
-                GenerateRooms(path);
+                GenerateRoomsOnPath(path);
         }
 
         //The room case based on the direction of the adjacent/next room.
@@ -549,7 +607,7 @@ namespace RyansLibrary.Labyrinth
             NegY = 5
         }
 
-        private void GenerateRooms(Path path)
+        private void GenerateRoomsOnPath(Path path)
         {
             if (path == null)      // Throw error if MainPath for area does not exist
             {
@@ -667,7 +725,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Returns true of the room with shape roomShape can be spawned, otherwise returns false.
+        /// Helper function; Returns true of the room with shape roomShape can be spawned, otherwise returns false.
         /// it also passes out the potential direction of the room so that rotations can be handled acordingly.
         /// If a room can be spawned the method will mark all rooms that take up the potential room's space.
         /// </summary>
@@ -855,7 +913,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Test all spaces adjacent to the room being tested. If a room exists in that space then set 
+        /// Helper Function Test all spaces adjacent to the room being tested. If a room exists in that space then set 
         /// the return array to the BlueprintRoom Tied to that space.
         /// </summary>
         /// <param name="room">The current blueprint room to check around.</param>
@@ -867,12 +925,12 @@ namespace RyansLibrary.Labyrinth
             BlueprintRoom[] availBlueRooms = new BlueprintRoom[STANDARD_ROOM_FACE_COUNT];
 
             // Get the positions of potential adjacent rooms to the room
-            Vector3 rightRoomPos = room.Position + (Vector3.right * _roomGridCellSize);     // F0: Right
-            Vector3 leftRoomPos = room.Position + (Vector3.left * _roomGridCellSize);       // F1: Left
-            Vector3 fwdRoomPos = room.Position + (Vector3.forward * _roomGridCellSize);     // F2: Forward
-            Vector3 backRoomPos = room.Position + (Vector3.back * _roomGridCellSize);       // F3: Back
-            Vector3 topRoomPos = room.Position + (Vector3.up * _roomGridCellSize);          // F4: Top
-            Vector3 botRoomPos = room.Position + (Vector3.down * _roomGridCellSize);        // F5: Bot
+            Vector3 rightRoomPos = room.Position + (Vector3.right * _gridUnitSize);     // F0: Right
+            Vector3 leftRoomPos = room.Position + (Vector3.left * _gridUnitSize);       // F1: Left
+            Vector3 fwdRoomPos = room.Position + (Vector3.forward * _gridUnitSize);     // F2: Forward
+            Vector3 backRoomPos = room.Position + (Vector3.back * _gridUnitSize);       // F3: Back
+            Vector3 topRoomPos = room.Position + (Vector3.up * _gridUnitSize);          // F4: Top
+            Vector3 botRoomPos = room.Position + (Vector3.down * _gridUnitSize);        // F5: Bot
 
             // Test each position; if the room does not exist the space is null, otherwise it's set to the Blueprint room tied to the position
             MasterDictionary.TryGetValue(rightRoomPos, out availBlueRooms[0]);        // F0: Right
@@ -895,7 +953,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Generate a room based on all information given. Information must be decided beforhand, this function
+        /// Generate a room based on a path and all information given. Information must be decided beforhand, this function
         /// is very dependant!
         /// </summary>
         /// <param name="shape">The shape type of the room</param>
@@ -905,7 +963,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="rDir">The direction code of the room.</param>
         /// <param name="prefabIndex">The prefab index in the room array; set to -1 to spawn a random room.</param>
         /// <returns></returns>
-        private Room GenerateRoom(RoomShape shape, RoomType rType, Path path, BlueprintRoom originRoom, RoomDirection rDir, int prefabIndex = -1)      // prefabIndex = -1 means spawn random room
+        private Room GenerateRoom(RoomShape shape, RoomType rType, Path path, BlueprintRoom originRoom, RoomDirection rDir = 0, int prefabIndex = -1)      // prefabIndex = -1 means spawn random room
         {
             Room generatedRoom = null;
             Quaternion rotation = Quaternion.identity;      // Take the rotation of the room into account
@@ -931,9 +989,9 @@ namespace RyansLibrary.Labyrinth
                     // Generate Big Room based on it's direction
                     if (rDir == RoomDirection.PosX)     // Right, Forward, Left
                     {
-                        BlueprintRoom rightRoom = MasterDictionary[originRoom.Position + (Vector3.right * _roomGridCellSize)];      // _>--
-                        BlueprintRoom fwdRoom = MasterDictionary[rightRoom.Position + (Vector3.forward * _roomGridCellSize)];         // __-^
-                        BlueprintRoom leftRoom = MasterDictionary[fwdRoom.Position + (Vector3.left * _roomGridCellSize)];             // __<-
+                        BlueprintRoom rightRoom = MasterDictionary[originRoom.Position + (Vector3.right * _gridUnitSize)];      // _>--
+                        BlueprintRoom fwdRoom = MasterDictionary[rightRoom.Position + (Vector3.forward * _gridUnitSize)];         // __-^
+                        BlueprintRoom leftRoom = MasterDictionary[fwdRoom.Position + (Vector3.left * _gridUnitSize)];             // __<-
 
                         generatedRoom = Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), originRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
@@ -944,9 +1002,9 @@ namespace RyansLibrary.Labyrinth
                     }
                     else if (rDir == RoomDirection.NegX)        // Left, Forward, Right
                     {
-                        BlueprintRoom leftRoom = MasterDictionary[originRoom.Position + (Vector3.left * _roomGridCellSize)];        // <_--
-                        BlueprintRoom fwdRoom = MasterDictionary[leftRoom.Position + (Vector3.forward * _roomGridCellSize)];          // __^-
-                        BlueprintRoom rightRoom = MasterDictionary[fwdRoom.Position + (Vector3.right * _roomGridCellSize)];           // __->
+                        BlueprintRoom leftRoom = MasterDictionary[originRoom.Position + (Vector3.left * _gridUnitSize)];        // <_--
+                        BlueprintRoom fwdRoom = MasterDictionary[leftRoom.Position + (Vector3.forward * _gridUnitSize)];          // __^-
+                        BlueprintRoom rightRoom = MasterDictionary[fwdRoom.Position + (Vector3.right * _gridUnitSize)];           // __->
                         
                         generatedRoom = Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), leftRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 6 - 11)
@@ -957,9 +1015,9 @@ namespace RyansLibrary.Labyrinth
                     }
                     else if (rDir == RoomDirection.PosZ)        // Right, Back, Left
                     {
-                        BlueprintRoom rightRoom = MasterDictionary[originRoom.Position + (Vector3.right * _roomGridCellSize)];      // __->
-                        BlueprintRoom backRoom = MasterDictionary[rightRoom.Position + (Vector3.back * _roomGridCellSize)];           // _v--
-                        BlueprintRoom leftRoom = MasterDictionary[backRoom.Position + (Vector3.left * _roomGridCellSize)];            // <_--
+                        BlueprintRoom rightRoom = MasterDictionary[originRoom.Position + (Vector3.right * _gridUnitSize)];      // __->
+                        BlueprintRoom backRoom = MasterDictionary[rightRoom.Position + (Vector3.back * _gridUnitSize)];           // _v--
+                        BlueprintRoom leftRoom = MasterDictionary[backRoom.Position + (Vector3.left * _gridUnitSize)];            // <_--
 
                         generatedRoom = Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), leftRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 3, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 18 - 23)
@@ -970,9 +1028,9 @@ namespace RyansLibrary.Labyrinth
                     }
                     else if (rDir == RoomDirection.NegZ)        // Left, Back, Right
                     {
-                        BlueprintRoom leftRoom = MasterDictionary[originRoom.Position + (Vector3.left * _roomGridCellSize)];        // __<-
-                        BlueprintRoom backRoom = MasterDictionary[leftRoom.Position + (Vector3.back * _roomGridCellSize)];            // v_--
-                        BlueprintRoom rightRoom = MasterDictionary[backRoom.Position + (Vector3.right * _roomGridCellSize)];          // _>--
+                        BlueprintRoom leftRoom = MasterDictionary[originRoom.Position + (Vector3.left * _gridUnitSize)];        // __<-
+                        BlueprintRoom backRoom = MasterDictionary[leftRoom.Position + (Vector3.back * _gridUnitSize)];            // v_--
+                        BlueprintRoom rightRoom = MasterDictionary[backRoom.Position + (Vector3.right * _gridUnitSize)];          // _>--
 
                         generatedRoom = Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), backRoom.Position, rotation, _roomContainer).GetComponent<Room>();
                         generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 2, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
@@ -993,7 +1051,7 @@ namespace RyansLibrary.Labyrinth
                     // Generate Tall Room based on it's direction
                     if (rDir == RoomDirection.PosY)
                     {
-                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.up * _roomGridCellSize)];
+                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.up * _gridUnitSize)];
 
                         generatedRoom = Instantiate(ChooseRandomRoomFromWeights(path.rooms1x2x1), originRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
                         generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
@@ -1002,7 +1060,7 @@ namespace RyansLibrary.Labyrinth
                     }
                     else if (rDir == RoomDirection.NegY)
                     {
-                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.down * _roomGridCellSize)];
+                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.down * _gridUnitSize)];
 
                         generatedRoom = Instantiate(ChooseRandomRoomFromWeights(path.rooms1x2x1), nextRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
                         generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 1, eulerRotation);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
@@ -1023,7 +1081,7 @@ namespace RyansLibrary.Labyrinth
                     // Generate Long Room based on it's direction
                     if (rDir == RoomDirection.PosX)
                     {
-                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.right * _roomGridCellSize)];
+                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.right * _gridUnitSize)];
 
                         generatedRoom = Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), originRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
                         generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);                          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
@@ -1032,7 +1090,7 @@ namespace RyansLibrary.Labyrinth
                     }
                     else if (rDir == RoomDirection.NegX)
                     {
-                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.left * _roomGridCellSize)];
+                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.left * _gridUnitSize)];
 
                         generatedRoom = Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), nextRoom.Position, rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
                         generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 1, eulerRotation);       // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
@@ -1041,7 +1099,7 @@ namespace RyansLibrary.Labyrinth
                     }
                     else if (rDir == RoomDirection.PosZ)
                     {
-                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.forward * _roomGridCellSize)];
+                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.forward * _gridUnitSize)];
 
                         rotation.SetFromToRotation(Vector3.right, Vector3.forward);
                         eulerRotation = new Vector3(0, 90, 0);
@@ -1052,7 +1110,7 @@ namespace RyansLibrary.Labyrinth
                     }
                     else if (rDir == RoomDirection.NegZ)
                     {
-                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.back * _roomGridCellSize)];
+                        BlueprintRoom nextRoom = MasterDictionary[originRoom.Position + (Vector3.back * _gridUnitSize)];
 
                         rotation.SetFromToRotation(Vector3.right, Vector3.forward);
                         eulerRotation = new Vector3(0, 90, 0);
@@ -1082,6 +1140,14 @@ namespace RyansLibrary.Labyrinth
                     break;
             }
 
+            return generatedRoom;
+        }
+
+        private Room GenerateSpecificRoom(GameObject prefab, Vector3 placementPosition, RoomDirection rDir = 0)
+        {
+            Quaternion rotation = Quaternion.identity;      // TODO: set rotation
+            Room generatedRoom = Instantiate(prefab, placementPosition, rotation, _roomContainer).GetComponent<Room>();
+            generatedRoom.Initialize(generatedRoom.RoomType);
             return generatedRoom;
         }
         #endregion
@@ -1203,9 +1269,9 @@ namespace RyansLibrary.Labyrinth
                 return;
 
             // Find the centerpoint of the box
-            float xPos = (_currentLowerBound.x + _currentUpperBound.x - _roomGridCellSize) / 2;
-            float yPos = (_currentLowerBound.y + _currentUpperBound.y - _roomGridCellSize) / 2;
-            float zPos = (_currentLowerBound.z + _currentUpperBound.z - _roomGridCellSize) / 2;
+            float xPos = (_currentLowerBound.x + _currentUpperBound.x - _gridUnitSize) / 2;
+            float yPos = (_currentLowerBound.y + _currentUpperBound.y - _gridUnitSize) / 2;
+            float zPos = (_currentLowerBound.z + _currentUpperBound.z - _gridUnitSize) / 2;
             Vector3 centerPoint = new Vector3(xPos, yPos, zPos);
 
             // Find the size of the box

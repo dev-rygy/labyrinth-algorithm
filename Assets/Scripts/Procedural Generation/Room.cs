@@ -38,7 +38,7 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Room Properties")]
         [SerializeField] public RoomShape roomShape;
-        [SerializeField] private RoomType _roomType;     // Just to show in inspector
+        [SerializeField] public RoomType roomType;     // Just to show in inspector
 
         [Header("debug")]
         [SerializeField] private bool debug = false;
@@ -64,7 +64,7 @@ namespace RyansLibrary.Labyrinth
         public void Initialize(RoomType type)
         {
             RoomType = type;
-            _roomType = type;
+            roomType = type;
             AcivateEntranceways();
         }
 

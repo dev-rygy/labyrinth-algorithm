@@ -11,28 +11,29 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    public enum RoomPlacementType
+    {
+        Static,     // Static rooms have a set placement
+        Dynamic,
+        Kinematic
+    }
+
+    // Room entrys for the main path algorithm
+    [System.Serializable]
+    public struct RoomEntry
+    {
+        [SerializeField] public GameObject Prefab;
+        [SerializeField] public RoomPlacementType Type;
+        [Header("Static Room Parameters")]
+        [SerializeField] public Vector3 SpawnPosition;      // For use with static rooms; all other rooms will ignore this
+        [Header("Kinematic Room Parameters")]
+        [SerializeField] public Vector3 UpperBound;         // For use with kinematic rooms; all other rooms will ignore these bounds;
+        [SerializeField] public Vector3 LowerBound;             // Upper and lower bound must be within the range of the area bounds
+    }
+
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Area", order = 1)]
     public class Area : ScriptableObject
     {
-        public enum RoomPlacementType
-        {
-            Static,     // Static rooms have a set placement
-            Dynamic,
-            Kinematic
-        }
-
-        [System.Serializable]
-        public struct RoomEntry
-        {
-            [SerializeField] public GameObject Prefab;
-            [SerializeField] public RoomPlacementType Type;
-            [Header("Static Room Parameters")]
-            [SerializeField] public Vector3 SpawnPosition;      // For use with static rooms; all other rooms will ignore this
-            [Header("Kinematic Room Parameters")]
-            [SerializeField] public Vector3 UpperBound;         // For use with kinematic rooms; all other rooms will ignore these bounds;
-            [SerializeField] public Vector3 LowerBound;             // Upper and lower bound must be within the range of the area bounds
-        }
-
         [field: SerializeField] public string Name { get; private set; }
 
         [field: Header("Bounding Box")]
@@ -44,6 +45,7 @@ namespace RyansLibrary.Labyrinth
         [field: Header("Main Path")]
         [field: SerializeField] public Path MainPath { get; set; }
         [field: SerializeField] public List<RoomEntry> UniqueRooms { get; set; }
+        [field: SerializeField] public int randomRoomsUnitArea;
 
         [field: Header("Alt Paths")]
         [field: SerializeField] public List<Path> Paths { get; set; }
