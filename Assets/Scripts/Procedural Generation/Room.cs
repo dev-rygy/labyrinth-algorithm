@@ -38,12 +38,12 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Room Properties")]
         [SerializeField] public RoomShape roomShape;
-        [SerializeField] private RoomType _roomType;     // Just to show in inspector
+        [SerializeField] public RoomType roomType;     // Just to show in inspector
 
         [Header("debug")]
         [SerializeField] private bool debug = false;
 
-        public Vector3 Position { get; private set; }
+        [field: SerializeField] public Vector3 RoomDimensions { get; private set; } = Vector3.one;
         public RoomType RoomType { get; private set; }
 
         private bool[,] openEntracways;
@@ -64,7 +64,7 @@ namespace RyansLibrary.Labyrinth
         public void Initialize(RoomType type)
         {
             RoomType = type;
-            _roomType = type;
+            roomType = type;
             AcivateEntranceways();
         }
 
@@ -73,7 +73,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="bluePrintArray">The blueprint room's entranceway array (6 possible entrances)</param>
         /// <param name="unitIndex">A specific unit space of the room in question</param>
-        public void CopyBlueprintRoomEntranceFlags(bool[] bluePrintArray, int unitIndex, Vector3 rotation)
+        public void CopyBlueprintEntranceFlags(bool[] bluePrintArray, int unitIndex, Vector3 rotation)
         {
             bluePrintArray = HandleRotation(bluePrintArray, rotation);
 
@@ -107,7 +107,6 @@ namespace RyansLibrary.Labyrinth
                 rotatedArray[4] = bluePrintArray[4];        // Positive Y to Positive X
                 rotatedArray[5] = bluePrintArray[5];        // Negative Y to Negative X
                 if (debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
-
             }
             else
                 Debug.LogError($"Room Error: Room {gameObject.name} has been rotated incorrectly.");

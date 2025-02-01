@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6555cbf84284dd4191d7f41b0e3675c, type: 3}
+  m_Name: Castle
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Castle
+  <LowerBound>k__BackingField: {x: -25, y: -25, z: -25}
+  <UpperBound>k__BackingField: {x: 25, y: 25, z: 25}
+  <MainPath>k__BackingField: {fileID: 11400000, guid: fb14fc246bdba4b499a09456e528a735,
+    type: 2}
+  <UniqueRooms>k__BackingField:
+  - Prefab: {fileID: 3966009581516977950, guid: be4df743c7847a94abbacf9bb81fda39,
+      type: 3}
+    PlacementType: 0
+    SpawnPosition: {x: 0, y: 15, z: 3}
+    UpperBound: {x: 0, y: 0, z: 0}
+    LowerBound: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 3966009581516977950, guid: be4df743c7847a94abbacf9bb81fda39,
+      type: 3}
+    PlacementType: 0
+    SpawnPosition: {x: 0, y: 5, z: 2}
+    UpperBound: {x: 0, y: 0, z: 0}
+    LowerBound: {x: 0, y: 0, z: 0}
+  randomRoomsUnitArea: 0
+  <Paths>k__BackingField:
+  - {fileID: 11400000, guid: 029b5e62ad2693d47a76f7766e520eeb, type: 2}
+  - {fileID: 11400000, guid: d5ebd944b25340345a5e98fce8a46074, type: 2}
+  - {fileID: 11400000, guid: 5475a87e9cb5aae46bf76948f2bdcd84, type: 2}
