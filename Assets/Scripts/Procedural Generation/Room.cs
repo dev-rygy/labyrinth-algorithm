@@ -43,7 +43,7 @@ namespace RyansLibrary.Labyrinth
         [Header("debug")]
         [SerializeField] private bool debug = false;
 
-        public Vector3 Position { get; private set; }
+        [field: SerializeField] public Vector3 RoomDimensions { get; private set; } = Vector3.one;
         public RoomType RoomType { get; private set; }
 
         private bool[,] openEntracways;
@@ -107,7 +107,6 @@ namespace RyansLibrary.Labyrinth
                 rotatedArray[4] = bluePrintArray[4];        // Positive Y to Positive X
                 rotatedArray[5] = bluePrintArray[5];        // Negative Y to Negative X
                 if (debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
-
             }
             else
                 Debug.LogError($"Room Error: Room {gameObject.name} has been rotated incorrectly.");

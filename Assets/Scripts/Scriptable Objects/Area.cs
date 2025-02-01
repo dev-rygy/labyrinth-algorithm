@@ -23,7 +23,7 @@ namespace RyansLibrary.Labyrinth
     public struct RoomEntry
     {
         [SerializeField] public GameObject Prefab;
-        [SerializeField] public RoomPlacementType Type;
+        [SerializeField] public RoomPlacementType PlacementType;
         [Header("Static Room Parameters")]
         [SerializeField] public Vector3 SpawnPosition;      // For use with static rooms; all other rooms will ignore this
         [Header("Kinematic Room Parameters")]

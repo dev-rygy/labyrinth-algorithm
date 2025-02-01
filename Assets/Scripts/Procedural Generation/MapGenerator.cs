@@ -6,7 +6,9 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
@@ -184,7 +186,7 @@ namespace RyansLibrary.Labyrinth
             BlueprintProcedure(_castleArea);
 
             // Check room conditions and generate rooms using the blueprint map of the area
-            // RoomGenerationProcedure(_castleArea);
+            RoomGenerationProcedure(_castleArea);
 
             // TODO: Implement perlin noise height and type Map
 
@@ -224,13 +226,13 @@ namespace RyansLibrary.Labyrinth
             _currentLowerBound = area.LowerBound * _gridUnitSize;
 
             // ******* Generate Area Blueprint *******
-            // Generate Main Path to boss
-            GenerateMainPathBlueprint(area);
+            // Generate Main Path to boss; TODO: Implement
+            // GenerateMainPathBlueprint(area);
 
-            //GenerateMainPathBlueprintOld(area);
+            GenerateMainPathBlueprintOld(area);
 
             // Ganerate Alternative paths
-            //GeneratePathBlueprint(area);
+            GeneratePathBlueprint(area);
         }
 
         public void GenerateMainPathBlueprint(Area area)
@@ -247,7 +249,7 @@ namespace RyansLibrary.Labyrinth
             area.MainPath.Initialize(startIndex, endIndex);      // End index in master path
 
             // TODO: Use Simple Room Placement and Bowyer–Watson Algorithm
-            UniqueRoomPlacement(area);
+            // UniqueRoomPlacement(area);
             // RandomRoomPlacement(area.MainPath)
         }
 
@@ -278,18 +280,20 @@ namespace RyansLibrary.Labyrinth
             // 1.) Spawn Static Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.Type == RoomPlacementType.Static)
+                if (entry.PlacementType == RoomPlacementType.Static)
                 {
                     Vector3 worldCoordinates = entry.SpawnPosition * _gridUnitSize;
                     // Update current area bounds to the actual size of the map in Unity Units
-                    GenerateSpecificRoom(entry.Prefab, worldCoordinates);
+                    Room newRoom = GenerateSpecificRoom(entry.Prefab, worldCoordinates);
+
+                    //ScanAndShift(newRoom, entry.PlacementType);
                 }
             }
 
             // 2.) Spawn Kinematic Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.Type == RoomPlacementType.Kinematic)
+                if (entry.PlacementType == RoomPlacementType.Kinematic)
                 {
 
                 }
@@ -298,7 +302,7 @@ namespace RyansLibrary.Labyrinth
             // 3.) Spawn Dynamic Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.Type == RoomPlacementType.Dynamic)
+                if (entry.PlacementType == RoomPlacementType.Dynamic)
                 {
 
                 }
@@ -308,6 +312,72 @@ namespace RyansLibrary.Labyrinth
         private void RandomRoomPlacement(Path path, int numOfUnitSpaces)
         {
             // TODO: random room placement
+        }
+
+        /// <summary>
+        /// Scan Area for collisions with other rooms and bounds and shift rooms if nessessary
+        /// This function is recursive, it will continue to shift rooms like a domino effect until
+        /// all rooms are in equalibrium.
+        /// </summary>
+        /// <param name="room"></param>
+        /// <param name="type"></param>
+        private void ScanAndShift(Room room, RoomPlacementType type)
+        {
+            BlueprintRoom collidedRoom = null;
+
+            // TODO: if kinematic room then shift from it's own bounds
+            ShiftRoomFromBounds(room);
+
+            if (CheckCollision(room, out collidedRoom))     // Check if the room overlaps another placed room
+            {
+                switch (type)
+                {
+                    case RoomPlacementType.Static:      // If a static room collides with another room while being placed it's an automatic error on the developer's part
+                        Debug.LogWarning("Map Generator Warning: A static room can not be moved, collision detected.");
+                        return;
+                    case RoomPlacementType.Dynamic:
+                        // TODO: Move Room
+                        // ScanAndShift(collidedRoom, collidedRoom.PlacementType);
+                        break;
+                    case RoomPlacementType.Kinematic:
+                        // TODO: Move Room inside bounds
+                        // ScanAndShift(collidedRoom, collidedRoom.PlacementType);
+                        break;
+                    default:
+                        Debug.LogError("Map Generator Error: Room Placement Type is invalid.");
+                        break;
+                }
+            }
+        }
+
+        // THIS METHOD IS WRONG!!!
+        private void ShiftRoomFromBounds(Room room)
+        {
+            Vector3 pl = room.gameObject.transform.position;
+            Vector3 pu = pl + ((room.RoomDimensions - Vector3.one) * _gridUnitSize);
+
+            Vector3 bl = _currentLowerBound;
+            Vector3 bu = _currentUpperBound;
+
+            Vector3 upperDiff = bu - pu;
+            if (upperDiff.x <= 0)
+                upperDiff.x = 0;
+            if (upperDiff.y <= 0)
+                upperDiff.y = 0;
+            if (upperDiff.z <= 0)
+                upperDiff.z = 0;
+
+            Vector3 lowerDiff = bl - pl;
+            if (lowerDiff.x >= 0)
+                lowerDiff.x = 0;
+            if (lowerDiff.y >= 0)
+                lowerDiff.y = 0;
+            if (lowerDiff.z >= 0)
+                lowerDiff.z = 0;
+
+            Vector3 shiftAmt = upperDiff + lowerDiff;
+
+            room.gameObject.transform.position += shiftAmt;
         }
 
         /// <summary>
@@ -478,7 +548,7 @@ namespace RyansLibrary.Labyrinth
                 BlueprintRoom collidedRoom = null;
 
                 // Check position in hash map; if failed then flag face attempt and try choosing a new position 
-                if (MasterDictionary.TryGetValue(tempPos, out collidedRoom))        // *** Test Failed; collision with another blueprintRoom
+                if (CheckCollision(tempPos, out collidedRoom))        // *** Test Failed; collision with another blueprintRoom
                 {
                     attempts[entrFlagIdx] = true;
                     failedAttempts++;
@@ -551,6 +621,50 @@ namespace RyansLibrary.Labyrinth
                 return false;
 
             return true;           // Invalid space
+        }
+
+        /// <summary>
+        /// Check blueprint room for collision with another blueprint room in the Master Dictionary
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="collidedRoom"></param>
+        /// <returns></returns>
+        private bool CheckCollision(Vector3 position, out BlueprintRoom collidedRoom)
+        {
+            return MasterDictionary.TryGetValue(position, out collidedRoom);
+        }
+
+        /// <summary>
+        /// Overloaded CheckCollision() function that will check a room with collision with a blueprint room
+        /// from the Master Dictionary
+        /// </summary>
+        /// <param name="room"></param>
+        /// <param name="collidedRoom"></param>
+        /// <returns></returns>
+        private bool CheckCollision(Room room, out BlueprintRoom collidedRoom)
+        {
+            Vector3 roomPosition = room.gameObject.transform.position;
+            collidedRoom = null;
+
+            // TODO: Add padding to condition (x < room.RoomDimensions.x + roomPadding)
+            for (int x = 0; x < room.RoomDimensions.x; x++)
+            {
+                for (int y = 0; y < room.RoomDimensions.y; y++)
+                {
+                    for (int z = 0; z < room.RoomDimensions.z; z++)
+                    {
+                        Vector3 currentPos = (new Vector3(x, y, z) * _gridUnitSize) + roomPosition;
+                        
+                        if (CheckCollision(currentPos, out collidedRoom))       // The room has collided with another room
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            // The room has not collided with another room 
+            return false;
         }
 
         /// <summary>

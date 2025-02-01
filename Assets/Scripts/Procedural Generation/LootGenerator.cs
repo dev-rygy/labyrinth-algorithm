@@ -13,6 +13,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class LootGenerator : MonoBehaviour
     {
+        [SerializeField] private bool _enabled = true;
+
         [Header("Debug")]
         [SerializeField] private bool debug;
 
@@ -26,6 +28,10 @@ namespace RyansLibrary.Labyrinth
 
         private void SpawnLoot()
         {
+            // Return if the Loot Generator is not enabled
+            if (!_enabled)
+                return;
+
             // Get reference to MasterPath in Map Generator
             _masterPathReference = MapGenerator.Instance?.MasterPath;
 
