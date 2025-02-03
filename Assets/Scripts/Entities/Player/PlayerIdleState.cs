@@ -31,23 +31,23 @@ public class PlayerIdleState : PlayerState
     public override void Enter()
     {   
         // Input Events
-        InputHandler.OnComboPrimary += OnComboPrimary;
-        InputHandler.OnComboSecondary += OnComboSecondary;
-        InputHandler.OnPowerPrimary += OnPoweredPrimary;
-        InputHandler.OnPowerSecondary += OnPoweredSecondary;
-        InputHandler.OnInteract1 += OnInteract1;
+        InputHandler.OnComboPrimary += OnComboPrimary;          // Input: right_shoulder 
+        InputHandler.OnComboSecondary += OnComboSecondary;      // Input: left_shoulder
+        InputHandler.OnPowerPrimary += OnPoweredPrimary;        // Input: right_trigger
+        InputHandler.OnPowerSecondary += OnPoweredSecondary;    // Input: left_trigger
+        InputHandler.OnInteract1 += OnInteract1;                // Input: interact
 
         // Play the Running blend tree animations
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, 0.1f);
 
         // Switch state immediately if holding down combo button
-        if (stateMachine.Input.IsHoldingPrimaryCombo)
+        if (stateMachine.Input.IsHoldingPrimaryCombo)           // Input: right_shoulder
             OnComboPrimary();
-        else if (stateMachine.Input.IsHoldingSecondaryCombo)
+        else if (stateMachine.Input.IsHoldingSecondaryCombo)    // Input: left_shoulder
             OnComboSecondary();
-        else if (stateMachine.Input.IsHoldingPrimaryPower)
+        else if (stateMachine.Input.IsHoldingPrimaryPower)      // Input: right_trigger
             OnPoweredPrimary();
-        else if (stateMachine.Input.IsHoldingSecondaryPower)
+        else if (stateMachine.Input.IsHoldingSecondaryPower)    // Input: left_trigger
             OnPoweredSecondary();
     }
 
@@ -73,7 +73,7 @@ public class PlayerIdleState : PlayerState
         // Falling state if the player is not grounded
         if (!stateMachine.ForceReciever.IsGrounded())
         {
-            stateMachine.SwitchState(new PlayerFallState(stateMachine));
+            stateMachine.TransitionStates(new PlayerFallState(stateMachine));
         }
     }
 
@@ -90,29 +90,29 @@ public class PlayerIdleState : PlayerState
     // Transition Functions
     private void OnComboPrimary()
     {
-        stateMachine.SwitchState(new PlayerComboPrimaryState(stateMachine));
+        stateMachine.TransitionStates(PlayerStates.ComboPrim);
     }
 
     private void OnComboSecondary()
     {
-        stateMachine.SwitchState(new PlayerComboSecondaryState(stateMachine));
+        stateMachine.TransitionStates(PlayerStates.ComboSec);
     }
 
     private void OnPoweredPrimary()
     {
-        stateMachine.SwitchState(new PlayerPowerPrimaryState(stateMachine));
+        stateMachine.TransitionStates(PlayerStates.PowerPrim);
     }
 
     private void OnPoweredSecondary()
     {
-        stateMachine.SwitchState(new PlayerPowerSecondaryState(stateMachine));
+        stateMachine.TransitionStates(PlayerStates.PowerSec);
     }
 
     private void OnInteract1()
     {
         if (stateMachine.CanClimb())
         {
-            stateMachine.SwitchState(new PlayerClimbState(stateMachine));
+            stateMachine.TransitionStates(PlayerStates.Climb);
         }
     }
 }

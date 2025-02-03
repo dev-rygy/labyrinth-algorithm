@@ -30,7 +30,7 @@ public class Buckler : Weapon
 
             if (!stateMachine.Input.IsHoldingSecondaryCombo)
             {
-                stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+                stateMachine.TransitionStates(PlayerStates.Idle);
                 return;
             }
         }
@@ -67,7 +67,7 @@ public class Buckler : Weapon
 
         private void PowerExit()
         {
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            stateMachine.TransitionStates(PlayerStates.Idle);
         }
     }
 

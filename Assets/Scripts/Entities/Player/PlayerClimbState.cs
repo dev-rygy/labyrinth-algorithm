@@ -31,6 +31,8 @@ public class PlayerClimbState : PlayerState
     {
         InputHandler.OnInteract1 += CancelClimb;
 
+        _doneClimbing = false;      // reset flag
+
         // Turn off gravity
         stateMachine.ForceReciever.HasGravity = false;
 
@@ -84,6 +86,6 @@ public class PlayerClimbState : PlayerState
 
     private void CancelClimb()
     {
-        stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+        stateMachine.TransitionStates(PlayerStates.Idle);
     }
 }

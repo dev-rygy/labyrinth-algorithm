@@ -10,12 +10,42 @@ using UnityEngine;
 using RyansLibrary.StateMachine;
 using RyansLibrary.Input;
 
+public enum PlayerStates
+{
+    Idle,
+    ComboPrim,
+    PowerPrim,
+    ComboSec,
+    PowerSec,
+    Charge,
+    Cast,
+    Fall,
+    Climb,
+    Dash,
+    Hit,
+    Death
+}
+
 /// <summary> Player Controls Manager that stores references and data for the different states to use. </summary>
 public class PlayerStateMachine : StateMachine
 {
     public static PlayerStateMachine Instance { get; private set; }
 
-    // TODO: Implement static states to save on memory
+    // Static states to save on memory
+    private PlayerIdleState _idleState;
+    private PlayerComboPrimaryState _comboPrimState;
+    private PlayerPowerPrimaryState _powerPrimState;
+    private PlayerComboSecondaryState _comboSecState;
+    private PlayerPowerSecondaryState _powerSecState;
+    private PlayerClimbState _climbState;
+    private PlayerFallState _fallState;
+    // TODO: Implement the rest of the states below
+    // private static PlayerChargeState _chargeState;
+    // private static PlayerCastState _castState;
+    // private static PlayerDashState _dashState;
+    // private static PlayerHitState _hitState;
+    // private static PlayerDeathState _deathState;
+    
 
     [field: Header("Required References")]
     [field: SerializeField] public Transform PlayerCharacter { get; private set; }
@@ -79,11 +109,75 @@ public class PlayerStateMachine : StateMachine
 
         // Kick off the player's state machine
         // Transition to the first state
-        SwitchState(new PlayerIdleState(this));
+        TransitionStates(new PlayerIdleState(this));
 
         // Equip Weapons
         EquipPrimaryWeapon(PrimaryWeapon);          // Equip the primary weapon that is referenced in the inspector off rip
         EquipSecondaryWeapon(SecondaryWeapon);      // Equip the secondary weapon that is referenced in the inspector off rip
+    }
+
+    /// <summary>
+    /// Overloaded transition function for better readability and better handling of static states
+    /// </summary>
+    /// <param name="state"></param>
+    public void TransitionStates(PlayerStates state)
+    {
+        switch (state)
+        {
+            case PlayerStates.Idle:
+                if (_idleState == null)
+                    _idleState = new PlayerIdleState(this);
+                TransitionStates(_idleState);
+                break;
+            case PlayerStates.ComboPrim:
+                if (_comboPrimState == null)
+                    _comboPrimState = new PlayerComboPrimaryState(this);
+                TransitionStates(_comboPrimState);
+                break;
+            case PlayerStates.PowerPrim:
+                if (_powerPrimState == null)
+                    _powerPrimState = new PlayerPowerPrimaryState(this);
+                TransitionStates(_powerPrimState);
+                break;
+            case PlayerStates.ComboSec:
+                if (_comboSecState == null)
+                    _comboSecState = new PlayerComboSecondaryState(this);
+                TransitionStates(_comboSecState);
+                break;
+            case PlayerStates.PowerSec:
+                if (_powerSecState == null)
+                    _powerSecState = new PlayerPowerSecondaryState(this);
+                TransitionStates(_powerSecState);
+                break;
+            case PlayerStates.Charge:
+                // TODO: Implement
+                break;
+            case PlayerStates.Cast:
+                // TODO: Implement
+                break;
+            case PlayerStates.Fall:
+                if (_fallState == null)
+                    _fallState = new PlayerFallState(this);
+                TransitionStates(_fallState);
+                break;
+            case PlayerStates.Climb:
+                if (_climbState == null)
+                    _climbState = new PlayerClimbState(this);
+                TransitionStates(_climbState);
+                break;
+            case PlayerStates.Dash:
+                // TODO: Implement
+                break;
+            case PlayerStates.Hit:
+                // TODO: Implement
+                break;
+            case PlayerStates.Death:
+                // TODO: Implement
+                break;
+            default:
+                Debug.LogError("Player State Machine Error: State Call " + state + " does not exist.");
+                break;
+        }
     }
 
     /// <summary>

@@ -16,8 +16,8 @@ public class PlayerPowerPrimaryState : PlayerState
     {
         if (stateMachine.PowerAttackPrimary == null)
         {
-            Debug.Log("Power Primary: Ability not assigned.");
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            Debug.LogWarning("Power Primary: Ability not assigned.");
+            stateMachine.TransitionStates(PlayerStates.Idle);
             return;
         }
 

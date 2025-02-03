@@ -19,6 +19,8 @@ public class PlayerFallState : PlayerState
 
     public override void Enter()
     {
+        _isLanding = false;     // reset flag
+
         // Play the Falling animation
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_FALLING_HASH, 0.1f);
     }
@@ -68,6 +70,6 @@ public class PlayerFallState : PlayerState
 
         stateMachine.ForceReciever.EnableGroundCheck = true;
 
-        stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+        stateMachine.TransitionStates(PlayerStates.Idle);
     }
 }

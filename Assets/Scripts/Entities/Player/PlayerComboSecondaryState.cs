@@ -16,8 +16,8 @@ public class PlayerComboSecondaryState : PlayerState
     {
         if (stateMachine.ComboAttackSecondary == null)
         {
-            Debug.Log("Combo Secondary: Ability not assigned.");
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            Debug.LogWarning("Combo Secondary: Ability not assigned.");
+            stateMachine.TransitionStates(PlayerStates.Idle);
             return;
         }
 

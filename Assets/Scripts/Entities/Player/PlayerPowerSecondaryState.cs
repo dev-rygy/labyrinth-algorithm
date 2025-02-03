@@ -16,8 +16,8 @@ public class PlayerPowerSecondaryState : PlayerState
     {
         if (stateMachine.PowerAttackSecondary == null)
         {
-            Debug.Log("Power Secondary: Ability not Assigned.");
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            Debug.LogWarning("Power Secondary: Ability not Assigned.");
+            stateMachine.TransitionStates(PlayerStates.Idle);
             return;
         }
 

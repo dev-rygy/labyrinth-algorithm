@@ -33,16 +33,17 @@ namespace RyansLibrary.StateMachine
         }
 
         /// <summary>
+        /// Transition Function
         /// 1.) Call the Exit method of the prev state
         /// 2.) Switch the state to the new state
         /// 3.) Call the Enter method of the new state
         /// </summary>
-        /// <param name="newState">The state to switch to</param>
-        public void SwitchState(State newState)
+        /// <param name="state">The state to switch to</param>
+        public void TransitionStates(State state)
         {
             _currentState?.Exit();
             if (DebugStateMachine && _currentState != null) Debug.Log("State " + _currentState + " Exited");
-            _currentState = newState;
+            _currentState = state;
             _currentState?.Enter();
             if (DebugStateMachine && _currentState != null) Debug.Log("State " + _currentState + " Entered");
         }

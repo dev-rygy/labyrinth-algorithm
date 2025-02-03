@@ -17,8 +17,8 @@ public class PlayerComboPrimaryState : PlayerState
     {
         if (stateMachine.ComboAttackPrimary == null)
         {
-            Debug.Log("Combo Primary: Ability not assigned.");
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            Debug.LogWarning("Combo Primary: Ability not assigned.");
+            stateMachine.TransitionStates(PlayerStates.Idle);
             return;
         }
 

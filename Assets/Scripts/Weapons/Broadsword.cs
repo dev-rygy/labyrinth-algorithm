@@ -94,7 +94,7 @@ public class Broadsword : Weapon
         private void ComboExit()
         {
             if (!_hasPressedAttack)
-                stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+                stateMachine.TransitionStates(PlayerStates.Idle);
         }
     }
 
@@ -138,7 +138,7 @@ public class Broadsword : Weapon
 
         private void PowerExit()
         {
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            stateMachine.TransitionStates(PlayerStates.Idle);
         }
     }
 
@@ -148,7 +148,7 @@ public class Broadsword : Weapon
 
         public override void Enter()
         {
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            stateMachine.TransitionStates(PlayerStates.Idle);
         }
 
         public override void Tick(float deltaTime)
@@ -168,7 +168,7 @@ public class Broadsword : Weapon
 
         public override void Enter()
         {
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            stateMachine.TransitionStates(PlayerStates.Idle);
         }
 
         public override void Exit()

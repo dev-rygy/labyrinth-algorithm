@@ -88,7 +88,7 @@ public class Unarmed : Weapon
         private void ComboExit()
         {
             if (!_hasPressedAttack)
-                stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+                stateMachine.TransitionStates(PlayerStates.Idle);
         }
     }
 
@@ -131,7 +131,7 @@ public class Unarmed : Weapon
 
         private void PowerExit()
         {
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            stateMachine.TransitionStates(PlayerStates.Idle);
         }
     }
 
@@ -156,7 +156,7 @@ public class Unarmed : Weapon
 
             if (!stateMachine.Input.IsHoldingSecondaryCombo)
             {
-                stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+                stateMachine.TransitionStates(PlayerStates.Idle);
                 return;
             }
         }
@@ -203,7 +203,7 @@ public class Unarmed : Weapon
 
         private void PowerExit()
         {
-            stateMachine.SwitchState(new PlayerIdleState(stateMachine));
+            stateMachine.TransitionStates(PlayerStates.Idle);
         }
     }
 
