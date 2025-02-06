@@ -2,7 +2,8 @@
  * Created By:      Ryan Carpenter
  * Date Created:    02/06/2025
  * Last Modified:   02/06/2025 (Ryan)
- * Notes:           Player Emote State
+ * Notes:           Player Emote State; emote the player on a button press and exit on
+ *                      almost any other condition (damaged, new input)
 */
 using RyansLibrary.Input;
 using System.Collections;
