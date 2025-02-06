@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   01/04/2025 (Ryan)
+ * Last Modified:   02/06/2025 (Ryan)
  * Notes:           Player Idle State
 */
 using System.Collections;
@@ -36,6 +36,7 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnPowerPrimary += OnPoweredPrimary;        // Input: right_trigger
         InputHandler.OnPowerSecondary += OnPoweredSecondary;    // Input: left_trigger
         InputHandler.OnInteract1 += OnInteract1;                // Input: interact
+        InputHandler.OnEmote += OnEmote;                        // Input: emote
 
         // Play the Running blend tree animations
         stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, 0.1f);
@@ -85,6 +86,7 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnPowerPrimary -= OnPoweredPrimary;
         InputHandler.OnPowerSecondary -= OnPoweredSecondary;
         InputHandler.OnInteract1 -= OnInteract1;
+        InputHandler.OnEmote -= OnEmote;
     }
 
     // Transition Functions
@@ -114,5 +116,10 @@ public class PlayerIdleState : PlayerState
         {
             stateMachine.TransitionStates(PlayerStates.Climb);
         }
+    }
+
+    private void OnEmote()
+    {
+        stateMachine.TransitionStates(PlayerStates.Emote);
     }
 }

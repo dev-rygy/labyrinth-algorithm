@@ -23,7 +23,8 @@ public enum PlayerStates
     Climb,
     Dash,
     Hit,
-    Death
+    Death,
+    Emote
 }
 
 /// <summary> Player Controls Manager that stores references and data for the different states to use. </summary>
@@ -45,6 +46,7 @@ public class PlayerStateMachine : StateMachine
     // private static PlayerDashState _dashState;
     // private static PlayerHitState _hitState;
     // private static PlayerDeathState _deathState;
+    private PlayerEmoteState _emoteState;
     
 
     [field: Header("Required References")]
@@ -173,6 +175,11 @@ public class PlayerStateMachine : StateMachine
                 break;
             case PlayerStates.Death:
                 // TODO: Implement
+                break;
+            case PlayerStates.Emote:
+                if (_emoteState == null)
+                    _emoteState = new PlayerEmoteState(this);
+                TransitionStates(_emoteState);
                 break;
             default:
                 Debug.LogError("Player State Machine Error: State Call " + state + " does not exist.");

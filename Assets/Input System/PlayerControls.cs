@@ -134,6 +134,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Emote"",
+                    ""type"": ""Button"",
+                    ""id"": ""6d07178e-830c-4587-afed-129b9dd7d874"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -521,6 +530,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Sheathe"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2d55d891-51f9-435b-bebb-1432293a6ec2"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Emote"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""14528a7b-8ac3-4686-a94a-70b299e71980"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Emote"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -569,6 +600,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_TwoHand = m_Player.FindAction("TwoHand", throwIfNotFound: true);
         m_Player_Sheathe = m_Player.FindAction("Sheathe", throwIfNotFound: true);
+        m_Player_Emote = m_Player.FindAction("Emote", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -647,6 +679,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_TwoHand;
     private readonly InputAction m_Player_Sheathe;
+    private readonly InputAction m_Player_Emote;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -663,6 +696,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @TwoHand => m_Wrapper.m_Player_TwoHand;
         public InputAction @Sheathe => m_Wrapper.m_Player_Sheathe;
+        public InputAction @Emote => m_Wrapper.m_Player_Emote;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -708,6 +742,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sheathe.started += instance.OnSheathe;
             @Sheathe.performed += instance.OnSheathe;
             @Sheathe.canceled += instance.OnSheathe;
+            @Emote.started += instance.OnEmote;
+            @Emote.performed += instance.OnEmote;
+            @Emote.canceled += instance.OnEmote;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -748,6 +785,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sheathe.started -= instance.OnSheathe;
             @Sheathe.performed -= instance.OnSheathe;
             @Sheathe.canceled -= instance.OnSheathe;
+            @Emote.started -= instance.OnEmote;
+            @Emote.performed -= instance.OnEmote;
+            @Emote.canceled -= instance.OnEmote;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -797,5 +837,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnDash(InputAction.CallbackContext context);
         void OnTwoHand(InputAction.CallbackContext context);
         void OnSheathe(InputAction.CallbackContext context);
+        void OnEmote(InputAction.CallbackContext context);
     }
 }
