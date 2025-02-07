@@ -22,8 +22,10 @@ public class PlayerIdleState : PlayerState
     private readonly int ANIM_IDLE_BLEND_TREE_HASH = Animator.StringToHash("Idle Blend Tree");
     private readonly int ANIM_IDLE_SPEED_HASH = Animator.StringToHash("IdleSpeed");
 
-    // Time to transition between animtions
+    // Blend tree damp time
     private const float ANIMATOR_DAMP_TIME = 0.1f;
+    // Time to transition between animations
+    private const float ANIMATOR_CROSSFADE_DURATION = 0.1f;
 
     // Constuctor
     public PlayerIdleState(PlayerStateMachine stateMachine) : base(stateMachine) { }
@@ -39,7 +41,7 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnEmote += OnEmote;                        // Input: emote
 
         // Play the Running blend tree animations
-        stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, 0.1f);
+        stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, ANIMATOR_CROSSFADE_DURATION);
 
         // Switch state immediately if holding down combo button
         if (stateMachine.Input.IsHoldingPrimaryCombo)           // Input: right_shoulder
@@ -74,7 +76,7 @@ public class PlayerIdleState : PlayerState
         // Falling state if the player is not grounded
         if (!stateMachine.ForceReciever.IsGrounded())
         {
-            stateMachine.TransitionStates(new PlayerFallState(stateMachine));
+            stateMachine.TransitionStates(PlayerStates.Fall);
         }
     }
 

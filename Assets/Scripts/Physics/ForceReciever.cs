@@ -20,15 +20,17 @@ public class ForceReciever : MonoBehaviour
     [field: Header("Falling and Grounded")]
     [field: SerializeField] public float GravityMultiplier { get; private set; } = -9.81f;
     [field: SerializeField] public float StaticVerticalVelocity { get; private set; } = -2f;
+    [SerializeField] private float _terminalVelocity = -50f;       // Highest velocity the player can reach
     [field: SerializeField] public bool HasGravity { get; set; } = true;
-    [field: SerializeField] public bool EnableGroundCheck = true;
 
+    [field: Header("Grounded Check")]
+    [field: SerializeField] public bool EnableGroundCheck = true;
     [SerializeField] private float _groundRayFanAngleX = 45;
     [SerializeField] private float _groundRayCount = 5;
     [SerializeField] private float _groundFanCheckDistance = 0.1f;
     [SerializeField] private float _groundDownCheckDistance = 0.025f;
-    [SerializeField] private float _terminalVelocity = -50f;       // Highest velocity the player can reach
 
+    [field: Header("Debugging")]
     [SerializeField] private bool _debug;
     [SerializeField] private bool _log = false;
 

@@ -27,7 +27,7 @@ public enum PlayerStates
     Fall,
     Climb,
     Dash,
-    Hit,
+    Impact,
     Death,
     Emote
 }
@@ -35,6 +35,7 @@ public enum PlayerStates
 /// <summary> Player Controls Manager that stores references and data for the different states to use. </summary>
 public class PlayerStateMachine : StateMachine
 {
+    #region Variables
     public static PlayerStateMachine Instance { get; private set; }     // WARNING: This singleton may need to be removed later for networking reasons with multiple players
 
     // Static states to save on memory
@@ -49,8 +50,6 @@ public class PlayerStateMachine : StateMachine
     // private static PlayerChargeState _chargeState;
     // private static PlayerCastState _castState;
     // private static PlayerDashState _dashState;
-    // private static PlayerHitState _hitState;
-    // private static PlayerDeathState _deathState;
     private PlayerEmoteState _emoteState;
     
 
@@ -92,15 +91,18 @@ public class PlayerStateMachine : StateMachine
     public InputHandler Input { get; private set; } // reference to the input handler
     public CharacterController Controller { get; private set; } // reference to the player's controller
     public Animator Animator { get; private set; }  // reference to the player's animator
-    public AnimationTimestamps AnimationTimestamps { get; private set; }
-    public ForceReciever ForceReciever { get; private set; }
+    public AnimationTimestamps AnimationTimestamps { get; private set; }        // reference to player animator events
+    public ForceReciever ForceReciever { get; private set; }        // reference to player physics
+    public EntityHealth Health { get; private set; }        // Reference to player health
 
     // Player Abilities Assigned In Code
     public Ability ComboAttackPrimary { get; private set; }
     public Ability ComboAttackSecondary { get; private set; }
     public Ability PowerAttackPrimary { get; private set; }
     public Ability PowerAttackSecondary { get; private set; }
+    #endregion
 
+    #region Mono
     private void Awake()
     {
         // Handle singleton
@@ -129,6 +131,7 @@ public class PlayerStateMachine : StateMachine
         Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
         AnimationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
         ForceReciever = GetComponent<ForceReciever>();              // The player must have a force reciever to interact with gravity
+        Health = GetComponent<EntityHealth>();                      // Player's health behavior is shared with all entities
 
         // Kick off the player's state machine
         // Transition to the first state
@@ -139,6 +142,22 @@ public class PlayerStateMachine : StateMachine
         EquipSecondaryWeapon(SecondaryWeapon);  
     }
 
+    private void OnEnable()
+    {
+        // Subscribe to State Events
+        Health.OnTakeDamage += HandleTakeDamage;
+        Health.OnDeath += HandleDeath;
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe to State Events
+        Health.OnTakeDamage -= HandleTakeDamage;
+        Health.OnDeath -= HandleDeath;
+    }
+    #endregion
+
+    #region State Machine Helpers
     /// <summary>
     /// Overloaded transition function for better readability and better handling of static states.
     /// </summary>
@@ -191,11 +210,11 @@ public class PlayerStateMachine : StateMachine
             case PlayerStates.Dash:
                 // TODO: Implement
                 break;
-            case PlayerStates.Hit:
-                // TODO: Implement
+            case PlayerStates.Impact:
+                TransitionStates(new PlayerImpactState(this));
                 break;
             case PlayerStates.Death:
-                // TODO: Implement
+                TransitionStates(new PlayerDeathState(this));
                 break;
             case PlayerStates.Emote:
                 if (_emoteState == null)
@@ -208,6 +227,60 @@ public class PlayerStateMachine : StateMachine
         }
     }
 
+    // Subscriber function to switch to impact state whenever the player get's hit
+    private void HandleTakeDamage()
+    {
+        TransitionStates(PlayerStates.Impact);
+    }
+
+    // Subscriber function to switch to death state when the player's health reaches 0
+    private void HandleDeath()
+    {
+        TransitionStates(PlayerStates.Death);
+    }
+    #endregion
+
+    #region Movement
+    /// <summary> Move the player controller in any which way please. Also apply gravity. </summary>
+    /// <param name="motion">Motion vector</param>
+    /// <param name="deltaTime">Time per frame</param>
+    public void Move(Vector3 motion, float deltaTime)
+    {
+        // Handle Movement
+        Controller.Move((motion + ForceReciever.Movement) * deltaTime);
+    }
+
+    public bool CanClimb()
+    {
+        Vector3 rayOrigin = transform.position + Vector3.up * ClimbTriggerOffset;
+        Vector3 moveDirection = PlayerCharacter.transform.forward;
+
+        if (DebugStateMachine) Debug.DrawRay(rayOrigin, moveDirection, Color.green);
+
+        // If the raycast does not hit an object with a collider; can not climb
+        if (!Physics.Raycast(rayOrigin, moveDirection, out RaycastHit raycastHit, ClimbInteractDistance))
+            return false;
+
+        // If the player is not facing towards the object; can not climb
+        if ((Vector3.Dot(PlayerCharacter.transform.forward, raycastHit.transform.forward)) < _climbInteractionAngle)
+            return false;
+
+        // If the player is facing an object of type "Climbable"; can climb
+        return raycastHit.transform.gameObject.CompareTag("Climbable");
+    }
+
+    /// <summary> Face the player character towards the direction they are moving </summary>
+    /// <param name="direction">The direction the player must face; Best if it is a normalized vector.</param>
+    /// <param name="deltaTime">Time per frame</param>
+    public void ApplyCharacterRotation(Vector3 direction, float deltaTime)
+    {
+        // have the player character look in the direction of movement
+        // Quaternion.Lerp() changes between two quaternion values based on a delta time
+        PlayerCharacter.rotation = Quaternion.Lerp(PlayerCharacter.rotation, Quaternion.LookRotation(direction), deltaTime * MoveRotationDampValue);
+    }
+    #endregion
+
+    #region Equippables
     /// <summary>
     /// Equips the abilities of the weapon that is passed into the function.
     /// If the weapon does not fill a ability space then the space will be null
@@ -271,7 +344,7 @@ public class PlayerStateMachine : StateMachine
     /// <param name="type">Ability slot</param>
     public void SetAbility(Ability ability, AbilityType type)
     {
-        switch(type)
+        switch (type)
         {
             case AbilityType.ComboAttackPrimary:
                 ComboAttackPrimary = ability;
@@ -292,44 +365,6 @@ public class PlayerStateMachine : StateMachine
             default:
                 return;
         }
-    }
-
-    /// <summary> Move the player controller in any which way please. Also apply gravity. </summary>
-    /// <param name="motion">Motion vector</param>
-    /// <param name="deltaTime">Time per frame</param>
-    public void Move(Vector3 motion, float deltaTime)
-    {
-        // Handle Movement
-        Controller.Move((motion + ForceReciever.Movement) * deltaTime);
-    }
-
-    public bool CanClimb()
-    {
-        Vector3 rayOrigin = transform.position + Vector3.up * ClimbTriggerOffset;
-        Vector3 moveDirection = PlayerCharacter.transform.forward;
-
-        if (DebugStateMachine) Debug.DrawRay(rayOrigin, moveDirection, Color.green);
-
-        // If the raycast does not hit an object with a collider; can not climb
-        if (!Physics.Raycast(rayOrigin, moveDirection, out RaycastHit raycastHit, ClimbInteractDistance))
-            return false;
-
-        // If the player is not facing towards the object; can not climb
-        if ((Vector3.Dot(PlayerCharacter.transform.forward, raycastHit.transform.forward)) < _climbInteractionAngle)
-            return false;
-
-        // If the player is facing an object of type "Climbable"; can climb
-        return raycastHit.transform.gameObject.CompareTag("Climbable");
-    }
-
-    /// <summary> Face the player character towards the direction they are moving </summary>
-    /// <param name="direction">The direction the player must face; Best if it is a normalized vector.</param>
-    /// <param name="deltaTime">Time per frame</param>
-    public void ApplyCharacterRotation(Vector3 direction, float deltaTime)
-    {
-        // have the player character look in the direction of movement
-        // Quaternion.Lerp() changes between two quaternion values based on a delta time
-        PlayerCharacter.rotation = Quaternion.Lerp(PlayerCharacter.rotation, Quaternion.LookRotation(direction), deltaTime * MoveRotationDampValue);
     }
 
     public void SheatheWeapons()        // Swap the attach points of the weapons to the sheathe points
@@ -371,11 +406,12 @@ public class PlayerStateMachine : StateMachine
     /// <param name="attachpoint"></param>
     private void AttachObject(GameObject obj, Transform attachpoint)
     {
-        if (obj == null) 
+        if (obj == null)
             return;
 
         obj.transform.parent = attachpoint.transform;
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localRotation = Quaternion.identity;
     }
+    #endregion
 }
