@@ -47,6 +47,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <WeaponColliderObject>k__BackingField: {fileID: 5796867988603755137}
+  _primaryComboAttackForce: 3
+  _primaryPowerAttackForce: 5
+  _primaryComboCooldown: 0.5
+  _secondaryComboCooldown: 1
+  _primaryPowerCooldown: 5
+  _secondaryPowerCooldown: 1
 --- !u!1 &5796867988603755137
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using RyansLibrary.Input;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Buckler : Weapon
@@ -9,13 +10,19 @@ public class Buckler : Weapon
     private readonly int ANIM_COMBO_SEC_HASH = Animator.StringToHash("Shield Block");
     private readonly int ANIM_POWER_SEC_HASH = Animator.StringToHash("Shield Bash");
 
+    [Header("Cooldowns")]
+    [SerializeField] private float _secondaryComboCooldown = 1f;
+    [SerializeField] private float _secondaryPowerCooldown = 1f;
+
     private class BucklerComboAttackSecondary : Ability
     {
         private int animHash;
+        private float cooldown;
 
-        public BucklerComboAttackSecondary(PlayerStateMachine stateMachine, int animHash) : base(stateMachine) 
+        public BucklerComboAttackSecondary(PlayerStateMachine stateMachine, int animHash, float cooldown) : base(stateMachine) 
         {
             this.animHash = animHash;
+            this.cooldown = cooldown;   
         }
 
         public override void Enter()
@@ -26,8 +33,10 @@ public class Buckler : Weapon
 
         public override void Tick(float deltaTime)
         {
-            stateMachine.Move(Vector3.zero, deltaTime);
+            // Apply ambient forces
+            stateMachine.ApplyAmbientForces(deltaTime);
 
+            // While holding the primary combo button down stay in blocking state
             if (!stateMachine.Input.IsHoldingSecondaryCombo)
             {
                 stateMachine.TransitionStates(PlayerStates.Idle);
@@ -35,16 +44,22 @@ public class Buckler : Weapon
             }
         }
 
-        public override void Exit() { }
+        public override void Exit() 
+        {
+            // Begin Cooldown
+            StartCooldown(cooldown);
+        }
     }
 
     private class BucklerPowerAttackSecondary : Ability
     {
         private int animHash;
+        private float cooldown;
 
-        public BucklerPowerAttackSecondary(PlayerStateMachine stateMachine, int animHash) : base(stateMachine) 
+        public BucklerPowerAttackSecondary(PlayerStateMachine stateMachine, int animHash, float cooldown) : base(stateMachine) 
         {
             this.animHash = animHash;
+            this.cooldown = cooldown;
         }
 
         public override void Enter()
@@ -57,11 +72,15 @@ public class Buckler : Weapon
 
         public override void Tick(float deltaTime)
         {
-            stateMachine.Move(Vector3.zero, deltaTime);
+            // Apply ambient forces
+            stateMachine.ApplyAmbientForces(deltaTime);
         }
 
         public override void Exit()
         {
+            // Begin Cooldown
+            StartCooldown(cooldown);
+
             stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
         }
 
@@ -82,9 +101,9 @@ public class Buckler : Weapon
         switch (type)
         {
             case AbilityType.ComboAttackSecondary:
-                return new BucklerComboAttackSecondary(stateMachine, ANIM_COMBO_SEC_HASH);
+                return new BucklerComboAttackSecondary(stateMachine, ANIM_COMBO_SEC_HASH, _secondaryComboCooldown);
             case AbilityType.PowerAttackSecondary:
-                return new BucklerPowerAttackSecondary(stateMachine, ANIM_POWER_SEC_HASH);
+                return new BucklerPowerAttackSecondary(stateMachine, ANIM_POWER_SEC_HASH, _secondaryPowerCooldown);
             default:
                 return null;
         }

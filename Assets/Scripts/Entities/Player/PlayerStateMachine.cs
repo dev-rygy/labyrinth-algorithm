@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   02/06/2025 (Ryan)
+ * Last Modified:   02/11/2025 (Ryan)
  * Notes:           Finite State Machine for the Player
  *                  1.) States = { Idle, ComboPrimary, PowerPrimary, ComboSecondary, PowerSecondary, Charge, Cast, Fall, Land, Climb, Dash, DashAttack, Hit, Death, Emote}
  *                  2.) Alphabet = { button_south, button_east, button_west, button_north, left_stick, right_stick, right_shoulder, left_shoulder, right_trigger, 
@@ -110,6 +110,14 @@ public class PlayerStateMachine : StateMachine
             Destroy(gameObject);
         else
             Instance = this;
+
+        // Assign references on object
+        Input = InputHandler.Instance;                              // An input handler must be in the player's scene
+        Controller = GetComponent<CharacterController>();           // The player must have a character controller
+        Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
+        AnimationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
+        ForceReciever = GetComponent<ForceReciever>();              // The player must have a force reciever to interact with gravity
+        Health = GetComponent<EntityHealth>();                      // Player's health behavior is shared with all entities
     }
 
     void Start()
@@ -125,14 +133,6 @@ public class PlayerStateMachine : StateMachine
             Debug.LogError("Player State Machine Error: Unarmed Weapon is missing.");
         }
 
-        // Assign references on object
-        Input = InputHandler.Instance;                              // An input handler must be in the player's scene
-        Controller = GetComponent<CharacterController>();           // The player must have a character controller
-        Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
-        AnimationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
-        ForceReciever = GetComponent<ForceReciever>();              // The player must have a force reciever to interact with gravity
-        Health = GetComponent<EntityHealth>();                      // Player's health behavior is shared with all entities
-
         // Kick off the player's state machine
         // Transition to the first state
         TransitionStates(PlayerStates.Idle);
@@ -144,6 +144,12 @@ public class PlayerStateMachine : StateMachine
 
     private void OnEnable()
     {
+        if (Health == null)
+        {
+            Debug.LogError("Player State Machine Error: Player's health was null.");
+            return;
+        }
+
         // Subscribe to State Events
         Health.OnTakeDamage += HandleTakeDamage;
         Health.OnDeath += HandleDeath;
@@ -151,6 +157,9 @@ public class PlayerStateMachine : StateMachine
 
     private void OnDisable()
     {
+        if (Health == null)
+            return;
+
         // Unsubscribe to State Events
         Health.OnTakeDamage -= HandleTakeDamage;
         Health.OnDeath -= HandleDeath;
@@ -248,6 +257,15 @@ public class PlayerStateMachine : StateMachine
     {
         // Handle Movement
         Controller.Move((motion + ForceReciever.Movement) * deltaTime);
+    }
+
+    /// <summary>
+    /// Applies gravity and other forces that surround the player without giving them movement
+    /// </summary>
+    /// <param name="deltaTime">Time per frame</param>
+    public void ApplyAmbientForces(float deltaTime)
+    {
+        Move(Vector3.zero, deltaTime);
     }
 
     public bool CanClimb()

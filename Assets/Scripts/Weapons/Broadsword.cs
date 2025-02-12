@@ -9,11 +9,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using RyansLibrary.StateMachine;
 using RyansLibrary.Input;
+using Unity.VisualScripting;
 
 public class Broadsword : Weapon
 {
+    [Header("Knockbacks")]
     [SerializeField] private float _primaryComboAttackForce = 3f;
     [SerializeField] private float _primaryPowerAttackForce = 5f;
+
+    [Header("Cooldowns")]
+    [SerializeField] private float _primaryComboCooldown = 1f;
+    [SerializeField] private float _secondaryComboCooldown = 1f;
+    [SerializeField] private float _primaryPowerCooldown = 1f;
+    [SerializeField] private float _secondaryPowerCooldown = 1f;
 
     // Animator Hash Codes
     private readonly int ANIM_COMBO_PRIM_HASH = Animator.StringToHash("Sword Combo Primary");
@@ -25,14 +33,16 @@ public class Broadsword : Weapon
     {
         private int animHash;
         private float attackForce;
+        private float cooldown;
 
         private bool _hasPressedAttack;
         private bool _canContinue;
 
-        public BroadswordComboAttackPrimary(PlayerStateMachine stateMachine, int animHash, float attackForce) : base(stateMachine) 
+        public BroadswordComboAttackPrimary(PlayerStateMachine stateMachine, int animHash, float attackForce, float cooldown) : base(stateMachine) 
         {
             this.attackForce = attackForce;
             this.animHash = animHash;
+            this.cooldown = cooldown;
         }
 
         public override void Enter()
@@ -54,11 +64,15 @@ public class Broadsword : Weapon
 
         public override void Tick(float deltaTime) 
         {
-            stateMachine.Move(Vector3.zero, deltaTime);
+            // Apply ambient forces
+            stateMachine.ApplyAmbientForces(deltaTime);
         }
 
         public override void Exit()
         {
+            // Begin Cooldown
+            StartCooldown(cooldown);
+
             // Input Events
             InputHandler.OnComboPrimary -= OnComboPrimary;
 
@@ -102,11 +116,13 @@ public class Broadsword : Weapon
     {
         private int animHash;
         private float attackForce;
+        private float cooldown;
 
-        public BroadswordPowerAttackPrimary(PlayerStateMachine stateMachine, int animHash, float attackForce) : base(stateMachine) 
+        public BroadswordPowerAttackPrimary(PlayerStateMachine stateMachine, int animHash, float attackForce, float cooldown) : base(stateMachine) 
         {
             this.attackForce = attackForce;
             this.animHash = animHash;
+            this.cooldown = cooldown;
         }
 
         public override void Enter()
@@ -125,11 +141,15 @@ public class Broadsword : Weapon
 
         public override void Tick(float deltaTime)
         {
-            stateMachine.Move(Vector3.zero, deltaTime);
+            // Apply ambient forces
+            stateMachine.ApplyAmbientForces(deltaTime);
         }
 
         public override void Exit()
         {
+            // Begin Cooldown
+            StartCooldown(cooldown);
+
             stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
 
             stateMachine.AnimationTimestamps.OnComboPrimColliderEnable -= stateMachine.PrimaryWeapon.EnableWeaponCollider;
@@ -193,9 +213,9 @@ public class Broadsword : Weapon
         switch (type)
         {
             case AbilityType.ComboAttackPrimary:
-                return new BroadswordComboAttackPrimary(stateMachine, ANIM_COMBO_PRIM_HASH, _primaryComboAttackForce);
+                return new BroadswordComboAttackPrimary(stateMachine, ANIM_COMBO_PRIM_HASH, _primaryComboAttackForce, _primaryComboCooldown);
             case AbilityType.PowerAttackPrimary:
-                return new BroadswordPowerAttackPrimary(stateMachine, ANIM_POWER_PRIM_HASH, _primaryPowerAttackForce);
+                return new BroadswordPowerAttackPrimary(stateMachine, ANIM_POWER_PRIM_HASH, _primaryPowerAttackForce, _primaryPowerCooldown);
             case AbilityType.ComboAttackSecondary:
                 return new BroadswordComboAttackSecondary(stateMachine);
             case AbilityType.PowerAttackSecondary:

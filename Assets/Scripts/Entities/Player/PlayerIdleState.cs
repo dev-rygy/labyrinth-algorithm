@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   02/06/2025 (Ryan)
+ * Last Modified:   02/11/2025 (Ryan)
  * Notes:           Player Idle State
 */
 using System.Collections;
@@ -94,21 +94,49 @@ public class PlayerIdleState : PlayerState
     // Transition Functions
     private void OnComboPrimary()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.ComboAttackPrimary.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Primary Combo Attack on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.ComboPrim);
     }
 
     private void OnComboSecondary()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.ComboAttackSecondary.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Secondary Combo Attack on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.ComboSec);
     }
 
     private void OnPoweredPrimary()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.PowerAttackPrimary.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Primary Power Attack on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.PowerPrim);
     }
 
     private void OnPoweredSecondary()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.PowerAttackSecondary.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Secondary Power Attack on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.PowerSec);
     }
 
