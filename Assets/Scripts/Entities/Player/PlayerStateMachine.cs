@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   02/11/2025 (Ryan)
+ * Last Modified:   02/12/2025 (Ryan)
  * Notes:           Finite State Machine for the Player
  *                  1.) States = { Idle, ComboPrimary, PowerPrimary, ComboSecondary, PowerSecondary, Charge, Cast, Fall, Land, Climb, Dash, DashAttack, Hit, Death, Emote}
  *                  2.) Alphabet = { button_south, button_east, button_west, button_north, left_stick, right_stick, right_shoulder, left_shoulder, right_trigger, 
@@ -56,6 +56,7 @@ public class PlayerStateMachine : StateMachine
     [field: Header("Required References")]
     [field: SerializeField] public Transform PlayerCharacter { get; private set; }      // The player model with the bones
     [field: SerializeField] public Weapon UnarmedWeapon { get; private set; }       // The abilities the player will have when they do not have a weapon equipped 
+    [field: SerializeField] public AbilityUI AbilityUI { get; private set; }        // TODO: remove this reference, this is BAD practice!
 
     [field: Header("Movement")]
     [field: Tooltip("Default speed of the player.")]
@@ -357,7 +358,7 @@ public class PlayerStateMachine : StateMachine
         SetAbility(ability, AbilityType.PowerAttackSecondary);
     }
 
-    /// <summary> Sets up an ability and assigns it to a slot. </summary>
+    /// <summary> Sets up an ability and assigns it to a slot.</summary>
     /// <param name="ability">Ability reference</param>
     /// <param name="type">Ability slot</param>
     public void SetAbility(Ability ability, AbilityType type)
@@ -366,18 +367,22 @@ public class PlayerStateMachine : StateMachine
         {
             case AbilityType.ComboAttackPrimary:
                 ComboAttackPrimary = ability;
+                AbilityUI.AssignPrimaryComboAbility(ability);
                 if (DebugStateMachine) Debug.Log("Combo Attack Primary set to " + ability);
                 break;
             case AbilityType.ComboAttackSecondary:
                 ComboAttackSecondary = ability;
+                AbilityUI.AssignSecondaryComboAbility(ability);
                 if (DebugStateMachine) Debug.Log("Combo Attack Secondary set to " + ability);
                 break;
             case AbilityType.PowerAttackPrimary:
                 PowerAttackPrimary = ability;
+                AbilityUI.AssignPrimaryPowerAbility(ability);
                 if (DebugStateMachine) Debug.Log("Power Attack Primary set to " + ability);
                 break;
             case AbilityType.PowerAttackSecondary:
                 PowerAttackSecondary = ability;
+                AbilityUI.AssignSecondaryPowerAbility(ability);
                 if (DebugStateMachine) Debug.Log("Power Attack Secondary set to " + ability);
                 break;
             default:

@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RyansLibrary.StateMachine;
+using System;
 
 public enum AbilityType
 {
@@ -26,6 +27,9 @@ public enum AbilityType
 
 public abstract class Ability : IAbility
 {
+    // Event for UI
+    public event Action<float, float> OnAbilityCooldown;
+
     protected PlayerStateMachine stateMachine;
 
     public bool OnCooldown { get; private set; } = false;
@@ -63,8 +67,12 @@ public abstract class Ability : IAbility
         {
             timeLeft -= Time.deltaTime;
 
+            OnAbilityCooldown?.Invoke(timeLeft, cooldownTime);
+
             yield return null;
         }
+
+        OnAbilityCooldown?.Invoke(0, cooldownTime);       // Invoke one last time at 0 to ensure 0 was reached
 
         OnCooldown = false;
     }
