@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/07/2025
- * Last Modified:   02/11/2025
+ * Last Modified:   02/11/2025 (Ryan)
  * Notes:           Every active ability is required to inherit this
  *                      parent class in order to inherent the interface
 */

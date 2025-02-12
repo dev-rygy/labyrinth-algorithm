@@ -1,3 +1,9 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    01/07/2025
+ * Last Modified:   02/11/2025 (Ryan)
+ * Notes:           Bucker stats and abilities
+*/
 using RyansLibrary.Input;
 using System.Collections;
 using System.Collections.Generic;
