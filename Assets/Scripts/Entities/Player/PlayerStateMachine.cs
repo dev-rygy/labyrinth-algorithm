@@ -113,7 +113,6 @@ public class PlayerStateMachine : StateMachine
             Instance = this;
 
         // Assign references on object
-        Input = InputHandler.Instance;                              // An input handler must be in the player's scene
         Controller = GetComponent<CharacterController>();           // The player must have a character controller
         Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
         AnimationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
@@ -133,6 +132,9 @@ public class PlayerStateMachine : StateMachine
         {
             Debug.LogError("Player State Machine Error: Unarmed Weapon is missing.");
         }
+
+        // Input Singleton
+        Input = InputHandler.Instance;                              // An input handler must be in the player's scene
 
         // Kick off the player's state machine
         // Transition to the first state
