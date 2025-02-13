@@ -98,7 +98,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85dc6818b71293942bfc7bb789e562de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Type>k__BackingField: 0
   <WeaponColliderObject>k__BackingField: {fileID: 323110394847867578}
+  primaryComboAbility: {fileID: 11400000, guid: c87052bb51962df4b85dd2f213e8cc80,
+    type: 2}
+  primaryPowerAbility: {fileID: 11400000, guid: 23dea615fc067e947b8708b9638575af,
+    type: 2}
+  secondaryComboAbility: {fileID: 11400000, guid: dfa3c3efcbbf4dc4486aadafd13cbbd6,
+    type: 2}
+  secondaryPowerAbility: {fileID: 11400000, guid: e052cd93790bb6c4081ebbc8a77ddeef,
+    type: 2}
   _primaryComboAttackForce: 3
   _primaryPowerAttackForce: 5
   _secondaryComboAttackForce: 3

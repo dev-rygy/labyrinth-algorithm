@@ -5,6 +5,7 @@
  * Notes:           Every active ability is required to inherit this
  *                      parent class in order to inherent the interface
 */
+using RyansLibrary.Abilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,34 @@ public abstract class Weapon : MonoBehaviour
 {
     [field: SerializeField] public WeaponType Type { get; private set; }
     [field: SerializeField] public GameObject WeaponColliderObject { get; private set; }
+
+    [field: SerializeField] protected AbilityData primaryComboAbility;
+    [field: SerializeField] protected AbilityData primaryPowerAbility;
+    [field: SerializeField] protected AbilityData secondaryComboAbility;
+    [field: SerializeField] protected AbilityData secondaryPowerAbility;
+
+    /// <summary>
+    /// Equip an ability from the weapon. If the ability does not exist then return null to
+    /// tell the system no ability exists.
+    /// </summary>
+    /// <param name="type">The ability key/category</param>
+    /// <returns>A new instance of the ability</returns>
+    public Ability GetAbility(AbilityType type)
+    {
+        switch (type)
+        {
+            case AbilityType.ComboAttackPrimary:
+                return AbilityFactory.Instance.GetAbility(primaryComboAbility);
+            case AbilityType.PowerAttackPrimary:
+                return AbilityFactory.Instance.GetAbility(primaryPowerAbility);
+            case AbilityType.ComboAttackSecondary:
+                return AbilityFactory.Instance.GetAbility(secondaryComboAbility);
+            case AbilityType.PowerAttackSecondary:
+                return AbilityFactory.Instance.GetAbility(secondaryPowerAbility);
+            default:
+                return null;
+        }
+    }
 
     public abstract Ability GetAbility(AbilityType type, PlayerStateMachine stateMachine);
 
