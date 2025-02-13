@@ -17,7 +17,7 @@ public enum WeaponType
     Hybrid              // Hybrid weapons can be equipped in both primary and secondary slots
 }
 
-public abstract class Weapon : MonoBehaviour
+public class Weapon : MonoBehaviour
 {
     [field: SerializeField] public WeaponType Type { get; private set; }
     [field: SerializeField] public GameObject WeaponColliderObject { get; private set; }
@@ -49,8 +49,6 @@ public abstract class Weapon : MonoBehaviour
                 return null;
         }
     }
-
-    public abstract Ability GetAbility(AbilityType type, PlayerStateMachine stateMachine);
 
     public void EnableWeaponCollider()
     {

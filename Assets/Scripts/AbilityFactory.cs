@@ -33,7 +33,7 @@ namespace RyansLibrary.Abilities
         public void Start()
         {
             // PlayerStateMachine Singleton Ref.
-            stateMachine = new PlayerStateMachine();
+            stateMachine = PlayerStateMachine.Instance;
 
             InitDictionary();
         }
@@ -71,7 +71,7 @@ namespace RyansLibrary.Abilities
             else
             {
                 // Handle the case where the key is not found in the dictionary.
-                Debug.LogError("Ability Factory Error: Ability does not exist.");
+                Debug.LogWarning("Ability Factory Warning: Ability does not exist.");
                 return null;
             }
         }
