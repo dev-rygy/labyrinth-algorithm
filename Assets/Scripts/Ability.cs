@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/07/2025
- * Last Modified:   02/11/2025 (Ryan)
+ * Last Modified:   02/13/2025 (Ryan)
  * Notes:           Every active ability is required to inherit this
  *                      parent class in order to inherent the interface
 */
@@ -58,18 +58,27 @@ public abstract class Ability : IAbility
         stateMachine.StartCoroutine(CooldownCo(cooldownTime));
     }
 
-    private IEnumerator CooldownCo(float cooldownTime)
+    /// <summary>
+    /// Main Cooldown Coroutine:
+    /// Updates cooldown time based un the updateInterval,
+    /// keep interval in the [0.1 - 0.01] range for the best results,
+    /// the higher the interval the more performant the code is.
+    /// </summary>
+    /// <param name="cooldownTime">The total cooldown of the current ability</param>
+    /// <param name="updateInterval">Time to in seconds, to update cooldown</param>
+    /// <returns></returns>
+    private IEnumerator CooldownCo(float cooldownTime, float updateInterval = 0.05f)
     {
         OnCooldown = true;
         float timeLeft = cooldownTime;
 
         while (timeLeft > 0)
         {
-            timeLeft -= Time.deltaTime;
-
             OnAbilityCooldown?.Invoke(timeLeft, cooldownTime);
 
-            yield return null;
+            timeLeft -= updateInterval;
+
+            yield return new WaitForSeconds(updateInterval);
         }
 
         OnAbilityCooldown?.Invoke(0, cooldownTime);       // Invoke one last time at 0 to ensure 0 was reached
