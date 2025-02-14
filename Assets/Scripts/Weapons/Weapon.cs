@@ -8,6 +8,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum WeaponType
 {
@@ -20,6 +21,11 @@ public abstract class Weapon : MonoBehaviour
 {
     [field: SerializeField] public WeaponType Type { get; private set; }
     [field: SerializeField] public GameObject WeaponColliderObject { get; private set; }
+
+    [field: SerializeField] public Sprite PrimaryComboSprite { get; protected set; }
+    [field: SerializeField] public Sprite PrimaryPowerSprite { get; protected set; }
+    [field: SerializeField] public Sprite SecondaryComboSprite { get; protected set; }
+    [field: SerializeField] public Sprite SecondaryPowerSprite { get; protected set; }
 
     public abstract Ability GetAbility(AbilityType type, PlayerStateMachine stateMachine);
 

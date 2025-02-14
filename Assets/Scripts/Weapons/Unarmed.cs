@@ -218,12 +218,16 @@ public class Unarmed : Weapon
         switch (type)
         {
             case AbilityType.ComboAttackPrimary:
+                stateMachine.SetAbilityImage(type, PrimaryComboSprite);
                 return new UnarmedComboAttackPrimary(stateMachine, ANIM_COMBO_PRIM_HASH, _primaryComboAttackForce);
             case AbilityType.PowerAttackPrimary:
+                stateMachine.SetAbilityImage(type, PrimaryPowerSprite);
                 return new UnarmedPowerAttackPrimary(stateMachine, ANIM_POWER_PRIM_HASH, _primaryPowerAttackForce);
             case AbilityType.ComboAttackSecondary:
+                stateMachine.SetAbilityImage(type, SecondaryComboSprite);
                 return new UnarmedComboAttackSecondary(stateMachine, ANIM_COMBO_SEC_HASH);
             case AbilityType.PowerAttackSecondary:
+                stateMachine.SetAbilityImage(type, SecondaryPowerSprite);
                 return new UnarmedPowerAttackSecondary(stateMachine, ANIM_POWER_SEC_HASH, _secondaryComboAttackForce);
             default:
                 return null;

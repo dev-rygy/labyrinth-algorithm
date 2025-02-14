@@ -392,6 +392,11 @@ public class PlayerStateMachine : StateMachine
         }
     }
 
+    public void SetAbilityImage(AbilityType type, Sprite sprite)
+    {
+        AbilityUI.SetAbilityImage(type, sprite);
+    }
+
     public void SheatheWeapons()        // Swap the attach points of the weapons to the sheathe points
     {
         SheathePrimaryWeapon();

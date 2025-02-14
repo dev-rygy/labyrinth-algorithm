@@ -45,6 +45,32 @@ public class AbilityUI : MonoBehaviour
         _secondaryPowerText.enabled = false;      // Disable cooldown text if not in use
     }
 
+    public void SetAbilityImage(AbilityType type, Sprite image)
+    {
+        switch(type)
+        {
+            case AbilityType.ComboAttackPrimary:
+                _primaryComboImage.sprite = image;
+                _primaryComboBGImage.sprite = image;
+                break;
+            case AbilityType.PowerAttackPrimary:
+                _primaryPowerImage.sprite = image;
+                _primaryPowerBGImage.sprite = image;
+                break;
+            case AbilityType.ComboAttackSecondary:
+                _secondaryComboImage.sprite = image;
+                _secondaryComboBGImage.sprite = image;
+                break;
+            case AbilityType.PowerAttackSecondary:
+                _secondaryPowerImage.sprite = image;
+                _secondaryPowerBGImage.sprite = image;
+                break;
+            default:
+                Debug.LogError("Ability UI Error: Ability Type Undefined.");
+                break;
+        }
+    }
+
     // TODO: Add ability image arguement
     public void AssignPrimaryComboAbility(Ability ability)
     {

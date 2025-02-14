@@ -213,12 +213,16 @@ public class Broadsword : Weapon
         switch (type)
         {
             case AbilityType.ComboAttackPrimary:
+                stateMachine.SetAbilityImage(type, PrimaryComboSprite);
                 return new BroadswordComboAttackPrimary(stateMachine, ANIM_COMBO_PRIM_HASH, _primaryComboAttackForce, _primaryComboCooldown);
             case AbilityType.PowerAttackPrimary:
+                stateMachine.SetAbilityImage(type, PrimaryPowerSprite);
                 return new BroadswordPowerAttackPrimary(stateMachine, ANIM_POWER_PRIM_HASH, _primaryPowerAttackForce, _primaryPowerCooldown);
             case AbilityType.ComboAttackSecondary:
+                stateMachine.SetAbilityImage(type, SecondaryComboSprite);
                 return new BroadswordComboAttackSecondary(stateMachine);
             case AbilityType.PowerAttackSecondary:
+                stateMachine.SetAbilityImage(type, SecondaryPowerSprite);
                 return new BroadswordPowerAttackSecondary(stateMachine);
             default:
                 return null;

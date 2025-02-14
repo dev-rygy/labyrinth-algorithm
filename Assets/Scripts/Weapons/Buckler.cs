@@ -107,8 +107,10 @@ public class Buckler : Weapon
         switch (type)
         {
             case AbilityType.ComboAttackSecondary:
+                stateMachine.SetAbilityImage(type, SecondaryComboSprite);
                 return new BucklerComboAttackSecondary(stateMachine, ANIM_COMBO_SEC_HASH, _secondaryComboCooldown);
             case AbilityType.PowerAttackSecondary:
+                stateMachine.SetAbilityImage(type, SecondaryPowerSprite);
                 return new BucklerPowerAttackSecondary(stateMachine, ANIM_POWER_SEC_HASH, _secondaryPowerCooldown);
             default:
                 return null;
