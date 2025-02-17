@@ -22,10 +22,10 @@ public class Weapon : MonoBehaviour
     [field: SerializeField] public WeaponType Type { get; private set; }
     [field: SerializeField] public GameObject WeaponColliderObject { get; private set; }
 
-    [field: SerializeField] protected AbilityData primaryComboAbility;
-    [field: SerializeField] protected AbilityData primaryPowerAbility;
-    [field: SerializeField] protected AbilityData secondaryComboAbility;
-    [field: SerializeField] protected AbilityData secondaryPowerAbility;
+    [field: SerializeField] protected Ability primaryComboAbility;
+    [field: SerializeField] protected Ability primaryPowerAbility;
+    [field: SerializeField] protected Ability secondaryComboAbility;
+    [field: SerializeField] protected Ability secondaryPowerAbility;
 
     /// <summary>
     /// Equip an ability from the weapon. If the ability does not exist then return null to
@@ -38,13 +38,13 @@ public class Weapon : MonoBehaviour
         switch (type)
         {
             case AbilityType.ComboAttackPrimary:
-                return AbilityFactory.Instance.GetAbility(primaryComboAbility);
+                return primaryComboAbility;
             case AbilityType.PowerAttackPrimary:
-                return AbilityFactory.Instance.GetAbility(primaryPowerAbility);
+                return primaryPowerAbility;
             case AbilityType.ComboAttackSecondary:
-                return AbilityFactory.Instance.GetAbility(secondaryComboAbility);
+                return secondaryComboAbility;
             case AbilityType.PowerAttackSecondary:
-                return AbilityFactory.Instance.GetAbility(secondaryPowerAbility);
+                return secondaryPowerAbility;
             default:
                 return null;
         }
