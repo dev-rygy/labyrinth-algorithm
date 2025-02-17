@@ -5,10 +5,10 @@
  * Notes:           Every active ability is required to inherit this
  *                      parent class in order to inherent the interface
 */
+using RyansLibrary.Abilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum WeaponType
 {
@@ -17,17 +17,38 @@ public enum WeaponType
     Hybrid              // Hybrid weapons can be equipped in both primary and secondary slots
 }
 
-public abstract class Weapon : MonoBehaviour
+public class Weapon : MonoBehaviour
 {
     [field: SerializeField] public WeaponType Type { get; private set; }
     [field: SerializeField] public GameObject WeaponColliderObject { get; private set; }
 
-    [field: SerializeField] public Sprite PrimaryComboSprite { get; protected set; }
-    [field: SerializeField] public Sprite PrimaryPowerSprite { get; protected set; }
-    [field: SerializeField] public Sprite SecondaryComboSprite { get; protected set; }
-    [field: SerializeField] public Sprite SecondaryPowerSprite { get; protected set; }
+    [field: SerializeField] protected Ability primaryComboAbility;
+    [field: SerializeField] protected Ability primaryPowerAbility;
+    [field: SerializeField] protected Ability secondaryComboAbility;
+    [field: SerializeField] protected Ability secondaryPowerAbility;
 
-    public abstract Ability GetAbility(AbilityType type, PlayerStateMachine stateMachine);
+    /// <summary>
+    /// Equip an ability from the weapon. If the ability does not exist then return null to
+    /// tell the system no ability exists.
+    /// </summary>
+    /// <param name="type">The ability key/category</param>
+    /// <returns>A new instance of the ability</returns>
+    public Ability GetAbility(AbilityType type)
+    {
+        switch (type)
+        {
+            case AbilityType.ComboAttackPrimary:
+                return primaryComboAbility;
+            case AbilityType.PowerAttackPrimary:
+                return primaryPowerAbility;
+            case AbilityType.ComboAttackSecondary:
+                return secondaryComboAbility;
+            case AbilityType.PowerAttackSecondary:
+                return secondaryPowerAbility;
+            default:
+                return null;
+        }
+    }
 
     public void EnableWeaponCollider()
     {

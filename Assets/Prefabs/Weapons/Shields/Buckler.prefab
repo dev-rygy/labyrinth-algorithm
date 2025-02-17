@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6763741746292073147}
-  - component: {fileID: 5739527513836384134}
+  - component: {fileID: 2906461909480575206}
   m_Layer: 0
   m_Name: Buckler
   m_TagString: Untagged
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 5251091778919956092}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5739527513836384134
+--- !u!114 &2906461909480575206
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,19 +43,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 319654419297701527}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd9184e8737d2da4f8302019f08dd831, type: 3}
+  m_Script: {fileID: 11500000, guid: dbf5258504337014d802d5f1f3bd3948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 1
   <WeaponColliderObject>k__BackingField: {fileID: 0}
-  <PrimaryComboSprite>k__BackingField: {fileID: 0}
-  <PrimaryPowerSprite>k__BackingField: {fileID: 0}
-  <SecondaryComboSprite>k__BackingField: {fileID: 21300000, guid: 58b3eb67311e7b943b13eb3314904feb,
-    type: 3}
-  <SecondaryPowerSprite>k__BackingField: {fileID: 21300000, guid: 4e88bc4a199594a4ba1d7a98b877c78a,
-    type: 3}
-  _secondaryComboCooldown: 1
-  _secondaryPowerCooldown: 3
+  primaryComboAbility: {fileID: 0}
+  primaryPowerAbility: {fileID: 0}
+  secondaryComboAbility: {fileID: 11400000, guid: 2c03408831595b145aca99b6f98d341d,
+    type: 2}
+  secondaryPowerAbility: {fileID: 11400000, guid: ead2e861cd011ca499830088f49dd33e,
+    type: 2}
 --- !u!1 &3823204896923491224
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,11 +9,13 @@
  *                  3.) Start State = { Idle }
  *                  4.) Final States = { Death }
 */
+using RyansLibrary.StateMachine;
+using RyansLibrary.Input;
+using RyansLibrary.Abilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using RyansLibrary.StateMachine;
-using RyansLibrary.Input;
+using System;
 
 public enum PlayerStates
 {
@@ -133,7 +135,7 @@ public class PlayerStateMachine : StateMachine
             Debug.LogError("Player State Machine Error: Unarmed Weapon is missing.");
         }
 
-        // Input Singleton
+        // Input Singleton ref.
         Input = InputHandler.Instance;                              // An input handler must be in the player's scene
 
         // Kick off the player's state machine
@@ -317,11 +319,11 @@ public class PlayerStateMachine : StateMachine
         Ability ability = null;
 
         // Set Combo Attack Primary
-        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary, this);
+        ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
         SetAbility(ability, AbilityType.ComboAttackPrimary);
 
         // Set Power Attack Primary
-        ability = weapon.GetAbility(AbilityType.PowerAttackPrimary, this);
+        ability = weapon.GetAbility(AbilityType.PowerAttackPrimary);
         SetAbility(ability, AbilityType.PowerAttackPrimary);
 
         // If there is a secondary weapon equipped then do not replace the secondary abilitites
@@ -329,11 +331,11 @@ public class PlayerStateMachine : StateMachine
             return;
 
         // Set Combo Attack Secondary
-        ability = weapon.GetAbility(AbilityType.ComboAttackSecondary, this);
+        ability = weapon.GetAbility(AbilityType.ComboAttackSecondary);
         SetAbility(ability, AbilityType.ComboAttackSecondary);
 
         // Set Power Attack Secondary
-        ability = weapon.GetAbility(AbilityType.PowerAttackSecondary, this);
+        ability = weapon.GetAbility(AbilityType.PowerAttackSecondary);
         SetAbility(ability, AbilityType.PowerAttackSecondary);
     }
 
@@ -352,11 +354,11 @@ public class PlayerStateMachine : StateMachine
         Ability ability = null;
 
         // Set Combo Attack Secondary
-        ability = weapon.GetAbility(AbilityType.ComboAttackSecondary, this);
+        ability = weapon.GetAbility(AbilityType.ComboAttackSecondary);
         SetAbility(ability, AbilityType.ComboAttackSecondary);
 
         // Set Power Attack Secondary
-        ability = weapon.GetAbility(AbilityType.PowerAttackSecondary, this);
+        ability = weapon.GetAbility(AbilityType.PowerAttackSecondary);
         SetAbility(ability, AbilityType.PowerAttackSecondary);
     }
 
@@ -444,4 +446,61 @@ public class PlayerStateMachine : StateMachine
         obj.transform.localRotation = Quaternion.identity;
     }
     #endregion
+}
+
+
+
+
+
+
+
+
+
+
+// TEST METHODS FOR REDOING ABILITIES, PLEASE DELETE!
+public abstract class Abil : ScriptableObject, IAbility
+{
+    public event Action<float, float> OnAbilityCooldown;
+
+    protected PlayerStateMachine stateMachine;
+
+    public bool OnCooldown { get; private set; } = false;
+
+    public abstract void Enter();
+
+    public abstract void Tick(float deltaTime);
+
+    public abstract void Exit();
+
+    /// <summary>
+    /// Start the ability's cooldown. The player may not use the ability again until the
+    /// cooldown time is exhausted.
+    /// </summary>
+    /// <param name="cooldownTime">Cooldown time</param>
+    protected void StartCooldown(float cooldownTime)
+    {
+        if (OnCooldown)       // If the ability is already on cooldown then return
+            return;
+
+        stateMachine.StartCoroutine(CooldownCo(cooldownTime));
+    }
+
+    private IEnumerator CooldownCo(float cooldownTime)
+    {
+        OnCooldown = true;
+        float timeLeft = cooldownTime;
+
+        while (timeLeft > 0)
+        {
+            timeLeft -= Time.deltaTime;
+
+            OnAbilityCooldown?.Invoke(timeLeft, cooldownTime);
+
+            yield return null;
+        }
+
+        OnAbilityCooldown?.Invoke(0, cooldownTime);       // Invoke one last time at 0 to ensure 0 was reached
+
+        OnCooldown = false;
+    }
 }
