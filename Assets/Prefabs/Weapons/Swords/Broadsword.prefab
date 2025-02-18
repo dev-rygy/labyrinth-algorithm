@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8181004317177496056}
-  - component: {fileID: 1612626065559645965}
+  - component: {fileID: 1008492756866259534}
   m_Layer: 0
   m_Name: Broadsword
   m_TagString: Untagged
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 329555570701765663}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1612626065559645965
+--- !u!114 &1008492756866259534
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,10 +43,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2442654483748241690}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c8a0ef6af334c640b6254dbe75704f2, type: 3}
+  m_Script: {fileID: 11500000, guid: dbf5258504337014d802d5f1f3bd3948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Type>k__BackingField: 0
   <WeaponColliderObject>k__BackingField: {fileID: 5796867988603755137}
+  primaryComboAbility: {fileID: 11400000, guid: a374773a4dbc0b04d82586fe4c5d7f23,
+    type: 2}
+  primaryPowerAbility: {fileID: 11400000, guid: 689a242ee685c754ea4b4833db50f5bb,
+    type: 2}
+  secondaryComboAbility: {fileID: 0}
+  secondaryPowerAbility: {fileID: 0}
 --- !u!1 &5796867988603755137
 GameObject:
   m_ObjectHideFlags: 0

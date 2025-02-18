@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   01/04/2025 (Ryan)
+ * Last Modified:   02/11/2025 (Ryan)
  * Notes:           Player Idle State
 */
 using System.Collections;
@@ -22,8 +22,10 @@ public class PlayerIdleState : PlayerState
     private readonly int ANIM_IDLE_BLEND_TREE_HASH = Animator.StringToHash("Idle Blend Tree");
     private readonly int ANIM_IDLE_SPEED_HASH = Animator.StringToHash("IdleSpeed");
 
-    // Time to transition between animtions
+    // Blend tree damp time
     private const float ANIMATOR_DAMP_TIME = 0.1f;
+    // Time to transition between animations
+    private const float ANIMATOR_CROSSFADE_DURATION = 0.1f;
 
     // Constuctor
     public PlayerIdleState(PlayerStateMachine stateMachine) : base(stateMachine) { }
@@ -36,9 +38,10 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnPowerPrimary += OnPoweredPrimary;        // Input: right_trigger
         InputHandler.OnPowerSecondary += OnPoweredSecondary;    // Input: left_trigger
         InputHandler.OnInteract1 += OnInteract1;                // Input: interact
+        InputHandler.OnEmote += OnEmote;                        // Input: emote
 
         // Play the Running blend tree animations
-        stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, 0.1f);
+        stateMachine.Animator.CrossFadeInFixedTime(ANIM_IDLE_BLEND_TREE_HASH, ANIMATOR_CROSSFADE_DURATION);
 
         // Switch state immediately if holding down combo button
         if (stateMachine.Input.IsHoldingPrimaryCombo)           // Input: right_shoulder
@@ -72,9 +75,7 @@ public class PlayerIdleState : PlayerState
 
         // Falling state if the player is not grounded
         if (!stateMachine.ForceReciever.IsGrounded())
-        {
-            stateMachine.TransitionStates(new PlayerFallState(stateMachine));
-        }
+            stateMachine.TransitionStates(PlayerStates.Fall);
     }
 
     public override void Exit()
@@ -85,34 +86,66 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnPowerPrimary -= OnPoweredPrimary;
         InputHandler.OnPowerSecondary -= OnPoweredSecondary;
         InputHandler.OnInteract1 -= OnInteract1;
+        InputHandler.OnEmote -= OnEmote;
     }
 
     // Transition Functions
     private void OnComboPrimary()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.ComboAttackPrimary.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Primary Combo Attack on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.ComboPrim);
     }
 
     private void OnComboSecondary()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.ComboAttackSecondary.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Secondary Combo Attack on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.ComboSec);
     }
 
     private void OnPoweredPrimary()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.PowerAttackPrimary.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Primary Power Attack on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.PowerPrim);
     }
 
     private void OnPoweredSecondary()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.PowerAttackSecondary.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Secondary Power Attack on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.PowerSec);
     }
 
     private void OnInteract1()
     {
         if (stateMachine.CanClimb())
-        {
             stateMachine.TransitionStates(PlayerStates.Climb);
-        }
+    }
+
+    private void OnEmote()
+    {
+        stateMachine.TransitionStates(PlayerStates.Emote);
     }
 }

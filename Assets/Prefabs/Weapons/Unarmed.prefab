@@ -62,7 +62,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7051519179909412514}
-  - component: {fileID: 7302327712710701688}
+  - component: {fileID: 1565995353058460579}
   m_Layer: 0
   m_Name: Unarmed
   m_TagString: Untagged
@@ -86,7 +86,7 @@ Transform:
   - {fileID: 7569633566605434292}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7302327712710701688
+--- !u!114 &1565995353058460579
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,10 +95,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1212062001675890958}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85dc6818b71293942bfc7bb789e562de, type: 3}
+  m_Script: {fileID: 11500000, guid: dbf5258504337014d802d5f1f3bd3948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Type>k__BackingField: 0
   <WeaponColliderObject>k__BackingField: {fileID: 323110394847867578}
-  _primaryComboAttackForce: 3
-  _primaryPowerAttackForce: 5
-  _secondaryComboAttackForce: 3
+  primaryComboAbility: {fileID: 11400000, guid: cee033a3d2d6f6242ad6b7e0d696dcc6,
+    type: 2}
+  primaryPowerAbility: {fileID: 11400000, guid: f388f447a8892fe49a08587de94e64e0,
+    type: 2}
+  secondaryComboAbility: {fileID: 11400000, guid: 196621956145cc247a75d55aa257166d,
+    type: 2}
+  secondaryPowerAbility: {fileID: 11400000, guid: 5b90da5f43c3f064081d1ff8d11fc25e,
+    type: 2}

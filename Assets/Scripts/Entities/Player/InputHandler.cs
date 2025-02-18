@@ -16,6 +16,7 @@ namespace RyansLibrary.Input
         public static InputHandler Instance { get; private set; }
 
         // Input Events
+        public static event System.Action OnAny;
         public static event System.Action OnMove;
         // public static event System.Action OnLook;        DEPRICATED
         // public static event System.Action OnLookRight;   DEPRICATED
@@ -30,6 +31,7 @@ namespace RyansLibrary.Input
         public static event System.Action OnDash;
         public static event System.Action OnTwoHand;
         public static event System.Action OnSheathe;
+        public static event System.Action OnEmote;
 
 
         [SerializeField] private bool _debug = false;
@@ -96,6 +98,17 @@ namespace RyansLibrary.Input
             _playerControls.Player.Dash.performed += _ => OnDash?.Invoke();
             _playerControls.Player.TwoHand.performed += _ => OnTwoHand?.Invoke();
             _playerControls.Player.Sheathe.performed += _ => OnSheathe?.Invoke();
+            _playerControls.Player.Emote.performed += _ => OnEmote?.Invoke();
+
+            // The "Any" action; All inputs that can cancel an interaction; EX. Any input cancels Emoting
+            _playerControls.Player.Move.performed += _ => OnAny?.Invoke();
+            _playerControls.Player.ComboAttackPrimary.performed += _ => OnAny?.Invoke();
+            _playerControls.Player.ComboAttackSecondary.performed += _ => OnAny?.Invoke();
+            _playerControls.Player.PowerAttackPrimary.performed += _ => OnAny?.Invoke();
+            _playerControls.Player.PowerAttackSecondary.performed += _ => OnAny?.Invoke();
+            _playerControls.Player.Dash.performed += _ => OnAny?.Invoke();
+            _playerControls.Player.TwoHand.performed += _ => OnAny?.Invoke();
+            _playerControls.Player.Sheathe.performed += _ => OnAny?.Invoke();
         }
 
         private void OnEnable()
