@@ -8,7 +8,6 @@ public class BroadswordPowerPrimary : Ability
 {
     [SerializeField] private string animHash;
     [SerializeField] private float attackForce;
-    [SerializeField] private float cooldown;
 
     public override void Enter()
     {
@@ -33,8 +32,7 @@ public class BroadswordPowerPrimary : Ability
 
     public override void Exit()
     {
-        // Begin Cooldown
-        StartCooldown(cooldown);
+        StartCooldown();
 
         stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
 

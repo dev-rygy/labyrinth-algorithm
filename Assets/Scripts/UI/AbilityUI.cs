@@ -46,35 +46,12 @@ public class AbilityUI : MonoBehaviour
         _secondaryPowerText.enabled = false;      // Disable cooldown text if not in use
     }
 
-    public void SetAbilityImage(AbilityType type, Sprite image)
-    {
-        switch(type)
-        {
-            case AbilityType.ComboAttackPrimary:
-                _primaryComboImage.sprite = image;
-                _primaryComboBGImage.sprite = image;
-                break;
-            case AbilityType.PowerAttackPrimary:
-                _primaryPowerImage.sprite = image;
-                _primaryPowerBGImage.sprite = image;
-                break;
-            case AbilityType.ComboAttackSecondary:
-                _secondaryComboImage.sprite = image;
-                _secondaryComboBGImage.sprite = image;
-                break;
-            case AbilityType.PowerAttackSecondary:
-                _secondaryPowerImage.sprite = image;
-                _secondaryPowerBGImage.sprite = image;
-                break;
-            default:
-                Debug.LogError("Ability UI Error: Ability Type Undefined.");
-                break;
-        }
-    }
-
     // TODO: Add ability image arguement
     public void AssignPrimaryComboAbility(Ability ability)
     {
+        _primaryComboImage.sprite = ability.abilityIcon;
+        _primaryComboBGImage.sprite = ability.abilityIcon;
+
         _primaryComboBGImage.fillAmount = 0;
         _primaryComboText.enabled = false;
         ability.OnAbilityCooldown += PrimaryComboCooldownUI;
@@ -82,6 +59,9 @@ public class AbilityUI : MonoBehaviour
 
     public void AssignPrimaryPowerAbility(Ability ability)
     {
+        _primaryPowerImage.sprite = ability.abilityIcon;
+        _primaryPowerBGImage.sprite = ability.abilityIcon;
+
         _primaryPowerBGImage.fillAmount = 0;
         _primaryPowerText.enabled = false;
         ability.OnAbilityCooldown += PrimaryPowerCooldownUI;
@@ -89,6 +69,9 @@ public class AbilityUI : MonoBehaviour
 
     public void AssignSecondaryComboAbility(Ability ability)
     {
+        _secondaryComboImage.sprite = ability.abilityIcon;
+        _secondaryComboBGImage.sprite = ability.abilityIcon;
+
         _secondaryComboBGImage.fillAmount = 0;
         _secondaryComboText.enabled = false;
         ability.OnAbilityCooldown += SecondaryComboCooldownUI;
@@ -96,6 +79,9 @@ public class AbilityUI : MonoBehaviour
 
     public void AssignSecondaryPowerAbility(Ability ability)
     {
+        _secondaryPowerImage.sprite = ability.abilityIcon;
+        _secondaryPowerBGImage.sprite= ability.abilityIcon;
+
         _secondaryPowerBGImage.fillAmount = 0;
         _secondaryPowerText.enabled = false;
         ability.OnAbilityCooldown += SecondaryPowerCooldownUI;

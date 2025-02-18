@@ -7,7 +7,6 @@ using UnityEngine;
 public class BucklerComboSecondary : Ability
 {
     [SerializeField] private string animHash;
-    [SerializeField] private float cooldown;
 
     public override void Enter()
     {
@@ -30,9 +29,8 @@ public class BucklerComboSecondary : Ability
         }
     }
 
-    public override void Exit()
+    public override void Exit() 
     {
-        // Begin Cooldown
-        StartCooldown(cooldown);
+        StartCooldown();
     }
 }

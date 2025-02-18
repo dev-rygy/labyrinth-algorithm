@@ -7,7 +7,6 @@ using UnityEngine;
 public class BuckerPowerSecondary : Ability
 {
     [SerializeField] private string animHash;
-    [SerializeField] private float cooldown;
 
     public override void Enter()
     {
@@ -27,8 +26,7 @@ public class BuckerPowerSecondary : Ability
 
     public override void Exit()
     {
-        // Begin Cooldown
-        StartCooldown(cooldown);
+        StartCooldown();
 
         stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
     }

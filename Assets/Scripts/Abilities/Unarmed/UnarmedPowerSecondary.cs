@@ -31,6 +31,8 @@ public class UnarmedPowerSecondary : Ability
 
     public override void Exit()
     {
+        StartCooldown();
+
         stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
 
         stateMachine.AnimationTimestamps.OnComboPrimColliderEnable -= stateMachine.PrimaryWeapon.EnableWeaponCollider;

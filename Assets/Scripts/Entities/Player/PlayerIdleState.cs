@@ -75,9 +75,7 @@ public class PlayerIdleState : PlayerState
 
         // Falling state if the player is not grounded
         if (!stateMachine.ForceReciever.IsGrounded())
-        {
             stateMachine.TransitionStates(PlayerStates.Fall);
-        }
     }
 
     public override void Exit()
@@ -143,9 +141,7 @@ public class PlayerIdleState : PlayerState
     private void OnInteract1()
     {
         if (stateMachine.CanClimb())
-        {
             stateMachine.TransitionStates(PlayerStates.Climb);
-        }
     }
 
     private void OnEmote()

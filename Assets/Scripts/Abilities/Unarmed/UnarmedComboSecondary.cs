@@ -27,5 +27,8 @@ public class UnarmedComboSecondary : Ability
         }
     }
 
-    public override void Exit() { }
+    public override void Exit() 
+    {
+        StartCooldown();
+    }
 }

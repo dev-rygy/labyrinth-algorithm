@@ -39,6 +39,8 @@ public class UnarmedComboPrimary : Ability
 
     public override void Exit()
     {
+        StartCooldown();
+
         // Input Events
         InputHandler.OnComboPrimary -= OnComboPrimary;
 

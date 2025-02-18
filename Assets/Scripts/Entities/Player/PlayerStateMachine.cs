@@ -394,11 +394,6 @@ public class PlayerStateMachine : StateMachine
         }
     }
 
-    public void SetAbilityImage(AbilityType type, Sprite sprite)
-    {
-        AbilityUI.SetAbilityImage(type, sprite);
-    }
-
     public void SheatheWeapons()        // Swap the attach points of the weapons to the sheathe points
     {
         SheathePrimaryWeapon();
@@ -446,61 +441,4 @@ public class PlayerStateMachine : StateMachine
         obj.transform.localRotation = Quaternion.identity;
     }
     #endregion
-}
-
-
-
-
-
-
-
-
-
-
-// TEST METHODS FOR REDOING ABILITIES, PLEASE DELETE!
-public abstract class Abil : ScriptableObject, IAbility
-{
-    public event Action<float, float> OnAbilityCooldown;
-
-    protected PlayerStateMachine stateMachine;
-
-    public bool OnCooldown { get; private set; } = false;
-
-    public abstract void Enter();
-
-    public abstract void Tick(float deltaTime);
-
-    public abstract void Exit();
-
-    /// <summary>
-    /// Start the ability's cooldown. The player may not use the ability again until the
-    /// cooldown time is exhausted.
-    /// </summary>
-    /// <param name="cooldownTime">Cooldown time</param>
-    protected void StartCooldown(float cooldownTime)
-    {
-        if (OnCooldown)       // If the ability is already on cooldown then return
-            return;
-
-        stateMachine.StartCoroutine(CooldownCo(cooldownTime));
-    }
-
-    private IEnumerator CooldownCo(float cooldownTime)
-    {
-        OnCooldown = true;
-        float timeLeft = cooldownTime;
-
-        while (timeLeft > 0)
-        {
-            timeLeft -= Time.deltaTime;
-
-            OnAbilityCooldown?.Invoke(timeLeft, cooldownTime);
-
-            yield return null;
-        }
-
-        OnAbilityCooldown?.Invoke(0, cooldownTime);       // Invoke one last time at 0 to ensure 0 was reached
-
-        OnCooldown = false;
-    }
 }

@@ -9,7 +9,6 @@ public class BroadswordComboPrimary : Ability
 {
     [SerializeField] private string animHash;
     [SerializeField] private float attackForce;
-    [SerializeField] private float cooldown;
 
     private bool _hasPressedAttack;
     private bool _canContinue;
@@ -41,8 +40,7 @@ public class BroadswordComboPrimary : Ability
 
     public override void Exit()
     {
-        // Begin Cooldown
-        StartCooldown(cooldown);
+        StartCooldown();
 
         // Input Events
         InputHandler.OnComboPrimary -= OnComboPrimary;

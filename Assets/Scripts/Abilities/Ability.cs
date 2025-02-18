@@ -8,7 +8,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using RyansLibrary.StateMachine;
 using System;
 
 namespace RyansLibrary.Abilities
@@ -29,10 +28,15 @@ namespace RyansLibrary.Abilities
 
     public abstract class Ability : ScriptableObject, IAbility
     {
+        public static float cooldownUpdateRate = 0.2f;
+
         // Event for UI
         public event Action<float, float> OnAbilityCooldown;
 
         protected PlayerStateMachine stateMachine;
+
+        [SerializeField] public Sprite abilityIcon;
+        [SerializeField] public float cooldown;
 
         public bool OnCooldown { get; private set; } = false;
 
@@ -47,29 +51,29 @@ namespace RyansLibrary.Abilities
         /// cooldown time is exhausted.
         /// </summary>
         /// <param name="cooldownTime">Cooldown time</param>
-        protected void StartCooldown(float cooldownTime)
+        public void StartCooldown()
         {
             if (OnCooldown)       // If the ability is already on cooldown then return
                 return;
 
-            stateMachine.StartCoroutine(CooldownCo(cooldownTime));
+            stateMachine.StartCoroutine(CooldownCo());
         }
 
-        private IEnumerator CooldownCo(float cooldownTime)
+        private IEnumerator CooldownCo()
         {
             OnCooldown = true;
-            float timeLeft = cooldownTime;
+            float timeLeft = cooldown;
 
             while (timeLeft > 0)
             {
-                timeLeft -= Time.deltaTime;
+                OnAbilityCooldown?.Invoke(timeLeft, cooldown);
 
-                OnAbilityCooldown?.Invoke(timeLeft, cooldownTime);
+                yield return new WaitForSeconds(cooldownUpdateRate);
 
-                yield return null;
+                timeLeft -= cooldownUpdateRate;
             }
 
-            OnAbilityCooldown?.Invoke(0, cooldownTime);       // Invoke one last time at 0 to ensure 0 was reached
+            OnAbilityCooldown?.Invoke(0, cooldown);       // Invoke one last time at 0 to ensure 0 was reached
 
             OnCooldown = false;
         }
