@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    02/12/2025
- * Last Modified:   02/12/2025 (Ryan)
+ * Last Modified:   02/19/2025 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Abilities;
@@ -19,86 +19,142 @@ public class AbilityUI : MonoBehaviour
     [SerializeField] private Image _primaryPowerImage;
     [SerializeField] private Image _secondaryComboImage;
     [SerializeField] private Image _secondaryPowerImage;
+    [SerializeField] private Image _dashImage;
 
     // Background Images
     [SerializeField] private Image _primaryComboBGImage;
     [SerializeField] private Image _primaryPowerBGImage;
     [SerializeField] private Image _secondaryComboBGImage;
     [SerializeField] private Image _secondaryPowerBGImage;
+    [SerializeField] private Image _dashBGImage;
 
     [Header("Text")]
     [SerializeField] private TMP_Text _primaryComboText;
     [SerializeField] private TMP_Text _primaryPowerText;
     [SerializeField] private TMP_Text _secondaryComboText;
     [SerializeField] private TMP_Text _secondaryPowerText;
+    [SerializeField] private TMP_Text _dashText;
 
-    // Start is called before the first frame update
     private void Start()
     {
-        _primaryComboBGImage.fillAmount = 0;
+        _primaryComboBGImage.fillAmount = 0;        // Disable cooldown gradient on start
         _primaryPowerBGImage.fillAmount = 0;
         _secondaryComboBGImage.fillAmount = 0;
         _secondaryPowerBGImage.fillAmount = 0;
+        _dashBGImage.fillAmount = 0;
 
-        _primaryComboText.enabled = false;      // Disable cooldown text if not in use
-        _primaryPowerText.enabled = false;      // Disable cooldown text if not in use
-        _secondaryComboText.enabled = false;      // Disable cooldown text if not in use
-        _secondaryPowerText.enabled = false;      // Disable cooldown text if not in use
-    }
-
-    // TODO: Add ability image arguement
-    public void AssignPrimaryComboAbility(Ability ability)
-    {
-        _primaryComboImage.sprite = ability.abilityIcon;
-        _primaryComboBGImage.sprite = ability.abilityIcon;
-
-        _primaryComboBGImage.fillAmount = 0;
-        _primaryComboText.enabled = false;
-        ability.OnAbilityCooldown += PrimaryComboCooldownUI;
-    }
-
-    public void AssignPrimaryPowerAbility(Ability ability)
-    {
-        _primaryPowerImage.sprite = ability.abilityIcon;
-        _primaryPowerBGImage.sprite = ability.abilityIcon;
-
-        _primaryPowerBGImage.fillAmount = 0;
+        _primaryComboText.enabled = false;      // Disable cooldown text on start
         _primaryPowerText.enabled = false;
-        ability.OnAbilityCooldown += PrimaryPowerCooldownUI;
-    }
-
-    public void AssignSecondaryComboAbility(Ability ability)
-    {
-        _secondaryComboImage.sprite = ability.abilityIcon;
-        _secondaryComboBGImage.sprite = ability.abilityIcon;
-
-        _secondaryComboBGImage.fillAmount = 0;
-        _secondaryComboText.enabled = false;
-        ability.OnAbilityCooldown += SecondaryComboCooldownUI;
-    }
-
-    public void AssignSecondaryPowerAbility(Ability ability)
-    {
-        _secondaryPowerImage.sprite = ability.abilityIcon;
-        _secondaryPowerBGImage.sprite= ability.abilityIcon;
-
-        _secondaryPowerBGImage.fillAmount = 0;
+        _secondaryComboText.enabled = false; 
         _secondaryPowerText.enabled = false;
-        ability.OnAbilityCooldown += SecondaryPowerCooldownUI;
+        _dashText.enabled = false;
     }
 
+    // Ability Assignment
+    public void AssignAbility(Ability ability)
+    {
+        switch (ability.Type)
+        {
+            case AbilityType.ComboAttackPrimary:        // Assign Primary Combo Ability
+                _primaryComboImage.sprite = ability.abilityIcon;
+                _primaryComboBGImage.sprite = ability.abilityIcon;
+                _primaryComboBGImage.fillAmount = 0;
+                _primaryComboText.enabled = false;
+                ability.OnAbilityCooldown += PrimaryComboCooldownUI;
+                return;
+            case AbilityType.PowerAttackPrimary:        // Assign Primary Power Ability
+                _primaryPowerImage.sprite = ability.abilityIcon;
+                _primaryPowerBGImage.sprite = ability.abilityIcon;
+                _primaryPowerBGImage.fillAmount = 0;
+                _primaryPowerText.enabled = false;
+                ability.OnAbilityCooldown += PrimaryPowerCooldownUI;
+                return;
+            case AbilityType.ComboAttackSecondary:      // Assign Secondary Combo Ability
+                _secondaryComboImage.sprite = ability.abilityIcon;
+                _secondaryComboBGImage.sprite = ability.abilityIcon;
+                _secondaryComboBGImage.fillAmount = 0;
+                _secondaryComboText.enabled = false;
+                ability.OnAbilityCooldown += SecondaryComboCooldownUI;
+                return;
+            case AbilityType.PowerAttackSecondary:      // Assign Secondary Power Ability
+                _secondaryPowerImage.sprite = ability.abilityIcon;
+                _secondaryPowerBGImage.sprite = ability.abilityIcon;
+                _secondaryPowerBGImage.fillAmount = 0;
+                _secondaryPowerText.enabled = false;
+                ability.OnAbilityCooldown += SecondaryPowerCooldownUI;
+                return;
+            case AbilityType.Dash:
+                _dashImage.sprite = ability.abilityIcon;
+                _dashBGImage.sprite = ability.abilityIcon;
+                _dashBGImage.fillAmount = 0;
+                _dashText.enabled = false;
+                ability.OnAbilityCooldown += DashCooldownUI;
+                return;
+            default:
+                Debug.LogError("Ability UI Error: Ability type undefined.");
+                return;
+        }
+    }
+
+    // Ability Removal
+    public void RemoveAbility(Ability ability)
+    {
+        switch (ability.Type)
+        {
+            case AbilityType.ComboAttackPrimary:        // Assign Primary Combo Ability
+                _primaryComboImage.sprite = null;
+                _primaryComboBGImage.sprite = null;
+                _primaryComboBGImage.fillAmount = 0;
+                _primaryComboText.enabled = false;
+                ability.OnAbilityCooldown -= PrimaryComboCooldownUI;
+                return;
+            case AbilityType.PowerAttackPrimary:        // Assign Primary Power Ability
+                _primaryPowerImage.sprite = null;
+                _primaryPowerBGImage.sprite = null;
+                _primaryPowerBGImage.fillAmount = 0;
+                _primaryPowerText.enabled = false;
+                ability.OnAbilityCooldown -= PrimaryPowerCooldownUI;
+                return;
+            case AbilityType.ComboAttackSecondary:      // Assign Secondary Combo Ability
+                _secondaryComboImage.sprite = null;
+                _secondaryComboBGImage.sprite = null;
+                _secondaryComboBGImage.fillAmount = 0;
+                _secondaryComboText.enabled = false;
+                ability.OnAbilityCooldown -= SecondaryComboCooldownUI;
+                return;
+            case AbilityType.PowerAttackSecondary:      // Assign Secondary Power Ability
+                _secondaryPowerImage.sprite = null;
+                _secondaryPowerBGImage.sprite = null;
+                _secondaryPowerBGImage.fillAmount = 0;
+                _secondaryPowerText.enabled = false;
+                ability.OnAbilityCooldown -= SecondaryPowerCooldownUI;
+                return;
+            case AbilityType.Dash:      // Assign Secondary Power Ability
+                _dashImage.sprite = null;
+                _dashBGImage.sprite = null;
+                _dashImage.fillAmount = 0;
+                _dashText.enabled = false;
+                ability.OnAbilityCooldown -= DashCooldownUI;
+                return;
+            default:
+                Debug.LogError("Ability UI Error: Ability type undefined.");
+                return;
+        }
+    }
+
+    // Cooldown UI
     private void PrimaryComboCooldownUI(float timeLeft, float cooldownTime)
     {
         // Ratio of time between [1,0]; can never be negative
         float normalizedCooldownRatio = Mathf.Max(timeLeft, 0) / cooldownTime;
         _primaryComboBGImage.fillAmount = normalizedCooldownRatio;
 
-        if (normalizedCooldownRatio > 0)
+        if (normalizedCooldownRatio > 0)        // If ability is on cooldown
         {
             _primaryComboImage.color = Color.gray;
             _primaryComboText.enabled = true;
 
-            if (timeLeft > 1.0f)
+            if (timeLeft > 1.0f)        // If the time left for the cooldown is < 1.0 then show decimal values in UI
             {
                 _primaryComboText.text = timeLeft.ToString("F0");
             }
@@ -194,4 +250,32 @@ public class AbilityUI : MonoBehaviour
             _secondaryPowerText.enabled = false;
         }
     }
+
+    private void DashCooldownUI(float timeLeft, float cooldownTime)
+    {
+        // Ratio of time between [1,0]; can never be negative
+        float normalizedCooldownRatio = Mathf.Max(timeLeft, 0) / cooldownTime;
+        _dashBGImage.fillAmount = normalizedCooldownRatio;
+
+        if (normalizedCooldownRatio > 0)
+        {
+            _dashImage.color = Color.grey;
+            _dashText.enabled = true;
+
+            if (timeLeft > 1.0f)
+            {
+                _dashText.text = timeLeft.ToString("F0");
+            }
+            else
+            {
+                _dashText.text = timeLeft.ToString("F1");
+            }
+        }
+        else
+        {
+            _dashImage.color = Color.white;
+            _dashText.enabled = false;
+        }
+    }
 }
+

@@ -26,6 +26,7 @@ public class Weapon : MonoBehaviour
     [field: SerializeField] protected Ability primaryPowerAbility;
     [field: SerializeField] protected Ability secondaryComboAbility;
     [field: SerializeField] protected Ability secondaryPowerAbility;
+    [field: SerializeField] protected Ability dashAbility;
 
     /// <summary>
     /// Equip an ability from the weapon. If the ability does not exist then return null to
@@ -45,6 +46,8 @@ public class Weapon : MonoBehaviour
                 return secondaryComboAbility;
             case AbilityType.PowerAttackSecondary:
                 return secondaryPowerAbility;
+            case AbilityType.Dash:
+                return dashAbility;
             default:
                 return null;
         }

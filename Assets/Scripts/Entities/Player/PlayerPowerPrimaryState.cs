@@ -14,23 +14,23 @@ public class PlayerPowerPrimaryState : PlayerState
 
     public override void Enter()
     {
-        if (stateMachine.PowerAttackPrimary == null)
+        if (stateMachine.PowerAttackPrimaryAbility == null)
         {
             Debug.LogWarning("Power Primary: Ability not assigned.");
             stateMachine.TransitionStates(PlayerStates.Idle);
             return;
         }
 
-        stateMachine.PowerAttackPrimary?.Enter();
+        stateMachine.PowerAttackPrimaryAbility?.Enter();
     }
 
     public override void Tick(float deltaTime)
     {
-        stateMachine.PowerAttackPrimary?.Tick(deltaTime);
+        stateMachine.PowerAttackPrimaryAbility?.Tick(deltaTime);
     }
 
     public override void Exit()
     {
-        stateMachine.PowerAttackPrimary?.Exit();
+        stateMachine.PowerAttackPrimaryAbility?.Exit();
     }
 }

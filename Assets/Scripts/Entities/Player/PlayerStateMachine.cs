@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   02/12/2025 (Ryan)
+ * Last Modified:   02/20/2025 (Ryan)
  * Notes:           Finite State Machine for the Player
  *                  1.) States = { Idle, ComboPrimary, PowerPrimary, ComboSecondary, PowerSecondary, Charge, Cast, Fall, Land, Climb, Dash, DashAttack, Hit, Death, Emote}
  *                  2.) Alphabet = { button_south, button_east, button_west, button_north, left_stick, right_stick, right_shoulder, left_shoulder, right_trigger, 
@@ -48,16 +48,16 @@ public class PlayerStateMachine : StateMachine
     private PlayerPowerSecondaryState _powerSecState;
     private PlayerClimbState _climbState;
     private PlayerFallState _fallState;
+    private PlayerDashState _dashState;
     // TODO: Implement the rest of the states below
     // private static PlayerChargeState _chargeState;
     // private static PlayerCastState _castState;
-    // private static PlayerDashState _dashState;
     private PlayerEmoteState _emoteState;
     
 
     [field: Header("Required References")]
     [field: SerializeField] public Transform PlayerCharacter { get; private set; }      // The player model with the bones
-    [field: SerializeField] public Weapon UnarmedWeapon { get; private set; }       // The abilities the player will have when they do not have a weapon equipped 
+    [field: SerializeField] public Weapon UnarmedWeapon { get; private set; }       // The abilities the player will have when they do not have a weapon equipped
     [field: SerializeField] public AbilityUI AbilityUI { get; private set; }        // TODO: remove this reference, this is BAD practice!
 
     [field: Header("Movement")]
@@ -80,6 +80,19 @@ public class PlayerStateMachine : StateMachine
     [field: Tooltip("Player's secondary weapon slot")]
     [field: SerializeField] public Weapon SecondaryWeapon { get; private set; }
 
+    // Equipped Abilities
+    [field: Header("Equipped Abilities")]
+    [field: Tooltip("Ability equipped in the Combo Attack Primary Slot")]
+    [field: SerializeField] public Ability ComboAttackPrimaryAbility { get; private set; }
+    [field: Tooltip("Ability equipped in the Power Attack Primary Slot")]
+    [field: SerializeField] public Ability PowerAttackPrimaryAbility { get; private set; }
+    [field: Tooltip("Ability equipped in the Combo Attack Secondary Slot")]
+    [field: SerializeField] public Ability ComboAttackSecondaryAbility { get; private set; }
+    [field: Tooltip("Ability equipped in the Power Attack Secondary Slot")]
+    [field: SerializeField] public Ability PowerAttackSecondaryAbility { get; private set; }
+    [field: Tooltip("Ability equipped in the Dash Slot")]
+    [field: SerializeField] public Ability DashAbility { get; set; }
+
     [field: Header("Attach Points")]                                                                // Attach points for objects that move with the player's rig
     [field: Tooltip("Primary weapon parent transform when equipped")]
     [field: SerializeField] public Transform PrimaryWeaponAttachPoint { get; private set; }
@@ -97,12 +110,6 @@ public class PlayerStateMachine : StateMachine
     public AnimationTimestamps AnimationTimestamps { get; private set; }        // reference to player animator events
     public ForceReciever ForceReciever { get; private set; }        // reference to player physics
     public EntityHealth Health { get; private set; }        // Reference to player health
-
-    // Player Abilities Assigned In Code
-    public Ability ComboAttackPrimary { get; private set; }
-    public Ability ComboAttackSecondary { get; private set; }
-    public Ability PowerAttackPrimary { get; private set; }
-    public Ability PowerAttackSecondary { get; private set; }
     #endregion
 
     #region Mono
@@ -144,7 +151,7 @@ public class PlayerStateMachine : StateMachine
 
         // Equip Primary and Secondary Weapons off rip if assigned in the inspector
         EquipPrimaryWeapon(PrimaryWeapon);
-        EquipSecondaryWeapon(SecondaryWeapon);  
+        EquipSecondaryWeapon(SecondaryWeapon); 
     }
 
     private void OnEnable()
@@ -222,7 +229,9 @@ public class PlayerStateMachine : StateMachine
                 TransitionStates(_climbState);
                 break;
             case PlayerStates.Dash:
-                // TODO: Implement
+                if (_dashState == null)
+                    _dashState = new PlayerDashState(this);
+                TransitionStates(_dashState);
                 break;
             case PlayerStates.Impact:
                 TransitionStates(new PlayerImpactState(this));
@@ -311,7 +320,7 @@ public class PlayerStateMachine : StateMachine
     /// <param name="weapon">The weapon to be equipped.</param>
     public void EquipPrimaryWeapon(Weapon weapon)
     {
-        // If the weapon passed in was null then equip the unarmed weapon
+        // If the weapon passed in was null then equip the unarmed weapon's abilities
         if (weapon == null)
             weapon = UnarmedWeapon;
 
@@ -320,11 +329,11 @@ public class PlayerStateMachine : StateMachine
 
         // Set Combo Attack Primary
         ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
-        SetAbility(ability, AbilityType.ComboAttackPrimary);
+        SetAbility(ability);
 
         // Set Power Attack Primary
         ability = weapon.GetAbility(AbilityType.PowerAttackPrimary);
-        SetAbility(ability, AbilityType.PowerAttackPrimary);
+        SetAbility(ability);
 
         // If there is a secondary weapon equipped then do not replace the secondary abilitites
         if (SecondaryWeapon != null)
@@ -332,11 +341,11 @@ public class PlayerStateMachine : StateMachine
 
         // Set Combo Attack Secondary
         ability = weapon.GetAbility(AbilityType.ComboAttackSecondary);
-        SetAbility(ability, AbilityType.ComboAttackSecondary);
+        SetAbility(ability);
 
         // Set Power Attack Secondary
         ability = weapon.GetAbility(AbilityType.PowerAttackSecondary);
-        SetAbility(ability, AbilityType.PowerAttackSecondary);
+        SetAbility(ability);
     }
 
     /// <summary>
@@ -346,7 +355,7 @@ public class PlayerStateMachine : StateMachine
     /// <param name="weapon">The weapon to be equipped.</param>
     public void EquipSecondaryWeapon(Weapon weapon)
     {
-        // If the weapon passed in was null then equip the unarmed weapon
+        // If the weapon passed in was null then equip the unarmed weapon's abilities
         if (weapon == null)
             weapon = UnarmedWeapon;
 
@@ -355,39 +364,50 @@ public class PlayerStateMachine : StateMachine
 
         // Set Combo Attack Secondary
         ability = weapon.GetAbility(AbilityType.ComboAttackSecondary);
-        SetAbility(ability, AbilityType.ComboAttackSecondary);
+        SetAbility(ability);
 
         // Set Power Attack Secondary
         ability = weapon.GetAbility(AbilityType.PowerAttackSecondary);
-        SetAbility(ability, AbilityType.PowerAttackSecondary);
+        SetAbility(ability);
     }
 
     /// <summary> Sets up an ability and assigns it to a slot.</summary>
     /// <param name="ability">Ability reference</param>
     /// <param name="type">Ability slot</param>
-    public void SetAbility(Ability ability, AbilityType type)
+    public void SetAbility(Ability ability)
     {
-        switch (type)
+        if (ability == null)
+        {
+            Debug.LogWarning("Player State Machine Warning: Ability could not be set; null.");
+            return;
+        }
+
+        switch (ability.Type)
         {
             case AbilityType.ComboAttackPrimary:
-                ComboAttackPrimary = ability;
-                AbilityUI.AssignPrimaryComboAbility(ability);
-                if (DebugStateMachine) Debug.Log("Combo Attack Primary set to " + ability);
+                ComboAttackPrimaryAbility = ability;
+                AbilityUI.AssignAbility(ability);
+                if (DebugStateMachine) Debug.Log("Combo Attack Primary Ability set to " + ability);
                 break;
             case AbilityType.ComboAttackSecondary:
-                ComboAttackSecondary = ability;
-                AbilityUI.AssignSecondaryComboAbility(ability);
-                if (DebugStateMachine) Debug.Log("Combo Attack Secondary set to " + ability);
+                ComboAttackSecondaryAbility = ability;
+                AbilityUI.AssignAbility(ability);
+                if (DebugStateMachine) Debug.Log("Combo Attack Secondary Ability set to " + ability);
                 break;
             case AbilityType.PowerAttackPrimary:
-                PowerAttackPrimary = ability;
-                AbilityUI.AssignPrimaryPowerAbility(ability);
-                if (DebugStateMachine) Debug.Log("Power Attack Primary set to " + ability);
+                PowerAttackPrimaryAbility = ability;
+                AbilityUI.AssignAbility(ability);
+                if (DebugStateMachine) Debug.Log("Power Attack Primary Ability set to " + ability);
                 break;
             case AbilityType.PowerAttackSecondary:
-                PowerAttackSecondary = ability;
-                AbilityUI.AssignSecondaryPowerAbility(ability);
-                if (DebugStateMachine) Debug.Log("Power Attack Secondary set to " + ability);
+                PowerAttackSecondaryAbility = ability;
+                AbilityUI.AssignAbility(ability);
+                if (DebugStateMachine) Debug.Log("Power Attack Secondary Ability set to " + ability);
+                break;
+            case AbilityType.Dash:
+                DashAbility = ability;
+                AbilityUI.AssignAbility(ability);
+                if (DebugStateMachine) Debug.Log("Dash Ability set to " + ability);
                 break;
             default:
                 return;

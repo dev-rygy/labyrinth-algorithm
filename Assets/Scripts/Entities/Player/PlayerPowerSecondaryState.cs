@@ -14,23 +14,23 @@ public class PlayerPowerSecondaryState : PlayerState
 
     public override void Enter()
     {
-        if (stateMachine.PowerAttackSecondary == null)
+        if (stateMachine.PowerAttackSecondaryAbility == null)
         {
             Debug.LogWarning("Power Secondary: Ability not Assigned.");
             stateMachine.TransitionStates(PlayerStates.Idle);
             return;
         }
 
-        stateMachine.PowerAttackSecondary?.Enter();
+        stateMachine.PowerAttackSecondaryAbility?.Enter();
     }
 
     public override void Tick(float deltaTime)
     {
-        stateMachine.PowerAttackSecondary?.Tick(deltaTime);
+        stateMachine.PowerAttackSecondaryAbility?.Tick(deltaTime);
     }
 
     public override void Exit()
     {
-        stateMachine.PowerAttackSecondary?.Exit();
+        stateMachine.PowerAttackSecondaryAbility?.Exit();
     }
 }

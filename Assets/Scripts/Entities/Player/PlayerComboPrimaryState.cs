@@ -15,23 +15,23 @@ public class PlayerComboPrimaryState : PlayerState
 
     public override void Enter()
     {
-        if (stateMachine.ComboAttackPrimary == null)
+        if (stateMachine.ComboAttackPrimaryAbility == null)
         {
             Debug.LogWarning("Combo Primary: Ability not assigned.");
             stateMachine.TransitionStates(PlayerStates.Idle);
             return;
         }
 
-        stateMachine.ComboAttackPrimary?.Enter();
+        stateMachine.ComboAttackPrimaryAbility?.Enter();
     }
 
     public override void Tick(float deltaTime)
     {
-        stateMachine.ComboAttackPrimary?.Tick(deltaTime);
+        stateMachine.ComboAttackPrimaryAbility?.Tick(deltaTime);
     }
 
     public override void Exit()
     {
-        stateMachine.ComboAttackPrimary?.Exit();
+        stateMachine.ComboAttackPrimaryAbility?.Exit();
     }
 }

@@ -42,7 +42,7 @@ public class EntityHealth : MonoBehaviour, IDamagable
         Health += amount;
     }
 
-    public virtual void MakeInvulnerable(float invTime)         // Called ANY time the Entity becomes invulnerable
+    public virtual void SetInvulnerableTimer(float invTime)         // Called ANY time the Entity becomes invulnerable
     {
         if (invTime > 0 && !Invulnerable)
             StartCoroutine(InvulnerableCo(invTime));

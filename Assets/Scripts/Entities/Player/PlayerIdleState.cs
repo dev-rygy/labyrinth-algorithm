@@ -8,8 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RyansLibrary.Input;
-using System.Xml.Serialization;
-using UnityEngine.UIElements;
 
 /// <summary>
 /// This is the default state for the player. Every state the player transitions to
@@ -37,6 +35,7 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnComboSecondary += OnComboSecondary;      // Input: left_shoulder
         InputHandler.OnPowerPrimary += OnPoweredPrimary;        // Input: right_trigger
         InputHandler.OnPowerSecondary += OnPoweredSecondary;    // Input: left_trigger
+        InputHandler.OnDash += OnDash;                          // Input: dash
         InputHandler.OnInteract1 += OnInteract1;                // Input: interact
         InputHandler.OnEmote += OnEmote;                        // Input: emote
 
@@ -69,7 +68,7 @@ public class PlayerIdleState : PlayerState
         if (moveInput != Vector3.zero)  // Code below only needed if the player is moving
         {
             // Rotate the player character in the normalized direction of movement
-            Vector3 moveInputNormalized = new Vector3(stateMachine.Input.MovementInputNormalized.x, 0, stateMachine.Input.MovementInputNormalized.y);
+            Vector3 moveInputNormalized = new Vector3(stateMachine.Input.MoveDirectionNormalized.x, 0, stateMachine.Input.MoveDirectionNormalized.y);
             stateMachine.ApplyCharacterRotation(moveInputNormalized, deltaTime);
         }
 
@@ -85,6 +84,7 @@ public class PlayerIdleState : PlayerState
         InputHandler.OnComboSecondary -= OnComboSecondary;
         InputHandler.OnPowerPrimary -= OnPoweredPrimary;
         InputHandler.OnPowerSecondary -= OnPoweredSecondary;
+        InputHandler.OnDash -= OnDash;
         InputHandler.OnInteract1 -= OnInteract1;
         InputHandler.OnEmote -= OnEmote;
     }
@@ -93,7 +93,7 @@ public class PlayerIdleState : PlayerState
     private void OnComboPrimary()
     {
         // If the ability is on cooldown then don't use at this time
-        if (stateMachine.ComboAttackPrimary.OnCooldown)
+        if (stateMachine.ComboAttackPrimaryAbility.OnCooldown)
         {
             if (stateMachine.DebugStateMachine) Debug.Log("Primary Combo Attack on Cooldown.");
             return;
@@ -105,7 +105,7 @@ public class PlayerIdleState : PlayerState
     private void OnComboSecondary()
     {
         // If the ability is on cooldown then don't use at this time
-        if (stateMachine.ComboAttackSecondary.OnCooldown)
+        if (stateMachine.ComboAttackSecondaryAbility.OnCooldown)
         {
             if (stateMachine.DebugStateMachine) Debug.Log("Secondary Combo Attack on Cooldown.");
             return;
@@ -117,7 +117,7 @@ public class PlayerIdleState : PlayerState
     private void OnPoweredPrimary()
     {
         // If the ability is on cooldown then don't use at this time
-        if (stateMachine.PowerAttackPrimary.OnCooldown)
+        if (stateMachine.PowerAttackPrimaryAbility.OnCooldown)
         {
             if (stateMachine.DebugStateMachine) Debug.Log("Primary Power Attack on Cooldown.");
             return;
@@ -129,13 +129,18 @@ public class PlayerIdleState : PlayerState
     private void OnPoweredSecondary()
     {
         // If the ability is on cooldown then don't use at this time
-        if (stateMachine.PowerAttackSecondary.OnCooldown)
+        if (stateMachine.PowerAttackSecondaryAbility.OnCooldown)
         {
             if (stateMachine.DebugStateMachine) Debug.Log("Secondary Power Attack on Cooldown.");
             return;
         }
 
         stateMachine.TransitionStates(PlayerStates.PowerSec);
+    }
+
+    private void OnDash()
+    {
+        stateMachine.TransitionStates(PlayerStates.Dash);
     }
 
     private void OnInteract1()

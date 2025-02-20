@@ -14,23 +14,23 @@ public class PlayerComboSecondaryState : PlayerState
 
     public override void Enter()
     {
-        if (stateMachine.ComboAttackSecondary == null)
+        if (stateMachine.ComboAttackSecondaryAbility == null)
         {
             Debug.LogWarning("Combo Secondary: Ability not assigned.");
             stateMachine.TransitionStates(PlayerStates.Idle);
             return;
         }
 
-        stateMachine.ComboAttackSecondary?.Enter();
+        stateMachine.ComboAttackSecondaryAbility?.Enter();
     }
 
     public override void Tick(float deltaTime)
     {
-        stateMachine.ComboAttackSecondary?.Tick(deltaTime);
+        stateMachine.ComboAttackSecondaryAbility?.Tick(deltaTime);
     }
 
     public override void Exit()
     {
-        stateMachine.ComboAttackSecondary?.Exit();
+        stateMachine.ComboAttackSecondaryAbility?.Exit();
     }
 }

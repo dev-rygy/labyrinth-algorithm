@@ -51,7 +51,7 @@ public class PlayerClimbState : PlayerState
         }
 
         // Move the player up and down based on the normalized movement input
-        Vector3 moveInput = new Vector3(0, stateMachine.Input.MovementInputNormalized.y, 0);
+        Vector3 moveInput = new Vector3(0, stateMachine.Input.MoveDirectionNormalized.y, 0);
         stateMachine.Move(moveInput * stateMachine.ClimbSpeed, deltaTime);
 
         // If the player has movement then play running animation

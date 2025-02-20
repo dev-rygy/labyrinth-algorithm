@@ -40,7 +40,7 @@ public class PlayerFallState : PlayerState
         if (moveInput != Vector3.zero)  // Code below only needed if the player is moving
         {
             // Rotate the player character in the normalized direction of movement
-            Vector3 moveInputNormalized = new Vector3(stateMachine.Input.MovementInputNormalized.x, 0, stateMachine.Input.MovementInputNormalized.y);
+            Vector3 moveInputNormalized = new Vector3(stateMachine.Input.MoveDirectionNormalized.x, 0, stateMachine.Input.MoveDirectionNormalized.y);
             stateMachine.ApplyCharacterRotation(moveInputNormalized, deltaTime);
         }
 
