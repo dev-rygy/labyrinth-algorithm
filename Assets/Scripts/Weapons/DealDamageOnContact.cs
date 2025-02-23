@@ -9,17 +9,12 @@ public class DealDamageOnContact : MonoBehaviour
 
     private void OnTriggerEnter(Collider otherCollider)
     {
-        Debug.Log("Collider Detected");
-
         // Object must have a rigidbody to take damage
         if (otherCollider.attachedRigidbody == null) return;
-
-        Debug.Log("Rigidbody Detected");
 
         // If the object has a Health component -> deal damage
         if (otherCollider.attachedRigidbody.TryGetComponent<EntityHealth>(out EntityHealth health))
         {
-            Debug.Log("Damage Delt");
             health.TakeDamage(damage);
         }
     }
