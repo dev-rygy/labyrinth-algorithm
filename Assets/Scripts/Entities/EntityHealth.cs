@@ -22,6 +22,11 @@ public class EntityHealth : MonoBehaviour, IDamagable
     public int Health { get; protected set; }
     public bool Invulnerable { get; protected set; }
 
+    public void Start()
+    {
+        Health = MaxHealth;
+    }
+
     public virtual void TakeDamage(int damage)         // Change health value with damage passed in; wait for invTime
     {
         if (Health <= 0)

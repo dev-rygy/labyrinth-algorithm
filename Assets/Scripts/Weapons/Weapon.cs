@@ -20,7 +20,7 @@ public enum WeaponType
 public class Weapon : MonoBehaviour
 {
     [field: SerializeField] public WeaponType Type { get; private set; }
-    [field: SerializeField] public GameObject WeaponColliderObject { get; private set; }
+    [field: SerializeField] public GameObject WeaponHitbox { get; private set; }
 
     [field: SerializeField] protected Ability primaryComboAbility;
     [field: SerializeField] protected Ability primaryPowerAbility;
@@ -55,17 +55,17 @@ public class Weapon : MonoBehaviour
 
     public void EnableWeaponCollider()
     {
-        if (WeaponColliderObject == null)
+        if (WeaponHitbox == null)
             return;
 
-        WeaponColliderObject.SetActive(true);
+        WeaponHitbox.SetActive(true);
     }
 
     public void DisableWeaponCollider()
     {
-        if (WeaponColliderObject == null)
+        if (WeaponHitbox == null)
             return;
 
-        WeaponColliderObject.SetActive(false);
+        WeaponHitbox.SetActive(false);
     }
 }
