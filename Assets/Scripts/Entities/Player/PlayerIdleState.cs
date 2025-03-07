@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RyansLibrary.Input;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// This is the default state for the player. Every state the player transitions to
@@ -140,6 +141,13 @@ public class PlayerIdleState : PlayerState
 
     private void OnDash()
     {
+        // If the ability is on cooldown then don't use at this time
+        if (stateMachine.DashAbility.OnCooldown)
+        {
+            if (stateMachine.DebugStateMachine) Debug.Log("Dash Ability on Cooldown.");
+            return;
+        }
+
         stateMachine.TransitionStates(PlayerStates.Dash);
     }
 

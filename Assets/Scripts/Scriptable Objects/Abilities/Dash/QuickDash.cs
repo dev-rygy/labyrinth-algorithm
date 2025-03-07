@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    02/17/2025
- * Last Modified:   02/19/2025 (Ryan)
+ * Last Modified:   03/06/2025 (Ryan)
  * Notes:           Default Dash when the player is unclothed or armor dash is the same as default
 */
 using RyansLibrary.Abilities;

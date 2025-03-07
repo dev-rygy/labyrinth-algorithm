@@ -151,7 +151,9 @@ public class PlayerStateMachine : StateMachine
 
         // Equip Primary and Secondary Weapons off rip if assigned in the inspector
         EquipPrimaryWeapon(PrimaryWeapon);
-        EquipSecondaryWeapon(SecondaryWeapon); 
+        EquipSecondaryWeapon(SecondaryWeapon);
+
+        SetAbility(DashAbility);
     }
 
     private void OnEnable()

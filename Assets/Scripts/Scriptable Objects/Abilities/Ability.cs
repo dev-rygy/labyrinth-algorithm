@@ -28,7 +28,7 @@ namespace RyansLibrary.Abilities
 
     public abstract class Ability : ScriptableObject, IAbility
     {
-        public static float cooldownUpdateRate = 0.2f;      // cooldown update rate for all abilities
+        public static float cooldownUpdateRate = 0.1f;      // cooldown update rate for all abilities
 
         // Event for UI
         public event Action<float, float> OnAbilityCooldown;
@@ -39,7 +39,7 @@ namespace RyansLibrary.Abilities
         [SerializeField] public Sprite abilityIcon;
         [SerializeField] public float cooldown;
 
-        public bool OnCooldown { get; private set; } = false;
+        [field: SerializeField] public bool OnCooldown { get; private set; } = false;
 
         public abstract void Enter();
 
