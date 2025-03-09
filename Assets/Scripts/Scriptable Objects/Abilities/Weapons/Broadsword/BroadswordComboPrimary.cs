@@ -34,12 +34,9 @@ public class BroadswordComboPrimary : Ability
         stateMachine.hitbox.OnContact += DealDamageOnContact;
 
         // When the combo is finished or if the player does not press the attack button again then exit the state
-        stateMachine.AnimationTimestamps.OnComboPrimEnter += ComboEnter;
-        stateMachine.AnimationTimestamps.OnComboPrimContinue += ComboContinue;
-        stateMachine.AnimationTimestamps.OnComboPrimExit += ComboExit;
-
-        stateMachine.AnimationTimestamps.OnComboPrimColliderEnable += stateMachine.PrimaryWeapon.EnableWeaponCollider;
-        stateMachine.AnimationTimestamps.OnComboPrimColliderDisable += stateMachine.PrimaryWeapon.DisableWeaponCollider;
+        stateMachine.AnimationTimestamps.OnAnimationEnter += ComboEnter;
+        stateMachine.AnimationTimestamps.OnAnimationContinue += ComboContinue;
+        stateMachine.AnimationTimestamps.OnAnimationExit += ComboExit;
 
         // Play the attack's animation
         stateMachine.Animator.CrossFadeInFixedTime(animHash, 0.3f);
@@ -62,12 +59,9 @@ public class BroadswordComboPrimary : Ability
         stateMachine.hitbox.OnContact -= DealDamageOnContact;
 
         // When the combo is finished or if the player does not press the attack button again then exit the state
-        stateMachine.AnimationTimestamps.OnComboPrimEnter -= ComboEnter;
-        stateMachine.AnimationTimestamps.OnComboPrimContinue -= ComboContinue;
-        stateMachine.AnimationTimestamps.OnComboPrimExit -= ComboExit;
-
-        stateMachine.AnimationTimestamps.OnComboPrimColliderEnable -= stateMachine.PrimaryWeapon.EnableWeaponCollider;
-        stateMachine.AnimationTimestamps.OnComboPrimColliderDisable -= stateMachine.PrimaryWeapon.DisableWeaponCollider;
+        stateMachine.AnimationTimestamps.OnAnimationEnter -= ComboEnter;
+        stateMachine.AnimationTimestamps.OnAnimationContinue -= ComboContinue;
+        stateMachine.AnimationTimestamps.OnAnimationExit -= ComboExit;
     }
 
     // The player presses the primary combo key

@@ -19,10 +19,7 @@ public class UnarmedPowerPrimary : Ability
     {
         stateMachine = PlayerStateMachine.Instance;
 
-        stateMachine.AnimationTimestamps.OnComboPrimExit += PowerExit;
-
-        stateMachine.AnimationTimestamps.OnComboPrimColliderEnable += stateMachine.PrimaryWeapon.EnableWeaponCollider;
-        stateMachine.AnimationTimestamps.OnComboPrimColliderDisable += stateMachine.PrimaryWeapon.DisableWeaponCollider;
+        stateMachine.AnimationTimestamps.OnAnimationExit += PowerExit;
 
         stateMachine.ForceReciever.AddForce(stateMachine.PlayerCharacter.transform.forward * attackForce, 0.75f);
 
@@ -39,10 +36,7 @@ public class UnarmedPowerPrimary : Ability
     {
         StartCooldown();
 
-        stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
-
-        stateMachine.AnimationTimestamps.OnComboPrimColliderEnable -= stateMachine.PrimaryWeapon.EnableWeaponCollider;
-        stateMachine.AnimationTimestamps.OnComboPrimColliderDisable -= stateMachine.PrimaryWeapon.DisableWeaponCollider;
+        stateMachine.AnimationTimestamps.OnAnimationExit -= PowerExit;
     }
 
     private void PowerExit()

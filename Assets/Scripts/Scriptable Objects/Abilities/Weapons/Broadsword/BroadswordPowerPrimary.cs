@@ -5,8 +5,6 @@
  * Notes:           Primary Combo Ability for the Broadsword
 */
 using RyansLibrary.Abilities;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BroadswordPowerPrimaryAbility", menuName = "Scriptable Objects/Ability/Weapons/Broadsword/BroadswordPowerPrimaryAbility", order = 1)]
@@ -14,32 +12,54 @@ public class BroadswordPowerPrimary : Ability
 {
     [Header("Attack")]
     [SerializeField] private int attackDamage;
-    [SerializeField] private float attackForce;
+    [SerializeField] private float initialAttackForce;
+    [SerializeField] private float attackForceGain;
+    [SerializeField] private float maximumPowerTime;
 
     [Header("Animation")]
     [SerializeField] private string animHash;
+
+    // The longer this variable is true the more power the ability will have
+    private float attackForce;
+    private bool poweringAbility;
+    private float originalAnimSpeed;
+    private float timerTime;
 
     public override void Enter()
     {
         stateMachine = PlayerStateMachine.Instance;
 
+        // Init. Ability Cast
+        attackForce = initialAttackForce;
+        poweringAbility = true;
+        timerTime = 0;
+
         stateMachine.hitbox.OnContact += DealDamageOnContact;
 
-        stateMachine.AnimationTimestamps.OnComboPrimExit += PowerExit;
-
-        stateMachine.AnimationTimestamps.OnComboPrimColliderEnable += stateMachine.PrimaryWeapon.EnableWeaponCollider;
-        stateMachine.AnimationTimestamps.OnComboPrimColliderDisable += stateMachine.PrimaryWeapon.DisableWeaponCollider;
-
-        stateMachine.ForceReciever.AddForce(stateMachine.PlayerCharacter.transform.forward * attackForce, 0.75f);
+        stateMachine.AnimationTimestamps.OnAnimationExit += PowerExit;
 
         // Play the attack's animation
-        stateMachine.Animator.CrossFadeInFixedTime(animHash, 0.3f);
+        stateMachine.Animator.CrossFadeInFixedTime(animHash, 0);
+
+        originalAnimSpeed = stateMachine.Animator.speed;    // Store original animation speed
     }
 
     public override void Tick(float deltaTime)
     {
         // Apply ambient forces
         stateMachine.ApplyAmbientForces(deltaTime);
+
+        // Start animation again and release force when the player is no longer holding down the primary power button
+        if (poweringAbility && !stateMachine.Input.IsHoldingPrimaryPower)
+            CommenceAttack();
+
+        // Freeze animation and power up attack when holding down primary power button
+        if (poweringAbility)
+        {
+            stateMachine.Animator.speed = 0;        // Stop Animation
+
+            PowerTimer(deltaTime);
+        }
     }
 
     public override void Exit()
@@ -48,10 +68,25 @@ public class BroadswordPowerPrimary : Ability
 
         stateMachine.hitbox.OnContact -= DealDamageOnContact;
 
-        stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
+        stateMachine.AnimationTimestamps.OnAnimationExit -= PowerExit;
+    }
 
-        stateMachine.AnimationTimestamps.OnComboPrimColliderEnable -= stateMachine.PrimaryWeapon.EnableWeaponCollider;
-        stateMachine.AnimationTimestamps.OnComboPrimColliderDisable -= stateMachine.PrimaryWeapon.DisableWeaponCollider;
+    private void PowerTimer(float deltaTime)
+    {
+        timerTime += deltaTime;
+        attackForce += attackForceGain * deltaTime;     // Add to force over time
+
+        if (timerTime >= maximumPowerTime)
+            CommenceAttack();
+    }
+
+    private void CommenceAttack()
+    {
+        poweringAbility = false;        // Flag to not stop the animation anymore
+
+        stateMachine.Animator.speed = originalAnimSpeed;        // Restore original animation speed
+
+        stateMachine.ForceReciever.AddForce(stateMachine.PlayerCharacter.transform.forward * attackForce, 0.75f);      // Attack Force
     }
 
     private void PowerExit()

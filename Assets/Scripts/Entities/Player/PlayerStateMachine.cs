@@ -387,6 +387,9 @@ public class PlayerStateMachine : StateMachine
             return;
         }
 
+        // Reset cooldown to prevent errors
+        ability.ResetCooldown();
+
         switch (ability.Type)
         {
             case AbilityType.ComboAttackPrimary:
