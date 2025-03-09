@@ -103,6 +103,9 @@ public class PlayerStateMachine : StateMachine
     [field: Tooltip("Shield parent transform when sheathed")]
     [field: SerializeField] public Transform ShieldSheatheAttachPoint { get; private set; }
 
+    [field: Header("Hitboxes")]
+    [field: SerializeField] public Hitbox hitbox { get; private set; }
+
     // References Assigned In Code
     public InputHandler Input { get; private set; } // reference to the input handler
     public CharacterController Controller { get; private set; } // reference to the player's controller
