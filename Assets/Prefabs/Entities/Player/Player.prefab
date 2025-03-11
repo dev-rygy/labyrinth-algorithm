@@ -263,6 +263,73 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5326989227265214720}
   m_LocalEulerAnglesHint: {x: -85.644, y: 89.996, z: -85.639}
+--- !u!1 &3606135239822115232
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6087317094565055842}
+  - component: {fileID: 3338496771949440459}
+  - component: {fileID: 4061529719449072694}
+  m_Layer: 0
+  m_Name: Hitbox Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &6087317094565055842
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606135239822115232}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.20833331, y: 0.62499994, z: 1.0416666}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5327056992418592808}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3338496771949440459
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606135239822115232}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4061529719449072694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606135239822115232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c29649fa2657a3140b65884f9368a1ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _debug: 0
 --- !u!1 &4876990063368453667
 GameObject:
   m_ObjectHideFlags: 0
@@ -33142,6 +33209,7 @@ Transform:
   m_Children:
   - {fileID: 5326687606062951868}
   - {fileID: 5328593582906945504}
+  - {fileID: 6087317094565055842}
   m_Father: {fileID: 4417549369138805797}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &5238221279149470940
@@ -69643,20 +69711,21 @@ MonoBehaviour:
   _climbInteractionAngle: 0.85
   <PrimaryWeapon>k__BackingField: {fileID: 700465039474909767}
   <SecondaryWeapon>k__BackingField: {fileID: 4888798840614094224}
-  <PrimaryWeaponAttachPoint>k__BackingField: {fileID: 2717451356006317172}
-  <SecondaryWeaponAttachPoint>k__BackingField: {fileID: 2347582765746272543}
-  <SwordSheatheAttachPoint>k__BackingField: {fileID: 7567666224496885868}
-  <ShieldSheatheAttachPoint>k__BackingField: {fileID: 4872363222399478353}
   <ComboAttackPrimaryAbility>k__BackingField: {fileID: 11400000, guid: cee033a3d2d6f6242ad6b7e0d696dcc6,
     type: 2}
-  <ComboAttackSecondaryAbility>k__BackingField: {fileID: 11400000, guid: 196621956145cc247a75d55aa257166d,
-    type: 2}
   <PowerAttackPrimaryAbility>k__BackingField: {fileID: 11400000, guid: f388f447a8892fe49a08587de94e64e0,
+    type: 2}
+  <ComboAttackSecondaryAbility>k__BackingField: {fileID: 11400000, guid: 196621956145cc247a75d55aa257166d,
     type: 2}
   <PowerAttackSecondaryAbility>k__BackingField: {fileID: 11400000, guid: 5b90da5f43c3f064081d1ff8d11fc25e,
     type: 2}
   <DashAbility>k__BackingField: {fileID: 11400000, guid: 935ed90b1fc22d448a6cb322c879b3bc,
     type: 2}
+  <PrimaryWeaponAttachPoint>k__BackingField: {fileID: 2717451356006317172}
+  <SecondaryWeaponAttachPoint>k__BackingField: {fileID: 2347582765746272543}
+  <SwordSheatheAttachPoint>k__BackingField: {fileID: 7567666224496885868}
+  <ShieldSheatheAttachPoint>k__BackingField: {fileID: 4872363222399478353}
+  <hitbox>k__BackingField: {fileID: 4061529719449072694}
 --- !u!114 &7359390006632431785
 MonoBehaviour:
   m_ObjectHideFlags: 0

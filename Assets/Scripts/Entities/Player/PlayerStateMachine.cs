@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   02/20/2025 (Ryan)
+ * Last Modified:   03/09/2025 (Ryan)
  * Notes:           Finite State Machine for the Player
  *                  1.) States = { Idle, ComboPrimary, PowerPrimary, ComboSecondary, PowerSecondary, Charge, Cast, Fall, Land, Climb, Dash, DashAttack, Hit, Death, Emote}
  *                  2.) Alphabet = { button_south, button_east, button_west, button_north, left_stick, right_stick, right_shoulder, left_shoulder, right_trigger, 
@@ -12,8 +12,6 @@
 using RyansLibrary.StateMachine;
 using RyansLibrary.Input;
 using RyansLibrary.Abilities;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -38,7 +36,10 @@ public enum PlayerStates
 public class PlayerStateMachine : StateMachine
 {
     #region Variables
-    public static PlayerStateMachine Instance { get; private set; }     // WARNING: This singleton may need to be removed later for networking reasons with multiple players
+    // Events
+    public event Action<Ability> OnAbilityChanged;      // Invokes when a new ability is slotted
+
+    public static PlayerStateMachine Instance { get; private set; }     // WARNING: This singleton may need to be removed later for networking purposes
 
     // Static states to save on memory
     private PlayerIdleState _idleState;
@@ -54,11 +55,10 @@ public class PlayerStateMachine : StateMachine
     // private static PlayerCastState _castState;
     private PlayerEmoteState _emoteState;
     
-
+    // Inspector Variables
     [field: Header("Required References")]
     [field: SerializeField] public Transform PlayerCharacter { get; private set; }      // The player model with the bones
     [field: SerializeField] public Weapon UnarmedWeapon { get; private set; }       // The abilities the player will have when they do not have a weapon equipped
-    [field: SerializeField] public AbilityUI AbilityUI { get; private set; }        // TODO: remove this reference, this is BAD practice!
 
     [field: Header("Movement")]
     [field: Tooltip("Default speed of the player.")]
@@ -103,6 +103,9 @@ public class PlayerStateMachine : StateMachine
     [field: Tooltip("Shield parent transform when sheathed")]
     [field: SerializeField] public Transform ShieldSheatheAttachPoint { get; private set; }
 
+    [field: Header("Hitboxes")]
+    [field: SerializeField] public Hitbox hitbox { get; private set; }
+
     // References Assigned In Code
     public InputHandler Input { get; private set; } // reference to the input handler
     public CharacterController Controller { get; private set; } // reference to the player's controller
@@ -115,8 +118,8 @@ public class PlayerStateMachine : StateMachine
     #region Mono
     private void Awake()
     {
-        // Handle singleton
-        if (Instance && Instance != this)
+        // Handle singleton; if instance has a reference and the reference is not this object
+        if (Instance != null && Instance != this)
             Destroy(gameObject);
         else
             Instance = this;
@@ -182,73 +185,32 @@ public class PlayerStateMachine : StateMachine
 
     #region State Machine Helpers
     /// <summary>
-    /// Overloaded transition function for better readability and better handling of static states.
+    /// Transition function for better readability and better handling of static states.
     /// </summary>
     /// <param name="state">The state to transition to.</param>
     public void TransitionStates(PlayerStates state)
     {
-        switch (state)
+        TransitionStates(GetState(state));
+    }
+
+    private PlayerState GetState(PlayerStates state)
+    {
+        switch(state)
         {
-            case PlayerStates.Idle:
-                if (_idleState == null)
-                    _idleState = new PlayerIdleState(this);
-                TransitionStates(_idleState);
-                break;
-            case PlayerStates.ComboPrim:
-                if (_comboPrimState == null)
-                    _comboPrimState = new PlayerComboPrimaryState(this);
-                TransitionStates(_comboPrimState);
-                break;
-            case PlayerStates.PowerPrim:
-                if (_powerPrimState == null)
-                    _powerPrimState = new PlayerPowerPrimaryState(this);
-                TransitionStates(_powerPrimState);
-                break;
-            case PlayerStates.ComboSec:
-                if (_comboSecState == null)
-                    _comboSecState = new PlayerComboSecondaryState(this);
-                TransitionStates(_comboSecState);
-                break;
-            case PlayerStates.PowerSec:
-                if (_powerSecState == null)
-                    _powerSecState = new PlayerPowerSecondaryState(this);
-                TransitionStates(_powerSecState);
-                break;
-            case PlayerStates.Charge:
-                // TODO: Implement
-                break;
-            case PlayerStates.Cast:
-                // TODO: Implement
-                break;
-            case PlayerStates.Fall:
-                if (_fallState == null)
-                    _fallState = new PlayerFallState(this);
-                TransitionStates(_fallState);
-                break;
-            case PlayerStates.Climb:
-                if (_climbState == null)
-                    _climbState = new PlayerClimbState(this);
-                TransitionStates(_climbState);
-                break;
-            case PlayerStates.Dash:
-                if (_dashState == null)
-                    _dashState = new PlayerDashState(this);
-                TransitionStates(_dashState);
-                break;
-            case PlayerStates.Impact:
-                TransitionStates(new PlayerImpactState(this));
-                break;
-            case PlayerStates.Death:
-                TransitionStates(new PlayerDeathState(this));
-                break;
-            case PlayerStates.Emote:
-                if (_emoteState == null)
-                    _emoteState = new PlayerEmoteState(this);
-                TransitionStates(_emoteState);
-                break;
-            default:
-                Debug.LogError("Player State Machine Error: State Call " + state + " does not exist.");
-                break;
+            case PlayerStates.Idle: return _idleState ??= new PlayerIdleState(this);
+            case PlayerStates.ComboPrim: return _comboPrimState ??= new PlayerComboPrimaryState(this);
+            case PlayerStates.PowerPrim: return _powerPrimState ??= new PlayerPowerPrimaryState(this);
+            case PlayerStates.ComboSec: return _comboSecState ??= new PlayerComboSecondaryState(this);
+            case PlayerStates.PowerSec: return _powerSecState ??= new PlayerPowerSecondaryState(this);
+            case PlayerStates.Charge: throw new ArgumentOutOfRangeException(nameof(state), $"Unhandled state: {state}");        // TODO: Implement
+            case PlayerStates.Cast: throw new ArgumentOutOfRangeException(nameof(state), $"Unhandled state: {state}");        // TODO: Implement
+            case PlayerStates.Fall: return _fallState ??= new PlayerFallState(this);
+            case PlayerStates.Climb: return _climbState ??= new PlayerClimbState(this);
+            case PlayerStates.Dash: return _dashState ??= new PlayerDashState(this);
+            case PlayerStates.Impact: return new PlayerImpactState(this);
+            case PlayerStates.Death: return new PlayerDeathState(this);
+            case PlayerStates.Emote: return _emoteState ??= new PlayerEmoteState(this);
+            default: throw new ArgumentOutOfRangeException(nameof(state), $"Unhandled state: {state}");
         }
     }
 
@@ -384,36 +346,37 @@ public class PlayerStateMachine : StateMachine
             return;
         }
 
+        // Reset cooldown to prevent errors
+        ability.ResetCooldown();
+
         switch (ability.Type)
         {
             case AbilityType.ComboAttackPrimary:
                 ComboAttackPrimaryAbility = ability;
-                AbilityUI.AssignAbility(ability);
                 if (DebugStateMachine) Debug.Log("Combo Attack Primary Ability set to " + ability);
                 break;
             case AbilityType.ComboAttackSecondary:
                 ComboAttackSecondaryAbility = ability;
-                AbilityUI.AssignAbility(ability);
                 if (DebugStateMachine) Debug.Log("Combo Attack Secondary Ability set to " + ability);
                 break;
             case AbilityType.PowerAttackPrimary:
                 PowerAttackPrimaryAbility = ability;
-                AbilityUI.AssignAbility(ability);
                 if (DebugStateMachine) Debug.Log("Power Attack Primary Ability set to " + ability);
                 break;
             case AbilityType.PowerAttackSecondary:
                 PowerAttackSecondaryAbility = ability;
-                AbilityUI.AssignAbility(ability);
                 if (DebugStateMachine) Debug.Log("Power Attack Secondary Ability set to " + ability);
                 break;
             case AbilityType.Dash:
                 DashAbility = ability;
-                AbilityUI.AssignAbility(ability);
                 if (DebugStateMachine) Debug.Log("Dash Ability set to " + ability);
                 break;
             default:
+                Debug.LogError("Player State Machine Error: Ability has invalid type.");
                 return;
         }
+
+        OnAbilityChanged?.Invoke(ability);       // Update UI
     }
 
     public void SheatheWeapons()        // Swap the attach points of the weapons to the sheathe points

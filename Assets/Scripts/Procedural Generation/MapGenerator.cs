@@ -1,14 +1,11 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   01/26/2024 (Ryan)
+ * Last Modified:   03/10/2025 (Ryan)
  * Notes:           Map Generator
 */
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
@@ -34,62 +31,6 @@ namespace RyansLibrary.Labyrinth
             entrancewayFlags = new bool[6];       // A flag to mark which entrances should be open for a room
         }
     }
-
-    /* OLD PATH CODE (Depricated)
-    public enum PathType
-    {
-        master,
-        main,
-        prize
-    }
-    public class Path
-    {
-        public string name { get; private set; }
-        public PathType Type { get; private set; }
-        public List<BlueprintRoom> BlueprintRooms { get; private set; }
-        public List<Room> Rooms { get; private set; }
-        public int startMasterIdx;  // Start index in master path
-        public int endMasterIdx;    // End index in master path
-
-        // Constructor for path; gets it's start and end index in the master path
-        public Path(string newName, PathType type, int startIdx, int endIdx)
-        {
-            name = newName;
-            Type = type;
-
-            BlueprintRooms = new List<BlueprintRoom>();
-            Rooms = new List<Room>();
-
-            startMasterIdx = startIdx;
-            endMasterIdx = endIdx;
-        }
-
-        public int BlueprintCount()
-        {
-            return BlueprintRooms.Count;
-        }
-
-        public int RoomCount()
-        {
-            return Rooms.Count;
-        }
-
-        public void Add(BlueprintRoom room)
-        {
-            BlueprintRooms.Add(room);
-        }
-
-        public void Add(Room room)
-        {
-            Rooms.Add(room);
-        }
-
-        public void ClearBluePrintRooms()
-        {
-            BlueprintRooms.Clear();
-        }
-    }
-    */
     #endregion
 
     public class MapGenerator : MonoBehaviour
@@ -112,7 +53,6 @@ namespace RyansLibrary.Labyrinth
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         public Dictionary<Vector3, BlueprintRoom> MasterDictionary { get; private set; }
         
-
         // ***** Inspector Values *****
         // Enable the map generator
         [Tooltip("Enables map generation.")]
@@ -145,10 +85,14 @@ namespace RyansLibrary.Labyrinth
         private void Awake()
         {
             // Handle Singleton
-            if (Instance && Instance != this)
+            if (Instance != null && Instance != this)
+            {
+                Debug.LogWarning("Another instance of MapGenerator already exists. Deleting Object...");
                 Destroy(gameObject);
-            else
-                Instance = this;
+                return;
+            }
+            
+            Instance = this;
         }
 
         private void Start()
@@ -156,8 +100,15 @@ namespace RyansLibrary.Labyrinth
             // If debug is active; step through procedures with UI buttons
             if (_debugAll)
                 return;
-            
-            LabyrinthAlg();
+            try
+            {
+                GenerateLabyrinth();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to generate labyrinth: {e.Message}");
+            }
+
         }
         #endregion
 
@@ -168,25 +119,22 @@ namespace RyansLibrary.Labyrinth
         /// Once a blueprint on the grid is made the algorithm then heads into a room check and generate procedure. It checks the shape that
         /// adjacent rooms made during the blueprint procedure and spawns a room if applicable.
         /// </summary>
-        public void LabyrinthAlg()
+        public void GenerateLabyrinth()
         {
             // Return if the Map Generator is not enabled
             if (!_enabled) 
                 return;
 
             // Initialize Master Data Structures
-            MasterDictionary = new Dictionary<Vector3, BlueprintRoom>();
-            MasterPath = ScriptableObject.CreateInstance<Path>();
-            MasterPath.Initialize(0, 0);
-            MasterPath.Name = MASTER_PATH_NAME;
+            InitializeMasterPath();
 
             // TODO: Implement a foreach loop to loop over all areas and generate blueprints
 
             // Generate blueprint map for area
-            BlueprintProcedure(_castleArea);
+            GenerateBlueprints(_castleArea);
 
             // Check room conditions and generate rooms using the blueprint map of the area
-            RoomGenerationProcedure(_castleArea);
+            GenerateRooms(_castleArea);
 
             // TODO: Implement perlin noise height and type Map
 
@@ -199,18 +147,27 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Blueprint Procedure
+        private void InitializeMasterPath()
+        {
+            // Initialize Master Data Structures
+            MasterDictionary = new Dictionary<Vector3, BlueprintRoom>();
+            MasterPath = ScriptableObject.CreateInstance<Path>();
+            MasterPath.Initialize(0, 0);
+            MasterPath.Name = MASTER_PATH_NAME;
+        }
+
         /// <summary>
         /// First procedure in the Labyrinth Algorithm that will make pseudo paths in different directions.
         /// These paths are basically just lists of positions on the room grid and will be used to generate
         /// the actual rooms later. It is called blueprint because it is a pre-map layout before placing the
         /// actual rooms.
         /// </summary>
-        public void BlueprintProcedure(Area area)
+        public void GenerateBlueprints(Area area)
         {
             // Must have a area to generate anything
             if (area == null)
             {
-                Debug.LogError($"Map Generator Error: Area Entry Missing for blueprint procedure.");
+                Debug.LogError("Map Generator Error: Area Entry Missing for blueprint procedure.");
                 return;
             }
 
@@ -229,35 +186,17 @@ namespace RyansLibrary.Labyrinth
             // Generate Main Path to boss; TODO: Implement
             // GenerateMainPathBlueprint(area);
 
-            GenerateMainPathBlueprintOld(area);
+            GenerateMainPathBlueprint(area);
 
             // Ganerate Alternative paths
             GeneratePathBlueprint(area);
-        }
-
-        public void GenerateMainPathBlueprint(Area area)
-        {
-            if (area.MainPath == null)      // Throw error if MainPath for area does not exist
-            {
-                Debug.LogError($"Map Generator Error: The Main Path for area {area.name} is not assigned.");
-                return;
-            }
-
-            // Initialize a new path at starting room if not null
-            int startIndex = MasterPath.BlueprintCount() - 1;               // Start index in master path
-            int endIndex = startIndex + area.MainPath.PathLength;
-            area.MainPath.Initialize(startIndex, endIndex);      // End index in master path
-
-            // TODO: Use Simple Room Placement and Bowyer–Watson Algorithm
-            // UniqueRoomPlacement(area);
-            // RandomRoomPlacement(area.MainPath)
         }
 
         /// <summary>
         /// Helper function for generating the main path.
         /// The main path is the path to the area boss and to traversal rooms to other areas
         /// </summary>
-        public void GenerateMainPathBlueprintOld(Area area)
+        public void GenerateMainPathBlueprint(Area area)
         {
             if (area.MainPath == null)      // Throw error if MainPath for area does not exist
             {
@@ -273,6 +212,25 @@ namespace RyansLibrary.Labyrinth
             DrunkardWalk(area.MainPath);
             
             if (_debugAll || _debugBlueprint) Debug.Log($"Map Generator: {area.Name} generated path {area.MainPath.name} with {area.MainPath.BlueprintCount()} rooms.");
+        }
+
+        /* WIP: RANDOM ROOM PLACEMENT ALG
+        public void GenerateMainPathBlueprintNew(Area area)
+        {
+            if (area.MainPath == null)      // Throw error if MainPath for area does not exist
+            {
+                Debug.LogError($"Map Generator Error: The Main Path for area {area.name} is not assigned.");
+                return;
+            }
+
+            // Initialize a new path at starting room if not null
+            int startIndex = MasterPath.BlueprintCount() - 1;               // Start index in master path
+            int endIndex = startIndex + area.MainPath.PathLength;
+            area.MainPath.Initialize(startIndex, endIndex);      // End index in master path
+
+            // TODO: Use Simple Room Placement and Bowyer–Watson Algorithm
+            // UniqueRoomPlacement(area);
+            // RandomRoomPlacement(area.MainPath)
         }
 
         private void UniqueRoomPlacement(Area area)
@@ -379,6 +337,7 @@ namespace RyansLibrary.Labyrinth
 
             room.gameObject.transform.position += shiftAmt;
         }
+        */
 
         /// <summary>
         /// Helper function for generating the prize path
@@ -693,7 +652,7 @@ namespace RyansLibrary.Labyrinth
         /// room shape chance, room prefab chance, if the room shape will align adiquately to the path, and what path
         /// the room is a part of. It will also activate the entranceways of rooms based on the path's sequence.
         /// </summary>
-        public void RoomGenerationProcedure(Area area) 
+        public void GenerateRooms(Area area) 
         {
             // Must have an area to generate anything
             if (area == null)
@@ -1282,9 +1241,9 @@ namespace RyansLibrary.Labyrinth
                 totalCellOcupancy += path.PathLength;
 
             // Calculate the bounded volume and check if amount of room cells taken up exceeds that amount
-            float xSize = (area.UpperBound.x - area.LowerBound.x);
-            float ySize = (area.UpperBound.y - area.LowerBound.y);
-            float zSize = (area.UpperBound.z - area.LowerBound.z);
+            float xSize = area.UpperBound.x - area.LowerBound.x;
+            float ySize = area.UpperBound.y - area.LowerBound.y;
+            float zSize = area.UpperBound.z - area.LowerBound.z;
             float volume = Math.RectangularVolume(xSize, ySize, zSize);
 
             if (volume < totalCellOcupancy)
@@ -1357,21 +1316,29 @@ namespace RyansLibrary.Labyrinth
         /// <param name="name">The name of the room; can be blank</param>
         private void GenerateBlueprintGizmo(Vector3 roomPos, PathType type, string name = "BlueprintRoom")
         {
-            // Set the Color of the gizmo
-            Color color = Color.blue;
-            switch(type)
-            {
-                case PathType.main:
-                    color = _mainPathColor;
-                    break;
-                case PathType.prize:
-                    color = _prizePathColor;
-                    break;
-            }
+            if (!_debugAll || !_debugBlueprint) return;
 
+            // Set the Color of the gizmo
+            Color color = GetColorForPathType(type);
             GameObject gizmo = Instantiate(_blueprintGizmoPrefab, roomPos, Quaternion.identity, _blueprintRoomContainer);
             gizmo.GetComponent<Renderer>().material.color = color;
             gizmo.name = name;
+        }
+
+        /// <summary>
+        /// Color of blueprint gizmo depending on path type
+        /// </summary>
+        private Color GetColorForPathType(PathType type)
+        {
+            switch (type)
+            {
+                case PathType.main:
+                    return _mainPathColor;
+                case PathType.prize:
+                    return _prizePathColor;
+                default:
+                    return Color.blue;  // Default color if none matched
+            }
         }
 
         /// <summary>

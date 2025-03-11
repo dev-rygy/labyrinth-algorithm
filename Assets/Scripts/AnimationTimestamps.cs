@@ -11,35 +11,23 @@ using UnityEngine;
 public class AnimationTimestamps : MonoBehaviour
 {
     // Animation Events
-    public event System.Action OnComboPrimColliderEnable;
-    public event System.Action OnComboPrimColliderDisable;
-    public event System.Action OnComboPrimEnter;
-    public event System.Action OnComboPrimContinue;
-    public event System.Action OnComboPrimExit;
+    public event System.Action OnAnimationEnter;
+    public event System.Action OnAnimationContinue;
+    public event System.Action OnAnimationExit;
 
     // Invoke methods
-    public void InvokeComboPrimEnable()
-    {
-        OnComboPrimColliderEnable?.Invoke();
-    }
-
-    public void InvokeComboPrimDisable()
-    {
-        OnComboPrimColliderDisable?.Invoke();
-    }
-
     public void InvokeComboPrimEnter()
     {
-        OnComboPrimEnter?.Invoke();
+        OnAnimationEnter?.Invoke();
     }
 
     public void InvokeComboPrimContinue()
     {
-        OnComboPrimContinue?.Invoke();
+        OnAnimationContinue?.Invoke();
     }
 
     public void InvokeCombroPrimExit()
     {
-        OnComboPrimExit?.Invoke();
+        OnAnimationExit?.Invoke();
     }
 }

@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 namespace RyansLibrary.Abilities
 {
@@ -39,7 +40,9 @@ namespace RyansLibrary.Abilities
         [SerializeField] public Sprite abilityIcon;
         [SerializeField] public float cooldown;
 
-        [field: SerializeField] public bool OnCooldown { get; private set; } = false;
+        public bool OnCooldown { get; private set; } = false;
+
+        private Coroutine coroutine;
 
         public abstract void Enter();
 
@@ -57,7 +60,17 @@ namespace RyansLibrary.Abilities
             if (OnCooldown)       // If the ability is already on cooldown then return
                 return;
 
-            stateMachine.StartCoroutine(CooldownCo());
+            coroutine = stateMachine.StartCoroutine(CooldownCo());
+        }
+
+        /// <summary>
+        /// Reset the cooldown parameter and coroutine
+        /// </summary>
+        public void ResetCooldown()
+        {
+            OnCooldown = false;
+            if (coroutine != null)
+                stateMachine.StopCoroutine(coroutine);
         }
 
         private IEnumerator CooldownCo()

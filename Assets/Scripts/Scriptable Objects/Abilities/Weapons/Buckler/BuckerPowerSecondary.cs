@@ -18,7 +18,7 @@ public class BuckerPowerSecondary : Ability
     {
         stateMachine = PlayerStateMachine.Instance;
 
-        stateMachine.AnimationTimestamps.OnComboPrimExit += PowerExit;
+        stateMachine.AnimationTimestamps.OnAnimationExit += PowerExit;
 
         // Play the attack's animation
         stateMachine.Animator.CrossFadeInFixedTime(animHash, 0.1f);
@@ -34,7 +34,7 @@ public class BuckerPowerSecondary : Ability
     {
         StartCooldown();
 
-        stateMachine.AnimationTimestamps.OnComboPrimExit -= PowerExit;
+        stateMachine.AnimationTimestamps.OnAnimationExit -= PowerExit;
     }
 
     private void PowerExit()

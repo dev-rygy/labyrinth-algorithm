@@ -33,7 +33,7 @@ public class AbilityUI : MonoBehaviour
     [SerializeField] private TMP_Text _secondaryPowerText;
     [SerializeField] private TMP_Text _dashText;
 
-    private void Start()
+    private void OnEnable()
     {
         _primaryComboBGImage.fillAmount = 0;        // Disable cooldown gradient on start
         _primaryPowerBGImage.fillAmount = 0;
@@ -43,9 +43,25 @@ public class AbilityUI : MonoBehaviour
 
         _primaryComboText.enabled = false;      // Disable cooldown text on start
         _primaryPowerText.enabled = false;
-        _secondaryComboText.enabled = false; 
+        _secondaryComboText.enabled = false;
         _secondaryPowerText.enabled = false;
         _dashText.enabled = false;
+
+        if (PlayerStateMachine.Instance != null)
+            PlayerStateMachine.Instance.OnAbilityChanged += AssignAbility;  // Receive callbacks for equipped abilities
+        else
+        {
+            Debug.LogError("Ability UI Error: PlayerStateMachine instance is null. Unable to subscribe to OnAbilityChanged.");
+            this.enabled = false;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (PlayerStateMachine.Instance == null)
+            return;
+
+        PlayerStateMachine.Instance.OnAbilityChanged -= AssignAbility;  // Receive callbacks for equipped abilities
     }
 
     // Ability Assignment

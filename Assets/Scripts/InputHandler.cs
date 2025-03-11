@@ -20,7 +20,7 @@ namespace RyansLibrary.Input
         public static event System.Action OnMove;
         // public static event System.Action OnLook;        DEPRICATED
         // public static event System.Action OnLookRight;   DEPRICATED
-        // public static event System.Action OnLookLeft;    DEPRICATED 
+        // public static event System.Action OnLookLeft;    DEPRICATED
         public static event System.Action OnJump;
         public static event System.Action OnInteract1;
         public static event System.Action OnInteract2;

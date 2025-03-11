@@ -10,11 +10,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using RyansLibrary.StateMachine;
 
-public interface IAbility
+namespace RyansLibrary.Abilities
 {
-    public void Enter();
+    public interface IAbility
+    {
+        public void Enter();
 
-    public void Tick(float deltaTime);
+        public void Tick(float deltaTime);
 
-    public void Exit();
+        public void Exit();
+    }
 }
