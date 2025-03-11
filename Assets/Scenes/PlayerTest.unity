@@ -987,7 +987,12 @@ PrefabInstance:
     - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}
       propertyPath: <DebugStateMachine>k__BackingField
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3621612921342865075, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      propertyPath: <MoveRotationDampValue>k__BackingField
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4417549369138805797, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}

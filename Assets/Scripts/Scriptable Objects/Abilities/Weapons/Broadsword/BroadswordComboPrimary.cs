@@ -6,8 +6,6 @@
 */
 using RyansLibrary.Abilities;
 using RyansLibrary.Input;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BroadswordComboPrimaryAbility", menuName = "Scriptable Objects/Ability/Weapons/Broadsword/BroadswordComboPrimaryAbility", order = 0)]
@@ -39,7 +37,7 @@ public class BroadswordComboPrimary : Ability
         stateMachine.AnimationTimestamps.OnAnimationExit += ComboExit;
 
         // Play the attack's animation
-        stateMachine.Animator.CrossFadeInFixedTime(animHash, 0.3f);
+        stateMachine.Animator.CrossFadeInFixedTime(animHash, 0.1f);
     }
 
     public override void Tick(float deltaTime)
