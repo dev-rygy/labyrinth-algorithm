@@ -596,6 +596,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: HUD Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 8331628404893149330, guid: ea4379ffa3cc78549a609c693a2ee9b3,
+        type: 3}
+      propertyPath: m_VertexColorAlwaysGammaSpace
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8782835514625387013, guid: ea4379ffa3cc78549a609c693a2ee9b3,
         type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -2981,5 +2986,5 @@ SceneRoots:
   - {fileID: 522497563}
   - {fileID: 566256791}
   - {fileID: 879215208}
-  - {fileID: 17595473}
   - {fileID: 945804584}
+  - {fileID: 17595473}

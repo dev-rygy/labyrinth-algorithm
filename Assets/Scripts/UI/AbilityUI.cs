@@ -56,15 +56,16 @@ public class AbilityUI : MonoBehaviour
         PlayerStateMachine.Instance.OnAbilityChanged -= AssignAbility;  // Receive callbacks for equipped abilities
     }
 
-    private void Start()
+    private void Awake()
     {
-        if (PlayerStateMachine.Instance != null)
-            PlayerStateMachine.Instance.OnAbilityChanged += AssignAbility;  // Receive callbacks for equipped abilities
-        else
+        if (PlayerStateMachine.Instance == null)
         {
             Debug.LogError("Ability UI Error: PlayerStateMachine instance is null. Unable to subscribe to OnAbilityChanged.");
             this.enabled = false;
+            return;
         }
+
+        PlayerStateMachine.Instance.OnAbilityChanged += AssignAbility;  // Receive callbacks for equipped abilities
     }
 
     // Ability Assignment
