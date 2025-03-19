@@ -45,6 +45,9 @@ namespace RyansLibrary.Labyrinth
         [Tooltip("The percent chance for a room with a big shape to spawn when the conditions are met.")]
         [field: SerializeField][field: Range(0, 1)] public float BigRoomSpawnChance { get; private set; } = 0;           // The spawn chance of big rooms 
 
+        [field: Header("Debug")]
+        [field: SerializeField] public Color PathGizmoColor;
+
         public List<BlueprintRoom> BlueprintRooms { get; private set; }
         public List<Room> Rooms { get; private set; }
         public int startMasterIdx { get; set; }  // Start index in master path
