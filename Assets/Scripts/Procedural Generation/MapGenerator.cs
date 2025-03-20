@@ -153,7 +153,7 @@ namespace RyansLibrary.Labyrinth
             GenerateBlueprints(_castleArea);
 
             // Check room conditions and generate rooms using the blueprint map of the area
-            GenerateRooms(_castleArea);
+            GenerateAreaRooms(_castleArea);
 
             // TODO: Implement perlin noise height and type Map
 
@@ -171,7 +171,7 @@ namespace RyansLibrary.Labyrinth
             // Initialize Master Data Structures
             MasterDictionary = new Dictionary<Vector3, BlueprintRoom>();
             MasterPath = ScriptableObject.CreateInstance<Path>();
-            MasterPath.Initialize(0, 0);
+            MasterPath.Initialize();
             MasterPath.Name = MASTER_PATH_NAME;
         }
 
@@ -360,7 +360,7 @@ namespace RyansLibrary.Labyrinth
         }
         */
 
-        // NEW ROOM PLACEMENT METHODS
+        // ************************************** NEW ROOM PLACEMENT METHODS ************************************** 
         private void PlaceUniqueRooms(Area area)
         {
             // 1.) Spawn Static Rooms
@@ -378,7 +378,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (entry.PlacementType == RoomPlacementType.Kinematic)
                 {
-
+                    // TODO: Place Kinematic Rooms
                 }
             }
 
@@ -387,7 +387,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (entry.PlacementType == RoomPlacementType.Dynamic)
                 {
-
+                    // TODO: Place Dynamic Rooms
                 }
             }
         }
@@ -417,12 +417,17 @@ namespace RyansLibrary.Labyrinth
 
                 // Spawn Room
                 Room newRoom = GenerateRoom(entry.Prefab, ConvertToWorldCoords(entry.SpawnPosition));
-                GenerateBlueprintRoomsFromDimensions(area.MainPath, entry.SpawnPosition, room.RoomDimensions);
+                Vector3Int spawnPosition = new Vector3Int((int)entry.SpawnPosition.x, (int)entry.SpawnPosition.y, (int)entry.SpawnPosition.z);      // Convert to int; TODO: change code later to support Vector3Ints
+                Vector3Int dimensions = new Vector3Int((int)room.RoomDimensions.x, (int)room.RoomDimensions.y, (int)room.RoomDimensions.z);
+                GenerateBlueprintRoomsFromDimensions(area.MainPath, spawnPosition, dimensions);      // Fill room space with blueprint rooms
+                area.MainPath.Add(newRoom);
+                MasterPath.Add(newRoom);
                 return true;
             }
 
             return false;
         }
+        // ************************************** END OF NEW PLACEMENT METHODS **************************************
 
         /// <summary>
         /// Helper function for generating the prize path
@@ -460,26 +465,26 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Choose a random room in a path. If endIndex = -1 => endIndex = path's last room.
         /// </summary>
-        /// <param name="pathToChooseFrom">The path to choose the starting room from</param>
+        /// <param name="path">The path to choose the starting room from</param>
         /// <param name="startIndex">Index to start from</param>
         /// <returns>The Choosen Blueprint Room.</returns>
-        private BlueprintRoom ChooseRandomRoom(Path pathToChooseFrom, int startIndex = 0, int endIndex = -1)
+        private BlueprintRoom ChooseRandomRoom(Path path, int startIndex = 0, int endIndex = -1)
         {
             // Default the endIndex to the path's end index
             if (endIndex == -1)
-                endIndex = pathToChooseFrom.BlueprintCount() - 1;
+                endIndex = path.BlueprintCount() - 1;
 
             // Check if range is valid
-            if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (pathToChooseFrom.BlueprintCount() - 1)))
+            if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (path.BlueprintCount() - 1)))
             {
                 Debug.LogError("Map Generator Error: Path index out of range or set incorrectly.");
                 return null;
             }
 
             // Check if path to choose from is valid
-            if (pathToChooseFrom.BlueprintCount() <= 0)
+            if (path.BlueprintCount() <= 0)
             {
-                Debug.LogError($"Map Generator Error: A starting room could not be choosen because {pathToChooseFrom.Name} has no rooms.");
+                Debug.LogError($"Map Generator Error: A starting room could not be choosen because {path.Name} has no rooms.");
                 return null;
             }
 
@@ -487,9 +492,9 @@ namespace RyansLibrary.Labyrinth
 
             // Choose a random room respecting the constraints and return
             int randomRoomIndex = UnityEngine.Random.Range(startIndex, endIndex);
-            BlueprintRoom room = pathToChooseFrom.BlueprintRooms[randomRoomIndex];
+            BlueprintRoom room = path.BlueprintRooms[randomRoomIndex];
 
-            if (_debugLogs) Debug.Log($"Map Generator: Random room choosen from {pathToChooseFrom.Name} at index {randomRoomIndex}");
+            if (_debugLogs) Debug.Log($"Map Generator: Random room choosen from {path.Name} at index {randomRoomIndex}");
 
             return room;
         }
@@ -644,6 +649,8 @@ namespace RyansLibrary.Labyrinth
             MasterPath?.Add(newRoom);                    // Add to Master List (required)
             MasterDictionary?.Add(position, newRoom);    // Add to Master Dictionary (required)
 
+            if (_debugLogs) Debug.Log($"Generated blueprint room {blueName}");
+
             return newRoom;
         }
 
@@ -651,20 +658,19 @@ namespace RyansLibrary.Labyrinth
         /// Generates a bunch of blueprint rooms based on a given dimension starting at a point.
         /// position and dimensions must be in room coordinates!
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">Path to add blueprint rooms to</param>
         /// <param name="position"></param>
         /// <param name="roomDimensions"></param>
-        private void GenerateBlueprintRoomsFromDimensions(Path path, Vector3 position, Vector3 roomDimensions)
+        private void GenerateBlueprintRoomsFromDimensions(Path path, Vector3Int position, Vector3Int roomDimensions)
         {
-            for (float x = position.x; x < position.x + roomDimensions.x; x++)      // x dimensions
+            for (int x = position.x; x < (position.x + roomDimensions.x); x++)      // traverse x dimensions
             {
-                for (float y = position.y; x < position.y + roomDimensions.y; y++)      // y dimensions
+                for (int y = position.y; y < (position.y + roomDimensions.y); y++)      // traverse y dimensions
                 {
-                    for (float z = position.z; z < position.z + roomDimensions.z; z++)      // z dimensions
+                    for (int z = position.z; z < (position.z + roomDimensions.z); z++)      // traverse z dimensions
                     {
                         Vector3 spawnPosition = ConvertToWorldCoords(new Vector3(x, y, z));
-
-                        GenerateBlueprintRoom(path, position);      // Call to method above
+                        GenerateBlueprintRoom(path, spawnPosition);      // Call to method above
                     }
                 }
             }
@@ -785,7 +791,7 @@ namespace RyansLibrary.Labyrinth
         /// room shape chance, room prefab chance, if the room shape will align adiquately to the path, and what path
         /// the room is a part of. It will also activate the entranceways of rooms based on the path's sequence.
         /// </summary>
-        public void GenerateRooms(Area area) 
+        public void GenerateAreaRooms(Area area) 
         {
             // Must have an area to generate anything
             if (area == null)
@@ -1497,6 +1503,7 @@ namespace RyansLibrary.Labyrinth
             {
                 // Initialize Master Data Structures
                 InitializeMasterPath();
+                _castleArea.MainPath.Initialize();
 
                 if (_castleArea == null)
                 {
@@ -1563,7 +1570,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Rooms From Paths"))        // Generates alt paths that diverge from the main path
                 {
-                    GenerateRooms(_castleArea);
+                    GenerateAreaRooms(_castleArea);
                     _debugState = DebugState.NotifyListeners;
                 }
             }
@@ -1618,7 +1625,7 @@ namespace RyansLibrary.Labyrinth
                     }
                     if (_debugState == DebugState.GenRooms)
                     {
-                        GenerateRooms(_castleArea);
+                        GenerateAreaRooms(_castleArea);
                         _debugState = DebugState.NotifyListeners;
                     }
                     if (_debugState == DebugState.NotifyListeners)

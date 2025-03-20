@@ -54,7 +54,7 @@ namespace RyansLibrary.Labyrinth
         public int endMasterIdx { get; set; }    // End index in master path
 
         // Constructor for path; gets it's start and end index in the master path
-        public void Initialize(int startIdx, int endIdx)
+        public void Initialize(int startIdx = 0, int endIdx = 0)
         {
             BlueprintRooms = new List<BlueprintRoom>();
             Rooms = new List<Room>();
