@@ -49,7 +49,5 @@ namespace RyansLibrary.Labyrinth
 
         [field: Header("Alt Paths")]
         [field: SerializeField] public List<Path> Paths { get; set; }
-
-
     }
 }
