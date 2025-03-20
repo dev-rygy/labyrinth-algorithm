@@ -1,12 +1,15 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   03/10/2025 (Ryan)
+ * Last Modified:   03/19/2025 (Ryan)
  * Notes:           Map Generator
 */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEngine.WSA;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -61,7 +64,6 @@ namespace RyansLibrary.Labyrinth
         [Header("Settings")]
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
         [SerializeField] private float _gridUnitSize = 13;          // The unit size of the room grid's cell
-        [SerializeField] private Transform _blueprintRoomContainer;     // Parent transform that contains all the spawned blueprint rooms if debug is on
         [SerializeField] private Transform _roomContainer;              // Parent transform that contains all the spawned rooms
 
         [Header("Areas")]
@@ -71,8 +73,6 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private bool _debug = false;
         [SerializeField] private GameObject _blueprintGizmoPrefab;
         [SerializeField] private Color _boundingBoxColor;
-        [SerializeField] private Color _mainPathColor;
-        [SerializeField] private Color _altPathColor;
 
         // ***** Private Values *****
         private enum DebugState
@@ -406,22 +406,29 @@ namespace RyansLibrary.Labyrinth
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
+                // Check Collision with bounds
                 Vector3 difference = CheckBounds(entry.SpawnPosition, room.RoomDimensions, area.UpperBound, area.LowerBound);
 
                 if (difference != Vector3.zero)     // Room was outside the bounds of the area
                 {
-                    Debug.LogError($"Map Generator Error: Static Room {room.name} was obstructed and could not be placed\n" +
-                        $"was {difference} units outside the bounds of the area");
+                    Debug.LogError($"Map Generator Error: Static Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
+                        $"It was {difference} units outside the bounds of the area.");
+                    return false;
+                }
+
+                // Check Collision with other rooms
+                Vector3Int spawnPosition = new Vector3Int((int)entry.SpawnPosition.x, (int)entry.SpawnPosition.y, (int)entry.SpawnPosition.z);      // Convert to int; TODO: change code later to support Vector3Ints
+                Vector3Int dimensions = new Vector3Int((int)room.RoomDimensions.x, (int)room.RoomDimensions.y, (int)room.RoomDimensions.z);
+                List<BlueprintRoom> rooms = GenerateBlueprintRoomsFromDimensions(area.MainPath, spawnPosition, dimensions);      // Fill room space with blueprint rooms
+
+                if (rooms == null)     // Room was outside the bounds of the area
+                {
+                    Debug.LogError($"Map Generator Error: Static Room \"{room.name}\" was obstructed and could not be placed");
                     return false;
                 }
 
                 // Spawn Room
-                Room newRoom = GenerateRoom(entry.Prefab, ConvertToWorldCoords(entry.SpawnPosition));
-                Vector3Int spawnPosition = new Vector3Int((int)entry.SpawnPosition.x, (int)entry.SpawnPosition.y, (int)entry.SpawnPosition.z);      // Convert to int; TODO: change code later to support Vector3Ints
-                Vector3Int dimensions = new Vector3Int((int)room.RoomDimensions.x, (int)room.RoomDimensions.y, (int)room.RoomDimensions.z);
-                GenerateBlueprintRoomsFromDimensions(area.MainPath, spawnPosition, dimensions);      // Fill room space with blueprint rooms
-                area.MainPath.Add(newRoom);
-                MasterPath.Add(newRoom);
+                Room newRoom = GenerateRoom(entry.Prefab, entry.RoomType, ConvertToWorldCoords(entry.SpawnPosition), area.MainPath);
                 return true;
             }
 
@@ -638,19 +645,19 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="path">The desired path to add the new blueprint room to.</param>
         /// <param name="position">The desired position to spawn the new room at. Must be in world coords</param>
-        /// <returns>The room generated.</returns>
+        /// <returns>Blueprint room generated.</returns>
         private BlueprintRoom GenerateBlueprintRoom(Path path, Vector3 position)
         {
             string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
             BlueprintRoom newRoom = new BlueprintRoom(position, blueName);
 
+            if (_debugLogs) Debug.Log($"Generated blueprint room {blueName}");
+
+
             // Update paths with new blueprint room
             path?.Add(newRoom);
             MasterPath?.Add(newRoom);                    // Add to Master List (required)
             MasterDictionary?.Add(position, newRoom);    // Add to Master Dictionary (required)
-
-            if (_debugLogs) Debug.Log($"Generated blueprint room {blueName}");
-
             return newRoom;
         }
 
@@ -661,8 +668,12 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">Path to add blueprint rooms to</param>
         /// <param name="position"></param>
         /// <param name="roomDimensions"></param>
-        private void GenerateBlueprintRoomsFromDimensions(Path path, Vector3Int position, Vector3Int roomDimensions)
+        /// <returns>Blueprint rooms generated in a list if needed.</returns>
+        private List<BlueprintRoom> GenerateBlueprintRoomsFromDimensions(Path path, Vector3Int position, Vector3Int roomDimensions)
         {
+            List<BlueprintRoom> rooms = new List<BlueprintRoom>();
+            List<Vector3> spawnPositions = new List<Vector3>();
+
             for (int x = position.x; x < (position.x + roomDimensions.x); x++)      // traverse x dimensions
             {
                 for (int y = position.y; y < (position.y + roomDimensions.y); y++)      // traverse y dimensions
@@ -670,10 +681,23 @@ namespace RyansLibrary.Labyrinth
                     for (int z = position.z; z < (position.z + roomDimensions.z); z++)      // traverse z dimensions
                     {
                         Vector3 spawnPosition = ConvertToWorldCoords(new Vector3(x, y, z));
-                        GenerateBlueprintRoom(path, spawnPosition);      // Call to method above
+
+                        if (CheckCollision(spawnPosition, out BlueprintRoom collidedRoom))
+                        {
+                            Debug.LogError($"Map Generator Error: Failed to generate blueprint room due to collision with {collidedRoom.RoomName}");
+                            return null;
+                        }
+
+                        spawnPositions.Add(spawnPosition);
                     }
                 }
             }
+
+            // If no errors then generate blueprint rooms from dimensions
+            foreach (Vector3 spawnPosition in spawnPositions)
+                rooms.Add(GenerateBlueprintRoom(path, spawnPosition));      // Call to method above
+
+            return rooms;
         }
 
         /// <summary>
@@ -711,12 +735,21 @@ namespace RyansLibrary.Labyrinth
             Vector3 upperPoint = origin + (roomDimensions - Vector3.one);
 
             Vector3 lowerDiff = lowerBound - lowerPoint;
-            Vector3 upperDiff = upperPoint - upperBound;
+            Vector3 upperDiff = upperBound - upperPoint;
 
-            if (lowerDiff.x > 0 && lowerDiff.y > 0 && lowerDiff.z > 0)      // Invalid Space
-                return lowerDiff;
-            if (upperDiff.x < 0 && upperDiff.y < 0 && upperDiff.z > 0)      // Invalid Space
-                return upperDiff;
+            if (lowerDiff.x > 0 || lowerDiff.y > 0 || lowerDiff.z > 0)      // Invalid Space
+            {
+                return new Vector3(lowerDiff.x > 0 ? lowerDiff.x : 0f,      // Return only the positive components of the lowerDiff
+                   lowerDiff.y > 0 ? lowerDiff.y : 0f,
+                   lowerDiff.z > 0 ? lowerDiff.z : 0f);
+            }
+
+            if (upperDiff.x < 0 || upperDiff.y < 0 || upperDiff.z < 0)      // Invalid Space
+            {
+                return new Vector3(upperDiff.x < 0 ? upperDiff.x : 0f,      // Return only the negative components of the lowerDiff
+                   upperDiff.y < 0 ? upperDiff.y : 0f,
+                   upperDiff.z < 0 ? upperDiff.z : 0f);
+            }
 
             return Vector3.zero;        // Valid Space
         }
@@ -1172,11 +1205,14 @@ namespace RyansLibrary.Labyrinth
         /// <param name="placementPosition"></param>
         /// <param name="rDir"></param>
         /// <returns></returns>
-        private Room GenerateRoom(GameObject prefab, Vector3 placementPosition, RoomDirection rDir = 0)
+        private Room GenerateRoom(GameObject prefab, RoomType rType, Vector3 placementPosition, Path path, RoomDirection rDir = 0)
         {
             Quaternion rotation = Quaternion.identity;      // TODO: set rotation
             Room generatedRoom = Instantiate(prefab, placementPosition, rotation, _roomContainer).GetComponent<Room>();
             generatedRoom.Initialize(generatedRoom.RoomType);
+
+            path.Add(generatedRoom);
+            MasterPath.Add(generatedRoom);
             return generatedRoom;
         }
 

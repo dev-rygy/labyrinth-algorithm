@@ -22,8 +22,10 @@ namespace RyansLibrary.Labyrinth
     [System.Serializable]
     public struct RoomEntry
     {
+        [Header("General Room Parameters")]
         [SerializeField] public GameObject Prefab;
         [SerializeField] public RoomPlacementType PlacementType;
+        [SerializeField] public RoomType RoomType;
         [Header("Static Room Parameters")]
         [SerializeField] public Vector3 SpawnPosition;      // For use with static rooms; all other rooms will ignore this
         [Header("Kinematic Room Parameters")]
@@ -44,7 +46,8 @@ namespace RyansLibrary.Labyrinth
 
         [field: Header("Main Path")]
         [field: SerializeField] public Path MainPath { get; set; }
-        [field: SerializeField] public List<RoomEntry> UniqueRooms { get; set; }
+        [field: SerializeField] public List<RoomEntry> UniqueRooms { get; set; }        // Must be spawned no matter what
+        [field: SerializeField] public List<RoomEntry> DivergentRooms { get; set; }     // Randomly selected during the generate divergent rooms procedure
         [field: SerializeField] public int randomRoomsUnitArea;
 
         [field: Header("Alt Paths")]
