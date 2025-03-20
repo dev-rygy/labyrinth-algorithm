@@ -191,7 +191,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-            if (!CheckBoundedVolume(area))
+            if (!CheckAreaBoundedVoluem(area))
             {
                 Debug.LogError($"Map Generator Error: The amount of blueprint rooms for area {area.Name} exceeds the bounding box's volume or the bounding box is inverted.");
                 return;
@@ -200,6 +200,10 @@ namespace RyansLibrary.Labyrinth
             // Update current area bounds to the actual size of the map in Unity Units
             _currentUpperBound = area.UpperBound * _gridUnitSize;
             _currentLowerBound = area.LowerBound * _gridUnitSize;
+
+            // TODO: Unique Room Placement
+
+            // TODO: Divergent Room Placement
 
             // ******* Generate Area Blueprint *******
             // Generate Main Path to boss; TODO: Implement
@@ -256,10 +260,10 @@ namespace RyansLibrary.Labyrinth
 
         private void UniqueRoomPlacement(Area area)
         {
-            // 1.) Spawn Static Rooms
+            // 1.) Spawn Fixed Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.PlacementType == RoomPlacementType.Static)
+                if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
                     Vector3 worldCoordinates = entry.SpawnPosition * _gridUnitSize;
                     // Update current area bounds to the actual size of the map in Unity Units
@@ -269,19 +273,19 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            // 2.) Spawn Kinematic Rooms
+            // 2.) Spawn Constrained Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.PlacementType == RoomPlacementType.Kinematic)
+                if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
 
                 }
             }
 
-            // 3.) Spawn Dynamic Rooms
+            // 3.) Spawn Free Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.PlacementType == RoomPlacementType.Dynamic)
+                if (entry.PlacementType == RoomPlacementType.Free)
                 {
 
                 }
@@ -304,21 +308,21 @@ namespace RyansLibrary.Labyrinth
         {
             BlueprintRoom collidedRoom = null;
 
-            // TODO: if kinematic room then shift from it's own bounds
+            // TODO: if Constrained room then shift from it's own bounds
             ShiftRoomFromBounds(room);
 
             if (CheckCollision(room, out collidedRoom))     // Check if the room overlaps another placed room
             {
                 switch (type)
                 {
-                    case RoomPlacementType.Static:      // If a static room collides with another room while being placed it's an automatic error on the developer's part
-                        Debug.LogWarning("Map Generator Warning: A static room can not be moved, collision detected.");
+                    case RoomPlacementType.Fixed:      // If a Fixed room collides with another room while being placed it's an automatic error on the developer's part
+                        Debug.LogWarning("Map Generator Warning: A Fixed room can not be moved, collision detected.");
                         return;
-                    case RoomPlacementType.Dynamic:
+                    case RoomPlacementType.Free:
                         // TODO: Move Room
                         // ScanAndShift(collidedRoom, collidedRoom.PlacementType);
                         break;
-                    case RoomPlacementType.Kinematic:
+                    case RoomPlacementType.Constrained:
                         // TODO: Move Room inside bounds
                         // ScanAndShift(collidedRoom, collidedRoom.PlacementType);
                         break;
@@ -363,38 +367,38 @@ namespace RyansLibrary.Labyrinth
         // ************************************** NEW ROOM PLACEMENT METHODS ************************************** 
         private void PlaceUniqueRooms(Area area)
         {
-            // 1.) Spawn Static Rooms
+            // 1.) Spawn Fixed Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.PlacementType == RoomPlacementType.Static)
+                if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
                     // Update current area bounds to the actual size of the map in Unity Units
-                    bool hasPlaced = PlaceStaticRoom(entry, area);
+                    bool hasPlaced = PlaceFixedRoom(entry, area);
                 }
             }
 
-            // 2.) Spawn Kinematic Rooms
+            // 2.) Spawn Constrained Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.PlacementType == RoomPlacementType.Kinematic)
+                if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
-                    // TODO: Place Kinematic Rooms
+                    // TODO: Place Constrained Rooms
                 }
             }
 
-            // 3.) Spawn Dynamic Rooms
+            // 3.) Spawn Free Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                if (entry.PlacementType == RoomPlacementType.Dynamic)
+                if (entry.PlacementType == RoomPlacementType.Free)
                 {
-                    // TODO: Place Dynamic Rooms
+                    // TODO: Place Free Rooms
                 }
             }
         }
 
 
         /// <summary>
-        /// Place static room within the bounds of an area; returns false if the
+        /// Place fixed room within the bounds of an area; returns false if the
         /// room could not be placed correctly
         /// </summary>
         /// <param name="room"></param>
@@ -402,7 +406,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="lowerBound"></param>
         /// <param name="placementPoint"></param>
         /// <returns></returns>
-        private bool PlaceStaticRoom(RoomEntry entry, Area area)
+        private bool PlaceFixedRoom(RoomEntry entry, Area area)
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
@@ -411,7 +415,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (difference != Vector3.zero)     // Room was outside the bounds of the area
                 {
-                    Debug.LogError($"Map Generator Error: Static Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
+                    Debug.LogError($"Map Generator Error: Fixed Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
                         $"It was {difference} units outside the bounds of the area.");
                     return false;
                 }
@@ -423,12 +427,12 @@ namespace RyansLibrary.Labyrinth
 
                 if (rooms == null)     // Room was outside the bounds of the area
                 {
-                    Debug.LogError($"Map Generator Error: Static Room \"{room.name}\" was obstructed and could not be placed");
+                    Debug.LogError($"Map Generator Error: Fixed Room \"{room.name}\" was obstructed and could not be placed");
                     return false;
                 }
 
                 // Spawn Room
-                Room newRoom = GenerateRoom(entry.Prefab, entry.RoomType, ConvertToWorldCoords(entry.SpawnPosition), area.MainPath);
+                Room newRoom = GenerateRoom(entry.Prefab, ConvertToWorldCoords(entry.SpawnPosition), area.MainPath);
                 return true;
             }
 
@@ -1198,18 +1202,18 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Spawn a room given a position and direction
+        /// Spawn a room given a position and direction; room type not passed as room is expected to
+        /// already know it's type if unique (FOR NOW BUT MAYBE NOT LATER)
         /// For random room placement algorithm to use.
         /// </summary>
         /// <param name="prefab"></param>
         /// <param name="placementPosition"></param>
         /// <param name="rDir"></param>
         /// <returns></returns>
-        private Room GenerateRoom(GameObject prefab, RoomType rType, Vector3 placementPosition, Path path, RoomDirection rDir = 0)
+        private Room GenerateRoom(GameObject prefab, Vector3 placementPosition, Path path, RoomDirection rDir = 0)
         {
             Quaternion rotation = Quaternion.identity;      // TODO: set rotation
             Room generatedRoom = Instantiate(prefab, placementPosition, rotation, _roomContainer).GetComponent<Room>();
-            generatedRoom.Initialize(generatedRoom.RoomType);
 
             path.Add(generatedRoom);
             MasterPath.Add(generatedRoom);
@@ -1422,31 +1426,42 @@ namespace RyansLibrary.Labyrinth
             return roomCoord * _gridUnitSize;
         }
 
-        // Vector based conversion from world -> room coords
+        // Vector based conversion from world -> room coords; can be expensive!
         private Vector3 ConvertToRoomCoords(Vector3 worldCoord)
         {
             return worldCoord / _gridUnitSize;
         }
 
-        // Vector based conversion from world -> room coords
+        // Vector based conversion from world -> room coords; can be expensive!
         private float ConvertToRoomCoords(float worldCoord)
         {
             return worldCoord / _gridUnitSize;
         }
 
         /// <summary>
-        /// Checks if the total amount of rooms is valid in a bounded range.
+        /// Checks if the total amount of rooms is valid in an area's bounded range.
         /// </summary>
         /// <returns>The test success or fail</returns>
-        private bool CheckBoundedVolume(Area area)
+        private bool CheckAreaBoundedVoluem(Area area)
         {
-            // Initialize the total to the MainPath's length first
-            float totalCellOcupancy = area.MainPath.PathLength;
-            // float totalRooms = _mainPathLength + (_prizePathLength * _amountOfPrizePaths);
+            float totalCellOccupancy = 0;
 
-            // Add alt. paths
-            foreach(Path path in area.Paths)
-                totalCellOcupancy += path.PathLength;
+            foreach(RoomEntry entry in area.UniqueRooms)                    // Add Unique Room volume
+            {
+                if (entry.Prefab.TryGetComponent<Room>(out Room room))
+                {
+                    totalCellOccupancy += room.GetRoomOccupancy();
+                }
+                else
+                    Debug.LogWarning("Map Generator Warning: Room Entry Prefab has no Room Script");
+            }
+
+            // TODO: Add Divergent Room volume ?
+
+            totalCellOccupancy += area.MainPath.PathLength;                 // Add Main Path volume
+
+            foreach (Path path in area.Paths)                               // Add Alt. Paths volume
+                totalCellOccupancy += path.PathLength;
 
             // Calculate the bounded volume and check if amount of room cells taken up exceeds that amount
             float xSize = area.UpperBound.x - area.LowerBound.x;
@@ -1454,7 +1469,7 @@ namespace RyansLibrary.Labyrinth
             float zSize = area.UpperBound.z - area.LowerBound.z;
             float volume = Math.RectangularVolume(xSize, ySize, zSize);
 
-            if (volume < totalCellOcupancy)
+            if (volume < totalCellOccupancy)
                 return false;
 
             return true;
@@ -1549,7 +1564,7 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-                if (!CheckBoundedVolume(_castleArea))
+                if (!CheckAreaBoundedVoluem(_castleArea))
                 {
                     Debug.LogError($"Map Generator Error: The amount of blueprint rooms for area {_castleArea.Name} exceeds the bounding box's volume or the bounding box is inverted.");
                     _debugState = DebugState.Failed;
@@ -1730,41 +1745,6 @@ namespace RyansLibrary.Labyrinth
                 }
             }
         }
-
-        /*  OLD DEBUGGING BLUEPRINT GIZMOS (DEPRICATED)
-        /// <summary>
-        /// Gizmo to show the paths taken to generate the rooms
-        /// </summary>
-        /// <param name="roomPos">Center position of the room to be generated</param>
-        /// <param name="name">The name of the room; can be blank</param>
-        private void GenerateBlueprintGizmo(Vector3 roomPos, PathType type, string name = "BlueprintRoom")
-        {
-            if (!_debugGizmos) 
-                return;
-
-            // Set the Color of the gizmo
-            Color color = GetColorForPathType(type);
-            GameObject gizmo = Instantiate(_blueprintGizmoPrefab, roomPos, Quaternion.identity, _blueprintRoomContainer);
-            gizmo.GetComponent<Renderer>().material.color = color;
-            gizmo.name = name;
-        }
-
-        /// <summary>
-        /// Color of blueprint gizmo depending on path type
-        /// </summary>
-        private Color GetColorForPathType(PathType type)
-        {
-            switch (type)
-            {
-                case PathType.main:
-                    return _mainPathColor;
-                case PathType.prize:
-                    return _altPathColor;
-                default:
-                    return Color.blue;  // Default color if none matched
-            }
-        }
-        */
         #endregion
     }
 }

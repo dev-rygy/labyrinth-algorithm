@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   10/26/2024 (Ryan)
+ * Last Modified:   03/19/2024 (Ryan)
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
@@ -39,13 +39,12 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Room Properties")]
         [SerializeField] public RoomShape roomShape;
-        [SerializeField] public RoomType roomType;     // Just to show in inspector
 
         [Header("debug")]
         [SerializeField] private bool debug = false;
 
         [field: SerializeField] public Vector3 RoomDimensions { get; private set; } = Vector3.one;
-        public RoomType RoomType { get; private set; }
+        [field: SerializeField] public RoomType RoomType { get; private set; }
 
         private bool[,] openEntracways;
 
@@ -65,7 +64,6 @@ namespace RyansLibrary.Labyrinth
         public void Initialize(RoomType type)
         {
             RoomType = type;
-            roomType = type;
             AcivateEntranceways();
         }
 
@@ -140,6 +138,11 @@ namespace RyansLibrary.Labyrinth
         {
             _roomWalls[entranceNum].GetChild(0).gameObject.SetActive(true);   // Activate Entranceway
             _roomWalls[entranceNum].GetChild(1).gameObject.SetActive(false);  // Deactivate Wall
+        }
+
+        public float GetRoomOccupancy()
+        {
+            return Math.RectangularVolume(RoomDimensions);
         }
     }
 }

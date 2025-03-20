@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/23/2025
- * Last Modified:   01/28/2025 (Ryan)
+ * Last Modified:   03/19/2025 (Ryan)
  * Notes:           Holds all the path's in an area and the 
  *                      bounds that they may spawn rooms in
 */
@@ -11,11 +11,12 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    // Placement type of each Unique room
     public enum RoomPlacementType
     {
-        Static,     // Static rooms have a set placement
-        Dynamic,
-        Kinematic
+        Fixed,          // Fixed rooms have set placement
+        Constrained,    // Constrained rooms can be placed anywhere in a specified bounded area
+        Free            // Free rooms can be placed anywhere in the bounds of the area
     }
 
     // Room entrys for the main path algorithm
@@ -25,11 +26,10 @@ namespace RyansLibrary.Labyrinth
         [Header("General Room Parameters")]
         [SerializeField] public GameObject Prefab;
         [SerializeField] public RoomPlacementType PlacementType;
-        [SerializeField] public RoomType RoomType;
-        [Header("Static Room Parameters")]
-        [SerializeField] public Vector3 SpawnPosition;      // For use with static rooms; all other rooms will ignore this
-        [Header("Kinematic Room Parameters")]
-        [SerializeField] public Vector3 UpperBound;         // For use with kinematic rooms; all other rooms will ignore these bounds;
+        [Header("Fixed Room Parameters")]
+        [SerializeField] public Vector3 SpawnPosition;      // For use with fixed rooms; all other rooms will ignore this
+        [Header("Constrained Room Parameters")]
+        [SerializeField] public Vector3 UpperBound;         // For use with constrained rooms; all other rooms will ignore these bounds;
         [SerializeField] public Vector3 LowerBound;             // Upper and lower bound must be within the range of the area bounds
     }
 

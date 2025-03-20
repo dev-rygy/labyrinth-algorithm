@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2024
- * Last Modified:   01/26/2024 
+ * Last Modified:   03/19/2024 
  * Notes:           Custom Math Library
 */
 using System.Collections;
@@ -21,9 +21,9 @@ namespace RyansLibrary
         {
             return Mathf.Pow(length, 3);
         }
-        
+
         /// <summary>
-        /// Find the volume of a rectangular prism
+        /// Find the volume of a rectangular prism, Component Based
         /// </summary>
         /// <param name="length"></param>
         /// <param name="width"></param>
@@ -33,6 +33,19 @@ namespace RyansLibrary
         {
             return length * width * height;
         }
+
+        /// <summary>
+        /// Find the volume of a rectangular prism, Vector Based
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns>A float volume</returns>
+        public static float RectangularVolume(Vector3 dimensions)
+        {
+            return dimensions.x * dimensions.y * dimensions.z;
+        }
+
 
         /// <summary>
         /// Checks if a number is even or odd.
