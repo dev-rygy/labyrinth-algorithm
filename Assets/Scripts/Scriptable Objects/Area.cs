@@ -43,9 +43,9 @@ namespace RyansLibrary.Labyrinth
         // TODO: Convert Bounding Box Parameters to Vector3Int!
         [field: Header("Bounding Box")]
         [Tooltip("No rooms can spawn past this coordinate point.")]
-        [field: SerializeField] public Vector3 UpperBound { get; set; }       // Upper bound; no rooms can spawn beyond this point
+        [field: SerializeField] public Vector3Int UpperBound { get; set; }       // Upper bound; no rooms can spawn beyond this point
         [Tooltip("No rooms can spawn past this coordinate point.")]
-        [field: SerializeField] public Vector3 LowerBound { get; set; }    // Lower bound; no rooms can spawn beyond this point
+        [field: SerializeField] public Vector3Int LowerBound { get; set; }    // Lower bound; no rooms can spawn beyond this point
 
         [field: Header("Main Path")]
         [field: SerializeField] public Path MainPath { get; set; }
