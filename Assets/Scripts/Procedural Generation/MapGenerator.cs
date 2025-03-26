@@ -1,15 +1,15 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   03/19/2025 (Ryan)
+ * Last Modified:   03/25/2025 (Ryan)
  * Notes:           Map Generator
 */
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.WSA;
+using static Autodesk.Fbx.FbxNurbsCurve;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -61,10 +61,11 @@ namespace RyansLibrary.Labyrinth
         [Tooltip("Enables map generation.")]
         [SerializeField] private bool _enabled = true;
 
-        [Header("Settings")]
+        [Header("Global Settings")]
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
-        [SerializeField] private float _gridUnitSize = 13;          // The unit size of the room grid's cell
-        [SerializeField] private Transform _roomContainer;              // Parent transform that contains all the spawned rooms
+        [SerializeField] private float _gridUnitSize = 13;                      // The unit size of the room grid's cell
+        [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
+        [SerializeField] private int _numOfPlacementAttempsBeforeRegen = -1;    // If this number is exceeded then the generator will refresh its entire generation attempt
 
         [Header("Areas")]
         [SerializeField] private Area _castleArea;
@@ -74,7 +75,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private GameObject _blueprintGizmoPrefab;
         [SerializeField] private Color _boundingBoxColor;
 
-        // ***** Private Values *****
+        // ***** Private Variables *****
         private enum DebugState
         {
             Start = 0,
@@ -100,9 +101,9 @@ namespace RyansLibrary.Labyrinth
         private void Awake()
         {
             // Handle Singleton
-            if (Instance != null && Instance != this)
+            if (Instance != null)
             {
-                Debug.LogWarning("Another instance of MapGenerator already exists. Deleting Object...");
+                Debug.LogWarning("Map Generator Warning: Another instance of MapGenerator already exists. Deleting Object...");
                 Destroy(gameObject);
                 return;
             }
@@ -191,7 +192,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-            if (!CheckAreaBoundedVoluem(area))
+            if (!CheckAreaBoundedVolume(area))
             {
                 Debug.LogError($"Map Generator Error: The amount of blueprint rooms for area {area.Name} exceeds the bounding box's volume or the bounding box is inverted.");
                 return;
@@ -239,163 +240,76 @@ namespace RyansLibrary.Labyrinth
             if (_debugLogs) Debug.Log($"Map Generator: {area.Name} generated path {area.MainPath.name} with {area.MainPath.BlueprintCount()} rooms.");
         }
 
-        /* WIP: RANDOM ROOM PLACEMENT ALG
-        public void GenerateMainPathBlueprintNew(Area area)
-        {
-            if (area.MainPath == null)      // Throw error if MainPath for area does not exist
-            {
-                Debug.LogError($"Map Generator Error: The Main Path for area {area.name} is not assigned.");
-                return;
-            }
-
-            // Initialize a new path at starting room if not null
-            int startIndex = MasterPath.BlueprintCount() - 1;               // Start index in master path
-            int endIndex = startIndex + area.MainPath.PathLength;
-            area.MainPath.Initialize(startIndex, endIndex);      // End index in master path
-
-            // TODO: Use Simple Room Placement and Bowyer–Watson Algorithm
-            // UniqueRoomPlacement(area);
-            // RandomRoomPlacement(area.MainPath)
-        }
-
-        private void UniqueRoomPlacement(Area area)
+        #region Unique Room Placement
+        private bool PlaceUniqueRooms(Area area)
         {
             // 1.) Spawn Fixed Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
-                    Vector3 worldCoordinates = entry.SpawnPosition * _gridUnitSize;
-                    // Update current area bounds to the actual size of the map in Unity Units
-                    Room newRoom = GenerateSpecificRoom(entry.Prefab, worldCoordinates);
-
-                    //ScanAndShift(newRoom, entry.PlacementType);
-                }
-            }
-
-            // 2.) Spawn Constrained Rooms
-            foreach (RoomEntry entry in area.UniqueRooms)
-            {
-                if (entry.PlacementType == RoomPlacementType.Constrained)
-                {
-
-                }
-            }
-
-            // 3.) Spawn Free Rooms
-            foreach (RoomEntry entry in area.UniqueRooms)
-            {
-                if (entry.PlacementType == RoomPlacementType.Free)
-                {
-
-                }
-            }
-        }
-
-        private void RandomRoomPlacement(Path path, int numOfUnitSpaces)
-        {
-            // TODO: random room placement
-        }
-
-        /// <summary>
-        /// Scan Area for collisions with other rooms and bounds and shift rooms if nessessary
-        /// This function is recursive, it will continue to shift rooms like a domino effect until
-        /// all rooms are in equalibrium.
-        /// </summary>
-        /// <param name="room"></param>
-        /// <param name="type"></param>
-        private void ScanAndShift(Room room, RoomPlacementType type)
-        {
-            BlueprintRoom collidedRoom = null;
-
-            // TODO: if Constrained room then shift from it's own bounds
-            ShiftRoomFromBounds(room);
-
-            if (CheckCollision(room, out collidedRoom))     // Check if the room overlaps another placed room
-            {
-                switch (type)
-                {
-                    case RoomPlacementType.Fixed:      // If a Fixed room collides with another room while being placed it's an automatic error on the developer's part
-                        Debug.LogWarning("Map Generator Warning: A Fixed room can not be moved, collision detected.");
-                        return;
-                    case RoomPlacementType.Free:
-                        // TODO: Move Room
-                        // ScanAndShift(collidedRoom, collidedRoom.PlacementType);
-                        break;
-                    case RoomPlacementType.Constrained:
-                        // TODO: Move Room inside bounds
-                        // ScanAndShift(collidedRoom, collidedRoom.PlacementType);
-                        break;
-                    default:
-                        Debug.LogError("Map Generator Error: Room Placement Type is invalid.");
-                        break;
-                }
-            }
-        }
-
-        // THIS METHOD IS WRONG!!!
-        private void ShiftRoomFromBounds(Room room)
-        {
-            Vector3 pl = room.gameObject.transform.position;
-            Vector3 pu = pl + ((room.RoomDimensions - Vector3.one) * _gridUnitSize);
-
-            Vector3 bl = _currentLowerBound;
-            Vector3 bu = _currentUpperBound;
-
-            Vector3 upperDiff = bu - pu;
-            if (upperDiff.x <= 0)
-                upperDiff.x = 0;
-            if (upperDiff.y <= 0)
-                upperDiff.y = 0;
-            if (upperDiff.z <= 0)
-                upperDiff.z = 0;
-
-            Vector3 lowerDiff = bl - pl;
-            if (lowerDiff.x >= 0)
-                lowerDiff.x = 0;
-            if (lowerDiff.y >= 0)
-                lowerDiff.y = 0;
-            if (lowerDiff.z >= 0)
-                lowerDiff.z = 0;
-
-            Vector3 shiftAmt = upperDiff + lowerDiff;
-
-            room.gameObject.transform.position += shiftAmt;
-        }
-        */
-
-        // ************************************** NEW ROOM PLACEMENT METHODS ************************************** 
-        private void PlaceUniqueRooms(Area area)
-        {
-            // 1.) Spawn Fixed Rooms
-            foreach (RoomEntry entry in area.UniqueRooms)
-            {
-                if (entry.PlacementType == RoomPlacementType.Fixed)
-                {
-                    // Update current area bounds to the actual size of the map in Unity Units
                     bool hasPlaced = PlaceFixedRoom(entry, area);
+
+                    if (!hasPlaced)
+                    {
+                        // Fixed room failed to generate, stop all operations
+                        Debug.LogError($"Map Generator Error: Fixed Room was outside of bounds and could not be placed.");
+                        return false;
+                    }
                 }
             }
 
             // 2.) Spawn Constrained Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
+                bool hasPlaced = false;
+                int attempts = 0;
+
                 if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
-                    // TODO: Place Constrained Rooms
+                    // Attempt to place the constrained room in it's bounded area; if not then break the function
+                    // and return false
+                    while (!hasPlaced)
+                    {
+                        if (attempts++ > _numOfPlacementAttempsBeforeRegen)
+                        {
+                            // TODO: Clear all data and regenerate the map
+                            Debug.LogWarning("Map Generator Warning: Constrained Room has exceeded the maximum number of placement attempts.");
+                            return false;
+                        }
+
+                        hasPlaced = PlaceConstrainedRoom(entry, area);
+                    }
                 }
             }
 
             // 3.) Spawn Free Rooms
             foreach (RoomEntry entry in area.UniqueRooms)
             {
+                bool hasPlaced = false;
+                int attempts = 0;
+
                 if (entry.PlacementType == RoomPlacementType.Free)
                 {
-                    // TODO: Place Free Rooms
+                    // Place Free Rooms
+                    // Attempt to place the constrained room in it's bounded area; if not then break the function
+                    // and return false
+                    while (!hasPlaced)
+                    {
+                        if (attempts++ > _numOfPlacementAttempsBeforeRegen)
+                        {
+                            // TODO: Clear all data and regenerate the map
+                            Debug.LogWarning("Map Generator Warning: Constrained Room has exceeded the maximum number of placement attempts.");
+                            return false;
+                        }
+
+                        hasPlaced = PlaceFreeRoom(entry, area);
+                    }
                 }
             }
-        }
 
+            return true;
+        }
 
         /// <summary>
         /// Place fixed room within the bounds of an area; returns false if the
@@ -410,7 +324,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
-                // Check Collision with bounds
+                // Check Collision with the area's bounds
                 Vector3 difference = CheckBounds(entry.SpawnPosition, room.RoomDimensions, area.UpperBound, area.LowerBound);
 
                 if (difference != Vector3.zero)     // Room was outside the bounds of the area
@@ -435,10 +349,91 @@ namespace RyansLibrary.Labyrinth
                 Room newRoom = GenerateRoom(entry.Prefab, ConvertToWorldCoords(entry.SpawnPosition), area.MainPath);
                 return true;
             }
-
+            Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
             return false;
         }
-        // ************************************** END OF NEW PLACEMENT METHODS **************************************
+
+        private bool PlaceConstrainedRoom(RoomEntry entry, Area area)
+        {
+            if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
+            {
+                float roomVolume = Math.RectangularVolume(room.RoomDimensions);
+
+                // TODO: this room's volume will need to be calculated elsewhere at the beginnning of the algorithm with the other constrained rooms!
+                if (!CheckBoundedVolume(roomVolume, entry.UpperBound, entry.LowerBound))
+                {
+                    Debug.LogError($"Map Generator Error: Constrained Room {entry.Prefab.name} occupancy exceeds " +
+                        $"the allotted space allowed in it's bounding box");
+                    return false;
+                }
+
+                // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
+                Vector3Int adjUpperBound = new Vector3Int(
+                    (int)(entry.UpperBound.x - room.RoomDimensions.x),
+                    (int)(entry.UpperBound.y - room.RoomDimensions.y),
+                    (int)(entry.UpperBound.z - room.RoomDimensions.z)
+                );
+
+                // Choose random spawn pos in the room's bounds;
+                // NOTE: this random position is in room coords
+                Vector3Int randomSpawnPos = new Vector3Int
+                (
+                    UnityEngine.Random.Range(entry.LowerBound.x, adjUpperBound.x + 1),
+                    UnityEngine.Random.Range(entry.LowerBound.x, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(entry.LowerBound.x, adjUpperBound.z + 1)
+                );
+
+                // Fill room space with blueprint rooms
+                List<BlueprintRoom> rooms = GenerateBlueprintRoomsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
+
+                if (rooms == null)     // the room collided with another room
+                {
+                    Debug.LogWarning($"Map Generator Error: Constrained Room {entry.Prefab.name} collided with another room and could not be placed");
+                    return false;
+                }
+
+                // Spawn New Room
+                Room newRoom = GenerateRoom(entry.Prefab, ConvertToWorldCoords(randomSpawnPos), area.MainPath);
+                return true;
+            }
+            Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
+            return false;
+        }
+
+        private bool PlaceFreeRoom(RoomEntry entry, Area area)
+        {
+            if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
+            {
+                // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
+                Vector3Int adjUpperBound = new Vector3Int(
+                    (int)(area.UpperBound.x - room.RoomDimensions.x),
+                    (int)(area.UpperBound.y - room.RoomDimensions.y),
+                    (int)(area.UpperBound.z - room.RoomDimensions.z)
+                );
+
+                // Choose random spawn pos in the room's bounds;
+                // NOTE: this random position is in room coords
+                Vector3Int randomSpawnPos = new Vector3Int
+                (
+                    UnityEngine.Random.Range((int)area.LowerBound.x, adjUpperBound.x + 1),
+                    UnityEngine.Random.Range((int)area.LowerBound.x, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range((int)area.LowerBound.x, adjUpperBound.z + 1)
+                );
+
+                // Fill room space with blueprint rooms
+                List<BlueprintRoom> rooms = GenerateBlueprintRoomsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
+
+                if (rooms == null)     // the room collided with another room
+                    return false;
+
+                // Spawn New Room
+                Room newRoom = GenerateRoom(entry.Prefab, ConvertToWorldCoords(randomSpawnPos), area.MainPath);
+                return true;
+            }
+            Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
+            return false;
+        }
+        #endregion
 
         /// <summary>
         /// Helper function for generating the prize path
@@ -553,6 +548,7 @@ namespace RyansLibrary.Labyrinth
 
                 // Choose a random direction to be the potential position for the next room.
                 int faceIdx = UnityEngine.Random.Range(1, STANDARD_ROOM_FACE_COUNT);
+
                 while (attempts[faceIdx])                               // Store attempt direction in circular array to aviod choosing the same direction twice.
                 {                                                       // Loop though attempts to find a unique direction
                     faceIdx++;
@@ -688,7 +684,7 @@ namespace RyansLibrary.Labyrinth
 
                         if (CheckCollision(spawnPosition, out BlueprintRoom collidedRoom))
                         {
-                            Debug.LogError($"Map Generator Error: Failed to generate blueprint room due to collision with {collidedRoom.RoomName}");
+                            Debug.LogWarning($"Map Generator Error: Failed to generate blueprint room due to collision with {collidedRoom.RoomName}");
                             return null;
                         }
 
@@ -721,7 +717,6 @@ namespace RyansLibrary.Labyrinth
 
             return true;           // Invalid space
         }
-
 
         /// <summary>
         /// Checks if a specified volume with a starting point overlaps the bounds of an area;
@@ -1427,22 +1422,25 @@ namespace RyansLibrary.Labyrinth
         }
 
         // Vector based conversion from world -> room coords; can be expensive!
-        private Vector3 ConvertToRoomCoords(Vector3 worldCoord)
+        private Vector3Int ConvertToRoomCoords(Vector3 worldCoord)
         {
-            return worldCoord / _gridUnitSize;
+            int xComp = (int)(worldCoord.x / _gridUnitSize);
+            int yComp = (int)(worldCoord.x / _gridUnitSize);
+            int zComp = (int)(worldCoord.x / _gridUnitSize);
+            return new Vector3Int(xComp, yComp, zComp);
         }
 
         // Vector based conversion from world -> room coords; can be expensive!
-        private float ConvertToRoomCoords(float worldCoord)
+        private int ConvertToRoomCoords(float worldCoord)
         {
-            return worldCoord / _gridUnitSize;
+            return (int)(worldCoord / _gridUnitSize);
         }
 
         /// <summary>
         /// Checks if the total amount of rooms is valid in an area's bounded range.
         /// </summary>
         /// <returns>The test success or fail</returns>
-        private bool CheckAreaBoundedVoluem(Area area)
+        private bool CheckAreaBoundedVolume(Area area)
         {
             float totalCellOccupancy = 0;
 
@@ -1469,10 +1467,31 @@ namespace RyansLibrary.Labyrinth
             float zSize = area.UpperBound.z - area.LowerBound.z;
             float volume = Math.RectangularVolume(xSize, ySize, zSize);
 
-            if (volume < totalCellOccupancy)
+            if (volume < totalCellOccupancy)        // The bounded volume cannot fullfill the area's cell requirements
                 return false;
 
-            return true;
+            return true;        // The area's cell requirements are met with the bounded volume
+        }
+
+        /// <summary>
+        /// Checks if the volume of the object can fit in the space of a bounded area
+        /// </summary>
+        /// <param name="cellOccupancy">The amound of cells an object takes up</param>
+        /// <param name="lowerBound">The lower bound of the bounding box</param>
+        /// <param name="upperBound">The upper bound of the bounding box</param>
+        /// <returns></returns>
+        private bool CheckBoundedVolume(float cellOccupancy, Vector3 upperBound, Vector3 lowerBound)
+        {
+            // Calculate the bounded volume and check if amount of room cells taken up exceeds that amount
+            float xSize = upperBound.x - lowerBound.x;
+            float ySize = upperBound.y - lowerBound.y;
+            float zSize = upperBound.z - lowerBound.z;
+            float volume = Math.RectangularVolume(xSize, ySize, zSize);
+
+            if (volume < cellOccupancy)     // The bounded volume CANNOT fullfill the amount of required cells
+                return false;
+
+            return true;        // The bounded volume CAN fullfill the amount of required cells
         }
 
         /// <summary>
@@ -1564,7 +1583,7 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-                if (!CheckAreaBoundedVoluem(_castleArea))
+                if (!CheckAreaBoundedVolume(_castleArea))
                 {
                     Debug.LogError($"Map Generator Error: The amount of blueprint rooms for area {_castleArea.Name} exceeds the bounding box's volume or the bounding box is inverted.");
                     _debugState = DebugState.Failed;

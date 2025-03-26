@@ -42,8 +42,8 @@ namespace RyansLibrary.Labyrinth
 
         [Header("debug")]
         [SerializeField] private bool debug = false;
-
-        [field: SerializeField] public Vector3 RoomDimensions { get; private set; } = Vector3.one;
+        // TODO: Convert RoomDimensions to Vector3Int!
+        [field: SerializeField] public Vector3Int RoomDimensions { get; private set; } = Vector3Int.one;
         [field: SerializeField] public RoomType RoomType { get; private set; }
 
         private bool[,] openEntracways;
