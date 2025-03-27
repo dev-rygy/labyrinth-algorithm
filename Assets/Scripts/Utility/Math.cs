@@ -4,8 +4,6 @@
  * Last Modified:   03/19/2024 
  * Notes:           Custom Math Library
 */
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RyansLibrary
