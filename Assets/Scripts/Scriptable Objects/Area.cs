@@ -50,7 +50,6 @@ namespace RyansLibrary.Labyrinth
         [field: Header("Main Path")]
         [field: SerializeField] public Path MainPath { get; set; }
         [field: SerializeField] public List<RoomEntry> UniqueRooms { get; private set; }        // Must be spawned no matter what
-        [field: SerializeField] public List<RoomEntry> DivergentRooms { get; private set; }     // Randomly selected during the generate divergent rooms procedure
         [field: SerializeField] public int DivergentRoomsCellOccupancy { get; private set; }
 
         [field: Header("Alt Paths")]

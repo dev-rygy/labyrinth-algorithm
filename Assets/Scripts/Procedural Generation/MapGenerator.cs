@@ -311,6 +311,82 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
+        /// Will place rooms randomly in an area but will pull rooms randomly from the main path
+        /// </summary>
+        /// <param name="area"></param>
+        /// <returns></returns>
+        private bool PlaceDivergentRooms(Area area)
+        {
+            Path mainPath = area.MainPath;
+            int occupancy = area.DivergentRoomsCellOccupancy;
+
+            // TODO: Remove these chances later
+            float chance2x1x2 = 0.20f;
+            float chance1x2x1 = 0.40f;
+            float chance2x1x1 = 0.60f;
+
+            int indexOffset = 1;        // The amount to increment the loop by
+            for (int i = 0; i < (occupancy - 1); i += indexOffset)
+            {
+                int spaceLeft = occupancy - i;
+                float roomRoll = UnityEngine.Random.Range(0, 1.01f);        // Roll for room based on it's % chance of spawning
+                Vector3Int dimensions = Vector3Int.one;         // Dimensions of a Small Room
+
+                // If there is enough room to spawn a Big Room and the roll was right
+                if (spaceLeft < 4 && roomRoll < chance2x1x2)
+                {
+                    dimensions = new Vector3Int(2, 1, 2);        // Dimensions of a Big Room
+                    indexOffset = 4;
+                }
+                else if (spaceLeft < 2 && roomRoll < chance1x2x1)
+                {
+                    dimensions = new Vector3Int(1, 2, 1);        // Dimensions of a Tall Room
+                    indexOffset = 2;
+                }
+                else if (spaceLeft < 2 && roomRoll < chance2x1x1)
+                {
+                    dimensions = new Vector3Int(2, 1, 1);        // Dimensions of a Long Room
+                    indexOffset = 2;
+                }
+                else                                                
+                {
+                    indexOffset = 1;
+                }
+
+                // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
+                Vector3Int adjUpperBound = new Vector3Int(
+                    area.UpperBound.x - dimensions.x,
+                    area.UpperBound.y - dimensions.y,
+                    area.UpperBound.z - dimensions.z
+                );
+
+                // Choose random spawn pos in the room's bounds;
+                // NOTE: this random position is in room coords
+                Vector3Int randomSpawnPos = new Vector3Int
+                (
+                    UnityEngine.Random.Range(area.LowerBound.x, adjUpperBound.x + 1),
+                    UnityEngine.Random.Range(area.LowerBound.y, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(area.LowerBound.z, adjUpperBound.z + 1)
+                );
+
+                // Append the newly generated blueprint rooms to the end of the list
+                List<BlueprintRoom> newRooms = GenerateBlueprintsFromDimensions(mainPath, randomSpawnPos, dimensions);
+
+                // If no collisions occured append the blueprintrooms to the list
+                if (newRooms != null)
+                {
+                    mainPath.BlueprintRooms.AddRange(newRooms);
+                }
+                else
+                {
+                    indexOffset = 0;        // do not advance iteration if nothing was spawned
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Place fixed room within the bounds of an area; returns false if the
         /// room could not be placed correctly
         /// </summary>
@@ -334,7 +410,7 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Check Collision with other rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintRoomsFromDimensions(area.MainPath, entry.SpawnPosition, room.RoomDimensions);      // Fill room space with blueprint rooms
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, entry.SpawnPosition, room.RoomDimensions);      // Fill room space with blueprint rooms
 
                 if (rooms == null)     // Room was outside the bounds of the area
                 {
@@ -376,12 +452,12 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int randomSpawnPos = new Vector3Int
                 (
                     UnityEngine.Random.Range(entry.LowerBound.x, adjUpperBound.x + 1),
-                    UnityEngine.Random.Range(entry.LowerBound.x, adjUpperBound.y + 1),
-                    UnityEngine.Random.Range(entry.LowerBound.x, adjUpperBound.z + 1)
+                    UnityEngine.Random.Range(entry.LowerBound.y, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(entry.LowerBound.z, adjUpperBound.z + 1)
                 );
 
                 // Fill room space with blueprint rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintRoomsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
 
                 if (rooms == null)     // the room collided with another room
                 {
@@ -413,12 +489,12 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int randomSpawnPos = new Vector3Int
                 (
                     UnityEngine.Random.Range(area.LowerBound.x, adjUpperBound.x + 1),
-                    UnityEngine.Random.Range(area.LowerBound.x, adjUpperBound.y + 1),
-                    UnityEngine.Random.Range(area.LowerBound.x, adjUpperBound.z + 1)
+                    UnityEngine.Random.Range(area.LowerBound.y, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(area.LowerBound.z, adjUpperBound.z + 1)
                 );
 
                 // Fill room space with blueprint rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintRoomsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
 
                 if (rooms == null)     // the room collided with another room
                     return false;
@@ -456,7 +532,7 @@ namespace RyansLibrary.Labyrinth
                     return;
                 }
 
-                BlueprintRoom startRoom = ChooseRandomRoom(area.MainPath, 1); // start at index 1 as to not choose the starting room of the game
+                BlueprintRoom startRoom = ChooseRandomRoomOnPath(area.MainPath, 1); // start at index 1 as to not choose the starting room of the game
                 path.Initialize(startIndex, endIndex);
 
                 DrunkardWalk(path, startRoom);
@@ -471,7 +547,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">The path to choose the starting room from</param>
         /// <param name="startIndex">Index to start from</param>
         /// <returns>The Choosen Blueprint Room.</returns>
-        private BlueprintRoom ChooseRandomRoom(Path path, int startIndex = 0, int endIndex = -1)
+        private BlueprintRoom ChooseRandomRoomOnPath(Path path, int startIndex = 0, int endIndex = -1)
         {
             // Default the endIndex to the path's end index
             if (endIndex == -1)
@@ -660,14 +736,15 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Generates a variety of blueprint rooms based on a given dimension starting at a point.
+        /// Generates a variety of blueprint rooms based on a given dimension starting at a point
+        /// If a collision occurs then the method returns a null list.
         /// position and dimensions must be in room coordinates!
         /// </summary>
         /// <param name="path">Path to add blueprint rooms to</param>
         /// <param name="position">Start position</param>
         /// <param name="roomDimensions"></param>
         /// <returns>Blueprint rooms generated in a list if needed.</returns>
-        private List<BlueprintRoom> GenerateBlueprintRoomsFromDimensions(Path path, Vector3Int position, Vector3Int roomDimensions)
+        private List<BlueprintRoom> GenerateBlueprintsFromDimensions(Path path, Vector3Int position, Vector3Int roomDimensions)
         {
             List<BlueprintRoom> rooms = new List<BlueprintRoom>();
             List<Vector3Int> roomOrigins = new List<Vector3Int>();
@@ -1621,7 +1698,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Divergent Rooms"))        // Generates Divergent Rooms
                 {
                     // Generate Divergent Rooms
-                    // TODO: Add Divergent Room Procedure
+                    PlaceDivergentRooms(_castleArea);
                     _debugState = DebugState.GenMainPath;
                 }
             }
