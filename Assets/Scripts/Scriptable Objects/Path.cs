@@ -27,6 +27,7 @@ namespace RyansLibrary.Labyrinth
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Path", order = 2)]
     public class Path : ScriptableObject
     {
+        // Editor Fields
         [field: SerializeField] public string Name { get; set; }
         [field: SerializeField] public PathType Type { get; private set; }
         [field: SerializeField] public int PathLength { get; private set; }
@@ -48,6 +49,7 @@ namespace RyansLibrary.Labyrinth
         [field: Header("Debug")]
         [field: SerializeField] public Color PathGizmoColor;
 
+        // Data Storage 
         public List<BlueprintRoom> BlueprintRooms { get; private set; }
         public List<Room> Rooms { get; private set; }
         public int startMasterIdx { get; set; }  // Start index in master path

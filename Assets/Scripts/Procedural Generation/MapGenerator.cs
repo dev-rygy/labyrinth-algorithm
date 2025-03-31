@@ -1,12 +1,15 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   03/26/2025 (Ryan)
+ * Last Modified:   03/31/2025 (Ryan)
  * Notes:           Map Generator
 */
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+// Needed for triangulation
+using RyansLibrary.Graphs;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -73,14 +76,21 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private bool _debug = false;
         [SerializeField] private GameObject _blueprintGizmoPrefab;
         [SerializeField] private Color _boundingBoxColor;
+        [SerializeField] private Color _triangulationColor;
+        [SerializeField] private Color _minimumSpanningTreeColor;
 
         // ***** Private Variables *****
+        // TODO: do not make this global in this class, maybe in the Area class?
+        private DelaunayTriangulation3D _triangulation;     // A single triangulation structure for a main path
+
+        // Debugging
         private enum DebugState
         {
             Start = 0,
             Initialize,
             GenUniqueRooms,
             GenDivergentRooms,
+            GenTriangulation,
             GenMainPath,
             GenAltPath,
             GenRooms,
@@ -212,7 +222,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Helper function for generating the main path.
+        /// Wrapper function for generating the main path.
         /// The main path is the path to the area boss and to traversal rooms to other areas
         /// </summary>
         public void GenerateMainPathBlueprint(Area area)
@@ -233,6 +243,39 @@ namespace RyansLibrary.Labyrinth
             DrunkardWalk(area.MainPath, area.Bounds);
             
             if (_debugLogs) Debug.Log($"Map Generator: {area.Name} generated path {area.MainPath.name} with {area.MainPath.BlueprintCount()} rooms.");
+        }
+
+        /// <summary>
+        /// Wrapper function for generating the prize path
+        /// </summary>
+        public void GenerateAltPathBlueprints(Area area)
+        {
+            if (area.MainPath == null)      // Throw error if MainPath for area does not exist
+            {
+                Debug.LogError($"Map Generator Error: The Main Path for area {area.name} is not assigned.");
+                return;
+            }
+
+            // Path to prize room; choose a random start room
+            // Initialize a new path at starting room if not null
+            int startIndex = area.MainPath.BlueprintCount() - 1;               // Start index in master path
+            int endIndex = startIndex + area.MainPath.PathLength;
+
+            foreach (Path path in area.Paths)
+            {
+                if (path == null)
+                {
+                    Debug.LogError($"Map Generator Error: A path {path.Name} for area {area.name} is not assigned.");
+                    return;
+                }
+
+                BlueprintRoom startRoom = ChooseRandomRoomOnPath(area.MainPath, 1); // start at index 1 as to not choose the starting room of the game
+                path.Initialize(startIndex, endIndex);
+
+                DrunkardWalk(path, area.Bounds, startRoom);
+
+                if (_debugLogs) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
+            }
         }
 
         #region Unique Room Placement
@@ -487,37 +530,24 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
-        /// <summary>
-        /// Helper function for generating the prize path
-        /// </summary>
-        public void GenerateAltPathBlueprints(Area area)
+        private void GenerateTriangulation(Area area)
         {
-            if (area.MainPath == null)      // Throw error if MainPath for area does not exist
+            if (area == null || area.MainPath == null)
             {
-                Debug.LogError($"Map Generator Error: The Main Path for area {area.name} is not assigned.");
+                Debug.LogError($"Map Generator Error: Error Area {area.Name} in invalid for triangulation.");
                 return;
             }
 
-            // Path to prize room; choose a random start room
-            // Initialize a new path at starting room if not null
-            int startIndex = area.MainPath.BlueprintCount() - 1;               // Start index in master path
-            int endIndex = startIndex + area.MainPath.PathLength;
+            List<Vertex> vertices = new List<Vertex>();
 
-            foreach (Path path in area.Paths)
+            foreach(BlueprintRoom room in area.MainPath.BlueprintRooms)
             {
-                if (path == null)
-                {
-                    Debug.LogError($"Map Generator Error: A path {path.Name} for area {area.name} is not assigned.");
-                    return;
-                }
-
-                BlueprintRoom startRoom = ChooseRandomRoomOnPath(area.MainPath, 1); // start at index 1 as to not choose the starting room of the game
-                path.Initialize(startIndex, endIndex);
-
-                DrunkardWalk(path, area.Bounds ,startRoom);
-
-                if (_debugLogs) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
+                vertices.Add(new Vertex<BlueprintRoom>(room.Position, room));
+                Debug.Log("Addeed");
             }
+
+            // Perform Delaunay Triangulation
+            _triangulation = DelaunayTriangulation3D.Triangulate(vertices);
         }
 
         /// <summary>
@@ -1719,7 +1749,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Critical Rooms"))       // Generates Unique Rooms
                 {
                     // Generate Unique Rooms
-                    PlaceUniqueRooms(_castleArea);
+                    //PlaceUniqueRooms(_castleArea);
                     _debugState = DebugState.GenDivergentRooms;
                 }
             }
@@ -1730,17 +1760,25 @@ namespace RyansLibrary.Labyrinth
                 {
                     // Generate Divergent Rooms
                     PlaceDivergentRooms(_castleArea);
+                    _debugState = DebugState.GenTriangulation;
+                }
+            }
+
+            if (_debugState == DebugState.GenTriangulation)
+            {
+                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Triangulation"))        // Generates triangulation of main path
+                {
+                    GenerateTriangulation(_castleArea);
                     _debugState = DebugState.GenMainPath;
                 }
             }
 
             if (_debugState == DebugState.GenMainPath)
             {
-                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Main Blueprint Path"))        // Generates main path
+                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Main Path"))        // Generates main path
                 {
                     GenerateMainPathBlueprint(_castleArea);
                     _debugState = DebugState.GenAltPath;
-
                 }
             }
 
@@ -1831,6 +1869,7 @@ namespace RyansLibrary.Labyrinth
                 return;
 
             DrawBoundingBox(_castleArea.Bounds);
+            DrawTriangulation(_triangulation);
             DrawBluePrintGizmos();
         }
 
@@ -1864,6 +1903,18 @@ namespace RyansLibrary.Labyrinth
 
             Gizmos.color = _boundingBoxColor;
             Gizmos.DrawWireCube(worldCenter, worldSize);
+        }
+
+        private void DrawTriangulation(DelaunayTriangulation3D triangulation)
+        {
+            if (triangulation == null) 
+                return;
+
+            foreach (Edge e in triangulation.Edges)
+            {
+                Gizmos.color = _triangulationColor;
+                Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
+            }
         }
 
         private void DrawBluePrintGizmos()
