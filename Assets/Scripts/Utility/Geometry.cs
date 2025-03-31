@@ -18,7 +18,6 @@ namespace RyansLibrary.Geometry
         public Vertex B { get; set; }       // Custom vertex class
         public Vertex C { get; set; }       // Custom vertex class
         public Vertex D { get; set; }       // Custom vertex class
-        public bool IsBad { get; set; }
 
         Vector3 Circumcenter { get; set; }
         float CircumradiusSquared { get; set; }
@@ -148,7 +147,6 @@ namespace RyansLibrary.Geometry
         public Vertex U { get; set; }
         public Vertex V { get; set; }
         public Vertex W { get; set; }
-        public bool IsBad { get; set; }
 
         public Triangle() { }
 

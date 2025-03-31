@@ -82,6 +82,7 @@ namespace RyansLibrary.Labyrinth
         // ***** Private Variables *****
         // TODO: do not make this global in this class, maybe in the Area class?
         private DelaunayTriangulation3D _triangulation;     // A single triangulation structure for a main path
+        private List<PrimsAlgorithm.Edge> _minimumSpanningTree;
 
         // Debugging
         private enum DebugState
@@ -543,11 +544,20 @@ namespace RyansLibrary.Labyrinth
             foreach(BlueprintRoom room in area.MainPath.BlueprintRooms)
             {
                 vertices.Add(new Vertex<BlueprintRoom>(room.Position, room));
-                Debug.Log("Addeed");
             }
 
             // Perform Delaunay Triangulation
             _triangulation = DelaunayTriangulation3D.Triangulate(vertices);
+
+            // Find Minimum Spanning tree with Prim's Algorithm
+            List<PrimsAlgorithm.Edge> edges = new List<PrimsAlgorithm.Edge>();
+
+            foreach (var edge in _triangulation.Edges)
+            {
+                edges.Add(new PrimsAlgorithm.Edge(edge.U, edge.V));
+            }
+
+            _minimumSpanningTree = PrimsAlgorithm.MinimumSpanningTree(edges, edges[0].U);
         }
 
         /// <summary>
@@ -1913,6 +1923,12 @@ namespace RyansLibrary.Labyrinth
             foreach (Edge e in triangulation.Edges)
             {
                 Gizmos.color = _triangulationColor;
+                Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
+            }
+
+            foreach (PrimsAlgorithm.Edge e in _minimumSpanningTree)
+            {
+                Gizmos.color = _minimumSpanningTreeColor;
                 Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
             }
         }

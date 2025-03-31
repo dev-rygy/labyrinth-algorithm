@@ -18,6 +18,31 @@ namespace RyansLibrary
         // Precision required for checking if a piece of geometry is nearly the same
         private const float TRIANGULATION_PRECISION = 0.01f;
 
+        // Derived class from Graphs.cs
+        public class Edge : Graphs.Edge
+        {
+            public bool IsBad { get; set; }
+
+            public Edge() : base() { }
+
+            public Edge(Vertex u, Vertex v) : base(u, v) { }
+        }
+
+        // Derived class from Geometry.cs
+        public class Tetrahedron : Geometry.Tetrahedron
+        {
+            public bool IsBad { get; set; }
+
+            public Tetrahedron(Vertex a, Vertex b, Vertex c, Vertex d) : base(a, b, c, d) { }
+        }
+
+        // Derived class from Geometry.cs
+        public class Triangle : Geometry.Triangle
+        {
+            public bool IsBad { get; set; }
+            public Triangle(Vertex u, Vertex v, Vertex w) : base(u, v, w) { }
+        }
+
         public List<Vertex> Vertices { get; private set; }
         public List<Edge> Edges { get; private set; }
         public List<Triangle> Triangles { get; private set; }
