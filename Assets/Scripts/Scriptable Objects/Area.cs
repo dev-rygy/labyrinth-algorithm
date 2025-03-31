@@ -31,8 +31,7 @@ namespace RyansLibrary.Labyrinth
         [Header("Fixed Room Parameters")]
         [SerializeField] public Vector3Int SpawnPosition;      // For use with fixed rooms; all other rooms will ignore this
         [Header("Constrained Room Parameters")]
-        [SerializeField] public Vector3Int UpperBound;         // For use with constrained rooms; all other rooms will ignore these bounds;
-        [SerializeField] public Vector3Int LowerBound;         // Upper and lower bound must be within the range of the area bounds
+        [SerializeField] public BoundsInt Bounds;              // For use with constrained rooms; all other rooms will ignore these bounds;
     }
 
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Area", order = 1)]
@@ -42,10 +41,8 @@ namespace RyansLibrary.Labyrinth
 
         // TODO: Convert Bounding Box Parameters to Vector3Int!
         [field: Header("Bounding Box")]
-        [Tooltip("No rooms can spawn past this coordinate point.")]
-        [field: SerializeField] public Vector3Int UpperBound { get; set; }       // Upper bound; no rooms can spawn beyond this point
-        [Tooltip("No rooms can spawn past this coordinate point.")]
-        [field: SerializeField] public Vector3Int LowerBound { get; set; }    // Lower bound; no rooms can spawn beyond this point
+        [Tooltip("No rooms can spawn outside of these bounds.")]
+        [field: SerializeField] public BoundsInt Bounds { get; private set; }
 
         [field: Header("Main Path")]
         [field: SerializeField] public Path MainPath { get; set; }

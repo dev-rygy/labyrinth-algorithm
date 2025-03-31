@@ -92,8 +92,8 @@ namespace RyansLibrary.Labyrinth
         private bool _debugGizmos = false;
         private bool _debugLogs = false;
 
-        private Vector3Int _currentUpperBound;     // The upper bound of the current area being generated in room coords
-        private Vector3Int _currentLowerBound;     // The lower bound of the current area being generated in room coords
+        //private Vector3Int _currentUpperBound;     // The upper bound of the current area being generated in room coords
+        //private Vector3Int _currentLowerBound;     // The lower bound of the current area being generated in room coords
         #endregion
 
         #region Mono
@@ -197,10 +197,6 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
-            // Update current area bounds to the actual size of the map in Unity Units
-            _currentUpperBound = area.UpperBound;
-            _currentLowerBound = area.LowerBound;
-
             // TODO: Unique Room Placement
 
             // TODO: Divergent Room Placement
@@ -234,7 +230,7 @@ namespace RyansLibrary.Labyrinth
             int endIndex = startIndex + area.MainPath.PathLength;
             area.MainPath.Initialize(startIndex, endIndex);      // End index in master path
 
-            DrunkardWalk(area.MainPath);
+            DrunkardWalk(area.MainPath, area.Bounds);
             
             if (_debugLogs) Debug.Log($"Map Generator: {area.Name} generated path {area.MainPath.name} with {area.MainPath.BlueprintCount()} rooms.");
         }
@@ -320,13 +316,13 @@ namespace RyansLibrary.Labyrinth
             Path mainPath = area.MainPath;
             int occupancy = area.DivergentRoomsCellOccupancy;
 
-            // TODO: Remove these chances later
+            // TODO: Remove these chances later; change them from being hard coded like this
             float chance2x1x2 = 0.20f;
             float chance1x2x1 = 0.40f;
             float chance2x1x1 = 0.60f;
 
             int indexOffset = 1;        // The amount to increment the loop by
-            for (int i = 0; i < (occupancy - 1); i += indexOffset)
+            for (int i = 0; i < occupancy; i += indexOffset)
             {
                 int spaceLeft = occupancy - i;
                 float roomRoll = UnityEngine.Random.Range(0, 1.01f);        // Roll for room based on it's % chance of spawning
@@ -355,34 +351,27 @@ namespace RyansLibrary.Labyrinth
 
                 // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
                 Vector3Int adjUpperBound = new Vector3Int(
-                    area.UpperBound.x - dimensions.x,
-                    area.UpperBound.y - dimensions.y,
-                    area.UpperBound.z - dimensions.z
+                    area.Bounds.xMax - dimensions.x,
+                    area.Bounds.yMax - dimensions.y,
+                    area.Bounds.zMax - dimensions.z
                 );
 
                 // Choose random spawn pos in the room's bounds;
                 // NOTE: this random position is in room coords
                 Vector3Int randomSpawnPos = new Vector3Int
                 (
-                    UnityEngine.Random.Range(area.LowerBound.x, adjUpperBound.x + 1),
-                    UnityEngine.Random.Range(area.LowerBound.y, adjUpperBound.y + 1),
-                    UnityEngine.Random.Range(area.LowerBound.z, adjUpperBound.z + 1)
+                    UnityEngine.Random.Range(area.Bounds.xMin, adjUpperBound.x + 1),
+                    UnityEngine.Random.Range(area.Bounds.yMin, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(area.Bounds.zMin, adjUpperBound.z + 1)
                 );
 
                 // Append the newly generated blueprint rooms to the end of the list
                 List<BlueprintRoom> newRooms = GenerateBlueprintsFromDimensions(mainPath, randomSpawnPos, dimensions);
 
-                // If no collisions occured append the blueprintrooms to the list
-                if (newRooms != null)
-                {
-                    mainPath.BlueprintRooms.AddRange(newRooms);
-                }
-                else
-                {
-                    indexOffset = 0;        // do not advance iteration if nothing was spawned
-                }
+                // do not advance iteration if nothing was spawned
+                if (newRooms == null)
+                    indexOffset = 0;
             }
-
             return true;
         }
 
@@ -400,7 +389,7 @@ namespace RyansLibrary.Labyrinth
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
                 // Check Collision with the area's bounds
-                Vector3 difference = CheckOutOfBounds(entry.SpawnPosition, room.RoomDimensions, area.UpperBound, area.LowerBound);
+                Vector3 difference = CheckOutOfBounds(entry.SpawnPosition, room.RoomDimensions, area.Bounds);
 
                 if (difference != Vector3.zero)     // Room was outside the bounds of the area
                 {
@@ -418,7 +407,7 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                // Spawn Room
+                // Spawn Room; TODO: maybe remove this and make blueprint rooms hold data about potential rooms?
                 Room newRoom = GenerateRoom(entry.Prefab, entry.SpawnPosition, area.MainPath);
                 return true;
             }
@@ -430,30 +419,20 @@ namespace RyansLibrary.Labyrinth
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
-                float roomVolume = Math.RectangularVolume(room.RoomDimensions);
-
-                // TODO: this room's volume will need to be calculated elsewhere at the beginnning of the algorithm with the other constrained rooms!
-                if (!CheckBoundedVolume(roomVolume, entry.UpperBound, entry.LowerBound))
-                {
-                    Debug.LogError($"Map Generator Error: Constrained Room {entry.Prefab.name} occupancy exceeds " +
-                        $"the allotted space allowed in it's bounding box");
-                    return false;
-                }
-
                 // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
                 Vector3Int adjUpperBound = new Vector3Int(
-                    entry.UpperBound.x - room.RoomDimensions.x,
-                    entry.UpperBound.y - room.RoomDimensions.y,
-                    entry.UpperBound.z - room.RoomDimensions.z
+                    entry.Bounds.xMax - room.RoomDimensions.x,
+                    entry.Bounds.yMax - room.RoomDimensions.y,
+                    entry.Bounds.zMax - room.RoomDimensions.z
                 );
 
                 // Choose random spawn pos in the room's bounds;
                 // NOTE: this random position is in room coords
                 Vector3Int randomSpawnPos = new Vector3Int
                 (
-                    UnityEngine.Random.Range(entry.LowerBound.x, adjUpperBound.x + 1),
-                    UnityEngine.Random.Range(entry.LowerBound.y, adjUpperBound.y + 1),
-                    UnityEngine.Random.Range(entry.LowerBound.z, adjUpperBound.z + 1)
+                    UnityEngine.Random.Range(entry.Bounds.xMin, adjUpperBound.x + 1),
+                    UnityEngine.Random.Range(entry.Bounds.yMin, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(entry.Bounds.zMin, adjUpperBound.z + 1)
                 );
 
                 // Fill room space with blueprint rooms
@@ -479,18 +458,18 @@ namespace RyansLibrary.Labyrinth
             {
                 // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
                 Vector3Int adjUpperBound = new Vector3Int(
-                    area.UpperBound.x - room.RoomDimensions.x,
-                    area.UpperBound.y - room.RoomDimensions.y,
-                    area.UpperBound.z - room.RoomDimensions.z
+                    area.Bounds.xMax - room.RoomDimensions.x,
+                    area.Bounds.yMax - room.RoomDimensions.y,
+                    area.Bounds.zMax - room.RoomDimensions.z
                 );
 
                 // Choose random spawn pos in the room's bounds;
                 // NOTE: this random position is in room coords
                 Vector3Int randomSpawnPos = new Vector3Int
                 (
-                    UnityEngine.Random.Range(area.LowerBound.x, adjUpperBound.x + 1),
-                    UnityEngine.Random.Range(area.LowerBound.y, adjUpperBound.y + 1),
-                    UnityEngine.Random.Range(area.LowerBound.z, adjUpperBound.z + 1)
+                    UnityEngine.Random.Range(area.Bounds.xMin, adjUpperBound.x + 1),
+                    UnityEngine.Random.Range(area.Bounds.yMin, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(area.Bounds.zMin, adjUpperBound.z + 1)
                 );
 
                 // Fill room space with blueprint rooms
@@ -535,7 +514,7 @@ namespace RyansLibrary.Labyrinth
                 BlueprintRoom startRoom = ChooseRandomRoomOnPath(area.MainPath, 1); // start at index 1 as to not choose the starting room of the game
                 path.Initialize(startIndex, endIndex);
 
-                DrunkardWalk(path, startRoom);
+                DrunkardWalk(path, area.Bounds ,startRoom);
 
                 if (_debugLogs) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
             }
@@ -584,8 +563,11 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="path">A path with a length of atleast one.</param>
         /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
-        private void DrunkardWalk(Path path, BlueprintRoom startRoom = null)
+        private void DrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom = null)
         {
+            // *** TODO: REMOVE ***
+            int fail = 100;
+
             // Make sure the path has atleast one room cell that can spawn
             if (path.PathLength <= 0)
             {
@@ -601,7 +583,11 @@ namespace RyansLibrary.Labyrinth
             // Prime loop with starting room
             if (startRoom == null)          // Generate Start Room if a start room was not passed in, generate a start room at position (0,0,0); TODO: Make the start position a desired position if we plan on having places where the player can teleport to.
             {
-                curRoom = GenerateBlueprintRoom(path, curPos);
+                //**** TODO: REMOVE!!! ****
+                Vector3Int tempStartRoomPos = new Vector3Int(5, 0, 5);      // Temp start room position for testing
+
+                curRoom = GenerateBlueprintRoom(path, tempStartRoomPos);
+                curPos = tempStartRoomPos;
                 startRoom = curRoom;
             }
             else                            // Start at the desired Start Room
@@ -663,11 +649,19 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Check if the room is in the realm of the bounding box, if not then don't spawn
-                if (!CheckOutOfBounds(tempPos))
+                if (CheckOutOfBounds(tempPos, bounds))
                 {
                     // TODO: Enable the stuff below, we need a prev room in order to do this because you cannot set the collided room as the bound
                     // attempts[entrFlagIdx] = true;
                     // failedAttempts++;
+
+                    // *** TODO: REMOVE ***
+                    fail--;
+                    if (fail < 0)
+                    {
+                        Debug.LogError("Failed");
+                        return;
+                    }
 
                     if (_debugLogs) Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
                     continue;
@@ -1460,10 +1454,10 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="desiredPos">The desired position to spawn the next room</param>
         /// <returns>Returns true if the space is out of bounds and false otherwise.</returns>
-        private bool CheckOutOfBounds(Vector3Int desiredPos)
+        private bool CheckOutOfBounds(Vector3Int desiredPos, Vector3Int upperBound, Vector3Int lowerBound)
         {
-            Vector3Int differenceUpper = _currentUpperBound - desiredPos;
-            Vector3Int differenceLower = _currentLowerBound - desiredPos;
+            Vector3Int differenceUpper = upperBound - desiredPos;
+            Vector3Int differenceLower = lowerBound - desiredPos;
             if (differenceUpper.x <= 0 || differenceUpper.y <= 0 || differenceUpper.z <= 0)        // Valid space
                 return false;
             if (differenceLower.x > 0 || differenceLower.y > 0 || differenceLower.z > 0)        // Valid space
@@ -1472,6 +1466,15 @@ namespace RyansLibrary.Labyrinth
             return true;           // Invalid space
         }
 
+        private bool CheckOutOfBounds(Vector3Int desiredPos, BoundsInt bounds)
+        {
+            if (bounds.Contains(desiredPos))        // Valid space
+                return false;
+
+            return true;           // Invalid space
+        }
+
+        /* OLD BOUNDS CHECK (DEPRICATED)
         /// <summary>
         /// Checks if a specified volume with a starting point overlaps the bounds of an area;
         /// Returns the offset of the area of the room outside the bounds.
@@ -1490,6 +1493,37 @@ namespace RyansLibrary.Labyrinth
 
             Vector3Int lowerDiff = lowerBound - lowerPoint;
             Vector3Int upperDiff = upperBound - upperPoint;
+
+            Debug.Log(lowerDiff);
+            Debug.Log(upperDiff);
+
+            if (lowerDiff.x > 0 || lowerDiff.y > 0 || lowerDiff.z > 0)      // Invalid Space
+            {
+                return new Vector3Int(
+                   lowerDiff.x > 0 ? lowerDiff.x : 0,      // Return only the positive components of the lowerDiff
+                   lowerDiff.y > 0 ? lowerDiff.y : 0,
+                   lowerDiff.z > 0 ? lowerDiff.z : 0);
+            }
+
+            if (upperDiff.x < 0 || upperDiff.y < 0 || upperDiff.z < 0)      // Invalid Space
+            {
+                return new Vector3Int(
+                   upperDiff.x < 0 ? upperDiff.x : 0,      // Return only the negative components of the lowerDiff
+                   upperDiff.y < 0 ? upperDiff.y : 0,
+                   upperDiff.z < 0 ? upperDiff.z : 0);
+            }
+
+            return Vector3Int.zero;        // Valid Space
+        }
+        */
+
+        private Vector3Int CheckOutOfBounds(Vector3Int origin, Vector3Int roomDimensions, BoundsInt bounds)
+        {
+            Vector3Int lowerPoint = origin;
+            Vector3Int upperPoint = origin + (roomDimensions - Vector3Int.one);
+
+            Vector3Int lowerDiff = bounds.min - lowerPoint;
+            Vector3Int upperDiff = bounds.max - upperPoint;
 
             if (lowerDiff.x > 0 || lowerDiff.y > 0 || lowerDiff.z > 0)      // Invalid Space
             {
@@ -1548,9 +1582,9 @@ namespace RyansLibrary.Labyrinth
                 totalCellOccupancy += path.PathLength;
 
             // Calculate the bounded volume and check if amount of room cells taken up exceeds that amount
-            float xSize = area.UpperBound.x - area.LowerBound.x;
-            float ySize = area.UpperBound.y - area.LowerBound.y;
-            float zSize = area.UpperBound.z - area.LowerBound.z;
+            float xSize = area.Bounds.size.x;
+            float ySize = area.Bounds.size.y;
+            float zSize = area.Bounds.size.z;
             float volume = Math.RectangularVolume(xSize, ySize, zSize);
 
             if (volume < totalCellOccupancy)        // The bounded volume cannot fullfill the area's cell requirements
@@ -1559,6 +1593,7 @@ namespace RyansLibrary.Labyrinth
             return true;        // The area's cell requirements are met with the bounded volume
         }
 
+        /* CHECK THE BOUNDING BOX OF A ROOM WITH DIMENSIONS (UNUSED)
         /// <summary>
         /// Checks if the volume of the object can fit in the space of a bounded area
         /// </summary>
@@ -1579,7 +1614,7 @@ namespace RyansLibrary.Labyrinth
 
             return true;        // The bounded volume CAN fullfill the amount of required cells
         }
-
+        */
         /// <summary>
         /// Choose a random room in a list based on the weights that are applied to that room.
         /// Takes the absolute probability meaning the function chooses a random position in the realm
@@ -1620,7 +1655,7 @@ namespace RyansLibrary.Labyrinth
             return null;
         }
 
-        /* CLEAR PATHS (Unused)
+        /* CLEAR PATHS (UNUSED)
         /// <summary>
         /// Clean up path lists to free up memory
         /// </summary>
@@ -1675,10 +1710,6 @@ namespace RyansLibrary.Labyrinth
                     _debugState = DebugState.Failed;
                     return;
                 }
-
-                // Update current area bounds to the actual size of the map in Unity Units
-                _currentUpperBound = _castleArea.UpperBound;
-                _currentLowerBound = _castleArea.LowerBound;
 
                 _debugState = DebugState.GenUniqueRooms;
             }
@@ -1799,10 +1830,11 @@ namespace RyansLibrary.Labyrinth
             if (!_debugGizmos)
                 return;
 
-            DrawBoundingBox();
+            DrawBoundingBox(_castleArea.Bounds);
             DrawBluePrintGizmos();
         }
 
+        /* OLD DRAWING OF BOUNDING BOX (DEPRICATED)
         /// <summary>
         /// Draw the bounding box of the generator
         /// </summary>
@@ -1823,6 +1855,15 @@ namespace RyansLibrary.Labyrinth
 
             Gizmos.color = _boundingBoxColor;
             Gizmos.DrawWireCube(centerPoint, size);
+        }
+        */
+        private void DrawBoundingBox(BoundsInt bounds)
+        {
+            Vector3 worldSize = ConvertToWorldCoords(bounds.size + Vector3Int.one);
+            Vector3 worldCenter = bounds.center * _gridUnitSize;
+
+            Gizmos.color = _boundingBoxColor;
+            Gizmos.DrawWireCube(worldCenter, worldSize);
         }
 
         private void DrawBluePrintGizmos()

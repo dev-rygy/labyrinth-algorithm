@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Castle
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Castle
+  <Bounds>k__BackingField:
+    m_Position: {x: 0, y: 0, z: 0}
+    m_Size: {x: 20, y: 5, z: 20}
   <UpperBound>k__BackingField: {x: 10, y: 5, z: 10}
   <LowerBound>k__BackingField: {x: -10, y: 0, z: -10}
   <MainPath>k__BackingField: {fileID: 11400000, guid: fb14fc246bdba4b499a09456e528a735,
@@ -21,22 +24,31 @@ MonoBehaviour:
   - Prefab: {fileID: 3966009581516977950, guid: be4df743c7847a94abbacf9bb81fda39,
       type: 3}
     PlacementType: 0
-    SpawnPosition: {x: -2, y: 0, z: 3}
+    SpawnPosition: {x: 8, y: 0, z: 13}
+    Bounds:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 0, y: 0, z: 0}
     UpperBound: {x: 0, y: 0, z: 0}
     LowerBound: {x: 0, y: 0, z: 0}
   - Prefab: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
       type: 3}
     PlacementType: 1
     SpawnPosition: {x: 0, y: 0, z: 0}
+    Bounds:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 20, y: 3, z: 10}
     UpperBound: {x: 10, y: 1, z: 10}
     LowerBound: {x: -10, y: 0, z: -10}
   - Prefab: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
       type: 3}
     PlacementType: 2
     SpawnPosition: {x: 0, y: 0, z: 0}
+    Bounds:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 10, y: 1, z: 20}
     UpperBound: {x: 0, y: 0, z: 0}
     LowerBound: {x: 0, y: 0, z: 0}
-  <DivergentRoomsCellOccupancy>k__BackingField: 40
+  <DivergentRoomsCellOccupancy>k__BackingField: 10
   <Paths>k__BackingField:
   - {fileID: 11400000, guid: 029b5e62ad2693d47a76f7766e520eeb, type: 2}
   - {fileID: 11400000, guid: d5ebd944b25340345a5e98fce8a46074, type: 2}
