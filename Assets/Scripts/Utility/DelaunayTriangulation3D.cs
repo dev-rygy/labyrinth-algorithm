@@ -9,7 +9,10 @@
 using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
+using RyansLibrary.Labyrinth;
 using System.Collections.Generic;
+using System.Collections;
+using Unity.VisualScripting;
 
 namespace RyansLibrary
 {
@@ -47,8 +50,6 @@ namespace RyansLibrary
         public List<Edge> Edges { get; private set; }
         public List<Triangle> Triangles { get; private set; }
         public List<Tetrahedron> Tetrahedra { get; private set; }
-
-        public bool stepwiseTriangulation = false;
 
         DelaunayTriangulation3D()
         {

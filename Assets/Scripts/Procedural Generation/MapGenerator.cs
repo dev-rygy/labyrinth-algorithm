@@ -10,6 +10,7 @@ using UnityEngine;
 
 // Needed for triangulation
 using RyansLibrary.Graphs;
+using RyansLibrary.Geometry;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -78,6 +79,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private GameObject _blueprintGizmoPrefab;
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _triangulationColor;
+        [SerializeField] private Color _circumcircleColor;
         [SerializeField] private Color _minimumSpanningTreeColor;
 
         // ***** Private Variables *****
@@ -547,8 +549,7 @@ namespace RyansLibrary.Labyrinth
                 vertices.Add(new Vertex<BlueprintRoom>(room.Position, room));
             }
 
-            // Perform Delaunay Triangulation
-            _triangulation = DelaunayTriangulation3D.Triangulate(vertices);
+            _triangulation = DelaunayTriangulation3D.Triangulate(vertices);                 // Perform Delaunay Triangulation
 
             // Find Minimum Spanning tree with Prim's Algorithm
             List<PrimsAlgorithm.Edge> edges = new List<PrimsAlgorithm.Edge>();
@@ -1760,7 +1761,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Critical Rooms"))       // Generates Unique Rooms
                 {
                     // Generate Unique Rooms
-                    PlaceUniqueRooms(_castleArea);
+                    //PlaceUniqueRooms(_castleArea);
                     _debugState = DebugState.GenDivergentRooms;
                 }
             }
@@ -1920,6 +1921,13 @@ namespace RyansLibrary.Labyrinth
         {
             if (triangulation == null) 
                 return;
+
+
+            foreach (Tetrahedron t in triangulation.Tetrahedra)
+            {
+                Gizmos.color = _circumcircleColor;
+                Gizmos.DrawSphere(t.Circumcenter * _gridUnitSize, Mathf.Sqrt(t.CircumradiusSquared) * _gridUnitSize);
+            }
 
             foreach (Edge e in triangulation.Edges)
             {

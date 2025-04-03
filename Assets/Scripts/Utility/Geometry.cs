@@ -19,8 +19,8 @@ namespace RyansLibrary.Geometry
         public Vertex C { get; set; }       // Custom vertex class
         public Vertex D { get; set; }       // Custom vertex class
 
-        Vector3 Circumcenter { get; set; }
-        float CircumradiusSquared { get; set; }
+        public Vector3 Circumcenter { get; private set; }
+        public float CircumradiusSquared { get; private set; }
 
         public Tetrahedron(Vertex a, Vertex b, Vertex c, Vertex d)
         {
