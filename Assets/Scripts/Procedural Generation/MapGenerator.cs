@@ -74,6 +74,7 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Debuging")]
         [SerializeField] private bool _debug = false;
+        [SerializeField] private bool _stepwiseDebug = false;
         [SerializeField] private GameObject _blueprintGizmoPrefab;
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _triangulationColor;
@@ -1759,7 +1760,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Critical Rooms"))       // Generates Unique Rooms
                 {
                     // Generate Unique Rooms
-                    //PlaceUniqueRooms(_castleArea);
+                    PlaceUniqueRooms(_castleArea);
                     _debugState = DebugState.GenDivergentRooms;
                 }
             }

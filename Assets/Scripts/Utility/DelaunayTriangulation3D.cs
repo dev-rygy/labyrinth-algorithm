@@ -48,6 +48,8 @@ namespace RyansLibrary
         public List<Triangle> Triangles { get; private set; }
         public List<Tetrahedron> Tetrahedra { get; private set; }
 
+        public bool stepwiseTriangulation = false;
+
         DelaunayTriangulation3D()
         {
             Edges = new List<Edge>();
