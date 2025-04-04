@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/23/2025
- * Last Modified:   03/31/2025 (Ryan)
+ * Last Modified:   04/03/2025 (Ryan)
  * Notes:           3D Delaunay Triangulation Algorithm
  *                  Adapted from https://github.com/Bl4ckb0ne/delaunay-triangulation
  *                  Copyright (c) 2015-2019 Simon Zeni (simonzeni@gmail.com)
@@ -9,10 +9,7 @@
 using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
-using RyansLibrary.Labyrinth;
 using System.Collections.Generic;
-using System.Collections;
-using Unity.VisualScripting;
 
 namespace RyansLibrary
 {
@@ -21,41 +18,22 @@ namespace RyansLibrary
         // Precision required for checking if a piece of geometry is nearly the same
         private const float TRIANGULATION_PRECISION = 0.01f;
 
-        // Derived class from Graphs.cs
-        public class Edge : Graphs.Edge
-        {
-            public bool IsBad { get; set; }
+        public List<Vertex> Verticies;
+        public List<Edge> Edges;
+        public List<Triangle> Triangles;
+        public List<Tetrahedron> Tetrahedra;
 
-            public Edge() : base() { }
-
-            public Edge(Vertex u, Vertex v) : base(u, v) { }
-        }
-
-        // Derived class from Geometry.cs
-        public class Tetrahedron : Geometry.Tetrahedron
-        {
-            public bool IsBad { get; set; }
-
-            public Tetrahedron(Vertex a, Vertex b, Vertex c, Vertex d) : base(a, b, c, d) { }
-        }
-
-        // Derived class from Geometry.cs
-        public class Triangle : Geometry.Triangle
-        {
-            public bool IsBad { get; set; }
-            public Triangle(Vertex u, Vertex v, Vertex w) : base(u, v, w) { }
-        }
-
-        public List<Vertex> Vertices { get; private set; }
-        public List<Edge> Edges { get; private set; }
-        public List<Triangle> Triangles { get; private set; }
-        public List<Tetrahedron> Tetrahedra { get; private set; }
+        private List<Triangle> _badTriangles;
+        private List<Tetrahedron> _badTetrahedra;
 
         DelaunayTriangulation3D()
         {
             Edges = new List<Edge>();
             Triangles = new List<Triangle>();
             Tetrahedra = new List<Tetrahedron>();
+
+            _badTriangles = new List<Triangle>();
+            _badTetrahedra = new List<Tetrahedron>();
         }
 
         /// <summary>
@@ -66,7 +44,7 @@ namespace RyansLibrary
         public static DelaunayTriangulation3D Triangulate(List<Vertex> vertices)
         {
             DelaunayTriangulation3D delaunay = new DelaunayTriangulation3D();
-            delaunay.Vertices = new List<Vertex>(vertices);
+            delaunay.Verticies = new List<Vertex>(vertices);
             delaunay.Triangulate();
 
             return delaunay;
@@ -74,16 +52,16 @@ namespace RyansLibrary
 
         void Triangulate()
         {
-            float minX = Vertices[0].Position.x;        // Min = Very first room vertex
-            float minY = Vertices[0].Position.y;
-            float minZ = Vertices[0].Position.z;
+            float minX = Verticies[0].Position.x;        // Min = Very first room vertex
+            float minY = Verticies[0].Position.y;
+            float minZ = Verticies[0].Position.z;
 
             float maxX = minX;                          // Max = Very first room vertex
             float maxY = minY;
             float maxZ = minZ;
 
             // Find the absolute minimum and absolute maximum point of all vertices
-            foreach (var vertex in Vertices)
+            foreach (var vertex in Verticies)
             {
                 if (vertex.Position.x < minX)
                     minX = vertex.Position.x;
@@ -118,41 +96,45 @@ namespace RyansLibrary
 
             Tetrahedra.Add(new Tetrahedron(p1, p2, p3, p4));
 
-            foreach (var vertex in Vertices)
+            foreach (var vertex in Verticies)
             {                      // Loop through all vertices (room midpoints)
-                List<Triangle> triangles = new List<Triangle>();
+                List<Triangle> Triangles = new List<Triangle>();
 
                 // If the tetrahedra contains a vertex in it's circumcircle then it is a bad tetrahedra
-                foreach (var t in Tetrahedra)
+                foreach (Tetrahedron t in Tetrahedra)
                 {
                     if (t.CircumCircleContains(vertex.Position))       // Check if vertex lies within circumcicle
                     {
-                        t.IsBad = true;
-                        triangles.Add(new Triangle(t.A, t.B, t.C));     // Make triangles out of each side of the tetrahedron
-                        triangles.Add(new Triangle(t.A, t.B, t.D));
-                        triangles.Add(new Triangle(t.A, t.C, t.D));
-                        triangles.Add(new Triangle(t.B, t.C, t.D));
+                        _badTetrahedra.Add(t);
+                        Triangles.Add(new Triangle(t.A, t.B, t.C));     // Make triangles out of each side of the tetrahedron
+                        Triangles.Add(new Triangle(t.A, t.B, t.D));
+                        Triangles.Add(new Triangle(t.A, t.C, t.D));
+                        Triangles.Add(new Triangle(t.B, t.C, t.D));
                     }
                 }
 
                 // If a Triangle is basically on top of another triangle then it is a bad triangle
-                for (int i = 0; i < triangles.Count; i++)               // Select first triangle
+                for (int i = 0; i < Triangles.Count; i++)               // Select first triangle
                 {
-                    for (int j = i + 1; j < triangles.Count; j++)       // Select second triangle
+                    for (int j = i + 1; j < Triangles.Count; j++)       // Select second triangle
                     {
-                        if (Triangle.AlmostEqual(triangles[i], triangles[j], TRIANGULATION_PRECISION))       // If both of the triangles are nearly on top of each other
+                        if (Triangle.AlmostEqual(Triangles[i], Triangles[j], TRIANGULATION_PRECISION))       // If both of the triangles are nearly on top of each other
                         {
-                            triangles[i].IsBad = true;
-                            triangles[j].IsBad = true;
+                            _badTriangles.Add(Triangles[i]);
+                            _badTriangles.Add(Triangles[j]);
                         }
                     }
                 }
 
                 // Remove all bad tetrahedron and triangles
-                Tetrahedra.RemoveAll((Tetrahedron t) => t.IsBad);       // Remove all bad tetrahedron
-                triangles.RemoveAll((Triangle t) => t.IsBad);           // Remove all bad triagles
+                Tetrahedra.RemoveAll((Tetrahedron t) => _badTetrahedra.Contains(t));       // Remove all bad tetrahedron
+                Triangles.RemoveAll((Triangle t) => _badTriangles.Contains(t));           // Remove all bad triagles
 
-                foreach (var triangle in triangles)
+                // Clear lists for next iteration
+                _badTetrahedra.Clear();
+                _badTriangles.Clear();
+
+                foreach (var triangle in Triangles)
                 {                   // Add new tetrahedra after each iteration
                     Tetrahedra.Add(new Tetrahedron(triangle.U, triangle.V, triangle.W, vertex));
                 }

@@ -1,14 +1,13 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   03/31/2025 (Ryan)
+ * Last Modified:   04/03/2025 (Ryan)
  * Notes:           Map Generator
 */
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Needed for triangulation
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 
@@ -75,7 +74,6 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Debuging")]
         [SerializeField] private bool _debug = false;
-        [SerializeField] private bool _stepwiseDebug = false;
         [SerializeField] private GameObject _blueprintGizmoPrefab;
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _triangulationColor;
@@ -85,7 +83,7 @@ namespace RyansLibrary.Labyrinth
         // ***** Private Variables *****
         // TODO: do not make this global in this class, maybe in the Area class?
         private DelaunayTriangulation3D _triangulation;     // A single triangulation structure for a main path
-        private List<PrimsAlgorithm.Edge> _minimumSpanningTree;
+        private List<Edge> _minimumSpanningTree;
 
         // Debugging
         private enum DebugState
@@ -552,14 +550,7 @@ namespace RyansLibrary.Labyrinth
             _triangulation = DelaunayTriangulation3D.Triangulate(vertices);                 // Perform Delaunay Triangulation
 
             // Find Minimum Spanning tree with Prim's Algorithm
-            List<PrimsAlgorithm.Edge> edges = new List<PrimsAlgorithm.Edge>();
-
-            foreach (var edge in _triangulation.Edges)
-            {
-                edges.Add(new PrimsAlgorithm.Edge(edge.U, edge.V));
-            }
-
-            _minimumSpanningTree = PrimsAlgorithm.MinimumSpanningTree(edges, edges[0].U);
+            _minimumSpanningTree = PrimsAlgorithm.MinimumSpanningTree(_triangulation.Edges, _triangulation.Edges[0].U);
         }
 
         /// <summary>
@@ -1881,7 +1872,7 @@ namespace RyansLibrary.Labyrinth
                 return;
 
             DrawBoundingBox(_castleArea.Bounds);
-            DrawTriangulation(_triangulation);
+            DrawTriangulation();
             DrawBluePrintGizmos();
         }
 
@@ -1917,25 +1908,27 @@ namespace RyansLibrary.Labyrinth
             Gizmos.DrawWireCube(worldCenter, worldSize);
         }
 
-        private void DrawTriangulation(DelaunayTriangulation3D triangulation)
+        private void DrawTriangulation()
         {
-            if (triangulation == null) 
+            if (_triangulation == null) 
                 return;
 
-
-            foreach (Tetrahedron t in triangulation.Tetrahedra)
+            // Draw circumcircles in remaining tetrahedron from triangulation
+            foreach (Tetrahedron t in _triangulation.Tetrahedra)
             {
                 Gizmos.color = _circumcircleColor;
                 Gizmos.DrawSphere(t.Circumcenter * _gridUnitSize, Mathf.Sqrt(t.CircumradiusSquared) * _gridUnitSize);
             }
 
-            foreach (Edge e in triangulation.Edges)
+            // Draw remaining edges from triangulation
+            foreach (Edge e in _triangulation.Edges)
             {
                 Gizmos.color = _triangulationColor;
                 Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
             }
 
-            foreach (PrimsAlgorithm.Edge e in _minimumSpanningTree)
+            // Draw the minimum spanning tree of the area
+            foreach (Edge e in _minimumSpanningTree)
             {
                 Gizmos.color = _minimumSpanningTreeColor;
                 Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
