@@ -444,8 +444,19 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
+                // If the available cells in the room entry is null then set all to true; else manually set available rooms
+                bool setAvailability = entry.AvailableCells == null ? true : false;
+
+                // TODO: Use hash map instead of List for faster lookup maybe?
                 // Check Collision with other rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, entry.SpawnPosition, room.RoomDimensions);      // Fill room space with blueprint rooms
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, entry.SpawnPosition, room.RoomDimensions, setAvailability);      // Fill room space with blueprint rooms
+
+                // Generate additional blueprint rooms
+                foreach (Vector3Int cell in entry.AvailableCells)
+                {
+                    Vector3Int actualPos = entry.SpawnPosition + cell;      // Find the actual position in room space of the cell
+                    GenerateBlueprintRoom(area.MainPath, actualPos);
+                }
 
                 if (rooms == null)     // Room was outside the bounds of the area
                 {
@@ -545,6 +556,10 @@ namespace RyansLibrary.Labyrinth
 
             foreach(BlueprintRoom room in area.MainPath.BlueprintRooms)
             {
+                // if room is not available then forget about triangulating/pathfinding to it
+                if (!room.Available)
+                    continue;
+
                 vertices.Add(new Vertex<BlueprintRoom>(room.Position, room));
             }
 
@@ -573,9 +588,12 @@ namespace RyansLibrary.Labyrinth
 
                 foreach (BlueprintRoom room in MasterPath.BlueprintRooms)
                 {
+                    // if the room is the start room or ending room of the edge then don't add to obstructions
                     Vector3Int roomPos = room.Position;
-                    if (roomPos != startPos && roomPos != endPos)
-                        obstructions.Add(roomPos);
+                    if (roomPos == startPos || roomPos == endPos)
+                        continue;
+
+                    obstructions.Add(roomPos);
                 }
 
                 List<Vector3Int> path = aStar.FindPath(startPos, endPos, obstructions, Heuristic.Manhattan);
@@ -607,7 +625,6 @@ namespace RyansLibrary.Labyrinth
 
                     // TODO: figure out a better way this is really jank
                     Vector3Int difference = curRoom.Position - prevRoom.Position;
-                    Debug.Log(difference);
 
                     int entrFlagIdx;
                     if (difference == Vector3Int.right)
@@ -828,10 +845,11 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">The desired path to add the new blueprint room to.</param>
         /// <param name="position">The desired position to spawn the new room at. Must be in world coords</param>
         /// <returns>Blueprint room created in room coords.</returns>
-        private BlueprintRoom GenerateBlueprintRoom(Path path, Vector3Int position)
+        private BlueprintRoom GenerateBlueprintRoom(Path path, Vector3Int position, bool available = true)
         {
             string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
             BlueprintRoom newRoom = new BlueprintRoom(position, blueName);
+            newRoom.Available = available;
 
             if (_debugLogs) Debug.Log($"Generated blueprint room {blueName}");
 
@@ -851,7 +869,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="position">Start position</param>
         /// <param name="roomDimensions"></param>
         /// <returns>Blueprint rooms generated in a list if needed.</returns>
-        private List<BlueprintRoom> GenerateBlueprintsFromDimensions(Path path, Vector3Int position, Vector3Int roomDimensions)
+        private List<BlueprintRoom> GenerateBlueprintsFromDimensions(Path path, Vector3Int position, Vector3Int roomDimensions, bool available = true)
         {
             List<BlueprintRoom> rooms = new List<BlueprintRoom>();
             List<Vector3Int> roomOrigins = new List<Vector3Int>();
@@ -877,7 +895,7 @@ namespace RyansLibrary.Labyrinth
 
             // If no errors then generate blueprint rooms from dimensions
             foreach (Vector3Int spawnPosition in roomOrigins)
-                rooms.Add(GenerateBlueprintRoom(path, spawnPosition));      // Call to method above
+                rooms.Add(GenerateBlueprintRoom(path, spawnPosition, available));      // Call to method above
 
             return rooms;
         }
@@ -1838,7 +1856,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Critical Rooms"))       // Generates Unique Rooms
                 {
                     // Generate Unique Rooms
-                    //PlaceUniqueRooms(_castleArea);
+                    PlaceUniqueRooms(_castleArea);
                     _debugState = DebugState.GenDivergentRooms;
                 }
             }

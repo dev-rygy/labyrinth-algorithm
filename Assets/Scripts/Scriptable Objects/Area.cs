@@ -29,9 +29,10 @@ namespace RyansLibrary.Labyrinth
         
         // TODO: Convert parameters below to Vector3Int!
         [Header("Fixed Room Parameters")]
-        [SerializeField] public Vector3Int SpawnPosition;      // For use with fixed rooms; all other rooms will ignore this
+        [SerializeField] public Vector3Int SpawnPosition;               // For use with fixed rooms; all other rooms will ignore this
+        [SerializeField] public List<Vector3Int> AvailableCells;        // List of cells the room gen algorithm can pathfind to; null = all rooms
         [Header("Constrained Room Parameters")]
-        [SerializeField] public BoundsInt Bounds;              // For use with constrained rooms; all other rooms will ignore these bounds;
+        [SerializeField] public BoundsInt Bounds;                       // For use with constrained rooms; all other rooms will ignore these bounds;
     }
 
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Area", order = 1)]
