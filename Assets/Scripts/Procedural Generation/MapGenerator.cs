@@ -586,12 +586,48 @@ namespace RyansLibrary.Labyrinth
                     return;
                 }
 
+                BlueprintRoom curRoom = null;
+                BlueprintRoom prevRoom = null;
                 foreach (Vector3Int pos in path)
                 {
-                    if (pos == startPos || pos == endPos)
-                        continue;
+                    if (pos != startPos && pos != endPos)
+                    {
+                        curRoom = GenerateBlueprintRoom(area.MainPath, pos);
+                    }
+                    else
+                    {
+                        curRoom = MasterDictionary[pos];
+                    }
 
-                    GenerateBlueprintRoom(area.MainPath, pos);
+                    if (prevRoom == null)
+                    {
+                        prevRoom = curRoom;
+                        continue;
+                    }
+
+                    // TODO: figure out a better way this is really jank
+                    Vector3Int difference = curRoom.Position - prevRoom.Position;
+                    Debug.Log(difference);
+
+                    int entrFlagIdx;
+                    if (difference == Vector3Int.right)
+                        entrFlagIdx = 0;
+                    else if (difference == Vector3Int.left)
+                        entrFlagIdx = 1;
+                    else if (difference == Vector3Int.forward)
+                        entrFlagIdx = 2;
+                    else if (difference == Vector3Int.back)
+                        entrFlagIdx = 3;
+                    else if (difference == Vector3Int.up)
+                        entrFlagIdx = 4;
+                    else if (difference == Vector3Int.down)
+                        entrFlagIdx = 5;
+                    else
+                        entrFlagIdx = -1;   // Default or error case
+
+                    FlagDoorways(curRoom, prevRoom, entrFlagIdx);
+
+                    prevRoom = curRoom;
                 }
             }
         }
@@ -721,6 +757,7 @@ namespace RyansLibrary.Labyrinth
                         break;
                     default:
                         Debug.LogError("Map Generator Error: Direction choosen by gen alg does not exist.");
+                        entrFlagIdx = -1;
                         break;
                 }
 
@@ -889,6 +926,12 @@ namespace RyansLibrary.Labyrinth
         /// <param name="entrFlagIdx">The index of the choosen face of the *first* room.</param>
         private void FlagDoorways(BlueprintRoom room1, BlueprintRoom room2, int entrFlagIdx) // Flag the entranceways to be activated in each room
         {
+            if (entrFlagIdx < 0)
+            {
+                Debug.LogError("Map Generator Error: Two rooms are invalid for entrance connection");
+                return;
+            }
+
             // Flag the fact of the next room facing the prev. room
             if (Math.IsEven(entrFlagIdx))                                   // If choosen an even numbered side then set opposite to true (Ex. F4 -> F3 = true)
                 room1.entrancewayFlags[entrFlagIdx + 1] = true;
@@ -920,8 +963,8 @@ namespace RyansLibrary.Labyrinth
             GenerateRoomsOnPath(area.MainPath);
 
             // Generator Rooms along alt. paths
-            foreach (Path path in area.Paths)
-                GenerateRoomsOnPath(path);
+            //foreach (Path path in area.Paths)
+                //GenerateRoomsOnPath(path);
         }
 
         //The room case based on the direction of the adjacent/next room.
@@ -1832,8 +1875,8 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Alt Blueprint Paths"))        // Generates alt paths that diverge from the main path
                 {
-                    GenerateMainPathBlueprint(_castleArea);
-                    GenerateAltPathBlueprints(_castleArea);
+                    //GenerateMainPathBlueprint(_castleArea);
+                    //GenerateAltPathBlueprints(_castleArea);
                     _debugState = DebugState.GenRooms;
                 }
             }
