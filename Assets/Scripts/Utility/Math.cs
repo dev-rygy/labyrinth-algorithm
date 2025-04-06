@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2024
- * Last Modified:   03/19/2024 
+ * Last Modified:   04/04/2024 (Ryan) 
  * Notes:           Custom Math Library
 */
 using UnityEngine;
@@ -10,6 +10,61 @@ namespace RyansLibrary
 {
     public static class Math
     {
+        #region Arithmetic
+        /// <summary>
+        /// Checks if a number is even or odd.
+        /// </summary>
+        /// <param name="n">Number to check</param>
+        /// <returns>True if the argument passed in is an even number.</returns>
+        public static bool IsEven(int n)
+        {
+            return (n % 2 == 0);
+        }
+        #endregion
+
+        #region Geometric
+        /// <summary>
+        /// Finds the Euclideon Distance between two points.
+        /// https://en.wikipedia.org/wiki/Euclidean_distance
+        /// </summary>
+        /// <param name="a">Point 1</param>
+        /// <param name="b">Point 2</param>
+        /// <returns>Distance</returns>
+        public static float EuclideonDistance3D(Vector3 a, Vector3 b)
+        {
+            // D(a, b) = sqrt[ (x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2 ]
+            return Vector3.Distance(a, b);
+        }
+
+        /// <summary>
+        /// Finds the Manhattan Distance between two points.
+        /// https://xlinux.nist.gov/dads/HTML/manhattanDistance.html
+        /// </summary>
+        /// <param name="a">Point 1</param>
+        /// <param name="b">Point 2</param>
+        /// <returns>Distance</returns>
+        public static float ManhattanDistance3D(Vector3 a, Vector3 b)
+        {
+            // D(a, b) = | x_2 - x_1 | + | y_2 - y_1 | + | z_2 - z_1 |
+            return Mathf.Abs(b.x - a.x) + Mathf.Abs(b.y - a.y) + Mathf.Abs(b.z - a.z);
+        }
+
+        /// <summary>
+        /// Finds the Chebyshev Distance between two points.
+        /// https://en.wikipedia.org/wiki/Chebyshev_distance
+        /// </summary>
+        /// <param name="a">Point 1</param>
+        /// <param name="b">Point 2</param>
+        /// <returns>Distance</returns>
+        public static float ChebyshevDistance3D(Vector3 a, Vector3 b)
+        {
+            // D(a, b) = max[ | x_2 - x_1 |, | y_2 - y_1 |, | z_2 - z_1 | ]
+            return Mathf.Max(Mathf.Abs(b.x - a.x), Mathf.Abs(b.y - a.y), Mathf.Abs(b.z - a.z));
+        }
+        #endregion
+
+
+        #region Volume
         /// <summary>
         /// Find the Volume of a cube.
         /// </summary>
@@ -43,16 +98,6 @@ namespace RyansLibrary
         {
             return dimensions.x * dimensions.y * dimensions.z;
         }
-
-
-        /// <summary>
-        /// Checks if a number is even or odd.
-        /// </summary>
-        /// <param name="n">Number to check</param>
-        /// <returns>True if the argument passed in is an even number.</returns>
-        public static bool IsEven(int n)
-        {
-            return (n % 2 == 0);
-        }
+        #endregion
     }
 }

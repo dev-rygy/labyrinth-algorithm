@@ -10,6 +10,7 @@ using UnityEngine;
 
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
+using RyansLibrary.AI;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -94,7 +95,7 @@ namespace RyansLibrary.Labyrinth
             GenDivergentRooms,
             GenTriangulation,
             GenMainPath,
-            GenAltPath,
+            GenPaths,
             GenRooms,
             NotifyListeners,
             Done,
@@ -553,6 +554,48 @@ namespace RyansLibrary.Labyrinth
             _minimumSpanningTree = PrimsAlgorithm.MinimumSpanningTree(_triangulation.Edges, _triangulation.Edges[0].U);
         }
 
+        private void ConnectMainPath(Area area)
+        {
+            if (area == null || area.MainPath == null)
+            {
+                Debug.LogError($"Map Generator Error: Error Area {area.Name} in invalid for pathfinding.");
+                return;
+            }
+
+            SimpleAStar3D aStar = new SimpleAStar3D(area.Bounds, Vector3Int.zero);
+
+            foreach (Edge e in _minimumSpanningTree)
+            {
+                Vector3Int startPos = new Vector3Int((int)e.U.Position.x, (int)e.U.Position.y, (int)e.U.Position.z);
+                Vector3Int endPos = new Vector3Int((int)e.V.Position.x, (int)e.V.Position.y, (int)e.V.Position.z);
+                HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
+                obstructions.Clear();
+
+                foreach (BlueprintRoom room in MasterPath.BlueprintRooms)
+                {
+                    Vector3Int roomPos = room.Position;
+                    if (roomPos != startPos && roomPos != endPos)
+                        obstructions.Add(roomPos);
+                }
+
+                List<Vector3Int> path = aStar.FindPath(startPos, endPos, obstructions, Heuristic.Manhattan);
+
+                if (path == null)
+                {
+                    Debug.LogError($"Map Generator Error: Pathfinding failed for edge.");
+                    return;
+                }
+
+                foreach (Vector3Int pos in path)
+                {
+                    if (pos == startPos || pos == endPos)
+                        continue;
+
+                    GenerateBlueprintRoom(area.MainPath, pos);
+                }
+            }
+        }
+
         /// <summary>
         /// Choose a random room in a path. If endIndex = -1 => endIndex = path's last room.
         /// </summary>
@@ -743,6 +786,7 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Generate a new blueprint room at the desired location. Add it to the master path and
         /// desired path passed in as an arguement. Generate a blueprint room gizmo if debug is enabled.
+        /// NOTE: Position must be in room coords
         /// </summary>
         /// <param name="path">The desired path to add the new blueprint room to.</param>
         /// <param name="position">The desired position to spawn the new room at. Must be in world coords</param>
@@ -753,7 +797,6 @@ namespace RyansLibrary.Labyrinth
             BlueprintRoom newRoom = new BlueprintRoom(position, blueName);
 
             if (_debugLogs) Debug.Log($"Generated blueprint room {blueName}");
-
 
             // Update paths and masters with new blueprint room
             path?.Add(newRoom);
@@ -1780,15 +1823,16 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Main Path"))        // Generates main path
                 {
-                    GenerateMainPathBlueprint(_castleArea);
-                    _debugState = DebugState.GenAltPath;
+                    ConnectMainPath(_castleArea);
+                    _debugState = DebugState.GenPaths;
                 }
             }
 
-            if (_debugState == DebugState.GenAltPath)
+            if (_debugState == DebugState.GenPaths)
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Alt Blueprint Paths"))        // Generates alt paths that diverge from the main path
                 {
+                    GenerateMainPathBlueprint(_castleArea);
                     GenerateAltPathBlueprints(_castleArea);
                     _debugState = DebugState.GenRooms;
                 }
@@ -1844,9 +1888,9 @@ namespace RyansLibrary.Labyrinth
                     if (_debugState == DebugState.GenMainPath)
                     {
                         GenerateMainPathBlueprint(_castleArea);
-                        _debugState = DebugState.GenAltPath;
+                        _debugState = DebugState.GenPaths;
                     }
-                    if (_debugState == DebugState.GenAltPath)
+                    if (_debugState == DebugState.GenPaths)
                     {
                         GenerateAltPathBlueprints(_castleArea);
                         _debugState = DebugState.GenRooms;
