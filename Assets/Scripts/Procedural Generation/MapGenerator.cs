@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   04/03/2025 (Ryan)
+ * Last Modified:   04/10/2025 (Ryan)
  * Notes:           Map Generator
 */
 using System;
@@ -11,6 +11,7 @@ using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 using RyansLibrary.AI;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -289,7 +290,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
-                    bool hasPlaced = PlaceFixedRoom(entry, area);
+                    bool hasPlaced = PlaceFixedRoomBlueprints(entry, area);
 
                     if (!hasPlaced)
                     {
@@ -319,7 +320,7 @@ namespace RyansLibrary.Labyrinth
                             return false;
                         }
 
-                        hasPlaced = PlaceConstrainedRoom(entry, area);
+                        hasPlaced = PlaceConstrainedRoomBlueprints(entry, area);
                     }
                 }
             }
@@ -344,7 +345,7 @@ namespace RyansLibrary.Labyrinth
                             return false;
                         }
 
-                        hasPlaced = PlaceFreeRoom(entry, area);
+                        hasPlaced = PlaceFreeRoomBlueprints(entry, area);
                     }
                 }
             }
@@ -430,7 +431,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="lowerBound"></param>
         /// <param name="placementPoint"></param>
         /// <returns></returns>
-        private bool PlaceFixedRoom(RoomEntry entry, Area area)
+        private bool PlaceFixedRoomBlueprints(RoomEntry entry, Area area)
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
@@ -444,18 +445,23 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                // If the available cells in the room entry is null then set all to true; else manually set available rooms
-                bool setAvailability = entry.AvailableCells == null ? true : false;
-
                 // TODO: Use hash map instead of List for faster lookup maybe?
                 // Check Collision with other rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, entry.SpawnPosition, room.RoomDimensions, setAvailability);      // Fill room space with blueprint rooms
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, entry.SpawnPosition, room.RoomDimensions, false);      // Fill room space with blueprint rooms
 
-                // Generate additional blueprint rooms
+                // Set rooms that are supposed to be available to available
                 foreach (Vector3Int cell in entry.AvailableCells)
                 {
                     Vector3Int actualPos = entry.SpawnPosition + cell;      // Find the actual position in room space of the cell
-                    GenerateBlueprintRoom(area.MainPath, actualPos);
+
+                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                    {
+                        r.Available = true;
+                    }
+                    else
+                    {
+                         GenerateBlueprintRoom(area.MainPath, actualPos, true);
+                    }
                 }
 
                 if (rooms == null)     // Room was outside the bounds of the area
@@ -464,15 +470,13 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                // Spawn Room; TODO: maybe remove this and make blueprint rooms hold data about potential rooms?
-                Room newRoom = GenerateRoom(entry.Prefab, entry.SpawnPosition, area.MainPath);
                 return true;
             }
             Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
             return false;
         }
 
-        private bool PlaceConstrainedRoom(RoomEntry entry, Area area)
+        private bool PlaceConstrainedRoomBlueprints(RoomEntry entry, Area area)
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
@@ -493,7 +497,7 @@ namespace RyansLibrary.Labyrinth
                 );
 
                 // Fill room space with blueprint rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions, false);
 
                 if (rooms == null)     // the room collided with another room
                 {
@@ -501,15 +505,29 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                // Spawn New Room
-                Room newRoom = GenerateRoom(entry.Prefab, randomSpawnPos, area.MainPath);
+                entry.SpawnPosition = randomSpawnPos;
+
+                // Set rooms that are supposed to be available to available
+                foreach (Vector3Int cell in entry.AvailableCells)
+                {
+                    Vector3Int actualPos = randomSpawnPos + cell;      // Find the actual position in room space of the cell
+
+                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                    {
+                        r.Available = true;
+                    }
+                    else
+                    {
+                        GenerateBlueprintRoom(area.MainPath, actualPos, true);
+                    }
+                }
                 return true;
             }
             Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
             return false;
         }
 
-        private bool PlaceFreeRoom(RoomEntry entry, Area area)
+        private bool PlaceFreeRoomBlueprints(RoomEntry entry, Area area)
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
@@ -533,10 +551,27 @@ namespace RyansLibrary.Labyrinth
                 List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
 
                 if (rooms == null)     // the room collided with another room
+                {
+                    Debug.LogWarning($"Map Generator Error: Constrained Room {entry.Prefab.name} collided with another room and could not be placed");
                     return false;
+                }
 
-                // Spawn New Room
-                Room newRoom = GenerateRoom(entry.Prefab, randomSpawnPos, area.MainPath);
+                entry.SpawnPosition = randomSpawnPos;
+
+                // Set rooms that are supposed to be available to available
+                foreach (Vector3Int cell in entry.AvailableCells)
+                {
+                    Vector3Int actualPos = randomSpawnPos + cell;      // Find the actual position in room space of the cell
+
+                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                    {
+                        r.Available = true;
+                    }
+                    else
+                    {
+                        GenerateBlueprintRoom(area.MainPath, actualPos, true);
+                    }
+                }
                 return true;
             }
             Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
@@ -563,7 +598,22 @@ namespace RyansLibrary.Labyrinth
                 vertices.Add(new Vertex<BlueprintRoom>(room.Position, room));
             }
 
-            _triangulation = DelaunayTriangulation3D.Triangulate(vertices);                 // Perform Delaunay Triangulation
+            // TODO: Remove, this is messy code
+            // Turn off blueprint room availability for unique rooms 
+            foreach (RoomEntry e in area.UniqueRooms)
+            {
+                foreach (Vector3Int cell in e.AvailableCells)
+                {
+                    Vector3Int actualPos = e.SpawnPosition + cell;      // Find the actual position in room space of the cell
+                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                        r.Available = false;
+                }
+            }
+
+            // Perform Delaunay Triangulation
+            _triangulation = DelaunayTriangulation3D.Triangulate(vertices);
+
+            // TODO: Remove edges that link to same room
 
             // Find Minimum Spanning tree with Prim's Algorithm
             _minimumSpanningTree = PrimsAlgorithm.MinimumSpanningTree(_triangulation.Edges, _triangulation.Edges[0].U);
@@ -994,6 +1044,28 @@ namespace RyansLibrary.Labyrinth
             NegX = 3,
             PosY = 4,
             NegY = 5
+        }
+
+        private void GenerateUniqueRooms(Area area)
+        {
+            foreach (RoomEntry entry in area.UniqueRooms)
+            {
+                Room generatedRoom = GenerateRoom(entry.Prefab, entry.SpawnPosition, area.MainPath);
+
+                // Unique rooms with available cells
+                if (entry.AvailableCells != null)
+                {
+                    for (int i = 0; i < entry.AvailableCells.Count; i++)
+                    {
+                        if (MasterDictionary.TryGetValue(entry.SpawnPosition + entry.AvailableCells[i], out BlueprintRoom room))
+                            generatedRoom.CopyBlueprintEntranceFlags(room.entrancewayFlags, i, Vector3.zero);
+                        else
+                            Debug.LogError($"Map Generator Error: Could not copy entranceway flags into unique room");
+                    }
+                }
+
+                generatedRoom.Initialize();
+            }
         }
 
         private void GenerateRoomsOnPath(Path path)
@@ -1903,6 +1975,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Rooms From Paths"))        // Generates alt paths that diverge from the main path
                 {
+                    GenerateUniqueRooms(_castleArea);
                     GenerateAreaRooms(_castleArea);
                     _debugState = DebugState.NotifyListeners;
                 }

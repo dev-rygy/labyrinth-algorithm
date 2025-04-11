@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/23/2025
- * Last Modified:   03/31/2025 (Ryan)
+ * Last Modified:   04/10/2025 (Ryan)
  * Notes:           Holds all the path's in an area and the 
  *                      bounds that they may spawn rooms in
 */
@@ -21,18 +21,18 @@ namespace RyansLibrary.Labyrinth
 
     // Room entrys for the main path algorithm
     [System.Serializable]
-    public struct RoomEntry
+    public class RoomEntry
     {
-        [Header("General Room Parameters")]
-        [SerializeField] public GameObject Prefab;
-        [SerializeField] public RoomPlacementType PlacementType;
-        
-        // TODO: Convert parameters below to Vector3Int!
+        [field: Header("General Room Parameters")]
+        [field: SerializeField] public GameObject Prefab { get; set; }
+        [field: SerializeField] public RoomPlacementType PlacementType { get; set; }
+
         [Header("Fixed Room Parameters")]
-        [SerializeField] public Vector3Int SpawnPosition;               // For use with fixed rooms; all other rooms will ignore this
-        [SerializeField] public List<Vector3Int> AvailableCells;        // List of cells the room gen algorithm can pathfind to; null = all rooms
-        [Header("Constrained Room Parameters")]
-        [SerializeField] public BoundsInt Bounds;                       // For use with constrained rooms; all other rooms will ignore these bounds;
+        [field: SerializeField] public Vector3Int SpawnPosition { get; set; }               // For use with fixed rooms; all other rooms will ignore this
+        [field: SerializeField] public List<Vector3Int> AvailableCells { get; set; }        // List of cells the room gen algorithm can pathfind to; null = all rooms
+
+        [field: Header("Constrained Room Parameters")]
+        [field: SerializeField] public BoundsInt Bounds { get; set; }                       // For use with constrained rooms; all other rooms will ignore these bounds
     }
 
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Area", order = 1)]
