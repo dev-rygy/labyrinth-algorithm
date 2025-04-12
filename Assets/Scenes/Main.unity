@@ -654,7 +654,7 @@ MonoBehaviour:
   highlightColor:
     serializedVersion: 2
     rgba: 4286151167
-  textStyle: 3
+  textStyle: 1
   textAlignment: 0
 --- !u!4 &522497563
 Transform:
@@ -717,7 +717,7 @@ MonoBehaviour:
   highlightColor:
     serializedVersion: 2
     rgba: 4294936777
-  textStyle: 3
+  textStyle: 1
   textAlignment: 0
 --- !u!4 &566256791
 Transform:
@@ -797,7 +797,7 @@ MonoBehaviour:
   highlightColor:
     serializedVersion: 2
     rgba: 4281532160
-  textStyle: 3
+  textStyle: 1
   textAlignment: 0
 --- !u!4 &879215208
 Transform:
@@ -1041,7 +1041,7 @@ MonoBehaviour:
   _roomContainer: {fileID: 250971250}
   _numOfPlacementAttempsBeforeRegen: 10
   _castleArea: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c, type: 2}
-  _debug: 1
+  _debug: 0
   _blueprintGizmoPrefab: {fileID: 346890499486270653, guid: 1e7aed37650f79e4f83703d767189d05,
     type: 3}
   _boundingBoxColor: {r: 1, g: 0.31442907, b: 0, a: 1}
@@ -1281,7 +1281,7 @@ PrefabInstance:
     - target: {fileID: 4417549369138805797, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 65
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4417549369138805797, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}

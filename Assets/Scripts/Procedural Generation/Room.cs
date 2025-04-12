@@ -40,7 +40,7 @@ namespace RyansLibrary.Labyrinth
         [Header("Room Properties")]
         [SerializeField] public RoomShape roomShape;
 
-        [Header("debug")]
+        [Header("Debug")]
         [SerializeField] private bool debug = false;
         // TODO: Convert RoomDimensions to Vector3Int!
         [field: SerializeField] public Vector3Int RoomDimensions { get; private set; } = Vector3Int.one;

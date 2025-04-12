@@ -15,14 +15,14 @@ MonoBehaviour:
   <Name>k__BackingField: Castle
   <Bounds>k__BackingField:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 20, y: 5, z: 16}
+    m_Size: {x: 12, y: 5, z: 12}
   <MainPath>k__BackingField: {fileID: 11400000, guid: fb14fc246bdba4b499a09456e528a735,
     type: 2}
   <UniqueRooms>k__BackingField:
   - <Prefab>k__BackingField: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
       type: 3}
     <PlacementType>k__BackingField: 0
-    <SpawnPosition>k__BackingField: {x: 5, y: 0, z: 5}
+    <SpawnPosition>k__BackingField: {x: 5, y: 0, z: 0}
     <AvailableCells>k__BackingField:
     - {x: 0, y: 0, z: 0}
     <Bounds>k__BackingField:
@@ -31,7 +31,7 @@ MonoBehaviour:
   - <Prefab>k__BackingField: {fileID: 3966009581516977950, guid: be4df743c7847a94abbacf9bb81fda39,
       type: 3}
     <PlacementType>k__BackingField: 0
-    <SpawnPosition>k__BackingField: {x: 8, y: 0, z: 10}
+    <SpawnPosition>k__BackingField: {x: 4, y: 0, z: 5}
     <AvailableCells>k__BackingField:
     - {x: 2, y: 0, z: -1}
     <Bounds>k__BackingField:
@@ -40,22 +40,22 @@ MonoBehaviour:
   - <Prefab>k__BackingField: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
       type: 3}
     <PlacementType>k__BackingField: 1
-    <SpawnPosition>k__BackingField: {x: 14, y: 0, z: 0}
+    <SpawnPosition>k__BackingField: {x: 7, y: 0, z: 3}
     <AvailableCells>k__BackingField:
     - {x: 0, y: 0, z: 0}
     <Bounds>k__BackingField:
       m_Position: {x: 0, y: 0, z: 0}
-      m_Size: {x: 20, y: 1, z: 16}
+      m_Size: {x: 12, y: 1, z: 12}
   - <Prefab>k__BackingField: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
       type: 3}
     <PlacementType>k__BackingField: 2
-    <SpawnPosition>k__BackingField: {x: 5, y: 3, z: 1}
+    <SpawnPosition>k__BackingField: {x: 1, y: 3, z: 10}
     <AvailableCells>k__BackingField:
     - {x: 0, y: 0, z: 0}
     <Bounds>k__BackingField:
       m_Position: {x: 0, y: 0, z: 0}
       m_Size: {x: 0, y: 0, z: 0}
-  <DivergentRoomsCellOccupancy>k__BackingField: 20
+  <DivergentRoomsCellOccupancy>k__BackingField: 15
   <Paths>k__BackingField:
   - {fileID: 11400000, guid: 029b5e62ad2693d47a76f7766e520eeb, type: 2}
   - {fileID: 11400000, guid: d5ebd944b25340345a5e98fce8a46074, type: 2}
