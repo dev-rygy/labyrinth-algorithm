@@ -160,6 +160,7 @@ namespace RyansLibrary.Labyrinth
         {
             // Initialize Master Data Structures
             InitializeMasterPath();
+            _castleArea.MainPath.Initialize();
 
             // TODO: Implement a foreach loop to loop over all areas and generate blueprints
 
@@ -211,14 +212,8 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
-            // TODO: Unique Room Placement
-
-            // TODO: Divergent Room Placement
-
-            // ******* Generate Area Blueprint *******
-            // Generate Main Path to boss; TODO: Implement
-            // GenerateMainPathBlueprint(area);
-
+            // ******* Generate Area Blueprints *******
+            // Generate Main Path to boss
             GenerateMainPathBlueprint(area);
 
             // Ganerate Alternative paths
@@ -239,13 +234,18 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
-            // Initialize a new path at starting room if not null
-            int startIndex = MasterPath.BlueprintCount() - 1;               // Start index in master path
-            int endIndex = startIndex + area.MainPath.PathLength;
-            area.MainPath.Initialize(startIndex, endIndex);      // End index in master path
+            // Unique Room Placement
+            PlaceUniqueRooms(_castleArea);
 
-            DrunkardWalk(area.MainPath, area.Bounds);
-            
+            // Divergent Room Placement
+            PlaceDivergentRooms(_castleArea);
+
+            // Generate Delauney Triangulation
+            GenerateTriangulation(_castleArea);
+
+            // Pathfind and Connect Main Path
+            ConnectMainPath(_castleArea);
+
             if (_debugLogs) Debug.Log($"Map Generator: {area.Name} generated path {area.MainPath.name} with {area.MainPath.BlueprintCount()} rooms.");
         }
 
@@ -262,7 +262,7 @@ namespace RyansLibrary.Labyrinth
 
             // Path to prize room; choose a random start room
             // Initialize a new path at starting room if not null
-            int startIndex = area.MainPath.BlueprintCount() - 1;               // Start index in master path
+            int startIndex = area.MainPath.BlueprintCount() - 1;              // Start index in master path
             int endIndex = startIndex + area.MainPath.PathLength;
 
             foreach (Path path in area.Paths)
@@ -282,6 +282,7 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
+        #region Main Path Blueprint Generation
         #region Unique Room Placement
         private bool PlaceUniqueRooms(Area area)
         {
@@ -698,7 +699,9 @@ namespace RyansLibrary.Labyrinth
                 }
             }
         }
+        #endregion
 
+        #region Alt Path Blueprint Generation
         /// <summary>
         /// Choose a random room in a path. If endIndex = -1 => endIndex = path's last room.
         /// </summary>
@@ -731,6 +734,13 @@ namespace RyansLibrary.Labyrinth
             int randomRoomIndex = UnityEngine.Random.Range(startIndex, endIndex);
             BlueprintRoom room = path.BlueprintRooms[randomRoomIndex];
 
+            // TODO: Make a circular array handle this
+            if (!room.Available)
+            {
+                Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
+                room = ChooseRandomRoomOnPath(path, startIndex, endIndex);
+            }
+
             if (_debugLogs) Debug.Log($"Map Generator: Random room choosen from {path.Name} at index {randomRoomIndex}");
 
             return room;
@@ -745,7 +755,7 @@ namespace RyansLibrary.Labyrinth
         private void DrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom = null)
         {
             // *** TODO: REMOVE ***
-            int fail = 100;
+            int fail = 1000;
 
             // Make sure the path has atleast one room cell that can spawn
             if (path.PathLength <= 0)
@@ -886,7 +896,9 @@ namespace RyansLibrary.Labyrinth
                 }
             }
         }
+        #endregion
 
+        #region Blueprint Room Generation
         /// <summary>
         /// Generate a new blueprint room at the desired location. Add it to the master path and
         /// desired path passed in as an arguement. Generate a blueprint room gizmo if debug is enabled.
@@ -1010,6 +1022,7 @@ namespace RyansLibrary.Labyrinth
             room2.entrancewayFlags[entrFlagIdx] = true;
         }
         #endregion
+        #endregion
 
         #region RoomGenerationProcedure
         /// <summary>
@@ -1027,12 +1040,15 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
+            // Generate Unique Rooms
+            GenerateUniqueRooms(area);
+
             // Generate Rooms along main path
             GenerateRoomsOnPath(area.MainPath);
 
             // Generator Rooms along alt. paths
-            //foreach (Path path in area.Paths)
-                //GenerateRoomsOnPath(path);
+            foreach (Path path in area.Paths)
+                GenerateRoomsOnPath(path);
         }
 
         //The room case based on the direction of the adjacent/next room.
@@ -1965,8 +1981,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Alt Blueprint Paths"))        // Generates alt paths that diverge from the main path
                 {
-                    //GenerateMainPathBlueprint(_castleArea);
-                    //GenerateAltPathBlueprints(_castleArea);
+                    GenerateAltPathBlueprints(_castleArea);
                     _debugState = DebugState.GenRooms;
                 }
             }
