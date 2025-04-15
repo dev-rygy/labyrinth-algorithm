@@ -12,22 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab2be37bdc730874bbc2eaa4348fa132, type: 3}
   m_Name: Mines_Main_Path
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: 
+  <Name>k__BackingField: Mines Main Path
   <Type>k__BackingField: 0
   <PathLength>k__BackingField: 30
   <startingRooms>k__BackingField: []
   <rooms1x1x1>k__BackingField:
   - Prefab: {fileID: 8151408096384611613, guid: 317c813604076fc478ea1a0b6c18baa2,
       type: 3}
-    Probability: 0
+    Probability: 100
   <rooms2x1x1>k__BackingField:
   - Prefab: {fileID: 2281302038410099749, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
       type: 3}
-    Probability: 0
+    Probability: 100
   <rooms1x2x1>k__BackingField: []
-  <rooms2x1x2>k__BackingField: []
+  <rooms2x1x2>k__BackingField:
+  - Prefab: {fileID: 6639078268214740932, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+      type: 3}
+    Probability: 100
   <endingRooms>k__BackingField: []
   <TallRoomSpawnChance>k__BackingField: 0
-  <LongRoomSpawnChance>k__BackingField: 0
-  <BigRoomSpawnChance>k__BackingField: 0
+  <LongRoomSpawnChance>k__BackingField: 0.45
+  <BigRoomSpawnChance>k__BackingField: 1
   PathGizmoColor: {r: 0.09019608, g: 0.99215686, b: 1, a: 0.29803923}

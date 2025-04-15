@@ -18,6 +18,15 @@ MonoBehaviour:
     m_Size: {x: 12, y: 5, z: 12}
   <MainPath>k__BackingField: {fileID: 11400000, guid: b3f0384528eb58345898e91ccf890656,
     type: 2}
-  <UniqueRooms>k__BackingField: []
+  <UniqueRooms>k__BackingField:
+  - <Prefab>k__BackingField: {fileID: 8151408096384611613, guid: 317c813604076fc478ea1a0b6c18baa2,
+      type: 3}
+    <PlacementType>k__BackingField: 0
+    <SpawnPosition>k__BackingField: {x: 5, y: 0, z: 0}
+    <AvailableCells>k__BackingField:
+    - {x: 0, y: 0, z: 0}
+    <Bounds>k__BackingField:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 0, y: 0, z: 0}
   <DivergentRoomsCellOccupancy>k__BackingField: 12
   <Paths>k__BackingField: []

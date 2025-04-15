@@ -12,9 +12,9 @@ namespace RyansLibrary.Labyrinth
 {
     public enum PathType
     {
-        master,
         main,
-        prize
+        prize,
+        master
     }
 
     [System.Serializable]
