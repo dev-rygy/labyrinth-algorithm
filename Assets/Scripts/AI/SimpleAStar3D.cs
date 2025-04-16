@@ -57,11 +57,13 @@ namespace RyansLibrary.AI
         private HashSet<Node> closedSet;
         private Stack<Vector3Int> path;
         private Grid3D<Node> grid;
+        private Vector3Int offset;
 
         public SimpleAStar3D(BoundsInt bounds, Vector3Int offset)
         {
-            grid = new Grid3D<Node>(bounds, offset);
+            grid = new Grid3D<Node>(bounds);
             var size = grid.Size;
+            this.offset = offset;
 
             openSet = new SimplePriorityQueue<Node, float>();
             closedSet = new HashSet<Node>();
@@ -93,14 +95,18 @@ namespace RyansLibrary.AI
 
             if (!grid.InBounds(start))      // Make sure the starting position is inside the given bounds
             {
-                Debug.LogError("A* Error: starting position lies outside the given bounds.");
+                Debug.LogError($"A* Error: starting position lies outside the given bounds: {start}");
                 return null;
             }
             if (!grid.InBounds(end))        // Make sure the ending position is inside the given bounds
             {
-                Debug.LogError("A* Error: ending position lies outside the given bounds.");
+                Debug.LogError($"A* Error: ending position lies outside the given bounds: {end}");
                 return null;
             }
+
+            // Adjust for offset of grid
+            start -= offset;
+            end -= offset;
 
             // Set the cost of start node and push into the queue 
             Node startNode = grid[start];
@@ -120,12 +126,14 @@ namespace RyansLibrary.AI
                     return ReconstructPath(current);
 
                 // Look at all neighbor nodes and evaluate
-                foreach (var offset in neighbors)
+                foreach (var neighborPos in neighbors)
                 {
-                    if (!grid.InBounds(current.Position + offset))      // Keep in bounds
+                    if (!grid.InBounds(current.Position + neighborPos + offset))      // Keep in bounds
+                    {
                         continue;
+                    }
 
-                    var neighbor = grid[current.Position + offset];
+                    var neighbor = grid[current.Position + neighborPos];
 
                     if (closedSet.Contains(neighbor))                   // Closed set contains neighbor
                         continue;
@@ -160,7 +168,7 @@ namespace RyansLibrary.AI
 
             while (node != null)
             {
-                path.Push(node.Position);
+                path.Push(node.Position + offset);
                 node = node.Parent;
             }
 
@@ -183,14 +191,14 @@ namespace RyansLibrary.AI
                     for (int z = 0; z < size.z; z++)
                     {
                         Vector3Int position = new Vector3Int(x, y, z);
-                        var node = grid[position];                   // Fill Position
+                        var node = grid[position];                  // Fill Position
                         node.Parent = null;                         // No Parent
                         node.gScore = float.PositiveInfinity;       // Infinate cost for scores
                         node.hScore = float.PositiveInfinity;
                         node.fScore = float.PositiveInfinity;
 
                         // Cannot traverse nodes in obstuctions set
-                        if (obstructions.Contains(position))
+                        if (obstructions.Contains(position + offset))
                         {
                             node.Traversable = false;
                         }

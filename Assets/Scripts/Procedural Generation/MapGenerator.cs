@@ -72,7 +72,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private int _numOfPlacementAttempsBeforeRegen = -1;    // If this number is exceeded then the generator will refresh its entire generation attempt
 
         [Header("Areas")]
-        [SerializeField] private Area _castleArea;
+        [SerializeField] private List<Area> _areas;
 
         [Header("Debuging")]
         [SerializeField] private bool _debug = false;
@@ -139,11 +139,17 @@ namespace RyansLibrary.Labyrinth
 
             try
             {
-                GenerateLabyrinth();
+                // Initialize Master Data Structures
+                InitializeMasterPath();
+
+                foreach (Area area in _areas)
+                {
+                    GenerateLabyrinth(area);
+                }
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to generate labyrinth: {e.Message}");
+                Debug.LogError($"Map Generator Error: Failed to generate labyrinth: {e.Message}");
             }
 
         }
@@ -156,19 +162,17 @@ namespace RyansLibrary.Labyrinth
         /// Once a blueprint on the grid is made the algorithm then heads into a room check and generate procedure. It checks the shape that
         /// adjacent rooms made during the blueprint procedure and spawns a room if applicable.
         /// </summary>
-        public void GenerateLabyrinth()
+        public void GenerateLabyrinth(Area area)
         {
-            // Initialize Master Data Structures
-            InitializeMasterPath();
-            _castleArea.MainPath.Initialize();
+            area.MainPath.Initialize();
 
             // TODO: Implement a foreach loop to loop over all areas and generate blueprints
 
             // Generate blueprint map for area
-            GenerateBlueprints(_castleArea);
+            GenerateBlueprints(area);
 
             // Check room conditions and generate rooms using the blueprint map of the area
-            GenerateAreaRooms(_castleArea);
+            GenerateAreaRooms(area);
 
             // TODO: Implement perlin noise height and type Map
 
@@ -235,16 +239,16 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Unique Room Placement
-            PlaceUniqueRooms(_castleArea);
+            PlaceUniqueRooms(area);
 
             // Divergent Room Placement
-            PlaceDivergentRooms(_castleArea);
+            PlaceDivergentRooms(area);
 
             // Generate Delauney Triangulation
-            GenerateTriangulation(_castleArea);
+            GenerateTriangulation(area);
 
             // Pathfind and Connect Main Path
-            ConnectMainPath(_castleArea);
+            ConnectMainPath(area);
 
             if (_debugLogs) Debug.Log($"Map Generator: {area.Name} generated path {area.MainPath.name} with {area.MainPath.BlueprintCount()} rooms.");
         }
@@ -436,8 +440,12 @@ namespace RyansLibrary.Labyrinth
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
+                // Adjust parameters to fit the area's actual position
+                Vector3Int areaOffset = area.Bounds.position;
+                Vector3Int adjustedSpawnPos = entry.SpawnPosition + areaOffset;
+
                 // Check Collision with the area's bounds
-                Vector3 difference = CheckOutOfBounds(entry.SpawnPosition, room.RoomDimensions, area.Bounds);
+                Vector3 difference = CheckOutOfBounds(adjustedSpawnPos, room.RoomDimensions, area.Bounds);
 
                 if (difference != Vector3.zero)     // Room was outside the bounds of the area
                 {
@@ -448,20 +456,20 @@ namespace RyansLibrary.Labyrinth
 
                 // TODO: Use hash map instead of List for faster lookup maybe?
                 // Check Collision with other rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, entry.SpawnPosition, room.RoomDimensions, false);      // Fill room space with blueprint rooms
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, adjustedSpawnPos, room.RoomDimensions, false);      // Fill room space with blueprint rooms
 
                 // Set rooms that are supposed to be available to available
                 foreach (Vector3Int cell in entry.AvailableCells)
                 {
-                    Vector3Int actualPos = entry.SpawnPosition + cell;      // Find the actual position in room space of the cell
+                    Vector3Int cellPosition = adjustedSpawnPos + cell;      // Find the actual position in room space of the cell
 
-                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                    if (MasterDictionary.TryGetValue(cellPosition, out BlueprintRoom r))
                     {
                         r.Available = true;
                     }
                     else
                     {
-                         GenerateBlueprintRoom(area.MainPath, actualPos, true);
+                         GenerateBlueprintRoom(area.MainPath, cellPosition, true);
                     }
                 }
 
@@ -628,7 +636,7 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
-            SimpleAStar3D aStar = new SimpleAStar3D(area.Bounds, Vector3Int.zero);
+            SimpleAStar3D aStar = new SimpleAStar3D(area.Bounds, area.Bounds.position);
 
             foreach (Edge e in _minimumSpanningTree)
             {
@@ -637,7 +645,7 @@ namespace RyansLibrary.Labyrinth
                 HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
                 obstructions.Clear();
 
-                foreach (BlueprintRoom room in MasterPath.BlueprintRooms)
+                foreach (BlueprintRoom room in area.MainPath.BlueprintRooms)
                 {
                     // if the room is the start room or ending room of the edge then don't add to obstructions
                     Vector3Int roomPos = room.Position;
@@ -737,7 +745,7 @@ namespace RyansLibrary.Labyrinth
             // TODO: Make a circular array handle this
             if (!room.Available)
             {
-                Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
+                //Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
                 room = ChooseRandomRoomOnPath(path, startIndex, endIndex);
             }
 
@@ -946,7 +954,7 @@ namespace RyansLibrary.Labyrinth
 
                         if (CheckCollision(origin, out BlueprintRoom collidedRoom))
                         {
-                            Debug.LogWarning($"Map Generator Error: Failed to generate blueprint room due to collision with {collidedRoom.RoomName}");
+                            Debug.LogWarning($"Map Generator Warning: Failed to generate blueprint room due to collision with {collidedRoom.RoomName}");
                             return null;
                         }
 
@@ -1066,14 +1074,18 @@ namespace RyansLibrary.Labyrinth
         {
             foreach (RoomEntry entry in area.UniqueRooms)
             {
-                Room generatedRoom = GenerateRoom(entry.Prefab, entry.SpawnPosition, area.MainPath);
+                // Adjust parameters to fit the area's actual position
+                Vector3Int areaOffset = area.Bounds.position;
+                Vector3Int adjustedSpawnPos = entry.SpawnPosition + areaOffset;
+
+                Room generatedRoom = GenerateRoom(entry.Prefab, adjustedSpawnPos, area.MainPath);
 
                 // Unique rooms with available cells
                 if (entry.AvailableCells != null)
                 {
                     for (int i = 0; i < entry.AvailableCells.Count; i++)
                     {
-                        if (MasterDictionary.TryGetValue(entry.SpawnPosition + entry.AvailableCells[i], out BlueprintRoom room))
+                        if (MasterDictionary.TryGetValue(adjustedSpawnPos + entry.AvailableCells[i], out BlueprintRoom room))
                             generatedRoom.CopyBlueprintEntranceFlags(room.entrancewayFlags, i, Vector3.zero);
                         else
                             Debug.LogError($"Map Generator Error: Could not copy entranceway flags into unique room");
@@ -1919,9 +1931,9 @@ namespace RyansLibrary.Labyrinth
             {
                 // Initialize Master Data Structures
                 InitializeMasterPath();
-                _castleArea.MainPath.Initialize();
+                _areas[0].MainPath.Initialize();
 
-                if (_castleArea == null)
+                if (_areas[0] == null)
                 {
                     Debug.LogError("Map Generator Error: Area Entry Missing.");
                     _debugState = DebugState.Failed;
@@ -1929,9 +1941,9 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-                if (!CheckAreaBoundedVolume(_castleArea))
+                if (!CheckAreaBoundedVolume(_areas[0]))
                 {
-                    Debug.LogError($"Map Generator Error: The amount of blueprint rooms for area {_castleArea.Name} exceeds the bounding box's volume or the bounding box is inverted.");
+                    Debug.LogError($"Map Generator Error: The amount of blueprint rooms for area {_areas[0].Name} exceeds the bounding box's volume or the bounding box is inverted.");
                     _debugState = DebugState.Failed;
                     return;
                 }
@@ -1944,7 +1956,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Critical Rooms"))       // Generates Unique Rooms
                 {
                     // Generate Unique Rooms
-                    PlaceUniqueRooms(_castleArea);
+                    PlaceUniqueRooms(_areas[0]);
                     _debugState = DebugState.GenDivergentRooms;
                 }
             }
@@ -1954,7 +1966,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Divergent Rooms"))        // Generates Divergent Rooms
                 {
                     // Generate Divergent Rooms
-                    PlaceDivergentRooms(_castleArea);
+                    PlaceDivergentRooms(_areas[0]);
                     _debugState = DebugState.GenTriangulation;
                 }
             }
@@ -1963,7 +1975,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Triangulation"))        // Generates triangulation of main path
                 {
-                    GenerateTriangulation(_castleArea);
+                    GenerateTriangulation(_areas[0]);
                     _debugState = DebugState.GenMainPath;
                 }
             }
@@ -1972,7 +1984,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Main Path"))        // Generates main path
                 {
-                    ConnectMainPath(_castleArea);
+                    ConnectMainPath(_areas[0]);
                     _debugState = DebugState.GenPaths;
                 }
             }
@@ -1981,7 +1993,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Alt Blueprint Paths"))        // Generates alt paths that diverge from the main path
                 {
-                    GenerateAltPathBlueprints(_castleArea);
+                    GenerateAltPathBlueprints(_areas[0]);
                     _debugState = DebugState.GenRooms;
                 }
             }
@@ -1990,8 +2002,8 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Rooms From Paths"))        // Generates alt paths that diverge from the main path
                 {
-                    GenerateUniqueRooms(_castleArea);
-                    GenerateAreaRooms(_castleArea);
+                    GenerateUniqueRooms(_areas[0]);
+                    GenerateAreaRooms(_areas[0]);
                     _debugState = DebugState.NotifyListeners;
                 }
             }
@@ -2036,17 +2048,17 @@ namespace RyansLibrary.Labyrinth
                     }
                     if (_debugState == DebugState.GenMainPath)
                     {
-                        GenerateMainPathBlueprint(_castleArea);
+                        GenerateMainPathBlueprint(_areas[0]);
                         _debugState = DebugState.GenPaths;
                     }
                     if (_debugState == DebugState.GenPaths)
                     {
-                        GenerateAltPathBlueprints(_castleArea);
+                        GenerateAltPathBlueprints(_areas[0]);
                         _debugState = DebugState.GenRooms;
                     }
                     if (_debugState == DebugState.GenRooms)
                     {
-                        GenerateAreaRooms(_castleArea);
+                        GenerateAreaRooms(_areas[0]);
                         _debugState = DebugState.NotifyListeners;
                     }
                     if (_debugState == DebugState.NotifyListeners)
@@ -2064,9 +2076,12 @@ namespace RyansLibrary.Labyrinth
             if (!_debugGizmos)
                 return;
 
-            DrawBoundingBox(_castleArea.Bounds);
-            DrawTriangulation();
-            DrawBluePrintGizmos();
+            foreach (Area area in _areas)
+            {
+                DrawBoundingBox(area.Bounds);
+                DrawTriangulation();
+                DrawBluePrintGizmos();
+            }
         }
 
         /* OLD DRAWING OF BOUNDING BOX (DEPRICATED)
@@ -2130,28 +2145,31 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawBluePrintGizmos()
         {
-            if (_castleArea.MainPath.BlueprintRooms == null)
-                return;
-
-            Vector3 unitSize = Vector3.one * _gridUnitSize;
-
-            // Draw Gizmos for main path
-            foreach (BlueprintRoom bRoom in _castleArea.MainPath.BlueprintRooms)
+            foreach (Area area in _areas)
             {
-                Gizmos.color = _castleArea.MainPath.PathGizmoColor;
-                Gizmos.DrawCube(ConvertToWorldCoords(bRoom.Position), unitSize);
-            }
-
-            foreach (Path path in _castleArea.Paths)
-            {
-                if (path.BlueprintRooms == null)
+                if (area.MainPath.BlueprintRooms == null)
                     return;
 
-                // Draw Gizmos for alt paths
-                foreach (BlueprintRoom bRoom in path.BlueprintRooms)
+                Vector3 unitSize = Vector3.one * _gridUnitSize;
+
+                // Draw Gizmos for main path
+                foreach (BlueprintRoom bRoom in area.MainPath.BlueprintRooms)
                 {
-                    Gizmos.color = path.PathGizmoColor;
+                    Gizmos.color = area.MainPath.PathGizmoColor;
                     Gizmos.DrawCube(ConvertToWorldCoords(bRoom.Position), unitSize);
+                }
+
+                foreach (Path path in area.Paths)
+                {
+                    if (path.BlueprintRooms == null)
+                        return;
+
+                    // Draw Gizmos for alt paths
+                    foreach (BlueprintRoom bRoom in path.BlueprintRooms)
+                    {
+                        Gizmos.color = path.PathGizmoColor;
+                        Gizmos.DrawCube(ConvertToWorldCoords(bRoom.Position), unitSize);
+                    }
                 }
             }
         }

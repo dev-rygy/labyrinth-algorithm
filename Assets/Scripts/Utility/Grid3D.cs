@@ -9,22 +9,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 namespace RyansLibrary
 {
     public class Grid3D<T>
     {
         public Vector3Int Size { get; private set; }
-        public Vector3Int Offset { get; set; }
 
         public BoundsInt Bounds { get; private set; }
 
         private T[] data;
 
-        public Grid3D(BoundsInt bounds, Vector3Int offset)
+        public Grid3D(BoundsInt bounds)
         {
             Size = bounds.size;
-            Offset = offset;
 
             data = new T[Size.x * Size.y * Size.z];
             Bounds = bounds;
@@ -37,7 +36,7 @@ namespace RyansLibrary
 
         public bool InBounds(Vector3Int pos)
         {
-            return Bounds.Contains(pos + Offset);
+            return Bounds.Contains(pos);
         }
 
         public T this[int x, int y, int z]
@@ -56,12 +55,10 @@ namespace RyansLibrary
         {
             get
             {
-                pos += Offset;
                 return data[GetIndex(pos)];
             }
             set
             {
-                pos += Offset;
                 data[GetIndex(pos)] = value;
             }
         }
