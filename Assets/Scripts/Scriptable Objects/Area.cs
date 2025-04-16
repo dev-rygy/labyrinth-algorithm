@@ -27,7 +27,7 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public GameObject Prefab { get; set; }
         [field: SerializeField] public RoomPlacementType PlacementType { get; set; }
 
-        [Header("Fixed Room Parameters")]
+        [field: Header("Fixed Room Parameters")]
         [field: SerializeField] public Vector3Int SpawnPosition { get; set; }               // For use with fixed rooms; all other rooms will ignore this
         [field: SerializeField] public List<Vector3Int> AvailableCells { get; set; }        // List of cells the room gen algorithm can pathfind to; null = all rooms
 

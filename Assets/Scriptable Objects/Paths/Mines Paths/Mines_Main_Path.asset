@@ -15,11 +15,17 @@ MonoBehaviour:
   <Name>k__BackingField: Mines Main Path
   <Type>k__BackingField: 0
   <PathLength>k__BackingField: 30
-  <startingRooms>k__BackingField: []
-  <rooms1x1x1>k__BackingField:
+  <startingRooms>k__BackingField:
   - Prefab: {fileID: 8151408096384611613, guid: 317c813604076fc478ea1a0b6c18baa2,
       type: 3}
     Probability: 100
+  <rooms1x1x1>k__BackingField:
+  - Prefab: {fileID: 8151408096384611613, guid: 317c813604076fc478ea1a0b6c18baa2,
+      type: 3}
+    Probability: 50
+  - Prefab: {fileID: 5684575692793342672, guid: 041d935cb0794594bb1d04d4fd6f79ae,
+      type: 3}
+    Probability: 50
   <rooms2x1x1>k__BackingField:
   - Prefab: {fileID: 2281302038410099749, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
       type: 3}
