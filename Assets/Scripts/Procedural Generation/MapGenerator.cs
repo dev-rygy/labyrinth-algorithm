@@ -222,6 +222,8 @@ namespace RyansLibrary.Labyrinth
 
             // Ganerate Alternative paths
             GenerateAltPathBlueprints(area);
+
+            // TODO: Generate Zone Connection Paths
         }
 
         /// <summary>
@@ -904,6 +906,10 @@ namespace RyansLibrary.Labyrinth
                 }
             }
         }
+        #endregion
+
+        #region Zone Path Blueprint Generation
+        // TODO: Generate Zone Connection Paths
         #endregion
 
         #region Blueprint Room Generation
