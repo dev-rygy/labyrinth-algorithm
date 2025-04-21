@@ -1043,12 +1043,39 @@ MonoBehaviour:
   _areas:
   - {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c, type: 2}
   - {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691, type: 2}
+  _zoneConnections:
+  - <AreaA>k__BackingField: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
+      type: 2}
+    <AreaB>k__BackingField: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
+      type: 2}
+    <RoomA>k__BackingField:
+      <Prefab>k__BackingField: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
+        type: 3}
+      <PlacementType>k__BackingField: 0
+      <SpawnPosition>k__BackingField: {x: 10, y: 0, z: 10}
+      <AvailableCells>k__BackingField:
+      - {x: 0, y: 0, z: 0}
+      <Bounds>k__BackingField:
+        m_Position: {x: 0, y: 0, z: 0}
+        m_Size: {x: 0, y: 0, z: 0}
+    <RoomB>k__BackingField:
+      <Prefab>k__BackingField: {fileID: 8151408096384611613, guid: 317c813604076fc478ea1a0b6c18baa2,
+        type: 3}
+      <PlacementType>k__BackingField: 0
+      <SpawnPosition>k__BackingField: {x: 10, y: 4, z: 10}
+      <AvailableCells>k__BackingField:
+      - {x: 0, y: 0, z: 0}
+      <Bounds>k__BackingField:
+        m_Position: {x: 0, y: 0, z: 0}
+        m_Size: {x: 0, y: 0, z: 0}
+    <ConnectionPath>k__BackingField: {fileID: 11400000, guid: 790b058cc6213dc489c512e552fa7852,
+      type: 2}
   _debug: 0
   _blueprintGizmoPrefab: {fileID: 346890499486270653, guid: 1e7aed37650f79e4f83703d767189d05,
     type: 3}
   _boundingBoxColor: {r: 1, g: 0.31442907, b: 0, a: 1}
   _triangulationColor: {r: 1, g: 0.10849059, b: 0.32239568, a: 1}
-  _circumcircleColor: {r: 0.4906105, g: 0.990566, b: 0.9556339, a: 0.101960786}
+  _circumcircleColor: {r: 0.4906105, g: 0.990566, b: 0.9556339, a: 0}
   _minimumSpanningTreeColor: {r: 0.18752226, g: 0.8337331, b: 0.9245283, a: 1}
 --- !u!4 &1229448570 stripped
 Transform:
