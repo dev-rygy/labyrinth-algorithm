@@ -11,6 +11,7 @@ using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 using RyansLibrary.AI;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -185,6 +186,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         public void GenerateLabyrinth()
         {
+            // ******* Generate Blueprints *******
             // Generate Zone Connection Paths
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
@@ -197,11 +199,13 @@ namespace RyansLibrary.Labyrinth
                 GenerateAreaBlueprints(area);
             }
 
+            // ******* Generate Rooms *******
             // Generate Zone Connection Rooms
-            //foreach (ZoneConnectionEntry entry in _zoneConnections)
-            //{
-                // TODO: Generate actual rooms for the zone connection
-            //}
+            foreach (ZoneConnectionEntry entry in _zoneConnections)
+            {
+                // Generate actual rooms for the zone connection
+                GenerateZoneConnectionRooms(entry);
+            }
 
             // Spawn rooms based on the blueprint map for each area
             foreach (Area area in _areas)
@@ -1248,6 +1252,54 @@ namespace RyansLibrary.Labyrinth
                 GenerateRoomsOnPath(path);
         }
 
+        public void GenerateZoneConnectionRooms(ZoneConnectionEntry entry)
+        {
+            // ******* Generate Room A ******
+            // Adjust parameters to fit the area's actual position
+            Vector3Int areaAOffset = entry.AreaA.Bounds.position;
+            Vector3Int adjustedSpawnPosA = entry.RoomA.SpawnPosition + areaAOffset;
+
+            Room generatedRoomA = GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosA, entry.AreaA.MainPath);
+
+            // Unique rooms with available cells
+            if (entry.RoomA.AvailableCells != null)
+            {
+                for (int i = 0; i < entry.RoomA.AvailableCells.Count; i++)
+                {
+                    if (MasterDictionary.TryGetValue(adjustedSpawnPosA + entry.RoomA.AvailableCells[i], out BlueprintRoom room))
+                        generatedRoomA.CopyBlueprintEntranceFlags(room.entrancewayFlags, i, Vector3.zero);
+                    else
+                        Debug.LogError($"Map Generator Error: Could not copy entranceway flags into unique room");
+                }
+            }
+
+            generatedRoomA.Initialize();
+
+            // ******* Generate Room B ******
+            // Adjust parameters to fit the area's actual position
+            Vector3Int areaBOffset = entry.AreaA.Bounds.position;
+            Vector3Int adjustedSpawnPosB = entry.RoomA.SpawnPosition + areaBOffset;
+
+            Room generatedRoomB = GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosB, entry.AreaA.MainPath);
+
+            // Unique rooms with available cells
+            if (entry.RoomA.AvailableCells != null)
+            {
+                for (int i = 0; i < entry.RoomA.AvailableCells.Count; i++)
+                {
+                    if (MasterDictionary.TryGetValue(adjustedSpawnPosB + entry.RoomA.AvailableCells[i], out BlueprintRoom room))
+                        generatedRoomB.CopyBlueprintEntranceFlags(room.entrancewayFlags, i, Vector3.zero);
+                    else
+                        Debug.LogError($"Map Generator Error: Could not copy entranceway flags into unique room");
+                }
+            }
+
+            generatedRoomB.Initialize();
+
+            // ******* Spawn Rooms On Connection Path ******
+            GenerateRoomsOnPath(entry.ConnectionPath);
+        }
+
         //The room case based on the direction of the adjacent/next room.
         private enum RoomDirection
         {
@@ -2262,8 +2314,8 @@ namespace RyansLibrary.Labyrinth
 
         private void OnDrawGizmos()
         {
-            //if (!_debugGizmos)
-                //return;
+            if (!_debugGizmos)
+                return;
 
             foreach (Area area in _areas)
             {
