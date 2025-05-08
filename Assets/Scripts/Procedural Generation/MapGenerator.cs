@@ -11,7 +11,7 @@ using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 using RyansLibrary.AI;
-using static UnityEngine.EventSystems.EventTrigger;
+using UnityEngine.Lumin;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -82,6 +82,10 @@ namespace RyansLibrary.Labyrinth
         [Tooltip("Enables map generation.")]
         [SerializeField] private bool _enabled = true;
 
+        [Header("Seed")]
+        [SerializeField] private int customSeed = 0;
+        [SerializeField] private bool generateRandomSeed = true;
+
         [Header("Global Settings")]
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
         [SerializeField] private int _gridUnitSize = 13;                      // The unit size of the room grid's cell
@@ -104,6 +108,7 @@ namespace RyansLibrary.Labyrinth
 
         // ***** Private Variables *****
         // TODO: do not make this global in this class, maybe in the Area class?
+        private int _seed;      // TODO: For networking make the host generate this
         private DelaunayTriangulation3D _triangulation;     // A single triangulation structure for a main path
         private List<Edge> _minimumSpanningTree;
 
@@ -125,9 +130,6 @@ namespace RyansLibrary.Labyrinth
         private DebugState _debugState = DebugState.Start;
         private bool _debugGizmos = false;
         private bool _debugLogs = false;
-
-        //private Vector3Int _currentUpperBound;     // The upper bound of the current area being generated in room coords
-        //private Vector3Int _currentLowerBound;     // The lower bound of the current area being generated in room coords
         #endregion
 
         #region Mono
@@ -159,6 +161,19 @@ namespace RyansLibrary.Labyrinth
 
             try
             {
+                if (generateRandomSeed)
+                {
+                    // Generate Random Seed
+                    _seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+                }
+                else
+                    _seed = customSeed;
+
+                UnityEngine.Random.InitState(_seed);
+
+                if (_debugLogs)
+                    Debug.Log($"Generating map with seed: {_seed}");
+
                 // Initialize Master Data Structures
                 InitializeMasterPath();
 
