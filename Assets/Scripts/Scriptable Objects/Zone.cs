@@ -2,7 +2,7 @@
  * Created By:      Ryan Carpenter
  * Date Created:    01/23/2025
  * Last Modified:   04/10/2025 (Ryan)
- * Notes:           Holds all the path's in an area and the 
+ * Notes:           Holds all the path's in an zone and the 
  *                      bounds that they may spawn rooms in
 */
 using System;
@@ -15,8 +15,8 @@ namespace RyansLibrary.Labyrinth
     public enum RoomPlacementType
     {
         Fixed,          // Fixed rooms have set placement
-        Constrained,    // Constrained rooms can be placed anywhere in a specified bounded area
-        Free            // Free rooms can be placed anywhere in the bounds of the area
+        Constrained,    // Constrained rooms can be placed anywhere in a specified bounded zone
+        Free            // Free rooms can be placed anywhere in the bounds of the zone
     }
 
     // Room entrys for the main path algorithm
@@ -35,8 +35,8 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public BoundsInt Bounds { get; set; }                       // For use with constrained rooms; all other rooms will ignore these bounds
     }
 
-    [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Area", order = 1)]
-    public class Area : ScriptableObject
+    [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Zone", order = 1)]
+    public class Zone : ScriptableObject
     {
         [field: SerializeField] public string Name { get; private set; }
 

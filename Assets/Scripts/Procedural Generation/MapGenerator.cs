@@ -11,7 +11,6 @@ using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 using RyansLibrary.AI;
-using UnityEngine.Lumin;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -42,8 +41,8 @@ namespace RyansLibrary.Labyrinth
     public class ZoneConnectionEntry
     {
         [field: Header("Zones")]
-        [field: SerializeField] public Area AreaA { get; set; }
-        [field: SerializeField] public Area AreaB { get; set; }
+        [field: SerializeField] public Zone ZoneA { get; set; }
+        [field: SerializeField] public Zone ZoneB { get; set; }
 
         [field: Header("Connection Rooms")]
         // Connection rooms (if null then it will choose randomly from the given path below
@@ -70,7 +69,7 @@ namespace RyansLibrary.Labyrinth
         public static event Action OnGenerationStarted;
 
         // ***** Path Containers *****
-        // The Master Path holds a reference to all bluprint rooms in an area
+        // The Master Path holds a reference to all bluprint rooms in an zone
         public Path MasterPath { get; private set; }
 
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
@@ -92,8 +91,8 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
         [SerializeField] private int _numOfPlacementAttempsBeforeRegen = -1;    // If this number is exceeded then the generator will refresh its entire generation attempt
 
-        [Header("Areas")]
-        [SerializeField] private List<Area> _areas;
+        [Header("Zones")]
+        [SerializeField] private List<Zone> _zones;
 
         [Header("Zone Connection")]
         [SerializeField] private List<ZoneConnectionEntry> _zoneConnections;
@@ -107,7 +106,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _minimumSpanningTreeColor;
 
         // ***** Private Variables *****
-        // TODO: do not make this global in this class, maybe in the Area class?
+        // TODO: do not make this global in this class, maybe in the Zone class?
         private int _seed;      // TODO: For networking make the host generate this
         private DelaunayTriangulation3D _triangulation;     // A single triangulation structure for a main path
         private List<Edge> _minimumSpanningTree;
@@ -177,9 +176,9 @@ namespace RyansLibrary.Labyrinth
                 // Initialize Master Data Structures
                 InitializeMasterPath();
 
-                // Initialize Area Data Structures
-                foreach (Area area in _areas)
-                    InitializeArea(area);
+                // Initialize Zone Data Structures
+                foreach (Zone zone in _zones)
+                    InitializeZone(zone);
 
                 GenerateLabyrinth();
                 
@@ -208,10 +207,10 @@ namespace RyansLibrary.Labyrinth
                 GenerateZoneConnectionBlueprint(entry);
             }
 
-            // Generate blueprint map for each area
-            foreach (Area area in _areas)
+            // Generate blueprint map for each zone
+            foreach (Zone zone in _zones)
             {
-                GenerateAreaBlueprints(area);
+                GenerateZoneBlueprints(zone);
             }
 
             // ******* Generate Rooms *******
@@ -222,12 +221,12 @@ namespace RyansLibrary.Labyrinth
                 GenerateZoneConnectionRooms(entry);
             }
 
-            // Spawn rooms based on the blueprint map for each area
-            foreach (Area area in _areas)
+            // Spawn rooms based on the blueprint map for each zone
+            foreach (Zone zone in _zones)
             {
 
-                // Check room conditions and generate rooms using the blueprint map of the area
-                GenerateAreaRooms(area);
+                // Check room conditions and generate rooms using the blueprint map of the zone
+                GenerateZoneRooms(zone);
 
                 // TODO: Implement perlin noise height and type Map
 
@@ -250,9 +249,9 @@ namespace RyansLibrary.Labyrinth
             MasterPath.Name = MASTER_PATH_NAME;
         }
 
-        private void InitializeArea(Area area)
+        private void InitializeZone(Zone zone)
         {
-            area.MainPath.Initialize();
+            zone.MainPath.Initialize();
         }
 
         /// <summary>
@@ -261,102 +260,102 @@ namespace RyansLibrary.Labyrinth
         /// the actual rooms later. It is called blueprint because it is a pre-map layout before placing the
         /// actual rooms.
         /// </summary>
-        public void GenerateAreaBlueprints(Area area)
+        public void GenerateZoneBlueprints(Zone zone)
         {
-            // Must have a area to generate anything
-            if (area == null)
+            // Must have a zone to generate anything
+            if (zone == null)
             {
-                Debug.LogError("Map Generator Error: Area Entry Missing for blueprint procedure.");
+                Debug.LogError("Map Generator Error: Zone Entry Missing for blueprint procedure.");
                 return;
             }
 
             // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-            if (!CheckAreaBoundedVolume(area))
+            if (!CheckZoneBoundedVolume(zone))
             {
-                Debug.LogError($"Map Generator Error: The amount of blueprint rooms for area {area.Name} exceeds the bounding box's volume or the bounding box is inverted.");
+                Debug.LogError($"Map Generator Error: The amount of blueprint rooms for zone {zone.Name} exceeds the bounding box's volume or the bounding box is inverted.");
                 return;
             }
 
-            // ******* Generate Area Blueprints *******
+            // ******* Generate Zone Blueprints *******
             // Generate Main Path to boss
-            GenerateMainPathBlueprint(area);
+            GenerateMainPathBlueprint(zone);
 
             // Ganerate Alternative paths
-            GenerateAltPathBlueprints(area);            
+            GenerateAltPathBlueprints(zone);            
         }
 
         /// <summary>
         /// Wrapper function for generating the main path.
-        /// The main path is the path to the area boss and to traversal rooms to other areas
+        /// The main path is the path to the zone boss and to traversal rooms to other zones
         /// </summary>
-        public void GenerateMainPathBlueprint(Area area)
+        public void GenerateMainPathBlueprint(Zone zone)
         {
             _debugState = DebugState.GenMainPath;
 
-            if (area.MainPath == null)      // Throw error if MainPath for area does not exist
+            if (zone.MainPath == null)      // Throw error if MainPath for zone does not exist
             {
-                Debug.LogError($"Map Generator Error: The Main Path for area {area.name} is not assigned.");
+                Debug.LogError($"Map Generator Error: The Main Path for zone {zone.name} is not assigned.");
                 return;
             }
 
             // Unique Room Placement
-            PlaceUniqueRooms(area);
+            PlaceUniqueRooms(zone);
 
             // Divergent Room Placement
-            PlaceDivergentRooms(area);
+            PlaceDivergentRooms(zone);
 
             // Generate Delauney Triangulation
-            GenerateTriangulation(area);
+            GenerateTriangulation(zone);
 
             // Pathfind and Connect Main Path
-            ConnectMainPath(area);
+            ConnectMainPath(zone);
 
-            if (_debugLogs) Debug.Log($"Map Generator: {area.Name} generated path {area.MainPath.name} with {area.MainPath.BlueprintCount()} rooms.");
+            if (_debugLogs) Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
         }
 
         /// <summary>
         /// Wrapper function for generating the prize path
         /// </summary>
-        public void GenerateAltPathBlueprints(Area area)
+        public void GenerateAltPathBlueprints(Zone zone)
         {
-            if (area.MainPath == null)      // Throw error if MainPath for area does not exist
+            if (zone.MainPath == null)      // Throw error if MainPath for zone does not exist
             {
-                Debug.LogError($"Map Generator Error: The Main Path for area {area.name} is not assigned.");
+                Debug.LogError($"Map Generator Error: The Main Path for zone {zone.name} is not assigned.");
                 return;
             }
 
             // Path to prize room; choose a random start room
             // Initialize a new path at starting room if not null
-            int startIndex = area.MainPath.BlueprintCount() - 1;              // Start index in master path
-            int endIndex = startIndex + area.MainPath.PathLength;
+            int startIndex = zone.MainPath.BlueprintCount() - 1;              // Start index in master path
+            int endIndex = startIndex + zone.MainPath.PathLength;
 
-            foreach (Path path in area.Paths)
+            foreach (Path path in zone.Paths)
             {
                 if (path == null)
                 {
-                    Debug.LogError($"Map Generator Error: A path {path.Name} for area {area.name} is not assigned.");
+                    Debug.LogError($"Map Generator Error: A path {path.Name} for zone {zone.name} is not assigned.");
                     return;
                 }
 
-                BlueprintRoom startRoom = ChooseRandomRoomOnPath(area.MainPath, 1); // start at index 1 as to not choose the starting room of the game
+                BlueprintRoom startRoom = ChooseRandomRoomInPath(zone.MainPath, 1); // start at index 1 as to not choose the starting room of the game
                 path.Initialize(startIndex, endIndex);
 
-                DrunkardWalk(path, area.Bounds, startRoom);
+                DrunkardWalk(path, zone.Bounds, startRoom);
 
                 if (_debugLogs) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
             }
         }
 
         #region Main Path Blueprint Generation
-        #region Unique Room Placement
-        private bool PlaceUniqueRooms(Area area)
+        #region Blueprint Room Placement
+        private bool PlaceUniqueRooms(Zone zone)
         {
             // 1.) Spawn Fixed Rooms
-            foreach (RoomEntry entry in area.UniqueRooms)
+            foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
-                    bool hasPlaced = PlaceFixedRoomBlueprints(entry, area);
+                    bool hasPlaced = PlaceFixedRoomBlueprints(entry, zone);
 
                     if (!hasPlaced)
                     {
@@ -368,14 +367,14 @@ namespace RyansLibrary.Labyrinth
             }
 
             // 2.) Spawn Constrained Rooms
-            foreach (RoomEntry entry in area.UniqueRooms)
+            foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 bool hasPlaced = false;
                 int attempts = 0;
 
                 if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
-                    // Attempt to place the constrained room in it's bounded area; if not then break the function
+                    // Attempt to place the constrained room in it's bounded zone; if not then break the function
                     // and return false
                     while (!hasPlaced)
                     {
@@ -386,13 +385,13 @@ namespace RyansLibrary.Labyrinth
                             return false;
                         }
 
-                        hasPlaced = PlaceConstrainedRoomBlueprints(entry, area);
+                        hasPlaced = PlaceConstrainedRoomBlueprints(entry, zone);
                     }
                 }
             }
 
             // 3.) Spawn Free Rooms
-            foreach (RoomEntry entry in area.UniqueRooms)
+            foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 bool hasPlaced = false;
                 int attempts = 0;
@@ -400,7 +399,7 @@ namespace RyansLibrary.Labyrinth
                 if (entry.PlacementType == RoomPlacementType.Free)
                 {
                     // Place Free Rooms
-                    // Attempt to place the constrained room in it's bounded area; if not then break the function
+                    // Attempt to place the constrained room in it's bounded zone; if not then break the function
                     // and return false
                     while (!hasPlaced)
                     {
@@ -411,7 +410,7 @@ namespace RyansLibrary.Labyrinth
                             return false;
                         }
 
-                        hasPlaced = PlaceFreeRoomBlueprints(entry, area);
+                        hasPlaced = PlaceFreeRoomBlueprints(entry, zone);
                     }
                 }
             }
@@ -420,14 +419,14 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Will place rooms randomly in an area but will pull rooms randomly from the main path
+        /// Will place rooms randomly in an zone but will pull rooms randomly from the main path
         /// </summary>
-        /// <param name="area"></param>
+        /// <param name="zone"></param>
         /// <returns></returns>
-        private bool PlaceDivergentRooms(Area area)
+        private bool PlaceDivergentRooms(Zone zone)
         {
-            Path mainPath = area.MainPath;
-            int occupancy = area.DivergentRoomsCellOccupancy;
+            Path mainPath = zone.MainPath;
+            int occupancy = zone.DivergentRoomsCellOccupancy;
 
             // TODO: Remove these chances later; change them from being hard coded like this
             float chance2x1x2 = 0.20f;
@@ -464,18 +463,18 @@ namespace RyansLibrary.Labyrinth
 
                 // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
                 Vector3Int adjUpperBound = new Vector3Int(
-                    area.Bounds.xMax - dimensions.x,
-                    area.Bounds.yMax - dimensions.y,
-                    area.Bounds.zMax - dimensions.z
+                    zone.Bounds.xMax - dimensions.x,
+                    zone.Bounds.yMax - dimensions.y,
+                    zone.Bounds.zMax - dimensions.z
                 );
 
                 // Choose random spawn pos in the room's bounds;
                 // NOTE: this random position is in room coords
                 Vector3Int randomSpawnPos = new Vector3Int
                 (
-                    UnityEngine.Random.Range(area.Bounds.xMin, adjUpperBound.x + 1),
-                    UnityEngine.Random.Range(area.Bounds.yMin, adjUpperBound.y + 1),
-                    UnityEngine.Random.Range(area.Bounds.zMin, adjUpperBound.z + 1)
+                    UnityEngine.Random.Range(zone.Bounds.xMin, adjUpperBound.x + 1),
+                    UnityEngine.Random.Range(zone.Bounds.yMin, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(zone.Bounds.zMin, adjUpperBound.z + 1)
                 );
 
                 // Append the newly generated blueprint rooms to the end of the list
@@ -489,7 +488,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Place fixed room within the bounds of an area; returns false if the
+        /// Place fixed room within the bounds of an zone; returns false if the
         /// room could not be placed correctly
         /// </summary>
         /// <param name="room"></param>
@@ -497,21 +496,21 @@ namespace RyansLibrary.Labyrinth
         /// <param name="lowerBound"></param>
         /// <param name="placementPoint"></param>
         /// <returns></returns>
-        private bool PlaceFixedRoomBlueprints(RoomEntry entry, Area area, ZoneConnectionEntry zoneEntry = null)
+        private bool PlaceFixedRoomBlueprints(RoomEntry entry, Zone zone, ZoneConnectionEntry zoneEntry = null)
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
-                // Adjust parameters to fit the area's actual position
-                Vector3Int areaOffset = area.Bounds.position;
-                Vector3Int adjustedSpawnPos = entry.SpawnPosition + areaOffset;
+                // Adjust parameters to fit the zone's actual position
+                Vector3Int zoneOffset = zone.Bounds.position;
+                Vector3Int adjustedSpawnPos = entry.SpawnPosition + zoneOffset;
 
-                // Check Collision with the area's bounds
-                Vector3 difference = CheckOutOfBounds(adjustedSpawnPos, room.RoomDimensions, area.Bounds);
+                // Check Collision with the zone's bounds
+                Vector3 difference = CheckOutOfBounds(adjustedSpawnPos, room.RoomDimensions, zone.Bounds);
 
-                if (difference != Vector3.zero)     // Room was outside the bounds of the area
+                if (difference != Vector3.zero)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"Map Generator Error: Fixed Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
-                        $"It was {difference} units outside the bounds of the area.");
+                        $"It was {difference} units outside the bounds of the zone.");
                     return false;
                 }
 
@@ -519,7 +518,7 @@ namespace RyansLibrary.Labyrinth
                 // Check Collision with other rooms
                 List<BlueprintRoom> rooms;
                 if (zoneEntry == null)
-                    rooms = GenerateBlueprintsFromDimensions(area.MainPath, adjustedSpawnPos, room.RoomDimensions, false);      // Fill room space with blueprint rooms
+                    rooms = GenerateBlueprintsFromDimensions(zone.MainPath, adjustedSpawnPos, room.RoomDimensions, false);      // Fill room space with blueprint rooms
                 else
                 {
                     rooms = GenerateBlueprintsFromDimensions(zoneEntry.ConnectionPath, adjustedSpawnPos, room.RoomDimensions, false);      // Fill room space with blueprint rooms
@@ -537,13 +536,13 @@ namespace RyansLibrary.Labyrinth
                     else
                     {
                         if (zoneEntry == null)
-                            GenerateBlueprintRoom(area.MainPath, cellPosition, true);
+                            GenerateBlueprintRoom(zone.MainPath, cellPosition, true);
                         else
                             GenerateBlueprintRoom(zoneEntry.ConnectionPath, cellPosition, true);
                     }
                 }
 
-                if (rooms == null)     // Room was outside the bounds of the area
+                if (rooms == null)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"Map Generator Error: Fixed Room \"{room.name}\" was obstructed and could not be placed");
                     return false;
@@ -555,7 +554,7 @@ namespace RyansLibrary.Labyrinth
             return false;
         }
 
-        private bool PlaceConstrainedRoomBlueprints(RoomEntry entry, Area area)
+        private bool PlaceConstrainedRoomBlueprints(RoomEntry entry, Zone zone)
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
@@ -576,7 +575,7 @@ namespace RyansLibrary.Labyrinth
                 );
 
                 // Fill room space with blueprint rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions, false);
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(zone.MainPath, randomSpawnPos, room.RoomDimensions, false);
 
                 if (rooms == null)     // the room collided with another room
                 {
@@ -597,7 +596,7 @@ namespace RyansLibrary.Labyrinth
                     }
                     else
                     {
-                        GenerateBlueprintRoom(area.MainPath, actualPos, true);
+                        GenerateBlueprintRoom(zone.MainPath, actualPos, true);
                     }
                 }
                 return true;
@@ -606,28 +605,28 @@ namespace RyansLibrary.Labyrinth
             return false;
         }
 
-        private bool PlaceFreeRoomBlueprints(RoomEntry entry, Area area)
+        private bool PlaceFreeRoomBlueprints(RoomEntry entry, Zone zone)
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
                 // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
                 Vector3Int adjUpperBound = new Vector3Int(
-                    area.Bounds.xMax - room.RoomDimensions.x,
-                    area.Bounds.yMax - room.RoomDimensions.y,
-                    area.Bounds.zMax - room.RoomDimensions.z
+                    zone.Bounds.xMax - room.RoomDimensions.x,
+                    zone.Bounds.yMax - room.RoomDimensions.y,
+                    zone.Bounds.zMax - room.RoomDimensions.z
                 );
 
                 // Choose random spawn pos in the room's bounds;
                 // NOTE: this random position is in room coords
                 Vector3Int randomSpawnPos = new Vector3Int
                 (
-                    UnityEngine.Random.Range(area.Bounds.xMin, adjUpperBound.x + 1),
-                    UnityEngine.Random.Range(area.Bounds.yMin, adjUpperBound.y + 1),
-                    UnityEngine.Random.Range(area.Bounds.zMin, adjUpperBound.z + 1)
+                    UnityEngine.Random.Range(zone.Bounds.xMin, adjUpperBound.x + 1),
+                    UnityEngine.Random.Range(zone.Bounds.yMin, adjUpperBound.y + 1),
+                    UnityEngine.Random.Range(zone.Bounds.zMin, adjUpperBound.z + 1)
                 );
 
                 // Fill room space with blueprint rooms
-                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(area.MainPath, randomSpawnPos, room.RoomDimensions);
+                List<BlueprintRoom> rooms = GenerateBlueprintsFromDimensions(zone.MainPath, randomSpawnPos, room.RoomDimensions);
 
                 if (rooms == null)     // the room collided with another room
                 {
@@ -648,7 +647,7 @@ namespace RyansLibrary.Labyrinth
                     }
                     else
                     {
-                        GenerateBlueprintRoom(area.MainPath, actualPos, true);
+                        GenerateBlueprintRoom(zone.MainPath, actualPos, true);
                     }
                 }
                 return true;
@@ -658,17 +657,18 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
-        private void GenerateTriangulation(Area area)
+        #region Delaunay Triangulation
+        private void GenerateTriangulation(Zone zone)
         {
-            if (area == null || area.MainPath == null)
+            if (zone == null || zone.MainPath == null)
             {
-                Debug.LogError($"Map Generator Error: Error Area {area.Name} in invalid for triangulation.");
+                Debug.LogError($"Map Generator Error: Error Zone {zone.Name} in invalid for triangulation.");
                 return;
             }
 
             List<Vertex> vertices = new List<Vertex>();
 
-            foreach(BlueprintRoom room in area.MainPath.BlueprintRooms)
+            foreach(BlueprintRoom room in zone.MainPath.BlueprintRooms)
             {
                 // if room is not available then forget about triangulating/pathfinding to it
                 if (!room.Available)
@@ -679,7 +679,7 @@ namespace RyansLibrary.Labyrinth
 
             // TODO: Remove, this is messy code
             // Turn off blueprint room availability for unique rooms 
-            foreach (RoomEntry e in area.UniqueRooms)
+            foreach (RoomEntry e in zone.UniqueRooms)
             {
                 foreach (Vector3Int cell in e.AvailableCells)
                 {
@@ -697,16 +697,18 @@ namespace RyansLibrary.Labyrinth
             // Find Minimum Spanning tree with Prim's Algorithm
             _minimumSpanningTree = PrimsAlgorithm.MinimumSpanningTree(_triangulation.Edges, _triangulation.Edges[0].U);
         }
+        #endregion
 
-        private void ConnectMainPath(Area area)
+        #region Pathfind Blueprint
+        private void ConnectMainPath(Zone zone)
         {
-            if (area == null || area.MainPath == null)
+            if (zone == null || zone.MainPath == null)
             {
-                Debug.LogError($"Map Generator Error: Error Area {area.Name} in invalid for pathfinding.");
+                Debug.LogError($"Map Generator Error: Error Zone {zone.Name} in invalid for pathfinding.");
                 return;
             }
 
-            SimpleAStar3D aStar = new SimpleAStar3D(area.Bounds, area.Bounds.position);
+            SimpleAStar3D aStar = new SimpleAStar3D(zone.Bounds, zone.Bounds.position);
 
             foreach (Edge e in _minimumSpanningTree)
             {
@@ -717,7 +719,7 @@ namespace RyansLibrary.Labyrinth
                 HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
                 obstructions.Clear();
 
-                foreach (BlueprintRoom room in area.MainPath.BlueprintRooms)
+                foreach (BlueprintRoom room in zone.MainPath.BlueprintRooms)
                 {
                     // if the room is the start room or ending room of the edge then don't add to obstructions
                     Vector3Int roomPos = room.Position;
@@ -741,7 +743,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     if (pos != startPos && pos != endPos)
                     {
-                        curRoom = GenerateBlueprintRoom(area.MainPath, pos);
+                        curRoom = GenerateBlueprintRoom(zone.MainPath, pos);
                     }
                     else
                     {
@@ -780,6 +782,7 @@ namespace RyansLibrary.Labyrinth
             }
         }
         #endregion
+        #endregion
 
         #region Alt Path Blueprint Generation
         /// <summary>
@@ -788,7 +791,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">The path to choose the starting room from</param>
         /// <param name="startIndex">Index to start from</param>
         /// <returns>The Choosen Blueprint Room.</returns>
-        private BlueprintRoom ChooseRandomRoomOnPath(Path path, int startIndex = 0, int endIndex = -1)
+        private BlueprintRoom ChooseRandomRoomInPath(Path path, int startIndex = 0, int endIndex = -1)
         {
             // Default the endIndex to the path's end index
             if (endIndex == -1)
@@ -818,7 +821,7 @@ namespace RyansLibrary.Labyrinth
             if (!room.Available)
             {
                 //Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
-                room = ChooseRandomRoomOnPath(path, startIndex, endIndex);
+                room = ChooseRandomRoomInPath(path, startIndex, endIndex);
             }
 
             if (_debugLogs) Debug.Log($"Map Generator: Random room choosen from {path.Name} at index {randomRoomIndex}");
@@ -991,10 +994,10 @@ namespace RyansLibrary.Labyrinth
 
             entry.ConnectionPath.Initialize();
 
-            // ***** Place Room A; Room A becomes a part of the first area
-            if (entry.AreaA == null)
+            // ***** Place Room A; Room A becomes a part of the first zone
+            if (entry.ZoneA == null)
             {
-                Debug.LogError("Map Generator Error: Area A of zone connection was null.");
+                Debug.LogError("Map Generator Error: Zone A of zone connection was null.");
                 return false;
             }
             if (entry.RoomA == null)
@@ -1005,11 +1008,11 @@ namespace RyansLibrary.Labyrinth
 
             bool hasPlaced = false;
             if (entry.RoomA.PlacementType == RoomPlacementType.Fixed)
-                hasPlaced = PlaceFixedRoomBlueprints(entry.RoomA, entry.AreaA);
+                hasPlaced = PlaceFixedRoomBlueprints(entry.RoomA, entry.ZoneA);
             //else if (entry.RoomA.PlacementType == RoomPlacementType.Constrained)
-            //    hasPlaced = PlaceConstrainedRoomBlueprints(entry.RoomA, entry.areaA);
+            //    hasPlaced = PlaceConstrainedRoomBlueprints(entry.RoomA, entry.zoneA);
             //else if (entry.RoomA.PlacementType == RoomPlacementType.Free)
-            //    hasPlaced = PlaceFreeRoomBlueprints(entry.RoomA, entry.areaA);
+            //    hasPlaced = PlaceFreeRoomBlueprints(entry.RoomA, entry.zoneA);
             
             if (!hasPlaced)     // Error placing RoomA
             {
@@ -1017,10 +1020,10 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            // ***** Place Room B; Room B becomes a part of the second area
-            if (entry.AreaB == null)
+            // ***** Place Room B; Room B becomes a part of the second zone
+            if (entry.ZoneB == null)
             {
-                Debug.LogError("Map Generator Error: Area B of zone connection was null.");
+                Debug.LogError("Map Generator Error: Zone B of zone connection was null.");
                 return false;
             }
             if (entry.RoomB == null)
@@ -1031,11 +1034,11 @@ namespace RyansLibrary.Labyrinth
 
             hasPlaced = false;
             if (entry.RoomB.PlacementType == RoomPlacementType.Fixed)
-                hasPlaced = PlaceFixedRoomBlueprints(entry.RoomB, entry.AreaB);
+                hasPlaced = PlaceFixedRoomBlueprints(entry.RoomB, entry.ZoneB);
             //else if (entry.RoomA.PlacementType == RoomPlacementType.Constrained)
-            //    hasPlaced = PlaceConstrainedRoomBlueprints(entry.RoomA, entry.areaA);
+            //    hasPlaced = PlaceConstrainedRoomBlueprints(entry.RoomA, entry.zoneA);
             //else if (entry.RoomA.PlacementType == RoomPlacementType.Free)
-            //    hasPlaced = PlaceFreeRoomBlueprints(entry.RoomA, entry.areaA);
+            //    hasPlaced = PlaceFreeRoomBlueprints(entry.RoomA, entry.zoneA);
 
             if (!hasPlaced)     // Error placing RoomB
             {
@@ -1045,19 +1048,19 @@ namespace RyansLibrary.Labyrinth
 
             // ***** Find a path from Room A to Room B
             Vector3Int position = new Vector3Int(
-                                (int)(entry.AreaA.Bounds.position.x + entry.AreaB.Bounds.position.x) / 2,
-                                (int)(entry.AreaA.Bounds.position.y + entry.AreaB.Bounds.position.y) / 2,
-                                (int)(entry.AreaA.Bounds.position.z + entry.AreaB.Bounds.position.z) / 2);
-            Vector3Int size = entry.AreaA.Bounds.size + entry.AreaB.Bounds.size;
+                                (int)(entry.ZoneA.Bounds.position.x + entry.ZoneB.Bounds.position.x) / 2,
+                                (int)(entry.ZoneA.Bounds.position.y + entry.ZoneB.Bounds.position.y) / 2,
+                                (int)(entry.ZoneA.Bounds.position.z + entry.ZoneB.Bounds.position.z) / 2);
+            Vector3Int size = entry.ZoneA.Bounds.size + entry.ZoneB.Bounds.size;
             BoundsInt combinedBounds = new BoundsInt();
             combinedBounds.position = position;
             combinedBounds.size = size;
 
             // Adjust parameters to fit the room's actual positions
-            Vector3Int areaAOffset = entry.AreaA.Bounds.position;
-            Vector3Int areaBOffset = entry.AreaB.Bounds.position;
-            Vector3Int startPos = entry.RoomA.SpawnPosition + areaAOffset;
-            Vector3Int endPos = entry.RoomB.SpawnPosition + areaBOffset;
+            Vector3Int zoneAOffset = entry.ZoneA.Bounds.position;
+            Vector3Int zoneBOffset = entry.ZoneB.Bounds.position;
+            Vector3Int startPos = entry.RoomA.SpawnPosition + zoneAOffset;
+            Vector3Int endPos = entry.RoomB.SpawnPosition + zoneBOffset;
 
             // Obstructions
             HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
@@ -1217,10 +1220,10 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Pass in two rooms and link their entrancways together. 
         /// </summary>
-        /// <param name="room1">First blueprint room</param>
-        /// <param name="room2">Second blueprint room</param>
+        /// <param name="roomA">First blueprint room</param>
+        /// <param name="roomB">Second blueprint room</param>
         /// <param name="entrFlagIdx">The index of the choosen face of the *first* room.</param>
-        private void FlagDoorways(BlueprintRoom room1, BlueprintRoom room2, int entrFlagIdx) // Flag the entranceways to be activated in each room
+        private void FlagDoorways(BlueprintRoom roomA, BlueprintRoom roomB, int entrFlagIdx) // Flag the entranceways to be activated in each room
         {
             if (entrFlagIdx < 0)
             {
@@ -1230,12 +1233,12 @@ namespace RyansLibrary.Labyrinth
 
             // Flag the fact of the next room facing the prev. room
             if (Math.IsEven(entrFlagIdx))                                   // If choosen an even numbered side then set opposite to true (Ex. F4 -> F3 = true)
-                room1.entrancewayFlags[entrFlagIdx + 1] = true;
+                roomA.entrancewayFlags[entrFlagIdx + 1] = true;
             else                                                            // If choosen an odd numbered side then set opposite to true (Ex. F3 -> F4 = true)
-                room1.entrancewayFlags[entrFlagIdx - 1] = true;
+                roomA.entrancewayFlags[entrFlagIdx - 1] = true;
 
             // Flag the face of the prev. room facing the next room
-            room2.entrancewayFlags[entrFlagIdx] = true;
+            roomB.entrancewayFlags[entrFlagIdx] = true;
         }
         #endregion
         #endregion
@@ -1247,34 +1250,34 @@ namespace RyansLibrary.Labyrinth
         /// room shape chance, room prefab chance, if the room shape will align adiquately to the path, and what path
         /// the room is a part of. It will also activate the entranceways of rooms based on the path's sequence.
         /// </summary>
-        public void GenerateAreaRooms(Area area) 
+        public void GenerateZoneRooms(Zone zone) 
         {
-            // Must have an area to generate anything
-            if (area == null)
+            // Must have an zone to generate anything
+            if (zone == null)
             {
-                Debug.LogError($"Map Generator Error: Area Entry Missing for room generation procedure.");
+                Debug.LogError($"Map Generator Error: Zone Entry Missing for room generation procedure.");
                 return;
             }
 
             // Generate Unique Rooms
-            GenerateUniqueRooms(area);
+            GenerateUniqueRooms(zone);
 
             // Generate Rooms along main path
-            GenerateRoomsOnPath(area.MainPath);
+            GenerateRoomsOnPath(zone.MainPath);
 
             // Generator Rooms along alt. paths
-            foreach (Path path in area.Paths)
+            foreach (Path path in zone.Paths)
                 GenerateRoomsOnPath(path);
         }
 
         public void GenerateZoneConnectionRooms(ZoneConnectionEntry entry)
         {
             // ******* Generate Room A ******
-            // Adjust parameters to fit the area's actual position
-            Vector3Int areaAOffset = entry.AreaA.Bounds.position;
-            Vector3Int adjustedSpawnPosA = entry.RoomA.SpawnPosition + areaAOffset;
+            // Adjust parameters to fit the zone's actual position
+            Vector3Int zoneAOffset = entry.ZoneA.Bounds.position;
+            Vector3Int adjustedSpawnPosA = entry.RoomA.SpawnPosition + zoneAOffset;
 
-            Room generatedRoomA = GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosA, entry.AreaA.MainPath);
+            Room generatedRoomA = GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosA, entry.ZoneA.MainPath);
 
             // Unique rooms with available cells
             if (entry.RoomA.AvailableCells != null)
@@ -1291,11 +1294,11 @@ namespace RyansLibrary.Labyrinth
             generatedRoomA.Initialize();
 
             // ******* Generate Room B ******
-            // Adjust parameters to fit the area's actual position
-            Vector3Int areaBOffset = entry.AreaA.Bounds.position;
-            Vector3Int adjustedSpawnPosB = entry.RoomA.SpawnPosition + areaBOffset;
+            // Adjust parameters to fit the zone's actual position
+            Vector3Int zoneBOffset = entry.ZoneA.Bounds.position;
+            Vector3Int adjustedSpawnPosB = entry.RoomA.SpawnPosition + zoneBOffset;
 
-            Room generatedRoomB = GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosB, entry.AreaA.MainPath);
+            Room generatedRoomB = GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosB, entry.ZoneA.MainPath);
 
             // Unique rooms with available cells
             if (entry.RoomA.AvailableCells != null)
@@ -1326,15 +1329,15 @@ namespace RyansLibrary.Labyrinth
             NegY = 5
         }
 
-        private void GenerateUniqueRooms(Area area)
+        private void GenerateUniqueRooms(Zone zone)
         {
-            foreach (RoomEntry entry in area.UniqueRooms)
+            foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                // Adjust parameters to fit the area's actual position
-                Vector3Int areaOffset = area.Bounds.position;
-                Vector3Int adjustedSpawnPos = entry.SpawnPosition + areaOffset;
+                // Adjust parameters to fit the zone's actual position
+                Vector3Int zoneOffset = zone.Bounds.position;
+                Vector3Int adjustedSpawnPos = entry.SpawnPosition + zoneOffset;
 
-                Room generatedRoom = GenerateRoom(entry.Prefab, adjustedSpawnPos, area.MainPath);
+                Room generatedRoom = GenerateRoom(entry.Prefab, adjustedSpawnPos, zone.MainPath);
 
                 // Unique rooms with available cells
                 if (entry.AvailableCells != null)
@@ -1354,7 +1357,7 @@ namespace RyansLibrary.Labyrinth
 
         private void GenerateRoomsOnPath(Path path)
         {
-            if (path == null)      // Throw error if MainPath for area does not exist
+            if (path == null)      // Throw error if MainPath for zone does not exist
             {
                 Debug.LogError($"Map Generator Error: The {path.Name} is not assigned for Room Generation.");
                 return;
@@ -1942,7 +1945,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Check if a point lies outside the bounds of the area.
+        /// Check if a point lies outside the bounds of the zone.
         /// *** The point must be in world coords ***
         /// </summary>
         /// <param name="desiredPos">The desired position to spawn the next room</param>
@@ -1969,8 +1972,8 @@ namespace RyansLibrary.Labyrinth
 
         /* OLD BOUNDS CHECK (DEPRICATED)
         /// <summary>
-        /// Checks if a specified volume with a starting point overlaps the bounds of an area;
-        /// Returns the offset of the area of the room outside the bounds.
+        /// Checks if a specified volume with a starting point overlaps the bounds of an zone;
+        /// Returns the offset of the zone of the room outside the bounds.
         /// If the value returned is zero then there is no overlap
         /// *** The origin, bounds, and dimensions must be in room coords ***
         /// </summary>
@@ -2050,14 +2053,14 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Checks if the total amount of rooms is valid in an area's bounded range.
+        /// Checks if the total amount of rooms is valid in an zone's bounded range.
         /// </summary>
         /// <returns>The test success or fail</returns>
-        private bool CheckAreaBoundedVolume(Area area)
+        private bool CheckZoneBoundedVolume(Zone zone)
         {
             float totalCellOccupancy = 0;
 
-            foreach (RoomEntry entry in area.UniqueRooms)                    // Add Unique Room volume
+            foreach (RoomEntry entry in zone.UniqueRooms)                    // Add Unique Room volume
             {
                 if (entry.Prefab.TryGetComponent<Room>(out Room room))
                 {
@@ -2069,26 +2072,26 @@ namespace RyansLibrary.Labyrinth
 
             // TODO: Add Divergent Room volume ?
 
-            totalCellOccupancy += area.MainPath.PathLength;                 // Add Main Path volume
+            totalCellOccupancy += zone.MainPath.PathLength;                 // Add Main Path volume
 
-            foreach (Path path in area.Paths)                               // Add Alt. Paths volume
+            foreach (Path path in zone.Paths)                               // Add Alt. Paths volume
                 totalCellOccupancy += path.PathLength;
 
             // Calculate the bounded volume and check if amount of room cells taken up exceeds that amount
-            float xSize = area.Bounds.size.x;
-            float ySize = area.Bounds.size.y;
-            float zSize = area.Bounds.size.z;
+            float xSize = zone.Bounds.size.x;
+            float ySize = zone.Bounds.size.y;
+            float zSize = zone.Bounds.size.z;
             float volume = Math.RectangularVolume(xSize, ySize, zSize);
 
-            if (volume < totalCellOccupancy)        // The bounded volume cannot fullfill the area's cell requirements
+            if (volume < totalCellOccupancy)        // The bounded volume cannot fullfill the zone's cell requirements
                 return false;
 
-            return true;        // The area's cell requirements are met with the bounded volume
+            return true;        // The zone's cell requirements are met with the bounded volume
         }
 
         /* CHECK THE BOUNDING BOX OF A ROOM WITH DIMENSIONS (UNUSED)
         /// <summary>
-        /// Checks if the volume of the object can fit in the space of a bounded area
+        /// Checks if the volume of the object can fit in the space of a bounded zone
         /// </summary>
         /// <param name="cellOccupancy">The amound of cells an object takes up</param>
         /// <param name="lowerBound">The lower bound of the bounding box</param>
@@ -2187,19 +2190,19 @@ namespace RyansLibrary.Labyrinth
             {
                 // Initialize Master Data Structures
                 InitializeMasterPath();
-                _areas[0].MainPath.Initialize();
+                _zones[0].MainPath.Initialize();
 
-                if (_areas[0] == null)
+                if (_zones[0] == null)
                 {
-                    Debug.LogError("Map Generator Error: Area Entry Missing.");
+                    Debug.LogError("Map Generator Error: Zone Entry Missing.");
                     _debugState = DebugState.Failed;
                     return;
                 }
 
                 // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-                if (!CheckAreaBoundedVolume(_areas[0]))
+                if (!CheckZoneBoundedVolume(_zones[0]))
                 {
-                    Debug.LogError($"Map Generator Error: The amount of blueprint rooms for area {_areas[0].Name} exceeds the bounding box's volume or the bounding box is inverted.");
+                    Debug.LogError($"Map Generator Error: The amount of blueprint rooms for zone {_zones[0].Name} exceeds the bounding box's volume or the bounding box is inverted.");
                     _debugState = DebugState.Failed;
                     return;
                 }
@@ -2212,7 +2215,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Critical Rooms"))       // Generates Unique Rooms
                 {
                     // Generate Unique Rooms
-                    PlaceUniqueRooms(_areas[0]);
+                    PlaceUniqueRooms(_zones[0]);
                     _debugState = DebugState.GenDivergentRooms;
                 }
             }
@@ -2222,7 +2225,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Divergent Rooms"))        // Generates Divergent Rooms
                 {
                     // Generate Divergent Rooms
-                    PlaceDivergentRooms(_areas[0]);
+                    PlaceDivergentRooms(_zones[0]);
                     _debugState = DebugState.GenTriangulation;
                 }
             }
@@ -2231,7 +2234,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Triangulation"))        // Generates triangulation of main path
                 {
-                    GenerateTriangulation(_areas[0]);
+                    GenerateTriangulation(_zones[0]);
                     _debugState = DebugState.GenMainPath;
                 }
             }
@@ -2240,7 +2243,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Main Path"))        // Generates main path
                 {
-                    ConnectMainPath(_areas[0]);
+                    ConnectMainPath(_zones[0]);
                     _debugState = DebugState.GenPaths;
                 }
             }
@@ -2249,7 +2252,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Alt Blueprint Paths"))        // Generates alt paths that diverge from the main path
                 {
-                    GenerateAltPathBlueprints(_areas[0]);
+                    GenerateAltPathBlueprints(_zones[0]);
                     _debugState = DebugState.GenRooms;
                 }
             }
@@ -2258,8 +2261,8 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Rooms From Paths"))        // Generates alt paths that diverge from the main path
                 {
-                    GenerateUniqueRooms(_areas[0]);
-                    GenerateAreaRooms(_areas[0]);
+                    GenerateUniqueRooms(_zones[0]);
+                    GenerateZoneRooms(_zones[0]);
                     _debugState = DebugState.NotifyListeners;
                 }
             }
@@ -2304,17 +2307,17 @@ namespace RyansLibrary.Labyrinth
                     }
                     if (_debugState == DebugState.GenMainPath)
                     {
-                        GenerateMainPathBlueprint(_areas[0]);
+                        GenerateMainPathBlueprint(_zones[0]);
                         _debugState = DebugState.GenPaths;
                     }
                     if (_debugState == DebugState.GenPaths)
                     {
-                        GenerateAltPathBlueprints(_areas[0]);
+                        GenerateAltPathBlueprints(_zones[0]);
                         _debugState = DebugState.GenRooms;
                     }
                     if (_debugState == DebugState.GenRooms)
                     {
-                        GenerateAreaRooms(_areas[0]);
+                        GenerateZoneRooms(_zones[0]);
                         _debugState = DebugState.NotifyListeners;
                     }
                     if (_debugState == DebugState.NotifyListeners)
@@ -2332,11 +2335,11 @@ namespace RyansLibrary.Labyrinth
             if (!_debugGizmos)
                 return;
 
-            foreach (Area area in _areas)
+            foreach (Zone zone in _zones)
             {
-                DrawBoundingBox(area.Bounds);
+                DrawBoundingBox(zone.Bounds);
                 DrawTriangulation();
-                DrawBluePrintGizmos(area);
+                DrawBluePrintGizmos(zone);
             }
 
             foreach (ZoneConnectionEntry entry in _zoneConnections)
@@ -2370,11 +2373,11 @@ namespace RyansLibrary.Labyrinth
         */
         private void DrawBoundingBox(BoundsInt bounds)
         {
-            Vector3 worldSize = ConvertToWorldCoords(bounds.size + Vector3Int.one);
-            Vector3 worldCenter = bounds.center * _gridUnitSize;
+            Vector3 boundsSize = ConvertToWorldCoords(bounds.size + Vector3Int.one);
+            Vector3 boundsCenter = bounds.center * _gridUnitSize;
 
             Gizmos.color = _boundingBoxColor;
-            Gizmos.DrawWireCube(worldCenter, worldSize);
+            Gizmos.DrawWireCube(boundsCenter, boundsSize);
         }
 
         private void DrawTriangulation()
@@ -2396,7 +2399,7 @@ namespace RyansLibrary.Labyrinth
                 Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
             }
 
-            // Draw the minimum spanning tree of the area
+            // Draw the minimum spanning tree of the zone
             foreach (Edge e in _minimumSpanningTree)
             {
                 Gizmos.color = _minimumSpanningTreeColor;
@@ -2404,21 +2407,21 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        private void DrawBluePrintGizmos(Area area)
+        private void DrawBluePrintGizmos(Zone zone)
         {
-            if (area.MainPath.BlueprintRooms == null)
+            if (zone.MainPath.BlueprintRooms == null)
                 return;
 
             Vector3 unitSize = Vector3.one * _gridUnitSize;
 
             // Draw Gizmos for main path
-            foreach (BlueprintRoom bRoom in area.MainPath.BlueprintRooms)
+            foreach (BlueprintRoom bRoom in zone.MainPath.BlueprintRooms)
             {
-                Gizmos.color = area.MainPath.PathGizmoColor;
+                Gizmos.color = zone.MainPath.PathGizmoColor;
                 Gizmos.DrawCube(ConvertToWorldCoords(bRoom.Position), unitSize);
             }
 
-            foreach (Path path in area.Paths)
+            foreach (Path path in zone.Paths)
             {
                 if (path.BlueprintRooms == null)
                     return;
