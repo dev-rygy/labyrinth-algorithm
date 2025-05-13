@@ -351,6 +351,159 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
+        #region Blueprint Random
+        /// <summary>
+        /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
+        /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
+        /// </summary>
+        /// <param name="path">A path with a length of atleast one.</param>
+        /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
+        public void BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom = null)
+        {
+            // *** TODO: REMOVE ***
+            int fail = 1000;
+
+            // Make sure the path has atleast one room cell that can spawn
+            if (path.PathLength <= 0)
+            {
+                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative");
+                return;
+            }
+
+            MasterPath.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
+
+            Vector3Int curPos = Vector3Int.zero;
+            BlueprintRoom curRoom = null;
+
+            // Prime loop with starting room
+            if (startRoom == null)          // Generate Start Room if a start room was not passed in, generate a start room at position (0,0,0); TODO: Make the start position a desired position if we plan on having places where the player can teleport to.
+            {
+                //**** TODO: REMOVE!!! ****
+                Vector3Int tempStartRoomPos = new Vector3Int(5, 0, 5);      // Temp start room position for testing
+
+                curRoom = GenerateBlueprintRoom(path, tempStartRoomPos);
+                curPos = tempStartRoomPos;
+                startRoom = curRoom;
+            }
+            else                            // Start at the desired Start Room
+            {
+                curPos = startRoom.Position;
+                curRoom = startRoom;
+            }
+            if (_debugLogs) Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
+
+            // Chose a position in a random cardinal direction and check for collisions
+            bool[] attempts = new bool[STANDARD_ROOM_FACE_COUNT];
+            int failedAttempts = 0;
+            int entrFlagIdx = 0;
+            while (path.BlueprintCount() < path.PathLength)
+            {
+                Vector3Int tempPos = curPos;
+
+                // Choose a random direction to be the potential position for the next room.
+                int faceIdx = UnityEngine.Random.Range(1, STANDARD_ROOM_FACE_COUNT);
+
+                while (attempts[faceIdx])                               // Store attempt direction in circular array to aviod choosing the same direction twice.
+                {                                                       // Loop though attempts to find a unique direction
+                    faceIdx++;
+                    if (faceIdx % STANDARD_ROOM_FACE_COUNT == 0)           // Circle back in array
+                        faceIdx = 0;
+                }
+
+                // "Walk" in that direction from the current pos
+                switch (faceIdx)
+                {
+                    // E0 - E5 is the face count for a unit room, this will be used later for entranceways
+                    case 0:
+                        tempPos += Vector3Int.right;    // F0 : (1, 0, 0); Wall Right
+                        entrFlagIdx = 0;
+                        break;
+                    case 1:
+                        tempPos += Vector3Int.left;     // F1 : (-1, 0, 0); Wall Left
+                        entrFlagIdx = 1;
+                        break;
+                    case 2:
+                        tempPos += Vector3Int.forward;  // F2 : (0, 0, 1); Wall Forward
+                        entrFlagIdx = 2;
+                        break;
+                    case 3:
+                        tempPos += Vector3Int.back;     // F3 : (0, 0, -1); Wall Back
+                        entrFlagIdx = 3;
+                        break;
+                    case 4:
+                        tempPos += Vector3Int.up;       // F4 : (0, 1, 0); Wall Top
+                        entrFlagIdx = 4;
+                        break;
+                    case 5:
+                        tempPos += Vector3Int.down;     // F5 : (0, 1, 0); Wall Bot
+                        entrFlagIdx = 5;
+                        break;
+                    default:
+                        Debug.LogError("Map Generator Error: Direction choosen by gen alg does not exist.");
+                        entrFlagIdx = -1;
+                        break;
+                }
+
+                // Check if the room is in the realm of the bounding box, if not then don't spawn
+                if (CheckOutOfBounds(tempPos, bounds))
+                {
+                    // TODO: Enable the stuff below, we need a prev room in order to do this because you cannot set the collided room as the bound
+                    // attempts[entrFlagIdx] = true;
+                    // failedAttempts++;
+
+                    // *** TODO: REMOVE ***
+                    fail--;
+                    if (fail < 0)
+                    {
+                        Debug.LogError("Failed");
+                        return;
+                    }
+
+                    if (_debugLogs) Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
+                    continue;
+                }
+
+                // Check Master Path for collisions (the temp pos ends up being inside another designated room space)
+                BlueprintRoom collidedRoom = null;
+
+                // Check position in hash map; if failed then flag face attempt and try choosing a new position 
+                if (CheckCollision(tempPos, out collidedRoom))        // *** Test Failed; collision with another blueprintRoom
+                {
+                    attempts[entrFlagIdx] = true;
+                    failedAttempts++;
+                }
+                else                                         // *** Test Passed; no collision
+                {
+                    curPos = tempPos; // Change Current Position to new position
+
+                    BlueprintRoom newBlueRoom = GenerateBlueprintRoom(path, curPos);
+                    FlagDoorways(newBlueRoom, curRoom, entrFlagIdx);                    // Flag the face that touches the opposite room
+
+                    curRoom = newBlueRoom;
+
+                    // Reset Attempts Array because we sucessfully spawned blueprint room
+                    Array.Clear(attempts, 0, attempts.Length);
+                    failedAttempts = 0;
+                }
+
+                // TODO: This is a bad way of handling collisions, implement backtracking later!
+                // If failed too many times -> try another room (rare)
+                if (failedAttempts >= STANDARD_ROOM_FACE_COUNT)        // All spaces adjacent to the current room are covered
+                {
+                    // Make the current room the collided room and try to gen again
+                    curPos = tempPos;
+                    curRoom = collidedRoom;
+
+                    // Reset Array
+                    Array.Clear(attempts, 0, attempts.Length);
+                    failedAttempts = 0;
+
+                    if (curRoom == null) Debug.LogError("Map Generator Error: No more availible spaces exist for a new bluprint room where a conflict does not occur.");
+                }
+            }
+        }
+        #endregion
+
         #region Blueprint Room Generation
         /// <summary>
         /// Generate a new blueprint room at the desired location. Add it to the master path and
@@ -441,6 +594,50 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Utility
+        /// <summary>
+        /// Choose a random room in a path. If endIndex = -1 => endIndex = path's last room.
+        /// </summary>
+        /// <param name="path">The path to choose the starting room from</param>
+        /// <param name="startIndex">Index to start from</param>
+        /// <returns>The Choosen Blueprint Room.</returns>
+        public BlueprintRoom ChooseRandomRoomInPath(Path path, int startIndex = 0, int endIndex = -1)
+        {
+            // Default the endIndex to the path's end index
+            if (endIndex == -1)
+                endIndex = path.BlueprintCount() - 1;
+
+            // Check if range is valid
+            if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (path.BlueprintCount() - 1)))
+            {
+                Debug.LogError("Map Generator Error: Path index out of range or set incorrectly.");
+                return null;
+            }
+
+            // Check if path to choose from is valid
+            if (path.BlueprintCount() <= 0)
+            {
+                Debug.LogError($"Map Generator Error: A starting room could not be choosen because {path.Name} has no rooms.");
+                return null;
+            }
+
+            // TODO: Make a enum/layer mask perameter that can choose a room from a specific type or types
+
+            // Choose a random room respecting the constraints and return
+            int randomRoomIndex = UnityEngine.Random.Range(startIndex, endIndex);
+            BlueprintRoom room = path.BlueprintRooms[randomRoomIndex];
+
+            // TODO: Make a circular array handle this
+            if (!room.Available)
+            {
+                //Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
+                room = ChooseRandomRoomInPath(path, startIndex, endIndex);
+            }
+
+            if (_debugLogs) Debug.Log($"Map Generator: Random room choosen from {path.Name} at index {randomRoomIndex}");
+
+            return room;
+        }
+
         /// <summary>
         /// Check if a point lies outside the bounds of the zone.
         /// *** The point must be in world coords ***

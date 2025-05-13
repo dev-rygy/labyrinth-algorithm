@@ -11,7 +11,6 @@ using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 using RyansLibrary.AI;
-using Gaskellgames;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -342,10 +341,10 @@ namespace RyansLibrary.Labyrinth
                     return;
                 }
 
-                BlueprintRoom startRoom = ChooseRandomRoomInPath(zone.MainPath, 1); // start at index 1 as to not choose the starting room of the game
+                BlueprintRoom startRoom = _blueprintGenerator.ChooseRandomRoomInPath(zone.MainPath, 1); // start at index 1 as to not choose the starting room of the game
                 path.Initialize(startIndex, endIndex);
 
-                DrunkardWalk(path, zone.Bounds, startRoom);
+                _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
 
                 if (_debugLogs) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
             }
