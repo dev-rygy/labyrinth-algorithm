@@ -508,7 +508,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">The desired path to add the new blueprint room to.</param>
         /// <param name="position">The desired position to spawn the new room at. Must be in world coords</param>
         /// <returns>Blueprint room created in room coords.</returns>
-        private BlueprintRoom GenerateBlueprintRoom(Path path, Vector3Int position, bool available = true)
+        public BlueprintRoom GenerateBlueprintRoom(Path path, Vector3Int position, bool available = true)
         {
             string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
             BlueprintRoom newRoom = new BlueprintRoom(position, blueName);

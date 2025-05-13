@@ -2,6 +2,17 @@ using RyansLibrary.Labyrinth;
 using System.Collections.Generic;
 using UnityEngine;
 
+//The room case based on the direction of the adjacent/next room.
+public enum RoomDirection
+{
+    PosZ = 0,
+    NegZ = 1,
+    PosX = 2,
+    NegX = 3,
+    PosY = 4,
+    NegY = 5
+}
+
 public class RoomGenerator
 {
     // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
@@ -28,17 +39,6 @@ public class RoomGenerator
     private Transform _roomContainer;
     private bool _debugGizmos = true;
     private bool _debugLogs = false;
-
-    //The room case based on the direction of the adjacent/next room.
-    private enum RoomDirection
-    {
-        PosZ = 0,
-        NegZ = 1,
-        PosX = 2,
-        NegX = 3,
-        PosY = 4,
-        NegY = 5
-    }
 
     public void GenerateUniqueRooms(Zone zone)
     {
@@ -426,7 +426,7 @@ public class RoomGenerator
     /// <param name="placementPosition"></param>
     /// <param name="rDir"></param>
     /// <returns></returns>
-    private Room GenerateRoom(GameObject prefab, Vector3Int placementPosition, Path path, RoomDirection rDir = 0)
+    public Room GenerateRoom(GameObject prefab, Vector3Int placementPosition, Path path, RoomDirection rDir = 0)
     {
         Quaternion rotation = Quaternion.identity;      // TODO: set rotation
         Room generatedRoom = Object.Instantiate(prefab, ConvertToWorldCoords(placementPosition), rotation, _roomContainer).GetComponent<Room>();
@@ -448,7 +448,7 @@ public class RoomGenerator
     /// <param name="rDir">The direction code of the room.</param>
     /// <param name="prefabIndex">The prefab index in the room array; set to -1 to spawn a random room.</param>
     /// <returns></returns>
-    private Room GenerateRoom(RoomShape shape, RoomType rType, Path path, BlueprintRoom originRoom, RoomDirection rDir = 0, int prefabIndex = -1)      // prefabIndex = -1 means spawn random room
+    public Room GenerateRoom(RoomShape shape, RoomType rType, Path path, BlueprintRoom originRoom, RoomDirection rDir = 0, int prefabIndex = -1)      // prefabIndex = -1 means spawn random room
     {
         Room generatedRoom = null;
         Quaternion rotation = Quaternion.identity;      // Take the rotation of the room into account
