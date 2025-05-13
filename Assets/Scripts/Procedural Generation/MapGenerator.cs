@@ -108,7 +108,10 @@ namespace RyansLibrary.Labyrinth
         // ***** Private Variables *****
         // TODO: do not make this global in this class, maybe in the Zone class?
         private int _seed;      // TODO: For networking make the host generate this
+
         private BlueprintGenerator _blueprintGenerator;
+        private RoomGenerator _roomGenerator;
+
         private DelaunayTriangulation3D _triangulation;     // A single triangulation structure for a main path
         private List<Edge> _minimumSpanningTree;
 
@@ -182,6 +185,9 @@ namespace RyansLibrary.Labyrinth
                 // Initialize Blueprint Generator
                 _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
 
+                // Initialize Room Generator
+                _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
+
                 // Initialize Zone Data Structures
                 foreach (Zone zone in _zones)
                     InitializeZone(zone);
@@ -252,22 +258,14 @@ namespace RyansLibrary.Labyrinth
             MasterPath.Initialize();
             MasterPath.Name = MASTER_PATH_NAME;
         }
-        #endregion
-
-        #region Blueprint Procedure
-        private void InitializeMasterPath()     // NOTE: This must be done before generating anything!
-        {
-            // Initialize Master Data Structures
-            MasterDictionary = new Dictionary<Vector3Int, BlueprintRoom>();
-            MasterPath = ScriptableObject.CreateInstance<Path>();
-            MasterPath.Initialize();
-            MasterPath.Name = MASTER_PATH_NAME;
-        }
 
         private void InitializeZone(Zone zone)
         {
             zone.MainPath.Initialize();
         }
+        #endregion
+
+        #region Blueprint Procedure
 
         /// <summary>
         /// First procedure in the Labyrinth Algorithm that will make pseudo paths in different directions.
@@ -1297,7 +1295,7 @@ namespace RyansLibrary.Labyrinth
         /// room shape chance, room prefab chance, if the room shape will align adiquately to the path, and what path
         /// the room is a part of. It will also activate the entranceways of rooms based on the path's sequence.
         /// </summary>
-        public void GenerateZoneRooms(Zone zone) 
+        public void GenerateZoneRooms(Zone zone)
         {
             // Must have an zone to generate anything
             if (zone == null)
@@ -1307,14 +1305,14 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Generate Unique Rooms
-            GenerateUniqueRooms(zone);
+            _roomGenerator.GenerateUniqueRooms(zone);
 
             // Generate Rooms along main path
-            GenerateRoomsOnPath(zone.MainPath);
+            _roomGenerator.GenerateRoomsOnPath(zone.MainPath);
 
             // Generator Rooms along alt. paths
             foreach (Path path in zone.Paths)
-                GenerateRoomsOnPath(path);
+                _roomGenerator.GenerateRoomsOnPath(path);
         }
 
         public void GenerateZoneConnectionRooms(ZoneConnectionEntry entry)
@@ -2262,6 +2260,9 @@ namespace RyansLibrary.Labyrinth
                 // Initialize Blueprint Generator
                 _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
 
+                // Initialize Room Generator
+                _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
+
                 // Initialize Zone Data Structures
                 foreach (Zone zone in _zones)
                     InitializeZone(zone);
@@ -2343,7 +2344,6 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Rooms From Paths"))        // Generates alt paths that diverge from the main path
                 {
-                    GenerateUniqueRooms(_zones[0]);
                     GenerateZoneRooms(_zones[0]);
                     _debugState = DebugState.NotifyListeners;
                 }
