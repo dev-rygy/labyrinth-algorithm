@@ -9,8 +9,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-using Priority_Queue;
-using UnityEditor.SceneManagement;     // Needed for SimplePriorityQueue
+using Priority_Queue;     // Needed for SimplePriorityQueue
 
 namespace RyansLibrary.AI
 {

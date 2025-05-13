@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   04/10/2025 (Ryan)
+ * Last Modified:   05/12/2025 (Ryan)
  * Notes:           Map Generator
 */
 using System;
@@ -15,27 +15,6 @@ using RyansLibrary.AI;
 namespace RyansLibrary.Labyrinth
 {
     #region Helper Objects
-    /// <summary>
-    /// Holds the properties of a suedo room that does not actually exist in the world.
-    /// Is meant to be replaced by actual rooms later on.
-    /// </summary>
-    public class BlueprintRoom
-    {
-        public string RoomName { get; private set; }
-        public Vector3Int Position { get; private set; }        // Position of blueprint room in room coords
-        public bool Available { get; set; }
-        public bool[] entrancewayFlags;
-
-        // Constructor
-        public BlueprintRoom(Vector3Int postion, string roomName = "Blueprint Room")
-        {
-            Available = true;
-            RoomName = roomName;
-            Position = postion;
-            entrancewayFlags = new bool[6];       // A flag to mark which entrances should be open for a room
-        }
-    }
-
     // Entry for connection zones together
     [System.Serializable]
     public class ZoneConnectionEntry
@@ -58,7 +37,6 @@ namespace RyansLibrary.Labyrinth
     {
         #region Variables
         // ***** CONSTANTS *****
-        const int STANDARD_ROOM_FACE_COUNT = 6;
         const string MASTER_PATH_NAME = "Master Path";
 
         // ***** Singleton Reference *****
@@ -322,6 +300,7 @@ namespace RyansLibrary.Labyrinth
             // Pathfind and Connect Main Path
             ConnectMainPath(zone, MST);
 
+
             if (_debugLogs) Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
         }
 
@@ -367,6 +346,17 @@ namespace RyansLibrary.Labyrinth
             }
 
             DelaunayTriangulation3D triangulation = _blueprintGenerator.GenerateTriangulationFromPath(zone.MainPath);
+
+            // Turn off blueprint room availability for unique rooms 
+            foreach (RoomEntry entry in zone.UniqueRooms)
+            {
+                foreach (Vector3Int cell in entry.AvailableCells)
+                {
+                    Vector3Int actualPos = entry.SpawnPosition + cell;      // Find the actual position in room space of the cell
+                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                        r.Available = false;
+                }
+            }
 
             List<Edge> MST = _blueprintGenerator.FindMinimumSpanningTree(triangulation.Edges, triangulation.Edges[0].U);
 
@@ -638,60 +628,6 @@ namespace RyansLibrary.Labyrinth
 
             return true;        // The zone's cell requirements are met with the bounded volume
         }
-
-        /// <summary>
-        /// Choose a random room in a list based on the weights that are applied to that room.
-        /// Takes the absolute probability meaning the function chooses a random position in the realm
-        /// of all room possibilities.
-        /// </summary>
-        /// <param name="pathEntrys">The path entry list of a particular room shape in the path object.</param>
-        /// <returns></returns>
-        private GameObject ChooseRandomRoomFromWeights(List<PathEntry> pathEntrys)
-        {
-            // If the path's room entry list contains no room return null
-            if (pathEntrys.Count == 0)
-            {
-                Debug.LogError("Map Generator Error: Probability of Room Weights Failed, room list empty.");
-                return null;
-            }
-
-            // If the path's room entry list contains one room return that room's prefab
-            if (pathEntrys.Count == 1)
-                return pathEntrys[0].Prefab;
-
-            // Choose a random room prefab based on probability
-            int totalWeight = 0;
-            foreach (PathEntry pathEntry in pathEntrys)
-            {
-                totalWeight += pathEntry.Probability;
-            }
-
-            int roll = UnityEngine.Random.Range(0, totalWeight + 1);        // roll 1 - 101; max exclusive
-            int runningTotal = 0;
-            for (int i = 0; i < pathEntrys.Count; i++)
-            {
-                runningTotal += pathEntrys[i].Probability;
-                if (roll <= runningTotal)
-                    return pathEntrys[i].Prefab;
-            }
-
-            Debug.LogError("Map Generator Error: Probability of Room Weights Failed, unknown error.");
-            return null;
-        }
-
-        /* CLEAR PATHS (UNUSED)
-        /// <summary>
-        /// Clean up path lists to free up memory
-        /// </summary>
-        void ClearAllPaths()
-        {
-            MasterPath.ClearBluePrintRooms(); // All paths combined
-            MainPath.ClearBluePrintRooms();   // path to Boss Room
-            for (int i = 0; i < _amountOfPrizePaths; i++)
-                PrizePaths[i].ClearBluePrintRooms();  // paths to prize rooms
-            PrizePaths.Clear();
-        }
-        */
         #endregion
 
         #region Debug
@@ -908,29 +844,6 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        /* OLD DRAWING OF BOUNDING BOX (DEPRICATED)
-        /// <summary>
-        /// Draw the bounding box of the generator
-        /// </summary>
-        private void DrawBoundingBox()
-        {
-            // Find the centerpoint of the box
-            float xPos = ConvertToWorldCoords(_currentLowerBound.x + _currentUpperBound.x) / 2;
-            float yPos = ConvertToWorldCoords(_currentLowerBound.y + _currentUpperBound.y) / 2;
-            float zPos = ConvertToWorldCoords(_currentLowerBound.z + _currentUpperBound.z) / 2;
-            Vector3 centerPoint = new Vector3(xPos, yPos, zPos);
-
-            // Find the size of the box
-            float xSize = ConvertToWorldCoords(_currentUpperBound.x - _currentLowerBound.x);
-            float ySize = ConvertToWorldCoords(_currentUpperBound.y - _currentLowerBound.y);
-            float zSize = ConvertToWorldCoords(_currentUpperBound.z - _currentLowerBound.z);
-            Vector3 size = new Vector3(xSize, ySize, zSize);
-
-
-            Gizmos.color = _boundingBoxColor;
-            Gizmos.DrawWireCube(centerPoint, size);
-        }
-        */
         private void DrawBoundingBox(BoundsInt bounds)
         {
             Vector3 boundsSize = _gridUnitSize * (bounds.size + Vector3Int.one);

@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    05/11/2025
- * Last Modified:   05/11/2025 (Ryan)
+ * Last Modified:   05/12/2025 (Ryan)
  * Notes:           Blueprint Generator
 */
 using System;
@@ -9,11 +9,31 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using RyansLibrary.Graphs;
-using RyansLibrary.Geometry;
 using RyansLibrary.AI;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Holds the properties of a suedo room that does not actually exist in the world.
+    /// Is meant to be replaced by actual rooms later on.
+    /// </summary>
+    public class BlueprintRoom
+    {
+        public string RoomName { get; private set; }
+        public Vector3Int Position { get; private set; }        // Position of blueprint room in room coords
+        public bool Available { get; set; }
+        public bool[] entrancewayFlags;
+
+        // Constructor
+        public BlueprintRoom(Vector3Int postion, string roomName = "Blueprint Room")
+        {
+            Available = true;
+            RoomName = roomName;
+            Position = postion;
+            entrancewayFlags = new bool[6];       // A flag to mark which entrances should be open for a room
+        }
+    }
+
     public class BlueprintGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
@@ -281,8 +301,6 @@ namespace RyansLibrary.Labyrinth
 
             // Add obstructions
             HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
-            obstructions.Clear();
-
             foreach (BlueprintRoom room in path.BlueprintRooms)
             {
                 // if the room is the start room or ending room of the edge then don't add to obstructions
@@ -293,6 +311,7 @@ namespace RyansLibrary.Labyrinth
                 obstructions.Add(roomPos);
             }
 
+            // Find a sequence of points in room coordinates
             List<Vector3Int> sequence = aStar.FindPath(startPos, endPos, obstructions, Heuristic.Manhattan);
 
             if (sequence == null)
