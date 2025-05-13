@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
     {
         #region Variables
         // ***** CONSTANTS *****
-        const int STANDARD_ROOM_FACE_COUNT = 6;                // Amount of faces on a blueprint room; This should never be changed unless unique shapes are made in the future
+        const int STANDARD_ROOM_FACE_COUNT = 6;
         const string MASTER_PATH_NAME = "Master Path";
 
         // ***** Singleton Reference *****
@@ -155,10 +155,12 @@ namespace RyansLibrary.Labyrinth
             // If debug is active; step through procedures with UI buttons
             if (_debug)
             {
+                Debug.Log("Map Generator: Debug On");
                 _debugState = DebugState.Start;        // Jump to next step
                 return;
             }
-
+            Debug.Log("Map Generator: Debug Off");
+            
             try
             {
                 if (generateRandomSeed)
@@ -174,11 +176,11 @@ namespace RyansLibrary.Labyrinth
                 if (_debugLogs)
                     Debug.Log($"Generating map with seed: {_seed}");
 
-                // Initialize Blueprint Generator
-                _blueprintGenerator = new BlueprintGenerator();
-
                 // Initialize Master Data Structures
-                _blueprintGenerator.InitializeMasters();
+                InitializeMasters();
+
+                // Initialize Blueprint Generator
+                _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
 
                 // Initialize Zone Data Structures
                 foreach (Zone zone in _zones)
@@ -240,6 +242,15 @@ namespace RyansLibrary.Labyrinth
                 // TODO: Clean Up
                 // ClearAllPaths();
             }
+        }
+
+        public void InitializeMasters()     // NOTE: This must be done before generating anything!
+        {
+            // Initialize Master Data Structures
+            MasterDictionary = new Dictionary<Vector3Int, BlueprintRoom>();
+            MasterPath = ScriptableObject.CreateInstance<Path>();
+            MasterPath.Initialize();
+            MasterPath.Name = MASTER_PATH_NAME;
         }
         #endregion
 
@@ -1373,6 +1384,11 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int zoneOffset = zone.Bounds.position;
                 Vector3Int adjustedSpawnPos = entry.SpawnPosition + zoneOffset;
 
+                if (MasterPath == null || MasterDictionary == null)
+                {
+                    Debug.Log("One of these are null.");
+                }
+
                 Room generatedRoom = GenerateRoom(entry.Prefab, adjustedSpawnPos, zone.MainPath);
 
                 // Unique rooms with available cells
@@ -2240,11 +2256,11 @@ namespace RyansLibrary.Labyrinth
                 if (_debugLogs)
                     Debug.Log($"Generating map with seed: {_seed}");
 
-                // Initialize Blueprint Generator
-                _blueprintGenerator = new BlueprintGenerator();
-
                 // Initialize Master Data Structures
-                _blueprintGenerator.InitializeMasters();
+                InitializeMasters();
+
+                // Initialize Blueprint Generator
+                _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
 
                 // Initialize Zone Data Structures
                 foreach (Zone zone in _zones)

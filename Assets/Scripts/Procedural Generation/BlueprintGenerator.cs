@@ -11,7 +11,6 @@ using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 using RyansLibrary.AI;
-using System.CodeDom.Compiler;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -19,7 +18,6 @@ namespace RyansLibrary.Labyrinth
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
         const int STANDARD_ROOM_FACE_COUNT = 6;
-        const string MASTER_PATH_NAME = "Master Path";
 
         // ***** Path Containers *****
         // The Master Path holds a reference to all bluprint rooms in an zone
@@ -35,13 +33,10 @@ namespace RyansLibrary.Labyrinth
         private bool _debugGizmos = true;
         private bool _debugLogs = false;
 
-        public void InitializeMasters()     // NOTE: This must be done before generating anything!
+        public BlueprintGenerator(Path masterPath, Dictionary<Vector3Int, BlueprintRoom> masterDictionary)
         {
-            // Initialize Master Data Structures
-            MasterDictionary = new Dictionary<Vector3Int, BlueprintRoom>();
-            MasterPath = ScriptableObject.CreateInstance<Path>();
-            MasterPath.Initialize();
-            MasterPath.Name = MASTER_PATH_NAME;
+            MasterPath = masterPath;
+            MasterDictionary = masterDictionary;
         }
 
         #region Unique/Divergent Room Blueprints
@@ -174,7 +169,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
-                bool result = PlaceBoundedBlueprints(path, bounds, room.RoomDimensions, out Vector3Int spawnPosition);
+                bool result = PlaceBoundedBlueprints(path, bounds, room.RoomDimensions, out Vector3Int spawnPosition, false);
 
                 if (!result)
                 {
@@ -224,7 +219,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="zone"></param>
         /// <returns></returns>
-        public bool PlaceBoundedBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition)
+        public bool PlaceBoundedBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true)
         {
             // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
             Vector3Int adjUpperBound = new Vector3Int(
@@ -243,7 +238,7 @@ namespace RyansLibrary.Labyrinth
             );
 
             // Append the newly generated blueprint rooms to the end of the list
-            List<BlueprintRoom> newRooms = GenerateBlueprintsFromDimensions(path, randomSpawnPos, dimensions);
+            List<BlueprintRoom> newRooms = GenerateBlueprintsFromDimensions(path, randomSpawnPos, dimensions, available);
 
             spawnPosition = randomSpawnPos;
 
