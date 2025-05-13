@@ -11,6 +11,7 @@ using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 using RyansLibrary.AI;
+using Gaskellgames;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -108,6 +109,7 @@ namespace RyansLibrary.Labyrinth
         // ***** Private Variables *****
         // TODO: do not make this global in this class, maybe in the Zone class?
         private int _seed;      // TODO: For networking make the host generate this
+        private BlueprintGenerator _blueprintGenerator;
         private DelaunayTriangulation3D _triangulation;     // A single triangulation structure for a main path
         private List<Edge> _minimumSpanningTree;
 
@@ -173,8 +175,11 @@ namespace RyansLibrary.Labyrinth
                 if (_debugLogs)
                     Debug.Log($"Generating map with seed: {_seed}");
 
+                // Initialize Blueprint Generator
+                _blueprintGenerator = new BlueprintGenerator();
+
                 // Initialize Master Data Structures
-                InitializeMasterPath();
+                _blueprintGenerator.InitializeMasters();
 
                 // Initialize Zone Data Structures
                 foreach (Zone zone in _zones)
@@ -299,10 +304,10 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Unique Room Placement
-            PlaceUniqueRooms(zone);
+            _blueprintGenerator.PlaceUniqueRooms(zone);
 
             // Divergent Room Placement
-            PlaceDivergentRooms(zone);
+            _blueprintGenerator.PlaceDivergentRooms(zone);
 
             // Generate Delauney Triangulation
             GenerateTriangulation(zone);
@@ -427,6 +432,11 @@ namespace RyansLibrary.Labyrinth
         {
             Path mainPath = zone.MainPath;
             int occupancy = zone.DivergentRoomsCellOccupancy;
+
+            for (int i = 0; i < occupancy; i++)
+            {
+                bool result = _blueprintGenerator.PlaceBoundedBlueprints(zone.MainPath, zone.Bounds, Vector3Int.one, out Vector3Int spawnPos);
+            }
 
             // TODO: Remove these chances later; change them from being hard coded like this
             float chance2x1x2 = 0.20f;
@@ -2189,8 +2199,28 @@ namespace RyansLibrary.Labyrinth
             if (_debugState == DebugState.Initialize)
             {
                 // Initialize Master Data Structures
-                InitializeMasterPath();
-                _zones[0].MainPath.Initialize();
+                if (generateRandomSeed)
+                {
+                    // Generate Random Seed
+                    _seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+                }
+                else
+                    _seed = customSeed;
+
+                UnityEngine.Random.InitState(_seed);
+
+                if (_debugLogs)
+                    Debug.Log($"Generating map with seed: {_seed}");
+
+                // Initialize Blueprint Generator
+                _blueprintGenerator = new BlueprintGenerator();
+
+                // Initialize Master Data Structures
+                _blueprintGenerator.InitializeMasters();
+
+                // Initialize Zone Data Structures
+                foreach (Zone zone in _zones)
+                    InitializeZone(zone);
 
                 if (_zones[0] == null)
                 {
@@ -2212,10 +2242,10 @@ namespace RyansLibrary.Labyrinth
 
             if (_debugState == DebugState.GenUniqueRooms)
             {
-                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Critical Rooms"))       // Generates Unique Rooms
+                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Unique Rooms"))       // Generates Unique Rooms
                 {
                     // Generate Unique Rooms
-                    PlaceUniqueRooms(_zones[0]);
+                    _blueprintGenerator.PlaceUniqueRooms(_zones[0]);
                     _debugState = DebugState.GenDivergentRooms;
                 }
             }
@@ -2225,7 +2255,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Divergent Rooms"))        // Generates Divergent Rooms
                 {
                     // Generate Divergent Rooms
-                    PlaceDivergentRooms(_zones[0]);
+                    _blueprintGenerator.PlaceDivergentRooms(_zones[0]);
                     _debugState = DebugState.GenTriangulation;
                 }
             }

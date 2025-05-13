@@ -1042,13 +1042,13 @@ MonoBehaviour:
   _gridUnitSize: 13
   _roomContainer: {fileID: 250971250}
   _numOfPlacementAttempsBeforeRegen: 10
-  _areas:
+  _zones:
   - {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c, type: 2}
   - {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691, type: 2}
   _zoneConnections:
-  - <AreaA>k__BackingField: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
+  - <ZoneA>k__BackingField: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
       type: 2}
-    <AreaB>k__BackingField: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
+    <ZoneB>k__BackingField: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
       type: 2}
     <RoomA>k__BackingField:
       <Prefab>k__BackingField: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
