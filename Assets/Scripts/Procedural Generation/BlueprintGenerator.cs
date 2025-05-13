@@ -11,6 +11,7 @@ using UnityEngine;
 using RyansLibrary.Graphs;
 using RyansLibrary.Geometry;
 using RyansLibrary.AI;
+using System.CodeDom.Compiler;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -43,6 +44,7 @@ namespace RyansLibrary.Labyrinth
             MasterPath.Name = MASTER_PATH_NAME;
         }
 
+        #region Unique/Divergent Room Blueprints
         public bool PlaceUniqueRooms(Zone zone)
         {
             // 1.) Spawn Fixed Rooms
@@ -157,13 +159,9 @@ namespace RyansLibrary.Labyrinth
                     Vector3Int cellPosition = adjustedSpawnPos + cell;      // Find the actual position in room space of the cell
 
                     if (MasterDictionary.TryGetValue(cellPosition, out BlueprintRoom r))
-                    {
                         r.Available = true;
-                    }
                     else
-                    {
                         GenerateBlueprintRoom(path, cellPosition, true);
-                    }
                 }
 
                 return true;
@@ -192,13 +190,9 @@ namespace RyansLibrary.Labyrinth
                     Vector3Int actualPos = spawnPosition + cell;      // Find the actual position in room space of the cell
 
                     if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
-                    {
                         r.Available = true;
-                    }
                     else
-                    {
                         GenerateBlueprintRoom(path, actualPos, true);
-                    }
                 }
                 return true;
             }
@@ -259,6 +253,103 @@ namespace RyansLibrary.Labyrinth
 
             return true;
         }
+        #endregion
+
+        #region Blueprint Graphs
+        public DelaunayTriangulation3D GenerateTriangulationFromPath(Path path)
+        {
+            List<Vertex> vertices = new List<Vertex>();
+
+            foreach (BlueprintRoom room in path.BlueprintRooms)
+            {
+                // if room is not available then forget about triangulating/pathfinding to it
+                if (!room.Available)
+                    continue;
+
+                vertices.Add(new Vertex<BlueprintRoom>(room.Position, room));
+            }
+
+            // Perform Delaunay Triangulation
+            return DelaunayTriangulation3D.Triangulate(vertices);
+        }
+
+        public List<Edge> FindMinimumSpanningTree(List<Edge> edges, Vertex startingVertex)
+        {
+            return PrimsAlgorithm.MinimumSpanningTree(edges, startingVertex);
+        }
+        #endregion
+
+        #region Blueprint Pathfind
+        public void PathfindBlueprint(Path path, BoundsInt bounds, Vector3Int startPos, Vector3Int endPos)
+        {
+            SimpleAStar3D aStar = new SimpleAStar3D(bounds, bounds.position);
+
+            // Add obstructions
+            HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
+            obstructions.Clear();
+
+            foreach (BlueprintRoom room in path.BlueprintRooms)
+            {
+                // if the room is the start room or ending room of the edge then don't add to obstructions
+                Vector3Int roomPos = room.Position;
+                if (roomPos == startPos || roomPos == endPos)
+                    continue;
+
+                obstructions.Add(roomPos);
+            }
+
+            List<Vector3Int> sequence = aStar.FindPath(startPos, endPos, obstructions, Heuristic.Manhattan);
+
+            if (sequence == null)
+            {
+                Debug.LogError($"Blueprint Generator Error: Pathfinding failed for edge.");
+                return;
+            }
+
+            BlueprintRoom curRoom = null;
+            BlueprintRoom prevRoom = null;
+            foreach (Vector3Int pos in sequence)
+            {
+                if (pos != startPos && pos != endPos)
+                {
+                    curRoom = GenerateBlueprintRoom(path, pos);
+                }
+                else
+                {
+                    curRoom = MasterDictionary[pos];
+                }
+
+                if (prevRoom == null)
+                {
+                    prevRoom = curRoom;
+                    continue;
+                }
+
+                // TODO: figure out a better way this is really jank
+                Vector3Int difference = curRoom.Position - prevRoom.Position;
+
+                int entrFlagIdx;
+                if (difference == Vector3Int.right)
+                    entrFlagIdx = 0;
+                else if (difference == Vector3Int.left)
+                    entrFlagIdx = 1;
+                else if (difference == Vector3Int.forward)
+                    entrFlagIdx = 2;
+                else if (difference == Vector3Int.back)
+                    entrFlagIdx = 3;
+                else if (difference == Vector3Int.up)
+                    entrFlagIdx = 4;
+                else if (difference == Vector3Int.down)
+                    entrFlagIdx = 5;
+                else
+                    entrFlagIdx = -1;   // Default or error case
+
+                FlagDoorways(curRoom, prevRoom, entrFlagIdx);
+
+                prevRoom = curRoom;
+            }
+        }
+        #endregion
 
         #region Blueprint Room Generation
         /// <summary>

@@ -310,10 +310,10 @@ namespace RyansLibrary.Labyrinth
             _blueprintGenerator.PlaceDivergentRooms(zone);
 
             // Generate Delauney Triangulation
-            GenerateTriangulation(zone);
+            List<Edge> MST = GenerateContigiousTriangulation(zone);
 
             // Pathfind and Connect Main Path
-            ConnectMainPath(zone);
+            ConnectMainPath(zone, MST);
 
             if (_debugLogs) Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
         }
@@ -668,14 +668,24 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Delaunay Triangulation
-        private void GenerateTriangulation(Zone zone)
+        private List<Edge> GenerateContigiousTriangulation(Zone zone)
         {
             if (zone == null || zone.MainPath == null)
             {
                 Debug.LogError($"Map Generator Error: Error Zone {zone.Name} in invalid for triangulation.");
-                return;
+                return null;
             }
 
+            DelaunayTriangulation3D triangulation = _blueprintGenerator.GenerateTriangulationFromPath(zone.MainPath);
+
+            List<Edge> MST = _blueprintGenerator.FindMinimumSpanningTree(triangulation.Edges, triangulation.Edges[0].U);
+
+            if (MST == null)
+                Debug.Log("Was null");
+
+            return MST;
+
+            /*
             List<Vertex> vertices = new List<Vertex>();
 
             foreach(BlueprintRoom room in zone.MainPath.BlueprintRooms)
@@ -706,12 +716,28 @@ namespace RyansLibrary.Labyrinth
 
             // Find Minimum Spanning tree with Prim's Algorithm
             _minimumSpanningTree = PrimsAlgorithm.MinimumSpanningTree(_triangulation.Edges, _triangulation.Edges[0].U);
+            */
         }
         #endregion
 
         #region Pathfind Blueprint
-        private void ConnectMainPath(Zone zone)
+        private void ConnectMainPath(Zone zone, List<Edge> edges)
         {
+            if (zone == null || zone.MainPath == null)
+            {
+                Debug.LogError($"Map Generator Error: Error Zone {zone.Name} in invalid for pathfinding.");
+                return;
+            }
+
+            foreach (Edge e in edges)
+            {
+                Vector3Int startPos = new Vector3Int((int)e.U.Position.x, (int)e.U.Position.y, (int)e.U.Position.z);
+                Vector3Int endPos = new Vector3Int((int)e.V.Position.x, (int)e.V.Position.y, (int)e.V.Position.z);
+
+                _blueprintGenerator.PathfindBlueprint(zone.MainPath, zone.Bounds, startPos, endPos);
+            }
+
+            /*
             if (zone == null || zone.MainPath == null)
             {
                 Debug.LogError($"Map Generator Error: Error Zone {zone.Name} in invalid for pathfinding.");
@@ -724,7 +750,7 @@ namespace RyansLibrary.Labyrinth
             {
                 Vector3Int startPos = new Vector3Int((int)e.U.Position.x, (int)e.U.Position.y, (int)e.U.Position.z);
                 Vector3Int endPos = new Vector3Int((int)e.V.Position.x, (int)e.V.Position.y, (int)e.V.Position.z);
-                
+
                 // Add obstructions
                 HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
                 obstructions.Clear();
@@ -790,6 +816,7 @@ namespace RyansLibrary.Labyrinth
                     prevRoom = curRoom;
                 }
             }
+            */
         }
         #endregion
         #endregion
@@ -2188,6 +2215,8 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Draw Debug Buttons
         /// </summary>
+        /// 
+        List<Edge> _debugMST = null;
         private void DebugProcedure()
         {
             if (_debugState == DebugState.Failed)
@@ -2264,7 +2293,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Triangulation"))        // Generates triangulation of main path
                 {
-                    GenerateTriangulation(_zones[0]);
+                    _debugMST = GenerateContigiousTriangulation(_zones[0]);
                     _debugState = DebugState.GenMainPath;
                 }
             }
@@ -2273,8 +2302,16 @@ namespace RyansLibrary.Labyrinth
             {
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Main Path"))        // Generates main path
                 {
-                    ConnectMainPath(_zones[0]);
-                    _debugState = DebugState.GenPaths;
+                    if (_debugMST != null)
+                    {
+                        ConnectMainPath(_zones[0], _debugMST);
+                        _debugState = DebugState.GenPaths;
+                    }
+                    else
+                    {
+                        Debug.LogError("Map Generator Error: MST was null.");
+                        _debugState = DebugState.Failed;
+                    }
                 }
             }
 
