@@ -59,77 +59,7 @@ namespace RyansLibrary.Labyrinth
             MasterDictionary = masterDictionary;
         }
 
-        #region Unique/Divergent Room Blueprints
-        public bool PlaceUniqueRooms(Zone zone)
-        {
-            // 1.) Spawn Fixed Rooms
-            foreach (RoomEntry entry in zone.UniqueRooms)
-            {
-                if (entry.PlacementType == RoomPlacementType.Fixed)
-                {
-                    bool hasPlaced = PlaceFixedUniqueRoomBlueprints(entry, zone.MainPath, zone.Bounds);
-
-                    if (!hasPlaced)
-                    {
-                        // Fixed room failed to generate, stop all operations
-                        Debug.LogError($"Map Generator Error: Fixed Room was outside of bounds and could not be placed.");
-                        return false;
-                    }
-                }
-            }
-
-            // 2.) Spawn Constrained Rooms
-            foreach (RoomEntry entry in zone.UniqueRooms)
-            {
-                bool hasPlaced = false;
-                int attempts = 0;
-
-                if (entry.PlacementType == RoomPlacementType.Constrained)
-                {
-                    // Attempt to place the constrained room in it's bounded zone; if not then break the function
-                    // and return false
-                    while (!hasPlaced)
-                    {
-                        if (attempts++ > _numOfPlacementAttempsBeforeRegen)
-                        {
-                            // TODO: Clear all data and regenerate the map
-                            Debug.LogWarning("Map Generator Warning: Constrained Room has exceeded the maximum number of placement attempts.");
-                            return false;
-                        }
-
-                        hasPlaced = PlaceBoundedUniqueRoomBlueprints(entry, zone.MainPath, entry.Bounds);
-                    }
-                }
-            }
-
-            // 3.) Spawn Free Rooms
-            foreach (RoomEntry entry in zone.UniqueRooms)
-            {
-                bool hasPlaced = false;
-                int attempts = 0;
-
-                if (entry.PlacementType == RoomPlacementType.Free)
-                {
-                    // Place Free Rooms
-                    // Attempt to place the constrained room in it's bounded zone; if not then break the function
-                    // and return false
-                    while (!hasPlaced)
-                    {
-                        if (attempts++ > _numOfPlacementAttempsBeforeRegen)
-                        {
-                            // TODO: Clear all data and regenerate the map
-                            Debug.LogWarning("Map Generator Warning: Constrained Room has exceeded the maximum number of placement attempts.");
-                            return false;
-                        }
-
-                        hasPlaced = PlaceBoundedUniqueRoomBlueprints(entry, zone.MainPath, zone.Bounds);
-                    }
-                }
-            }
-
-            return true;
-        }
-
+        #region Unique Blueprint Placement
         /// <summary>
         /// Place fixed room within the bounds of an zone; returns false if the
         /// room could not be placed correctly
@@ -215,25 +145,6 @@ namespace RyansLibrary.Labyrinth
             return false;
         }
 
-        public bool PlaceDivergentRooms(Zone zone)
-        {
-            Path mainPath = zone.MainPath;
-            int occupancy = zone.DivergentRoomsCellOccupancy;
-            int indexOffset = 1;
-
-            for (int i = 0; i < occupancy; i += indexOffset)
-            {
-                bool result = PlaceBoundedBlueprints(zone.MainPath, zone.Bounds, Vector3Int.one, out Vector3Int spawnPos);
-
-                if (result)
-                    indexOffset = 1;
-                else
-                    indexOffset = 0;
-            }
-
-            return true;
-        }
-
         /// <summary>
         /// Will place rooms randomly in an zone but will pull rooms randomly from the main path
         /// </summary>
@@ -312,7 +223,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Find a sequence of points in room coordinates
-            List<Vector3Int> sequence = aStar.FindPath(startPos, endPos, obstructions, Heuristic.Manhattan);
+            List<Vector3Int> sequence = aStar.FindPath(startPos, endPos, obstructions, Heuristic.Euclidean);
 
             if (sequence == null)
             {

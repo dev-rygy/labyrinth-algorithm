@@ -47,6 +47,7 @@ namespace RyansLibrary.Labyrinth
         private bool _debugGizmos = true;
         private bool _debugLogs = false;
 
+        #region Unique Room Generator
         public void GenerateUniqueRooms(Zone zone)
         {
             foreach (RoomEntry entry in zone.UniqueRooms)
@@ -77,7 +78,9 @@ namespace RyansLibrary.Labyrinth
                 generatedRoom.Initialize();
             }
         }
+        #endregion
 
+        #region Path Room Generator
         public void GenerateRoomsOnPath(Path path)
         {
             if (path == null)      // Throw error if MainPath for zone does not exist
@@ -423,7 +426,9 @@ namespace RyansLibrary.Labyrinth
 
             return availBlueRooms;
         }
+        #endregion
 
+        #region Generate Room
         /// <summary>
         /// Spawn a room given a position and direction; room type not passed as room is expected to
         /// already know it's type if unique (FOR NOW BUT MAYBE NOT LATER)
@@ -634,7 +639,9 @@ namespace RyansLibrary.Labyrinth
 
             return generatedRoom;
         }
+        #endregion
 
+        #region Utility
         // Vector based conversion from room -> world coords
         private Vector3 ConvertToWorldCoords(Vector3Int roomCoords)
         {
@@ -683,5 +690,6 @@ namespace RyansLibrary.Labyrinth
             Debug.LogError("Map Generator Error: Probability of Room Weights Failed, unknown error.");
             return null;
         }
+        #endregion
     }
 }

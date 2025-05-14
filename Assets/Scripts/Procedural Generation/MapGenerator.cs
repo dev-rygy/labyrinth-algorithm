@@ -67,7 +67,6 @@ namespace RyansLibrary.Labyrinth
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
         [SerializeField] private int _gridUnitSize = 13;                      // The unit size of the room grid's cell
         [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
-        [SerializeField] private int _numOfPlacementAttempsBeforeRegen = -1;    // If this number is exceeded then the generator will refresh its entire generation attempt
 
         [Header("Zones")]
         [SerializeField] private List<Zone> _zones;
@@ -90,10 +89,10 @@ namespace RyansLibrary.Labyrinth
         private BlueprintGenerator _blueprintGenerator;
         private RoomGenerator _roomGenerator;
 
-        private DelaunayTriangulation3D _triangulation;     // A single triangulation structure for a main path
+        // Debugging
+        private DelaunayTriangulation3D _triangulation;
         private List<Edge> _minimumSpanningTree;
 
-        // Debugging
         private enum DebugState
         {
             Start = 0,
@@ -137,41 +136,17 @@ namespace RyansLibrary.Labyrinth
             if (_debug)
             {
                 Debug.Log("Map Generator: Debug On");
-                _debugState = DebugState.Start;        // Jump to next step
+                _debugState = DebugState.Start;        // Jump to first step in debug
                 return;
             }
-            Debug.Log("Map Generator: Debug Off");
+            else
+                Debug.Log("Map Generator: Debug Off");
             
             try
             {
-                if (generateRandomSeed)
-                {
-                    // Generate Random Seed
-                    _seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-                }
-                else
-                    _seed = customSeed;
-
-                UnityEngine.Random.InitState(_seed);
-
-                if (_debugLogs)
-                    Debug.Log($"Generating map with seed: {_seed}");
-
-                // Initialize Master Data Structures
-                InitializeMasters();
-
-                // Initialize Blueprint Generator
-                _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
-
-                // Initialize Room Generator
-                _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
-
-                // Initialize Zone Data Structures
-                foreach (Zone zone in _zones)
-                    InitializeZone(zone);
+                InitializeLabyrinth();
 
                 GenerateLabyrinth();
-                
             }
             catch (Exception e)
             {
@@ -194,6 +169,12 @@ namespace RyansLibrary.Labyrinth
             // Generate Zone Connection Paths
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
+                // TODO: Option 1: Handle this after both zone A's and B's blueprints have been generated.
+                    // This is only needed here because of triangulation but can be handled with
+                    // an extra step of finding the shortest path to a room
+                // TODO: Option 2: Connect blueprint with a unique room entry assiciated with the zone so
+                    // that the room can still be a part of triangulation and the pathfinding occurs after 
+                    // the zone's generation
                 GenerateZoneConnectionBlueprint(entry);
             }
 
@@ -226,6 +207,35 @@ namespace RyansLibrary.Labyrinth
                 // TODO: Clean Up
                 // ClearAllPaths();
             }
+        }
+
+        private void InitializeLabyrinth()
+        {
+            if (generateRandomSeed)
+            {
+                // Generate Random Seed
+                _seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            }
+            else
+                _seed = customSeed;
+
+            UnityEngine.Random.InitState(_seed);
+
+            if (_debugLogs)
+                Debug.Log($"Generating map with seed: {_seed}");
+
+            // Initialize Master Data Structures
+            InitializeMasters();
+
+            // Initialize Blueprint Generator
+            _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
+
+            // Initialize Room Generator
+            _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
+
+            // Initialize the Main Path in each Zone
+            foreach (Zone zone in _zones)
+                InitializeZone(zone);
         }
 
         public void InitializeMasters()     // NOTE: This must be done before generating anything!
@@ -289,10 +299,10 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Unique Room Placement
-            _blueprintGenerator.PlaceUniqueRooms(zone);
+            PlaceUniqueRooms(zone);
 
             // Divergent Room Placement
-            _blueprintGenerator.PlaceDivergentRooms(zone);
+            PlaceDivergentRooms(zone);
 
             // Generate Delauney Triangulation
             List<Edge> MST = GenerateContigiousTriangulation(zone);
@@ -302,6 +312,79 @@ namespace RyansLibrary.Labyrinth
 
 
             if (_debugLogs) Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
+        }
+
+        public bool PlaceUniqueRooms(Zone zone)
+        {
+            // 1.) Spawn Fixed Rooms
+            foreach (RoomEntry entry in zone.UniqueRooms)
+            {
+                if (entry.PlacementType == RoomPlacementType.Fixed)
+                {
+                    bool hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry, zone.MainPath, zone.Bounds);
+
+                    if (!hasPlaced)
+                    {
+                        // Fixed room failed to generate, stop all operations
+                        Debug.LogError($"Map Generator Error: Fixed Room was outside of bounds and could not be placed.");
+                        return false;
+                    }
+                }
+            }
+
+            // 2.) Spawn Constrained Rooms
+            foreach (RoomEntry entry in zone.UniqueRooms)
+            {
+                bool hasPlaced = false;
+
+                if (entry.PlacementType == RoomPlacementType.Constrained)
+                {
+                    // Attempt to place the constrained room in it's bounded zone; if not then break the function
+                    // and return false
+                    while (!hasPlaced)
+                    {
+                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(entry, zone.MainPath, entry.Bounds);
+                    }
+                }
+            }
+
+            // 3.) Spawn Free Rooms
+            foreach (RoomEntry entry in zone.UniqueRooms)
+            {
+                bool hasPlaced = false;
+
+                if (entry.PlacementType == RoomPlacementType.Free)
+                {
+                    // Place Free Rooms
+                    // Attempt to place the constrained room in it's bounded zone; if not then break the function
+                    // and return false
+                    while (!hasPlaced)
+                    {
+                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(entry, zone.MainPath, zone.Bounds);
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public bool PlaceDivergentRooms(Zone zone)
+        {
+            Path mainPath = zone.MainPath;
+            int occupancy = zone.DivergentRoomsCellOccupancy;
+            int indexOffset = 1;
+
+            for (int i = 0; i < occupancy; i += indexOffset)
+            {
+                bool result = _blueprintGenerator.PlaceBoundedBlueprints(zone.MainPath, zone.Bounds, Vector3Int.one, out Vector3Int spawnPos);
+
+                if (result)
+                    indexOffset = 1;
+                else
+                    indexOffset = 0;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -347,6 +430,9 @@ namespace RyansLibrary.Labyrinth
 
             DelaunayTriangulation3D triangulation = _blueprintGenerator.GenerateTriangulationFromPath(zone.MainPath);
 
+            if (_debug)
+                _triangulation = triangulation;
+
             // Turn off blueprint room availability for unique rooms 
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
@@ -359,6 +445,9 @@ namespace RyansLibrary.Labyrinth
             }
 
             List<Edge> MST = _blueprintGenerator.FindMinimumSpanningTree(triangulation.Edges, triangulation.Edges[0].U);
+
+            if (_debug)
+                _minimumSpanningTree = MST;
 
             return MST;
         }
@@ -382,6 +471,7 @@ namespace RyansLibrary.Labyrinth
 
         // Generate Zone Connection Paths
         // TODO: make connection entrys into a type of zone of it's own that intersects two zones together
+        // TODO: Handle this generation when both zone blueprints have been already been generated
         public bool GenerateZoneConnectionBlueprint(ZoneConnectionEntry entry)
         {
             if (entry.ConnectionPath == null)
@@ -390,6 +480,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
+            // Init. Path
             entry.ConnectionPath.Initialize();
 
             // ***** Place Room A; Room A becomes a part of the first zone
@@ -404,6 +495,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
+            // Handle Room A Placement
             bool hasPlaced = false;
             if (entry.RoomA.PlacementType == RoomPlacementType.Fixed)
                 hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry.RoomA, entry.ZoneA.MainPath, entry.ZoneA.Bounds);
@@ -704,7 +796,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Unique Rooms"))       // Generates Unique Rooms
                 {
                     // Generate Unique Rooms
-                    _blueprintGenerator.PlaceUniqueRooms(_zones[0]);
+                    PlaceUniqueRooms(_zones[0]);
                     _debugState = DebugState.GenDivergentRooms;
                 }
             }
@@ -714,7 +806,7 @@ namespace RyansLibrary.Labyrinth
                 if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Divergent Rooms"))        // Generates Divergent Rooms
                 {
                     // Generate Divergent Rooms
-                    _blueprintGenerator.PlaceDivergentRooms(_zones[0]);
+                    PlaceDivergentRooms(_zones[0]);
                     _debugState = DebugState.GenTriangulation;
                 }
             }
@@ -773,16 +865,19 @@ namespace RyansLibrary.Labyrinth
             if (GUI.Button(new Rect(10, 50, 200, 30), "Show Gizmos"))       // Enables Gizmos
             {
                 _debugGizmos = !_debugGizmos;
+                Debug.Log($"Toggle Gizmos: {_debugGizmos}");
             }
 
             if (GUI.Button(new Rect(10, 90, 200, 30), "Show Logs"))       // Enables Logs
             {
                 _debugLogs = !_debugLogs;
+                Debug.Log($"Toggle Logs: {_debugLogs}");
             }
 
             if (GUI.Button(new Rect(10, 130, 200, 30), "Reload Scene"))        // Reload the scene
             {
                 ScenesManager.Instance.ReloadScene();
+                Debug.Log($"Scene Reloaded.");
             }
 
             if (_debugState != DebugState.Done)
