@@ -206,7 +206,7 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Blueprint Pathfind
-        public void PathfindBlueprint(Path path, BoundsInt bounds, Vector3Int startPos, Vector3Int endPos)
+        public void PathfindBlueprint(Path path, BoundsInt bounds, Vector3Int startPos, Vector3Int endPos, Heuristic heuristic = Heuristic.Euclidean)
         {
             SimpleAStar3D aStar = new SimpleAStar3D(bounds, bounds.position);
 
@@ -223,7 +223,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Find a sequence of points in room coordinates
-            List<Vector3Int> sequence = aStar.FindPath(startPos, endPos, obstructions, Heuristic.Euclidean);
+            List<Vector3Int> sequence = aStar.FindPath(startPos, endPos, obstructions, heuristic);
 
             if (sequence == null)
             {

@@ -465,7 +465,7 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int startPos = new Vector3Int((int)e.U.Position.x, (int)e.U.Position.y, (int)e.U.Position.z);
                 Vector3Int endPos = new Vector3Int((int)e.V.Position.x, (int)e.V.Position.y, (int)e.V.Position.z);
 
-                _blueprintGenerator.PathfindBlueprint(zone.MainPath, zone.Bounds, startPos, endPos);
+                _blueprintGenerator.PathfindBlueprint(zone.MainPath, zone.Bounds, startPos, endPos, zone.PathfindingHeuristic);
             }
         }
 

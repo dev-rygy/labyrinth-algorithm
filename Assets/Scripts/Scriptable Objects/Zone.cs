@@ -5,6 +5,7 @@
  * Notes:           Holds all the path's in an zone and the 
  *                      bounds that they may spawn rooms in
 */
+using RyansLibrary.AI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,7 +39,9 @@ namespace RyansLibrary.Labyrinth
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Zone", order = 1)]
     public class Zone : ScriptableObject
     {
+        [field: Header("General Settings")]
         [field: SerializeField] public string Name { get; private set; }
+        [field: SerializeField] public Heuristic PathfindingHeuristic { get; private set; }
 
         // TODO: Convert Bounding Box Parameters to Vector3Int!
         [field: Header("Bounding Box")]
