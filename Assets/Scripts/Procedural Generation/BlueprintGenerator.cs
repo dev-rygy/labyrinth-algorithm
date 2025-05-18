@@ -203,6 +203,32 @@ namespace RyansLibrary.Labyrinth
         {
             return PrimsAlgorithm.MinimumSpanningTree(edges, startingVertex);
         }
+
+        public BlueprintRoom FindClosestRoomInPath(Path path, Vector3Int point)
+        {
+            if (path == null)
+            {
+                Debug.LogError("Blueprint Generator Error: Path was null.");
+                return null;
+            }
+
+            BlueprintRoom closest = null;
+            float distance = Mathf.Infinity;
+            foreach (BlueprintRoom room in path.BlueprintRooms)
+            {
+                if (room.Available)
+                {
+                    float currentDistance = Vector3Int.Distance(point, room.Position);
+                    if (currentDistance < distance)
+                    {
+                        closest = room;
+                        distance = currentDistance;
+                    }
+                }
+            }
+
+            return closest;
+        }
         #endregion
 
         #region Blueprint Pathfind
