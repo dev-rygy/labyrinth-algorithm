@@ -18,11 +18,13 @@ namespace RyansLibrary.StateMachine
         /// subscribe to any events here
         /// </summary>
         public abstract void Enter();
+
         /// <summary>
         /// Tick is called every frame from the statemachine
         /// </summary>
         /// <param name="deltaTime">Time per frame</param>
         public abstract void Tick(float deltaTime);
+
         /// <summary>
         /// Exit is called right before a state is switched;
         /// unsubscribe to events here

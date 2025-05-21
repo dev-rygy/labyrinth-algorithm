@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RyansLibrary")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29e5977d875c85912a72185e26f363ee7db3e1d0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe86e318fa10e3ba6072b20296474173792a3571")]
 [assembly: System.Reflection.AssemblyProductAttribute("RyansLibrary")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RyansLibrary")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

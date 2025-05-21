@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Castle
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Castle
+  <PathfindingHeuristic>k__BackingField: 1
   <Bounds>k__BackingField:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 12, y: 5, z: 12}
@@ -40,7 +41,7 @@ MonoBehaviour:
   - <Prefab>k__BackingField: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
       type: 3}
     <PlacementType>k__BackingField: 1
-    <SpawnPosition>k__BackingField: {x: 1, y: 0, z: 7}
+    <SpawnPosition>k__BackingField: {x: 1, y: 0, z: 0}
     <AvailableCells>k__BackingField:
     - {x: 0, y: 0, z: 0}
     <Bounds>k__BackingField:
@@ -49,7 +50,7 @@ MonoBehaviour:
   - <Prefab>k__BackingField: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
       type: 3}
     <PlacementType>k__BackingField: 2
-    <SpawnPosition>k__BackingField: {x: 1, y: 2, z: 5}
+    <SpawnPosition>k__BackingField: {x: 9, y: 4, z: 11}
     <AvailableCells>k__BackingField:
     - {x: 0, y: 0, z: 0}
     <Bounds>k__BackingField:

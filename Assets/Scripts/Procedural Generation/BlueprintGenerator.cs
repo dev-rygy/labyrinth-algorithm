@@ -7,9 +7,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
 
 using RyansLibrary.Graphs;
 using RyansLibrary.AI;
+using System.IO;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -46,9 +48,6 @@ namespace RyansLibrary.Labyrinth
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
         public Dictionary<Vector3Int, BlueprintRoom> MasterDictionary { get; private set; }
-
-        // TODO: Remove later
-        [SerializeField] private int _numOfPlacementAttempsBeforeRegen = 10;    // If this number is exceeded then the generator will refresh its entire generation attempt
 
         private bool _debugGizmos = true;
         private bool _debugLogs = false;
@@ -123,7 +122,11 @@ namespace RyansLibrary.Labyrinth
 
                 if (!result)
                 {
-                    Debug.LogWarning($"Map Generator Error: Constrained Room {entry.Prefab.name} collided with another room and could not be placed");
+                    if (_debugLogs)
+                    {
+                        Debug.LogWarning($"Map Generator Warning: Constrained Room {entry.Prefab.name} " +
+                            $"collided with another room and could not be placed. Retrying...");
+                    }
                     return false;
                 }
 
@@ -163,9 +166,9 @@ namespace RyansLibrary.Labyrinth
             // NOTE: this random position is in room coords
             Vector3Int randomSpawnPos = new Vector3Int
             (
-                UnityEngine.Random.Range(bounds.xMin, adjUpperBound.x + 1),
-                UnityEngine.Random.Range(bounds.yMin, adjUpperBound.y + 1),
-                UnityEngine.Random.Range(bounds.zMin, adjUpperBound.z + 1)
+                Random.Range(bounds.xMin, adjUpperBound.x + 1),
+                Random.Range(bounds.yMin, adjUpperBound.y + 1),
+                Random.Range(bounds.zMin, adjUpperBound.z + 1)
             );
 
             // Append the newly generated blueprint rooms to the end of the list
@@ -232,7 +235,7 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Blueprint Pathfind
-        public void PathfindBlueprint(Path path, BoundsInt bounds, Vector3Int startPos, Vector3Int endPos, Heuristic heuristic = Heuristic.Euclidean)
+        public bool PathfindBlueprintFromPath(Path path, BoundsInt bounds, Vector3Int startPos, Vector3Int endPos, Heuristic heuristic = Heuristic.Euclidean)
         {
             SimpleAStar3D aStar = new SimpleAStar3D(bounds, bounds.position);
 
@@ -254,7 +257,7 @@ namespace RyansLibrary.Labyrinth
             if (sequence == null)
             {
                 Debug.LogError($"Blueprint Generator Error: Pathfinding failed for edge.");
-                return;
+                return false;
             }
 
             BlueprintRoom curRoom = null;
@@ -262,13 +265,9 @@ namespace RyansLibrary.Labyrinth
             foreach (Vector3Int pos in sequence)
             {
                 if (pos != startPos && pos != endPos)
-                {
                     curRoom = GenerateBlueprintRoom(path, pos);
-                }
                 else
-                {
                     curRoom = MasterDictionary[pos];
-                }
 
                 if (prevRoom == null)
                 {
@@ -276,29 +275,13 @@ namespace RyansLibrary.Labyrinth
                     continue;
                 }
 
-                // TODO: figure out a better way this is really jank
+                // Flag doorways of blueprint rooms
                 Vector3Int difference = curRoom.Position - prevRoom.Position;
-
-                int entrFlagIdx;
-                if (difference == Vector3Int.right)
-                    entrFlagIdx = 0;
-                else if (difference == Vector3Int.left)
-                    entrFlagIdx = 1;
-                else if (difference == Vector3Int.forward)
-                    entrFlagIdx = 2;
-                else if (difference == Vector3Int.back)
-                    entrFlagIdx = 3;
-                else if (difference == Vector3Int.up)
-                    entrFlagIdx = 4;
-                else if (difference == Vector3Int.down)
-                    entrFlagIdx = 5;
-                else
-                    entrFlagIdx = -1;   // Default or error case
-
-                FlagDoorways(curRoom, prevRoom, entrFlagIdx);
+                FlagDoorways(curRoom, prevRoom, difference);
 
                 prevRoom = curRoom;
             }
+            return true;
         }
         #endregion
 
@@ -309,7 +292,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="path">A path with a length of atleast one.</param>
         /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
-        public void BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom = null)
+        public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom = null)
         {
             // *** TODO: REMOVE ***
             int fail = 1000;
@@ -318,7 +301,7 @@ namespace RyansLibrary.Labyrinth
             if (path.PathLength <= 0)
             {
                 Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative");
-                return;
+                return false;
             }
 
             MasterPath.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
@@ -341,7 +324,8 @@ namespace RyansLibrary.Labyrinth
                 curPos = startRoom.Position;
                 curRoom = startRoom;
             }
-            if (_debugLogs) Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
+            if (_debugLogs) 
+                Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
 
             // Chose a position in a random cardinal direction and check for collisions
             bool[] attempts = new bool[STANDARD_ROOM_FACE_COUNT];
@@ -352,7 +336,7 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int tempPos = curPos;
 
                 // Choose a random direction to be the potential position for the next room.
-                int faceIdx = UnityEngine.Random.Range(1, STANDARD_ROOM_FACE_COUNT);
+                int faceIdx = Random.Range(1, STANDARD_ROOM_FACE_COUNT);
 
                 while (attempts[faceIdx])                               // Store attempt direction in circular array to aviod choosing the same direction twice.
                 {                                                       // Loop though attempts to find a unique direction
@@ -407,10 +391,11 @@ namespace RyansLibrary.Labyrinth
                     if (fail < 0)
                     {
                         Debug.LogError("Failed");
-                        return;
+                        return false;
                     }
 
-                    if (_debugLogs) Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
+                    if (_debugLogs) 
+                        Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
                     continue;
                 }
 
@@ -449,9 +434,15 @@ namespace RyansLibrary.Labyrinth
                     Array.Clear(attempts, 0, attempts.Length);
                     failedAttempts = 0;
 
-                    if (curRoom == null) Debug.LogError("Map Generator Error: No more availible spaces exist for a new bluprint room where a conflict does not occur.");
+                    if (curRoom == null)
+                    {
+                        Debug.LogError("Map Generator Error: No more availible spaces exist for a new bluprint room where a conflict does not occur.");
+                        return false;
+                    }
                 }
             }
+
+            return true;
         }
         #endregion
 
@@ -503,7 +494,8 @@ namespace RyansLibrary.Labyrinth
 
                         if (CheckCollision(origin, out BlueprintRoom collidedRoom))
                         {
-                            Debug.LogWarning($"Map Generator Warning: Failed to generate blueprint room due to collision with {collidedRoom.RoomName}");
+                            if (_debugLogs) 
+                                Debug.LogWarning($"Map Generator Warning: Failed to generate blueprint room due to collision with {collidedRoom.RoomName}");
                             return null;
                         }
 
@@ -517,6 +509,28 @@ namespace RyansLibrary.Labyrinth
                 rooms.Add(GenerateBlueprintRoom(path, spawnPosition, available));      // Call to method above
 
             return rooms;
+        }
+
+        public void FlagDoorways(BlueprintRoom roomA, BlueprintRoom roomB, Vector3Int difference)
+        {
+            // TODO: Bad way of handling this. Find a better way
+            int entrFlagIdx;
+            if (difference == Vector3Int.right)
+                entrFlagIdx = 0;
+            else if (difference == Vector3Int.left)
+                entrFlagIdx = 1;
+            else if (difference == Vector3Int.forward)
+                entrFlagIdx = 2;
+            else if (difference == Vector3Int.back)
+                entrFlagIdx = 3;
+            else if (difference == Vector3Int.up)
+                entrFlagIdx = 4;
+            else if (difference == Vector3Int.down)
+                entrFlagIdx = 5;
+            else
+                entrFlagIdx = -1;   // Default or error case
+
+            FlagDoorways(roomA, roomB, entrFlagIdx);
         }
 
         /// <summary>
@@ -574,7 +588,7 @@ namespace RyansLibrary.Labyrinth
             // TODO: Make a enum/layer mask perameter that can choose a room from a specific type or types
 
             // Choose a random room respecting the constraints and return
-            int randomRoomIndex = UnityEngine.Random.Range(startIndex, endIndex);
+            int randomRoomIndex = Random.Range(startIndex, endIndex);
             BlueprintRoom room = path.BlueprintRooms[randomRoomIndex];
 
             // TODO: Make a circular array handle this

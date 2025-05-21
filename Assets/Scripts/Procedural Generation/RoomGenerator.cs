@@ -6,6 +6,7 @@
 */
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
 {
@@ -212,7 +213,7 @@ namespace RyansLibrary.Labyrinth
         private bool RoomShapeCondition(BlueprintRoom currRoom, RoomShape roomShape, Path path, out RoomDirection rDir)
         {
             rDir = 0;               // Initialize the direction as default
-            float roomRoll = UnityEngine.Random.Range(0, 1.01f);        // Roll for room based on it's % chance of spawning
+            float roomRoll = Random.Range(0, 1.01f);        // Roll for room based on it's % chance of spawning
 
             BlueprintRoom[] availBlueRooms = CheckAvailableAdjacentRooms(currRoom, path);
 
@@ -678,7 +679,7 @@ namespace RyansLibrary.Labyrinth
                 totalWeight += pathEntry.Probability;
             }
 
-            int roll = UnityEngine.Random.Range(0, totalWeight + 1);        // roll 1 - 101; max exclusive
+            int roll = Random.Range(0, totalWeight + 1);        // roll 1 - 101; max exclusive
             int runningTotal = 0;
             for (int i = 0; i < pathEntrys.Count; i++)
             {
