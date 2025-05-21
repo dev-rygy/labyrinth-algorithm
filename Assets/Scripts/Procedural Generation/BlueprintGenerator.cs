@@ -1,8 +1,12 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    05/11/2025
- * Last Modified:   05/12/2025 (Ryan)
+ * Last Modified:   05/20/2025 (Ryan)
  * Notes:           Blueprint Generator
+ *                  Handles all blueprint cell generation
+ *                  Has many functions to generate blueprint rooms using
+ *                  multiple techniques. Most common techniques are 
+ *                  cached in BlueprintGenerator class
 */
 using System;
 using System.Collections.Generic;
@@ -11,13 +15,12 @@ using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Coll
 
 using RyansLibrary.Graphs;
 using RyansLibrary.AI;
-using System.IO;
 
 namespace RyansLibrary.Labyrinth
 {
     /// <summary>
-    /// Holds the properties of a suedo room that does not actually exist in the world.
-    /// Is meant to be replaced by actual rooms later on.
+    /// Holds the properties of a psuedo room that does not actually exist in the world.
+    /// Is meant to be parsed and replaced by actual rooms later on.
     /// </summary>
     public class BlueprintRoom
     {
@@ -39,13 +42,13 @@ namespace RyansLibrary.Labyrinth
     public class BlueprintGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
-        const int STANDARD_ROOM_FACE_COUNT = 6;
+        const int STANDARD_FACE_COUNT = 6;
 
-        // ***** Path Containers *****
-        // The Master Path holds a reference to all bluprint rooms in an zone
+        // ***** Master References *****
+        // The Master Path holds a reference to all bluprint rooms generated
         public Path MasterPath { get; private set; }
-
-        // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
+        // Master Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions.
+        // Holds reference to all blueprint rooms
         // Keys are in room coords
         public Dictionary<Vector3Int, BlueprintRoom> MasterDictionary { get; private set; }
 
@@ -60,13 +63,12 @@ namespace RyansLibrary.Labyrinth
 
         #region Unique Blueprint Placement
         /// <summary>
-        /// Place fixed room within the bounds of an zone; returns false if the
-        /// room could not be placed correctly
+        /// Places fixed room within the bounds of an zone; returns false if the
+        /// room could not be placed correctly.
         /// </summary>
-        /// <param name="room"></param>
-        /// <param name="upperBound"></param>
-        /// <param name="lowerBound"></param>
-        /// <param name="placementPoint"></param>
+        /// <param name="entry">Room Entry</param>
+        /// <param name="path">Path to store blueprints in</param>
+        /// <param name="bounds">Bounds to constrict placement</param>
         /// <returns></returns>
         public bool PlaceFixedUniqueRoomBlueprints(RoomEntry entry, Path path, BoundsInt bounds)
         {
@@ -78,10 +80,9 @@ namespace RyansLibrary.Labyrinth
 
                 // Check Collision with the zone's bounds
                 Vector3 difference = CheckOutOfBounds(adjustedSpawnPos, room.RoomDimensions, bounds);
-
                 if (difference != Vector3.zero)     // Room was outside the bounds of the zone
                 {
-                    Debug.LogError($"Map Generator Error: Unique Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
+                    Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
                         $"It was {difference} units outside the bounds of the zone.");
                     return false;
                 }
@@ -93,7 +94,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (rooms == null)     // Room was outside the bounds of the zone
                 {
-                    Debug.LogError($"Map Generator Error: Unique Room \"{room.name}\" was obstructed and could not be placed");
+                    Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" was obstructed and could not be placed");
                     return false;
                 }
 
@@ -149,7 +150,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Will place rooms randomly in an zone but will pull rooms randomly from the main path
+        /// Will place rooms randomly in an zone but will pull rooms randomly from the main path.
         /// </summary>
         /// <param name="zone"></param>
         /// <returns></returns>
@@ -328,7 +329,7 @@ namespace RyansLibrary.Labyrinth
                 Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
 
             // Chose a position in a random cardinal direction and check for collisions
-            bool[] attempts = new bool[STANDARD_ROOM_FACE_COUNT];
+            bool[] attempts = new bool[STANDARD_FACE_COUNT];
             int failedAttempts = 0;
             int entrFlagIdx = 0;
             while (path.BlueprintCount() < path.PathLength)
@@ -336,12 +337,12 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int tempPos = curPos;
 
                 // Choose a random direction to be the potential position for the next room.
-                int faceIdx = Random.Range(1, STANDARD_ROOM_FACE_COUNT);
+                int faceIdx = Random.Range(1, STANDARD_FACE_COUNT);
 
                 while (attempts[faceIdx])                               // Store attempt direction in circular array to aviod choosing the same direction twice.
                 {                                                       // Loop though attempts to find a unique direction
                     faceIdx++;
-                    if (faceIdx % STANDARD_ROOM_FACE_COUNT == 0)           // Circle back in array
+                    if (faceIdx % STANDARD_FACE_COUNT == 0)           // Circle back in array
                         faceIdx = 0;
                 }
 
@@ -424,7 +425,7 @@ namespace RyansLibrary.Labyrinth
 
                 // TODO: This is a bad way of handling collisions, implement backtracking later!
                 // If failed too many times -> try another room (rare)
-                if (failedAttempts >= STANDARD_ROOM_FACE_COUNT)        // All spaces adjacent to the current room are covered
+                if (failedAttempts >= STANDARD_FACE_COUNT)        // All spaces adjacent to the current room are covered
                 {
                     // Make the current room the collided room and try to gen again
                     curPos = tempPos;
@@ -607,12 +608,12 @@ namespace RyansLibrary.Labyrinth
         /// Check if a point lies outside the bounds of the zone.
         /// *** The point must be in world coords ***
         /// </summary>
-        /// <param name="desiredPos">The desired position to spawn the next room</param>
-        /// <returns>Returns true if the space is out of bounds and false otherwise.</returns>
-        public bool CheckOutOfBounds(Vector3Int desiredPos, Vector3Int upperBound, Vector3Int lowerBound)
+        /// <param name="desiredPosition">The desired position to spawn the next room</param>
+        /// <returns>Returns TRUE if the space is out of bounds and FALSE otherwise.</returns>
+        public bool CheckOutOfBounds(Vector3Int desiredPosition, Vector3Int upperBound, Vector3Int lowerBound)
         {
-            Vector3Int differenceUpper = upperBound - desiredPos;
-            Vector3Int differenceLower = lowerBound - desiredPos;
+            Vector3Int differenceUpper = upperBound - desiredPosition;
+            Vector3Int differenceLower = lowerBound - desiredPosition;
             if (differenceUpper.x <= 0 || differenceUpper.y <= 0 || differenceUpper.z <= 0)        // Valid space
                 return false;
             if (differenceLower.x > 0 || differenceLower.y > 0 || differenceLower.z > 0)        // Valid space
@@ -629,15 +630,48 @@ namespace RyansLibrary.Labyrinth
             return true;           // Invalid space
         }
 
-        public Vector3Int CheckOutOfBounds(Vector3Int origin, Vector3Int roomDimensions, BoundsInt bounds)
+        /// <summary>
+        /// Checks if a room is out of bounds with just it's origin and dimensions.
+        /// Returns the difference of how much of the room lied outside the bounds.
+        /// **** Points and dimensions must be in world coords ****
+        /// </summary>
+        /// <param name="origin">Blueprint origin</param>
+        /// <param name="dimensions">Blueprint dimensions</param>
+        /// <param name="bounds">Bounds</param>
+        /// <returns>Zero if in bounds, otherwise will return the offset amount in room coords</returns>
+        public Vector3Int CheckOutOfBounds(Vector3Int origin, Vector3Int dimensions, BoundsInt bounds)
         {
+            // Find the lower and upper cell point of the blueprint
             Vector3Int lowerPoint = origin;
-            Vector3Int upperPoint = origin + (roomDimensions - Vector3Int.one);
+            Vector3Int upperPoint = origin + (dimensions - Vector3Int.one);
 
+            Vector3Int difference = Vector3Int.zero;
+
+            // X Axis
+            if (lowerPoint.x < bounds.min.x)
+                difference.x = lowerPoint.x - bounds.min.x;         // negative (left out of bounds)
+            else if (upperPoint.x > bounds.max.x - 1)
+                difference.x = upperPoint.x - (bounds.max.x - 1);   // positive (right out of bounds)
+
+            // Y Axis
+            if (lowerPoint.y < bounds.min.y)
+                difference.y = lowerPoint.y - bounds.min.y;         // negative (below)
+            else if (upperPoint.y > bounds.max.y - 1)
+                difference.y = upperPoint.y - (bounds.max.y - 1);   // positive (above)
+
+            // Z Axis
+            if (lowerPoint.z < bounds.min.z)
+                difference.z = lowerPoint.z - bounds.min.z;         // negative (back)
+            else if (upperPoint.z > bounds.max.z - 1)
+                difference.z = upperPoint.z - (bounds.max.z - 1);   // positive (front)
+
+            return difference;
+
+            /* OLD CODE 
             Vector3Int lowerDiff = bounds.min - lowerPoint;
             Vector3Int upperDiff = bounds.max - upperPoint;
 
-            if (lowerDiff.x > 0 || lowerDiff.y > 0 || lowerDiff.z > 0)      // Invalid Space
+            if (lowerDiff.x > 0 || lowerDiff.y > 0 || lowerDiff.z > 0)      // Invalid Space (Top Right)
             {
                 return new Vector3Int(
                    lowerDiff.x > 0 ? lowerDiff.x : 0,      // Return only the positive components of the lowerDiff
@@ -645,7 +679,7 @@ namespace RyansLibrary.Labyrinth
                    lowerDiff.z > 0 ? lowerDiff.z : 0);
             }
 
-            if (upperDiff.x < 0 || upperDiff.y < 0 || upperDiff.z < 0)      // Invalid Space
+            if (upperDiff.x < 0 || upperDiff.y < 0 || upperDiff.z < 0)      // Invalid Space (Bot Left)
             {
                 return new Vector3Int(
                    upperDiff.x < 0 ? upperDiff.x : 0,      // Return only the negative components of the lowerDiff
@@ -654,15 +688,15 @@ namespace RyansLibrary.Labyrinth
             }
 
             return Vector3Int.zero;        // Valid Space
+            */
         }
 
         /// <summary>
-        /// Check point for collision with a blueprint room; the collided room is 
-        /// returned (optional use)
+        /// Checks for a collision with another blueprint cell
         /// </summary>
-        /// <param name="position"></param>
-        /// <param name="collidedRoom"></param>
-        /// <returns></returns>
+        /// <param name="position">The position of the blueprint room</param>
+        /// <param name="collidedRoom">If any room was found to collide then return the room otherwise will be null</param>
+        /// <returns>Collided or not collided</returns>
         public bool CheckCollision(Vector3Int position, out BlueprintRoom collidedRoom)
         {
             return MasterDictionary.TryGetValue(position, out collidedRoom);
