@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab2be37bdc730874bbc2eaa4348fa132, type: 3}
+  m_Name: Mines_Main_Path
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Mines Main Path
+  <Type>k__BackingField: 0
+  <PathLength>k__BackingField: 30
+  <startingRooms>k__BackingField:
+  - Prefab: {fileID: 8151408096384611613, guid: 317c813604076fc478ea1a0b6c18baa2,
+      type: 3}
+    Probability: 100
+  <rooms1x1x1>k__BackingField:
+  - Prefab: {fileID: 5738533610704310278, guid: c39852ea6c8d06847a4b22df5f7a4645,
+      type: 3}
+    Probability: 15
+  - Prefab: {fileID: 2584096259799582538, guid: 603e97c95cb590e4bbd04517c046b9bc,
+      type: 3}
+    Probability: 15
+  - Prefab: {fileID: 5738533610704310278, guid: 559aa25a399ff694ab33d72f524a20d9,
+      type: 3}
+    Probability: 25
+  - Prefab: {fileID: 5738533610704310278, guid: 20a437d3db180cf4693fed82249e3051,
+      type: 3}
+    Probability: 25
+  - Prefab: {fileID: 9085129968841252470, guid: 3cb38ea7daa47ba448f77f08a2394fd9,
+      type: 3}
+    Probability: 7
+  - Prefab: {fileID: 2339514643080810285, guid: 14147654058f3744db84579b2abc9295,
+      type: 3}
+    Probability: 7
+  - Prefab: {fileID: 5684575692793342672, guid: 041d935cb0794594bb1d04d4fd6f79ae,
+      type: 3}
+    Probability: 6
+  <rooms2x1x1>k__BackingField:
+  - Prefab: {fileID: 2281302038410099749, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
+      type: 3}
+    Probability: 100
+  <rooms1x2x1>k__BackingField: []
+  <rooms2x1x2>k__BackingField:
+  - Prefab: {fileID: 6639078268214740932, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+      type: 3}
+    Probability: 100
+  <endingRooms>k__BackingField: []
+  <TallRoomSpawnChance>k__BackingField: 0
+  <LongRoomSpawnChance>k__BackingField: 0.45
+  <BigRoomSpawnChance>k__BackingField: 1
+  PathGizmoColor: {r: 0.09019608, g: 0.99215686, b: 1, a: 0.29803923}

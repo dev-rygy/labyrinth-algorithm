@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   10/26/2024 (Ryan)
+ * Last Modified:   04/11/2024 (Ryan)
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
@@ -17,6 +17,7 @@ namespace RyansLibrary.Labyrinth
         longRoom,
         tallRoom,
         bigRoom,
+        unique
     }
 
     // Determines its gameplay and purpose.
@@ -38,13 +39,12 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Room Properties")]
         [SerializeField] public RoomShape roomShape;
-        [SerializeField] public RoomType roomType;     // Just to show in inspector
 
-        [Header("debug")]
+        [Header("Debug")]
         [SerializeField] private bool debug = false;
-
-        [field: SerializeField] public Vector3 RoomDimensions { get; private set; } = Vector3.one;
-        public RoomType RoomType { get; private set; }
+        // TODO: Convert RoomDimensions to Vector3Int!
+        [field: SerializeField] public Vector3Int RoomDimensions { get; private set; } = Vector3Int.one;
+        [field: SerializeField] public RoomType RoomType { get; private set; }
 
         private bool[,] openEntracways;
 
@@ -61,10 +61,9 @@ namespace RyansLibrary.Labyrinth
         }
 
         // Initialize the Room's entrances and loot
-        public void Initialize(RoomType type)
+        public void Initialize(RoomType type = RoomType.general)
         {
             RoomType = type;
-            roomType = type;
             AcivateEntranceways();
         }
 
@@ -139,6 +138,11 @@ namespace RyansLibrary.Labyrinth
         {
             _roomWalls[entranceNum].GetChild(0).gameObject.SetActive(true);   // Activate Entranceway
             _roomWalls[entranceNum].GetChild(1).gameObject.SetActive(false);  // Deactivate Wall
+        }
+
+        public float GetRoomOccupancy()
+        {
+            return Math.RectangularVolume(RoomDimensions);
         }
     }
 }
