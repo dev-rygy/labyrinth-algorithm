@@ -84,7 +84,6 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _minimumSpanningTreeColor;
 
         // ***** Private Variables *****
-        // TODO: do not make this global in this class, maybe in the Zone class?
         private int _seed;      // TODO: For networking make the host generate this
 
         private BlueprintGenerator _blueprintGenerator;

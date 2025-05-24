@@ -6,10 +6,7 @@
  *                  Adapted from https://github.com/Bl4ckb0ne/delaunay-triangulation
  *                  Copyright (c) 2015-2019 Simon Zeni (simonzeni@gmail.com)
 */
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 namespace RyansLibrary
 {
