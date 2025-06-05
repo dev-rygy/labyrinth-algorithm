@@ -33,7 +33,6 @@ namespace RyansLibrary.Input
         public static event System.Action OnSheathe;
         public static event System.Action OnEmote;
 
-
         [SerializeField] private bool _debug = false;
 
         // The player's Unnormalized Input
@@ -42,10 +41,10 @@ namespace RyansLibrary.Input
         public Vector2 MoveDirectionNormalized { get; private set; }
         // public Vector3 LookInput { get; private set; }   DEPRICATED
         // public bool JumpKeyPressed { get; private set; } DEPRICATED
-        [field: SerializeField] public bool IsHoldingPrimaryCombo { get; private set; }
-        [field: SerializeField] public bool IsHoldingSecondaryCombo { get; private set; }
-        [field: SerializeField] public bool IsHoldingPrimaryPower { get; private set; }
-        [field: SerializeField] public bool IsHoldingSecondaryPower { get; private set; }
+        public bool IsHoldingPrimaryCombo { get; private set; }
+        public bool IsHoldingSecondaryCombo { get; private set; }
+        public bool IsHoldingPrimaryPower { get; private set; }
+        public bool IsHoldingSecondaryPower { get; private set; }
 
         private PlayerControls _playerControls;
 

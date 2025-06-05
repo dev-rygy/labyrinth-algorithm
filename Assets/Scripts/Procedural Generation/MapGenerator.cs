@@ -76,7 +76,6 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private List<ZoneConnectionEntry> _zoneConnections;
 
         [Header("Debuging")]
-        [SerializeField] private bool _debug = false;
         [Space]
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _triangulationColor;
@@ -90,6 +89,7 @@ namespace RyansLibrary.Labyrinth
         private RoomGenerator _roomGenerator;
 
         // Debugging
+        private bool _debug = false;
         private DelaunayTriangulation3D _triangulation;
         private List<Edge> _minimumSpanningTree;
 

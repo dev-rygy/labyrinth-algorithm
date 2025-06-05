@@ -20,6 +20,26 @@ namespace RyansLibrary
         {
             return (n % 2 == 0);
         }
+
+        /// <summary>
+        /// Squares a number
+        /// </summary>
+        /// <param name="n">Number</param>
+        /// <returns>Squared result</returns>
+        public static float Squared(float n)
+        {
+            return n * n;
+        }
+
+        /// <summary>
+        /// Squares a number
+        /// </summary>
+        /// <param name="n">Number</param>
+        /// <returns>Squared result</returns>
+        public static int Squared(int n)
+        {
+            return n * n;
+        }
         #endregion
 
         #region Geometric
@@ -62,7 +82,6 @@ namespace RyansLibrary
             return Mathf.Max(Mathf.Abs(b.x - a.x), Mathf.Abs(b.y - a.y), Mathf.Abs(b.z - a.z));
         }
         #endregion
-
 
         #region Volume
         /// <summary>
