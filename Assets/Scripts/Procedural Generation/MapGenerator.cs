@@ -998,7 +998,7 @@ namespace RyansLibrary.Labyrinth
                 // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
                 if (!CheckZoneBoundedVolume(_zones[0]))
                 {
-                    Debug.LogError($"Map Generator Error: The amount of blueprint rooms for zone {_zones[0].Name} exceeds the bounding box's volume or the bounding box is inverted.");
+                    UnityEngine.Debug.LogError($"Map Generator Error: The amount of blueprint rooms for zone {_zones[0].Name} exceeds the bounding box's volume or the bounding box is inverted.");
                     _debugState = DebugState.Failed;
                     return;
                 }

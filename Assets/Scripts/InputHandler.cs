@@ -15,7 +15,7 @@ namespace RyansLibrary.Input
     {
         public static InputHandler Instance { get; private set; }
 
-        // Input Events
+        // Player Input Events
         public static event System.Action OnAny;
         public static event System.Action OnMove;
         // public static event System.Action OnLook;        DEPRICATED
@@ -32,6 +32,15 @@ namespace RyansLibrary.Input
         public static event System.Action OnTwoHand;
         public static event System.Action OnSheathe;
         public static event System.Action OnEmote;
+
+        // Console Input Events
+        public static event System.Action OnToggleConsole;
+        public static event System.Action OnAutoComplete;
+        public static event System.Action OnSubmit;
+        public static event System.Action OnPageUp;
+        public static event System.Action OnPageDown;
+        public static event System.Action OnPrevious;
+        public static event System.Action OnNext;
 
         [SerializeField] private bool _debug = false;
 
@@ -108,6 +117,15 @@ namespace RyansLibrary.Input
             _playerControls.Player.Dash.performed += _ => OnAny?.Invoke();
             _playerControls.Player.TwoHand.performed += _ => OnAny?.Invoke();
             _playerControls.Player.Sheathe.performed += _ => OnAny?.Invoke();
+
+            // Console Input
+            _playerControls.Console.ToggleConsole.performed += _ => OnToggleConsole?.Invoke();
+            _playerControls.Console.AutoComplete.performed += _ => OnAutoComplete?.Invoke();
+            _playerControls.Console.Submit.performed += _ => OnSubmit?.Invoke();
+            _playerControls.Console.PageUp.performed += _ => OnPageUp?.Invoke();
+            _playerControls.Console.PageDown.performed += _ => OnPageDown?.Invoke();
+            _playerControls.Console.Previous.performed += _ => OnPrevious?.Invoke();
+            _playerControls.Console.Next.performed += _ => OnNext?.Invoke();
         }
 
         private void OnEnable()
@@ -125,12 +143,23 @@ namespace RyansLibrary.Input
             TogglePlayerInput(true);
         }
 
+        #region Player Controls
+        // Toggles 'Player' input actions
         private void TogglePlayerInput(bool toggle)
         {
             if (toggle)
                 _playerControls.Player.Enable();
             else
                 _playerControls.Player.Disable();
+        }
+
+        // Toggles 'Console' input actions
+        private void ToggleConsoleInput(bool toggle)
+        {
+            if (toggle)
+                _playerControls.Console.Enable();
+            else
+                _playerControls.Console.Disable();
         }
 
         private void OnMovementInput(InputAction.CallbackContext context)
@@ -250,5 +279,6 @@ namespace RyansLibrary.Input
             if (_debug) Debug.Log("Player has interacted");
         }
         */
+        #endregion
     }
 }
