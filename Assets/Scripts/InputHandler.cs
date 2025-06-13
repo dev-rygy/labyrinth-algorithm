@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   01/04/2025 (Ryan)
+ * Last Modified:   06/12/2025 (Ryan)
  * Notes:           Input Handler
 */
 using System.Collections;
@@ -32,9 +32,10 @@ namespace RyansLibrary.Input
         public static event System.Action OnTwoHand;
         public static event System.Action OnSheathe;
         public static event System.Action OnEmote;
+        public static event System.Action OnConsoleOpen;
 
         // Console Input Events
-        public static event System.Action OnToggleConsole;
+        public static event System.Action OnConsoleClose;
         public static event System.Action OnAutoComplete;
         public static event System.Action OnSubmit;
         public static event System.Action OnPageUp;
@@ -42,6 +43,7 @@ namespace RyansLibrary.Input
         public static event System.Action OnPrevious;
         public static event System.Action OnNext;
 
+        [SerializeField] private bool _toggleConsole = true;
         [SerializeField] private bool _debug = false;
 
         // The player's Unnormalized Input
@@ -71,11 +73,14 @@ namespace RyansLibrary.Input
             if (_playerControls == null)
                 _playerControls = new PlayerControls();
 
-            SubscribeToInputEvents();
+            SubscribeToPlayerEvents();
+            SubscribeToConsoleEvents();
+
             TogglePlayerInput(true);
+            ToggleConsoleInput(false);
         }
 
-        private void SubscribeToInputEvents()
+        private void SubscribeToPlayerEvents()
         {
             // Movement Input Events
             _playerControls.Player.Move.performed += context => OnMovementInput(context);
@@ -118,8 +123,17 @@ namespace RyansLibrary.Input
             _playerControls.Player.TwoHand.performed += _ => OnAny?.Invoke();
             _playerControls.Player.Sheathe.performed += _ => OnAny?.Invoke();
 
+            // Open Console
+            _playerControls.Player.OpenConsole.performed += _ => OnConsoleOpenInput();
+        }
+
+        private void SubscribeToConsoleEvents()
+        {
+            if (!_toggleConsole)
+                return;
+
             // Console Input
-            _playerControls.Console.ToggleConsole.performed += _ => OnToggleConsole?.Invoke();
+            _playerControls.Console.CloseConsole.performed += _ => OnConsoleCloseInput();
             _playerControls.Console.AutoComplete.performed += _ => OnAutoComplete?.Invoke();
             _playerControls.Console.Submit.performed += _ => OnSubmit?.Invoke();
             _playerControls.Console.PageUp.performed += _ => OnPageUp?.Invoke();
@@ -131,21 +145,25 @@ namespace RyansLibrary.Input
         private void OnEnable()
         {
             TogglePlayerInput(true);
+            ToggleConsoleInput(false);
         }
 
         private void OnDisable()
         {
             TogglePlayerInput(false);
+            ToggleConsoleInput(false);
         }
 
         private void OnDestroy()
         {
-            TogglePlayerInput(true);
+            TogglePlayerInput(false);
+            ToggleConsoleInput(false);
         }
 
         #region Player Controls
+
         // Toggles 'Player' input actions
-        private void TogglePlayerInput(bool toggle)
+        public void TogglePlayerInput(bool toggle)
         {
             if (toggle)
                 _playerControls.Player.Enable();
@@ -154,7 +172,7 @@ namespace RyansLibrary.Input
         }
 
         // Toggles 'Console' input actions
-        private void ToggleConsoleInput(bool toggle)
+        public void ToggleConsoleInput(bool toggle)
         {
             if (toggle)
                 _playerControls.Console.Enable();
@@ -217,6 +235,26 @@ namespace RyansLibrary.Input
             }
             if (context.canceled)
                 IsHoldingSecondaryPower = false;
+        }
+
+        private void OnConsoleOpenInput()
+        {
+            // Toggle Action Maps
+            TogglePlayerInput(false);
+            ToggleConsoleInput(true);
+
+            // Open Console
+            OnConsoleOpen?.Invoke();
+        }
+
+        private void OnConsoleCloseInput()
+        {
+            // Toggle Action Maps
+            TogglePlayerInput(true);
+            ToggleConsoleInput(false);
+
+            // Close Console
+            OnConsoleClose?.Invoke();
         }
 
         /* Jump Input (DEPRICATED)

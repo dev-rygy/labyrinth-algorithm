@@ -207,6 +207,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenConsole"",
+                    ""type"": ""Button"",
+                    ""id"": ""7fe17574-0e1a-4230-be60-e72b92b5be7f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -614,6 +623,165 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Desktop"",
                     ""action"": ""Emote"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e16eb2d1-9976-41dc-8ab8-3c2bd53f5f2a"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenConsole"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Console"",
+            ""id"": ""423cab1d-768f-4e35-83d5-ac0847f53a02"",
+            ""actions"": [
+                {
+                    ""name"": ""CloseConsole"",
+                    ""type"": ""Button"",
+                    ""id"": ""64baef02-e92d-4522-9106-1b24c5f1d432"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AutoComplete"",
+                    ""type"": ""Button"",
+                    ""id"": ""d5767ae4-3eaa-4c8f-b3ed-b138c1d15975"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Submit"",
+                    ""type"": ""Button"",
+                    ""id"": ""092c0727-a8b1-42e2-9cea-893d8cfa83d7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PageUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""44fe08aa-f776-4245-b03a-c209a5eebd31"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PageDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""1ee83abf-e201-497b-aa74-f7d40143e46c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Previous"",
+                    ""type"": ""Button"",
+                    ""id"": ""11d8c3c8-1235-42d1-8537-f86673a403e5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Next"",
+                    ""type"": ""Button"",
+                    ""id"": ""acc4242e-03fb-4c3d-91dd-daec1b20c376"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""3d738d6f-e43b-4e0c-81d1-c53a6c6e0b17"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseConsole"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bbb83c6b-0758-4a4f-835b-8315ee083801"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AutoComplete"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bb0a89df-6ff3-4132-8630-04371e976ce3"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""74f0ad33-671f-499d-8596-ebb33cc659ac"",
+                    ""path"": ""<Keyboard>/pageUp"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PageUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""76393156-8abb-4eec-8fb4-d1d25b641c82"",
+                    ""path"": ""<Keyboard>/pageDown"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PageDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""436b9f85-08e4-43fc-94ed-11b45bff6721"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Previous"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6cefb9f8-c302-4ba3-8128-8006f93bbce5"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Next"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1134,154 +1302,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
-        },
-        {
-            ""name"": ""Console"",
-            ""id"": ""423cab1d-768f-4e35-83d5-ac0847f53a02"",
-            ""actions"": [
-                {
-                    ""name"": ""ToggleConsole"",
-                    ""type"": ""Button"",
-                    ""id"": ""64baef02-e92d-4522-9106-1b24c5f1d432"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""AutoComplete"",
-                    ""type"": ""Button"",
-                    ""id"": ""d5767ae4-3eaa-4c8f-b3ed-b138c1d15975"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Submit"",
-                    ""type"": ""Button"",
-                    ""id"": ""092c0727-a8b1-42e2-9cea-893d8cfa83d7"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""PageUp"",
-                    ""type"": ""Button"",
-                    ""id"": ""44fe08aa-f776-4245-b03a-c209a5eebd31"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""PageDown"",
-                    ""type"": ""Button"",
-                    ""id"": ""1ee83abf-e201-497b-aa74-f7d40143e46c"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Previous"",
-                    ""type"": ""Button"",
-                    ""id"": ""11d8c3c8-1235-42d1-8537-f86673a403e5"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Next"",
-                    ""type"": ""Button"",
-                    ""id"": ""acc4242e-03fb-4c3d-91dd-daec1b20c376"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""3d738d6f-e43b-4e0c-81d1-c53a6c6e0b17"",
-                    ""path"": ""<Keyboard>/backquote"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ToggleConsole"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""bbb83c6b-0758-4a4f-835b-8315ee083801"",
-                    ""path"": ""<Keyboard>/tab"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""AutoComplete"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""bb0a89df-6ff3-4132-8630-04371e976ce3"",
-                    ""path"": ""<Keyboard>/enter"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Submit"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""74f0ad33-671f-499d-8596-ebb33cc659ac"",
-                    ""path"": ""<Keyboard>/pageUp"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""PageUp"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""76393156-8abb-4eec-8fb4-d1d25b641c82"",
-                    ""path"": ""<Keyboard>/pageDown"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""PageDown"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""436b9f85-08e4-43fc-94ed-11b45bff6721"",
-                    ""path"": ""<Keyboard>/upArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Previous"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""6cefb9f8-c302-4ba3-8128-8006f93bbce5"",
-                    ""path"": ""<Keyboard>/downArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Next"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
         }
     ],
     ""controlSchemes"": [
@@ -1329,6 +1349,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_TwoHand = m_Player.FindAction("TwoHand", throwIfNotFound: true);
         m_Player_Sheathe = m_Player.FindAction("Sheathe", throwIfNotFound: true);
         m_Player_Emote = m_Player.FindAction("Emote", throwIfNotFound: true);
+        m_Player_OpenConsole = m_Player.FindAction("OpenConsole", throwIfNotFound: true);
+        // Console
+        m_Console = asset.FindActionMap("Console", throwIfNotFound: true);
+        m_Console_CloseConsole = m_Console.FindAction("CloseConsole", throwIfNotFound: true);
+        m_Console_AutoComplete = m_Console.FindAction("AutoComplete", throwIfNotFound: true);
+        m_Console_Submit = m_Console.FindAction("Submit", throwIfNotFound: true);
+        m_Console_PageUp = m_Console.FindAction("PageUp", throwIfNotFound: true);
+        m_Console_PageDown = m_Console.FindAction("PageDown", throwIfNotFound: true);
+        m_Console_Previous = m_Console.FindAction("Previous", throwIfNotFound: true);
+        m_Console_Next = m_Console.FindAction("Next", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1341,22 +1371,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
-        // Console
-        m_Console = asset.FindActionMap("Console", throwIfNotFound: true);
-        m_Console_ToggleConsole = m_Console.FindAction("ToggleConsole", throwIfNotFound: true);
-        m_Console_AutoComplete = m_Console.FindAction("AutoComplete", throwIfNotFound: true);
-        m_Console_Submit = m_Console.FindAction("Submit", throwIfNotFound: true);
-        m_Console_PageUp = m_Console.FindAction("PageUp", throwIfNotFound: true);
-        m_Console_PageDown = m_Console.FindAction("PageDown", throwIfNotFound: true);
-        m_Console_Previous = m_Console.FindAction("Previous", throwIfNotFound: true);
-        m_Console_Next = m_Console.FindAction("Next", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerControls.Player.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerControls.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Console.enabled, "This will cause a leak and performance issues, PlayerControls.Console.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerControls.UI.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1445,6 +1466,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_TwoHand;
     private readonly InputAction m_Player_Sheathe;
     private readonly InputAction m_Player_Emote;
+    private readonly InputAction m_Player_OpenConsole;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1508,6 +1530,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Emote".
         /// </summary>
         public InputAction @Emote => m_Wrapper.m_Player_Emote;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/OpenConsole".
+        /// </summary>
+        public InputAction @OpenConsole => m_Wrapper.m_Player_OpenConsole;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1573,6 +1599,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Emote.started += instance.OnEmote;
             @Emote.performed += instance.OnEmote;
             @Emote.canceled += instance.OnEmote;
+            @OpenConsole.started += instance.OnOpenConsole;
+            @OpenConsole.performed += instance.OnOpenConsole;
+            @OpenConsole.canceled += instance.OnOpenConsole;
         }
 
         /// <summary>
@@ -1623,6 +1652,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Emote.started -= instance.OnEmote;
             @Emote.performed -= instance.OnEmote;
             @Emote.canceled -= instance.OnEmote;
+            @OpenConsole.started -= instance.OnOpenConsole;
+            @OpenConsole.performed -= instance.OnOpenConsole;
+            @OpenConsole.canceled -= instance.OnOpenConsole;
         }
 
         /// <summary>
@@ -1656,6 +1688,168 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Console
+    private readonly InputActionMap m_Console;
+    private List<IConsoleActions> m_ConsoleActionsCallbackInterfaces = new List<IConsoleActions>();
+    private readonly InputAction m_Console_CloseConsole;
+    private readonly InputAction m_Console_AutoComplete;
+    private readonly InputAction m_Console_Submit;
+    private readonly InputAction m_Console_PageUp;
+    private readonly InputAction m_Console_PageDown;
+    private readonly InputAction m_Console_Previous;
+    private readonly InputAction m_Console_Next;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Console".
+    /// </summary>
+    public struct ConsoleActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ConsoleActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Console/CloseConsole".
+        /// </summary>
+        public InputAction @CloseConsole => m_Wrapper.m_Console_CloseConsole;
+        /// <summary>
+        /// Provides access to the underlying input action "Console/AutoComplete".
+        /// </summary>
+        public InputAction @AutoComplete => m_Wrapper.m_Console_AutoComplete;
+        /// <summary>
+        /// Provides access to the underlying input action "Console/Submit".
+        /// </summary>
+        public InputAction @Submit => m_Wrapper.m_Console_Submit;
+        /// <summary>
+        /// Provides access to the underlying input action "Console/PageUp".
+        /// </summary>
+        public InputAction @PageUp => m_Wrapper.m_Console_PageUp;
+        /// <summary>
+        /// Provides access to the underlying input action "Console/PageDown".
+        /// </summary>
+        public InputAction @PageDown => m_Wrapper.m_Console_PageDown;
+        /// <summary>
+        /// Provides access to the underlying input action "Console/Previous".
+        /// </summary>
+        public InputAction @Previous => m_Wrapper.m_Console_Previous;
+        /// <summary>
+        /// Provides access to the underlying input action "Console/Next".
+        /// </summary>
+        public InputAction @Next => m_Wrapper.m_Console_Next;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Console; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ConsoleActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ConsoleActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ConsoleActions" />
+        public void AddCallbacks(IConsoleActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ConsoleActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ConsoleActionsCallbackInterfaces.Add(instance);
+            @CloseConsole.started += instance.OnCloseConsole;
+            @CloseConsole.performed += instance.OnCloseConsole;
+            @CloseConsole.canceled += instance.OnCloseConsole;
+            @AutoComplete.started += instance.OnAutoComplete;
+            @AutoComplete.performed += instance.OnAutoComplete;
+            @AutoComplete.canceled += instance.OnAutoComplete;
+            @Submit.started += instance.OnSubmit;
+            @Submit.performed += instance.OnSubmit;
+            @Submit.canceled += instance.OnSubmit;
+            @PageUp.started += instance.OnPageUp;
+            @PageUp.performed += instance.OnPageUp;
+            @PageUp.canceled += instance.OnPageUp;
+            @PageDown.started += instance.OnPageDown;
+            @PageDown.performed += instance.OnPageDown;
+            @PageDown.canceled += instance.OnPageDown;
+            @Previous.started += instance.OnPrevious;
+            @Previous.performed += instance.OnPrevious;
+            @Previous.canceled += instance.OnPrevious;
+            @Next.started += instance.OnNext;
+            @Next.performed += instance.OnNext;
+            @Next.canceled += instance.OnNext;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ConsoleActions" />
+        private void UnregisterCallbacks(IConsoleActions instance)
+        {
+            @CloseConsole.started -= instance.OnCloseConsole;
+            @CloseConsole.performed -= instance.OnCloseConsole;
+            @CloseConsole.canceled -= instance.OnCloseConsole;
+            @AutoComplete.started -= instance.OnAutoComplete;
+            @AutoComplete.performed -= instance.OnAutoComplete;
+            @AutoComplete.canceled -= instance.OnAutoComplete;
+            @Submit.started -= instance.OnSubmit;
+            @Submit.performed -= instance.OnSubmit;
+            @Submit.canceled -= instance.OnSubmit;
+            @PageUp.started -= instance.OnPageUp;
+            @PageUp.performed -= instance.OnPageUp;
+            @PageUp.canceled -= instance.OnPageUp;
+            @PageDown.started -= instance.OnPageDown;
+            @PageDown.performed -= instance.OnPageDown;
+            @PageDown.canceled -= instance.OnPageDown;
+            @Previous.started -= instance.OnPrevious;
+            @Previous.performed -= instance.OnPrevious;
+            @Previous.canceled -= instance.OnPrevious;
+            @Next.started -= instance.OnNext;
+            @Next.performed -= instance.OnNext;
+            @Next.canceled -= instance.OnNext;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ConsoleActions.UnregisterCallbacks(IConsoleActions)" />.
+        /// </summary>
+        /// <seealso cref="ConsoleActions.UnregisterCallbacks(IConsoleActions)" />
+        public void RemoveCallbacks(IConsoleActions instance)
+        {
+            if (m_Wrapper.m_ConsoleActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ConsoleActions.AddCallbacks(IConsoleActions)" />
+        /// <seealso cref="ConsoleActions.RemoveCallbacks(IConsoleActions)" />
+        /// <seealso cref="ConsoleActions.UnregisterCallbacks(IConsoleActions)" />
+        public void SetCallbacks(IConsoleActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ConsoleActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ConsoleActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ConsoleActions" /> instance referencing this action map.
+    /// </summary>
+    public ConsoleActions @Console => new ConsoleActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -1851,168 +2045,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="UIActions" /> instance referencing this action map.
     /// </summary>
     public UIActions @UI => new UIActions(this);
-
-    // Console
-    private readonly InputActionMap m_Console;
-    private List<IConsoleActions> m_ConsoleActionsCallbackInterfaces = new List<IConsoleActions>();
-    private readonly InputAction m_Console_ToggleConsole;
-    private readonly InputAction m_Console_AutoComplete;
-    private readonly InputAction m_Console_Submit;
-    private readonly InputAction m_Console_PageUp;
-    private readonly InputAction m_Console_PageDown;
-    private readonly InputAction m_Console_Previous;
-    private readonly InputAction m_Console_Next;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "Console".
-    /// </summary>
-    public struct ConsoleActions
-    {
-        private @PlayerControls m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public ConsoleActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "Console/ToggleConsole".
-        /// </summary>
-        public InputAction @ToggleConsole => m_Wrapper.m_Console_ToggleConsole;
-        /// <summary>
-        /// Provides access to the underlying input action "Console/AutoComplete".
-        /// </summary>
-        public InputAction @AutoComplete => m_Wrapper.m_Console_AutoComplete;
-        /// <summary>
-        /// Provides access to the underlying input action "Console/Submit".
-        /// </summary>
-        public InputAction @Submit => m_Wrapper.m_Console_Submit;
-        /// <summary>
-        /// Provides access to the underlying input action "Console/PageUp".
-        /// </summary>
-        public InputAction @PageUp => m_Wrapper.m_Console_PageUp;
-        /// <summary>
-        /// Provides access to the underlying input action "Console/PageDown".
-        /// </summary>
-        public InputAction @PageDown => m_Wrapper.m_Console_PageDown;
-        /// <summary>
-        /// Provides access to the underlying input action "Console/Previous".
-        /// </summary>
-        public InputAction @Previous => m_Wrapper.m_Console_Previous;
-        /// <summary>
-        /// Provides access to the underlying input action "Console/Next".
-        /// </summary>
-        public InputAction @Next => m_Wrapper.m_Console_Next;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_Console; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="ConsoleActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(ConsoleActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="ConsoleActions" />
-        public void AddCallbacks(IConsoleActions instance)
-        {
-            if (instance == null || m_Wrapper.m_ConsoleActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_ConsoleActionsCallbackInterfaces.Add(instance);
-            @ToggleConsole.started += instance.OnToggleConsole;
-            @ToggleConsole.performed += instance.OnToggleConsole;
-            @ToggleConsole.canceled += instance.OnToggleConsole;
-            @AutoComplete.started += instance.OnAutoComplete;
-            @AutoComplete.performed += instance.OnAutoComplete;
-            @AutoComplete.canceled += instance.OnAutoComplete;
-            @Submit.started += instance.OnSubmit;
-            @Submit.performed += instance.OnSubmit;
-            @Submit.canceled += instance.OnSubmit;
-            @PageUp.started += instance.OnPageUp;
-            @PageUp.performed += instance.OnPageUp;
-            @PageUp.canceled += instance.OnPageUp;
-            @PageDown.started += instance.OnPageDown;
-            @PageDown.performed += instance.OnPageDown;
-            @PageDown.canceled += instance.OnPageDown;
-            @Previous.started += instance.OnPrevious;
-            @Previous.performed += instance.OnPrevious;
-            @Previous.canceled += instance.OnPrevious;
-            @Next.started += instance.OnNext;
-            @Next.performed += instance.OnNext;
-            @Next.canceled += instance.OnNext;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="ConsoleActions" />
-        private void UnregisterCallbacks(IConsoleActions instance)
-        {
-            @ToggleConsole.started -= instance.OnToggleConsole;
-            @ToggleConsole.performed -= instance.OnToggleConsole;
-            @ToggleConsole.canceled -= instance.OnToggleConsole;
-            @AutoComplete.started -= instance.OnAutoComplete;
-            @AutoComplete.performed -= instance.OnAutoComplete;
-            @AutoComplete.canceled -= instance.OnAutoComplete;
-            @Submit.started -= instance.OnSubmit;
-            @Submit.performed -= instance.OnSubmit;
-            @Submit.canceled -= instance.OnSubmit;
-            @PageUp.started -= instance.OnPageUp;
-            @PageUp.performed -= instance.OnPageUp;
-            @PageUp.canceled -= instance.OnPageUp;
-            @PageDown.started -= instance.OnPageDown;
-            @PageDown.performed -= instance.OnPageDown;
-            @PageDown.canceled -= instance.OnPageDown;
-            @Previous.started -= instance.OnPrevious;
-            @Previous.performed -= instance.OnPrevious;
-            @Previous.canceled -= instance.OnPrevious;
-            @Next.started -= instance.OnNext;
-            @Next.performed -= instance.OnNext;
-            @Next.canceled -= instance.OnNext;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ConsoleActions.UnregisterCallbacks(IConsoleActions)" />.
-        /// </summary>
-        /// <seealso cref="ConsoleActions.UnregisterCallbacks(IConsoleActions)" />
-        public void RemoveCallbacks(IConsoleActions instance)
-        {
-            if (m_Wrapper.m_ConsoleActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="ConsoleActions.AddCallbacks(IConsoleActions)" />
-        /// <seealso cref="ConsoleActions.RemoveCallbacks(IConsoleActions)" />
-        /// <seealso cref="ConsoleActions.UnregisterCallbacks(IConsoleActions)" />
-        public void SetCallbacks(IConsoleActions instance)
-        {
-            foreach (var item in m_Wrapper.m_ConsoleActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_ConsoleActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="ConsoleActions" /> instance referencing this action map.
-    /// </summary>
-    public ConsoleActions @Console => new ConsoleActions(this);
     private int m_DesktopSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -2137,6 +2169,70 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEmote(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenConsole(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Console" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ConsoleActions.AddCallbacks(IConsoleActions)" />
+    /// <seealso cref="ConsoleActions.RemoveCallbacks(IConsoleActions)" />
+    public interface IConsoleActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "CloseConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseConsole(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AutoComplete" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAutoComplete(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Submit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSubmit(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PageUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPageUp(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PageDown" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPageDown(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Previous" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPrevious(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Next" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnNext(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -2215,62 +2311,5 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
-    }
-    /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Console" which allows adding and removing callbacks.
-    /// </summary>
-    /// <seealso cref="ConsoleActions.AddCallbacks(IConsoleActions)" />
-    /// <seealso cref="ConsoleActions.RemoveCallbacks(IConsoleActions)" />
-    public interface IConsoleActions
-    {
-        /// <summary>
-        /// Method invoked when associated input action "ToggleConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleConsole(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "AutoComplete" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnAutoComplete(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Submit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSubmit(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "PageUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPageUp(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "PageDown" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPageDown(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Previous" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPrevious(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Next" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnNext(InputAction.CallbackContext context);
     }
 }
