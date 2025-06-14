@@ -640,6 +640,184 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ]
         },
         {
+            ""name"": ""FreeCamera"",
+            ""id"": ""367fa734-27c7-4830-9cb2-180dddc10b7b"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""9b1076cb-5603-43f0-a206-8932f5aeed9d"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""38c94708-aa6d-4a12-b39b-f9a43dea4b20"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""OpenConsole"",
+                    ""type"": ""Button"",
+                    ""id"": ""4765269d-bd86-46e3-ad4e-2195a4881cc8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""75895c54-68dc-4ba0-a560-46ff29e331b9"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""1fd8d940-08a9-4a81-bbd3-f547d82aae1c"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""141809c3-a0fb-4d06-82a6-9386cbb5898d"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""b436a802-38f9-4d1c-9ba0-0c7764210260"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""3be8febf-d9d4-4192-ac17-f8d9eac5d37f"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""87f8ae0d-7502-4f4f-8968-8f75d4c5f675"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ba1522e-482b-49b2-9ef9-5ec0626a19c5"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""47dbbc16-6c6c-4d6e-952c-ea856d25675f"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""6e290a61-be82-4b5f-8893-8905af3dc503"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""38d1f2aa-a6a8-4bb8-80aa-12b90e4b121f"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""7e2fd230-1af3-4bf0-a0b5-0b6f948c3bb4"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""d01cc1f2-00cf-436a-9b19-9fdc2b0fe88e"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Desktop"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2bce647f-417f-43be-90f9-58bc62a477b9"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenConsole"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""Console"",
             ""id"": ""423cab1d-768f-4e35-83d5-ac0847f53a02"",
             ""actions"": [
@@ -1350,6 +1528,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Sheathe = m_Player.FindAction("Sheathe", throwIfNotFound: true);
         m_Player_Emote = m_Player.FindAction("Emote", throwIfNotFound: true);
         m_Player_OpenConsole = m_Player.FindAction("OpenConsole", throwIfNotFound: true);
+        // FreeCamera
+        m_FreeCamera = asset.FindActionMap("FreeCamera", throwIfNotFound: true);
+        m_FreeCamera_Move = m_FreeCamera.FindAction("Move", throwIfNotFound: true);
+        m_FreeCamera_Look = m_FreeCamera.FindAction("Look", throwIfNotFound: true);
+        m_FreeCamera_OpenConsole = m_FreeCamera.FindAction("OpenConsole", throwIfNotFound: true);
         // Console
         m_Console = asset.FindActionMap("Console", throwIfNotFound: true);
         m_Console_CloseConsole = m_Console.FindAction("CloseConsole", throwIfNotFound: true);
@@ -1376,6 +1559,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerControls.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_FreeCamera.enabled, "This will cause a leak and performance issues, PlayerControls.FreeCamera.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Console.enabled, "This will cause a leak and performance issues, PlayerControls.Console.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerControls.UI.Disable() has not been called.");
     }
@@ -1688,6 +1872,124 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
+
+    // FreeCamera
+    private readonly InputActionMap m_FreeCamera;
+    private List<IFreeCameraActions> m_FreeCameraActionsCallbackInterfaces = new List<IFreeCameraActions>();
+    private readonly InputAction m_FreeCamera_Move;
+    private readonly InputAction m_FreeCamera_Look;
+    private readonly InputAction m_FreeCamera_OpenConsole;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "FreeCamera".
+    /// </summary>
+    public struct FreeCameraActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public FreeCameraActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "FreeCamera/Move".
+        /// </summary>
+        public InputAction @Move => m_Wrapper.m_FreeCamera_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "FreeCamera/Look".
+        /// </summary>
+        public InputAction @Look => m_Wrapper.m_FreeCamera_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "FreeCamera/OpenConsole".
+        /// </summary>
+        public InputAction @OpenConsole => m_Wrapper.m_FreeCamera_OpenConsole;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_FreeCamera; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="FreeCameraActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(FreeCameraActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="FreeCameraActions" />
+        public void AddCallbacks(IFreeCameraActions instance)
+        {
+            if (instance == null || m_Wrapper.m_FreeCameraActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_FreeCameraActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
+            @Look.started += instance.OnLook;
+            @Look.performed += instance.OnLook;
+            @Look.canceled += instance.OnLook;
+            @OpenConsole.started += instance.OnOpenConsole;
+            @OpenConsole.performed += instance.OnOpenConsole;
+            @OpenConsole.canceled += instance.OnOpenConsole;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="FreeCameraActions" />
+        private void UnregisterCallbacks(IFreeCameraActions instance)
+        {
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
+            @Look.started -= instance.OnLook;
+            @Look.performed -= instance.OnLook;
+            @Look.canceled -= instance.OnLook;
+            @OpenConsole.started -= instance.OnOpenConsole;
+            @OpenConsole.performed -= instance.OnOpenConsole;
+            @OpenConsole.canceled -= instance.OnOpenConsole;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="FreeCameraActions.UnregisterCallbacks(IFreeCameraActions)" />.
+        /// </summary>
+        /// <seealso cref="FreeCameraActions.UnregisterCallbacks(IFreeCameraActions)" />
+        public void RemoveCallbacks(IFreeCameraActions instance)
+        {
+            if (m_Wrapper.m_FreeCameraActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="FreeCameraActions.AddCallbacks(IFreeCameraActions)" />
+        /// <seealso cref="FreeCameraActions.RemoveCallbacks(IFreeCameraActions)" />
+        /// <seealso cref="FreeCameraActions.UnregisterCallbacks(IFreeCameraActions)" />
+        public void SetCallbacks(IFreeCameraActions instance)
+        {
+            foreach (var item in m_Wrapper.m_FreeCameraActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_FreeCameraActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="FreeCameraActions" /> instance referencing this action map.
+    /// </summary>
+    public FreeCameraActions @FreeCamera => new FreeCameraActions(this);
 
     // Console
     private readonly InputActionMap m_Console;
@@ -2169,6 +2471,35 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEmote(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenConsole(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "FreeCamera" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="FreeCameraActions.AddCallbacks(IFreeCameraActions)" />
+    /// <seealso cref="FreeCameraActions.RemoveCallbacks(IFreeCameraActions)" />
+    public interface IFreeCameraActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLook(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "OpenConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -6,8 +6,10 @@
 */
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 namespace RyansLibrary.Input
 {
@@ -18,7 +20,7 @@ namespace RyansLibrary.Input
         // Player Input Events
         public static event System.Action OnAny;
         public static event System.Action OnMove;
-        // public static event System.Action OnLook;        DEPRICATED
+        public static event System.Action OnLook;
         // public static event System.Action OnLookRight;   DEPRICATED
         // public static event System.Action OnLookLeft;    DEPRICATED
         public static event System.Action OnJump;
@@ -50,7 +52,7 @@ namespace RyansLibrary.Input
         public Vector2 MovementInput { get; private set; }
         // The player's Normalized Input
         public Vector2 MoveDirectionNormalized { get; private set; }
-        // public Vector3 LookInput { get; private set; }   DEPRICATED
+        public Vector2 LookInput { get; private set; }
         // public bool JumpKeyPressed { get; private set; } DEPRICATED
         public bool IsHoldingPrimaryCombo { get; private set; }
         public bool IsHoldingSecondaryCombo { get; private set; }
@@ -74,6 +76,7 @@ namespace RyansLibrary.Input
                 _playerControls = new PlayerControls();
 
             SubscribeToPlayerEvents();
+            SubscribeToFreeCameraEvents();
             SubscribeToConsoleEvents();
 
             TogglePlayerInput(true);
@@ -87,8 +90,8 @@ namespace RyansLibrary.Input
             _playerControls.Player.Move.canceled += context => OnMovementInput(context);
 
             // Look Input Events (DEPRICATED)
-            // _playerControls.Player.Look.performed += context => OnLookInput(context);
-            // _playerControls.Player.Look.canceled += context => OnLookInput(context);
+            //_playerControls.Player.Look.performed += context => OnLookInput(context);
+            //_playerControls.Player.Look.canceled += context => OnLookInput(context);
             // _playerControls.Player.LookRight.started += context => OnLookRightInput(context);
             // _playerControls.Player.LookLeft.started += context => OnLookLeftInput(context);
 
@@ -125,6 +128,18 @@ namespace RyansLibrary.Input
 
             // Open Console
             _playerControls.Player.OpenConsole.performed += _ => OnConsoleOpenInput();
+        }
+
+        private void SubscribeToFreeCameraEvents()
+        {
+            // Free Camera Events
+            _playerControls.FreeCamera.Move.performed += context => OnMovementInput(context);
+            _playerControls.FreeCamera.Move.canceled += context => OnMovementInput(context);
+
+            _playerControls.FreeCamera.Look.performed += context => OnLookInput(context);
+            _playerControls.FreeCamera.Look.canceled += context => OnLookInput(context);
+
+            _playerControls.FreeCamera.OpenConsole.performed += _ => OnConsoleOpenInput();
         }
 
         private void SubscribeToConsoleEvents()
@@ -178,6 +193,14 @@ namespace RyansLibrary.Input
                 _playerControls.Console.Enable();
             else
                 _playerControls.Console.Disable();
+        }
+
+        public void ToggleFreeCameraInput(bool toggle)
+        {
+            if (toggle)
+                _playerControls.FreeCamera.Enable();
+            else
+                _playerControls.FreeCamera.Disable();
         }
 
         private void OnMovementInput(InputAction.CallbackContext context)
@@ -266,8 +289,6 @@ namespace RyansLibrary.Input
             OnJump?.Invoke();
         }
         */
-
-        /*  Look Input (DEPRICATED)
         private void OnLookInput(InputAction.CallbackContext context)
         {
             // Read value from input and set the movementInput Vector to it
@@ -276,27 +297,6 @@ namespace RyansLibrary.Input
 
             if (_debug) Debug.Log("The Look Input read was = " + LookInput);
         }
-
-        private void OnLookRightInput(InputAction.CallbackContext context)
-        {
-            if (!context.started)
-                return;
-
-            OnLookRight?.Invoke();
-
-            if (_debug) Debug.Log("Player pressed look right button");
-        }
-
-        private void OnLookLeftInput(InputAction.CallbackContext context)
-        {
-            if (!context.started)
-                return;
-
-            OnLookLeft?.Invoke();
-
-            if (_debug) Debug.Log("Player pressed look left button");
-        }
-        */
 
         /*      Interact Input Functions (DEPRICATED)
         private void OnInteract1Input(InputAction.CallbackContext context)

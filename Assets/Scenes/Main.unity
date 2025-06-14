@@ -737,6 +737,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UIContainer: {fileID: 1260832884}
+  _toggleInputMemory: 1
+  _inputMemoryCapacity: 10
+  _outputText: {fileID: 1662433589}
+  _inputField: {fileID: 1185124819}
+  _scrollRect: {fileID: 40187441}
 --- !u!1 &366474165
 GameObject:
   m_ObjectHideFlags: 0
@@ -1236,6 +1241,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 687593877}
   m_CullTransparentMesh: 1
+--- !u!1 &716076879 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6288163642289274413, guid: 3a55df7c24309c74798865a78e36de5f,
+    type: 3}
+  m_PrefabInstance: {fileID: 2001051860}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &825817147 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2423500065196981606, guid: ea4379ffa3cc78549a609c693a2ee9b3,
@@ -1254,6 +1265,24 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2001051860}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &826382184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 716076879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b6791d5a87222c419884fda1fc66d8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cameraSpeed: 5
+  _cameraSensitivity: 1
+  _invertYLook: 0
+  botCamAngleClamp: 0.75
+  topCamAngleClamp: -0.75
+  _cameraPivotTransform: {fileID: 0}
 --- !u!1 &879215206
 GameObject:
   m_ObjectHideFlags: 0
@@ -2347,7 +2376,7 @@ GameObject:
   - component: {fileID: 1662433590}
   - component: {fileID: 1662433589}
   m_Layer: 0
-  m_Name: Console Text (TMP)
+  m_Name: Output Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2400,8 +2429,6 @@ MonoBehaviour:
     non ex euismod eleifend. Suspendisse ac leo in ligula viverra dictum.
 
 
-    o
-
     Phasellus
     ullamcorper eleifend laoreet. Mauris aliquet non dolor in egestas. In gravida
     lectus ac erat commodo, sed vestibulum elit mollis. Etiam semper sit amet dolor
@@ -2412,7 +2439,6 @@ MonoBehaviour:
     Maecenas vehicula nec lacus nec gravida. Vivamus interdum pellentesque consequat.
     Nunc sed lectus tortor. In ullamcorper efficitur malesuada. Aliquam accumsan
     placerat condimentum. Aliquam ullamcorper sed nisl ut scelerisque.
-
 
 
     Nunc
@@ -2428,16 +2454,14 @@ MonoBehaviour:
     tempus. Nunc ac viverra nulla.
 
 
-
-    Morbi mi nisl, aliquet sed sapien vel,
-    viverra consectetur arcu. Pellentesque habitant morbi tristique senectus et netus
-    et malesuada fames ac turpis egestas. Aliquam vel dapibus tortor. Aliquam quis
-    est est. Phasellus eget neque diam. Mauris velit nunc, commodo sit amet elementum
+    Morbi mi nisl, aliquet sed sapien vel, viverra
+    consectetur arcu. Pellentesque habitant morbi tristique senectus et netus et
+    malesuada fames ac turpis egestas. Aliquam vel dapibus tortor. Aliquam quis est
+    est. Phasellus eget neque diam. Mauris velit nunc, commodo sit amet elementum
     id, sagittis ut metus. Ut sapien risus, porttitor eget porttitor sit amet, feugiat
     at eros. Praesent placerat mattis quam vitae malesuada. Aenean sit amet justo
     nec mauris hendrerit convallis vitae hendrerit augue. Morbi semper quis elit
     id blandit. Maecenas feugiat ante turpis, gravida efficitur urna semper elementum.
-
 
 
     In
@@ -2725,7 +2749,11 @@ PrefabInstance:
     - {fileID: 9142369575599584613, guid: 3a55df7c24309c74798865a78e36de5f, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6288163642289274413, guid: 3a55df7c24309c74798865a78e36de5f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 826382184}
   m_SourcePrefab: {fileID: 100100000, guid: 3a55df7c24309c74798865a78e36de5f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

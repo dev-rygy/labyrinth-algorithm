@@ -43,6 +43,13 @@ namespace RyansLibrary.Console
         /// <param name="command">Command to add</param>
         public void RegisterCommand(ConsoleCommand command)
         {
+            if (_commands.ContainsKey(command.CommandId.ToLower()))     // Prevent double command registry
+            {
+                Debug.LogWarning($"Console Registry Warning: Command '{command.CommandId}' is already registered.");
+                return;
+            }
+
+            // Add command to registry
             _commands.Add(command.CommandId, command);
         }
 
@@ -60,23 +67,23 @@ namespace RyansLibrary.Console
             if (splitString.Length == 0) 
                 return false;
 
-            string commandName = splitString[0].ToLower();      // First part of string is command key
+            string commandName = splitString[0].ToLower();      // First part of string is command keyword
             string[] args = splitString.Length > 1 ? splitString[1..] : Array.Empty<string>();      // All rest are arguements
 
-            // Try executing command
+            // Search command registry for command with the name specified
             if (_commands.TryGetValue(commandName, out var command))
             {
-                try
+                try         // Attempt to execute the command
                 {
                     command.Execute.Invoke(args);
                     return true;
                 }
-                catch (Exception e)
+                catch (Exception e)     // Error executing command
                 {
                     Debug.LogError($"Console Registry Error: Error executing command '{commandName}': {e.Message}");
                 }
             }
-            else
+            else    // Command keyword not recognized
             {
                 Debug.LogWarning($"Console Registry Warning: Unknown command - {commandName}");
             }
@@ -84,6 +91,7 @@ namespace RyansLibrary.Console
             return false;
         }
 
+        // Parse all commands
         public IEnumerable<ConsoleCommand> GetAllCommands() => _commands.Values;
     }
 }
