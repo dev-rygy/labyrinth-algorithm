@@ -46,6 +46,7 @@ namespace RyansLibrary.Input
         // Free Camera Input Events
         public static event System.Action OnFreeCamMove;
         public static event System.Action OnFreeCamLook;
+        public static event System.Action<bool> OnFreeCamSprint;
 
         // Console Input Events
         public static event System.Action OnConsoleClose;
@@ -164,6 +165,9 @@ namespace RyansLibrary.Input
 
             _playerControls.FreeCamera.Look.performed += context => OnFreeCamLookInput(context);
             _playerControls.FreeCamera.Look.canceled += context => OnFreeCamLookInput(context);
+
+            _playerControls.FreeCamera.Sprint.performed += _ => OnFreeCamSprint(true);
+            _playerControls.FreeCamera.Sprint.canceled += _ => OnFreeCamSprint(false);
 
             _playerControls.FreeCamera.OpenConsole.performed += _ => OnConsoleOpenInput();
         }

@@ -576,6 +576,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "37e022c7-445f-4949-b56d-b2f20e0c3f10",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "OpenConsole",
                     "type": "Button",
                     "id": "4765269d-bd86-46e3-ad4e-2195a4881cc8",
@@ -682,6 +691,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "OpenConsole",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9b2c9dd3-bdc3-4023-8efd-4712fbf6e0d9",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

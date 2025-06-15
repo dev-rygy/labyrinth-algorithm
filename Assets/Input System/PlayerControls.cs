@@ -662,6 +662,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""Sprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""37e022c7-445f-4949-b56d-b2f20e0c3f10"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""OpenConsole"",
                     ""type"": ""Button"",
                     ""id"": ""4765269d-bd86-46e3-ad4e-2195a4881cc8"",
@@ -768,6 +777,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""OpenConsole"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b2c9dd3-bdc3-4023-8efd-4712fbf6e0d9"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1488,6 +1508,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_FreeCamera = asset.FindActionMap("FreeCamera", throwIfNotFound: true);
         m_FreeCamera_Move = m_FreeCamera.FindAction("Move", throwIfNotFound: true);
         m_FreeCamera_Look = m_FreeCamera.FindAction("Look", throwIfNotFound: true);
+        m_FreeCamera_Sprint = m_FreeCamera.FindAction("Sprint", throwIfNotFound: true);
         m_FreeCamera_OpenConsole = m_FreeCamera.FindAction("OpenConsole", throwIfNotFound: true);
         // Console
         m_Console = asset.FindActionMap("Console", throwIfNotFound: true);
@@ -1834,6 +1855,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IFreeCameraActions> m_FreeCameraActionsCallbackInterfaces = new List<IFreeCameraActions>();
     private readonly InputAction m_FreeCamera_Move;
     private readonly InputAction m_FreeCamera_Look;
+    private readonly InputAction m_FreeCamera_Sprint;
     private readonly InputAction m_FreeCamera_OpenConsole;
     /// <summary>
     /// Provides access to input actions defined in input action map "FreeCamera".
@@ -1854,6 +1876,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "FreeCamera/Look".
         /// </summary>
         public InputAction @Look => m_Wrapper.m_FreeCamera_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "FreeCamera/Sprint".
+        /// </summary>
+        public InputAction @Sprint => m_Wrapper.m_FreeCamera_Sprint;
         /// <summary>
         /// Provides access to the underlying input action "FreeCamera/OpenConsole".
         /// </summary>
@@ -1890,6 +1916,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @Sprint.started += instance.OnSprint;
+            @Sprint.performed += instance.OnSprint;
+            @Sprint.canceled += instance.OnSprint;
             @OpenConsole.started += instance.OnOpenConsole;
             @OpenConsole.performed += instance.OnOpenConsole;
             @OpenConsole.canceled += instance.OnOpenConsole;
@@ -1910,6 +1939,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @Sprint.started -= instance.OnSprint;
+            @Sprint.performed -= instance.OnSprint;
+            @Sprint.canceled -= instance.OnSprint;
             @OpenConsole.started -= instance.OnOpenConsole;
             @OpenConsole.performed -= instance.OnOpenConsole;
             @OpenConsole.canceled -= instance.OnOpenConsole;
@@ -2456,6 +2488,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Sprint" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSprint(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "OpenConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

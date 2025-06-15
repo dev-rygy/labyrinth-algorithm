@@ -1277,12 +1277,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b6791d5a87222c419884fda1fc66d8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cameraSpeed: 5
-  _cameraSensitivity: 1
+  _cameraSpeed: 35
+  _cameraSprintSpeed: 95
+  _cameraSensitivity: 100
   _invertYLook: 0
   botCamAngleClamp: 0.75
   topCamAngleClamp: -0.75
   _cameraPivotTransform: {fileID: 1769615166}
+  _cameraOffsetTransform: {fileID: 1273520057}
   _debug: 1
 --- !u!1 &879215206
 GameObject:
@@ -1424,7 +1426,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Type Here
+  m_text: Type 'Help' for a list of commands...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1611,7 +1613,7 @@ PrefabInstance:
     - target: {fileID: 969296451609887793, guid: b0f8ca7fa239f984795e5f61ebbb719c,
         type: 3}
       propertyPath: _debug
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2276462963789199991, guid: b0f8ca7fa239f984795e5f61ebbb719c,
         type: 3}
@@ -2024,6 +2026,12 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -1820, y: -980}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!4 &1273520057 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 117727087681985627, guid: 3a55df7c24309c74798865a78e36de5f,
+    type: 3}
+  m_PrefabInstance: {fileID: 2001051860}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1279811800
 GameObject:
   m_ObjectHideFlags: 0
@@ -2427,57 +2435,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Lrem ipsum dolor sit amet, consectetur adipiscing elit. Mauris at risus
-    urna. Suspendisse potenti. Nulla eget libero elit. Donec non feugiat libero,
-    eget dignissim libero. Ut malesuada turpis non mollis faucibus. In vitae ligula
-    quis felis porta varius et in sem. Curabitur quis orci diam. Etiam commodo faucibus
-    nisi, non eleifend justo malesuada ut. Vivamus non est elit. Duis volutpat arcu
-    non ex euismod eleifend. Suspendisse ac leo in ligula viverra dictum.
-
-
-    Phasellus
-    ullamcorper eleifend laoreet. Mauris aliquet non dolor in egestas. In gravida
-    lectus ac erat commodo, sed vestibulum elit mollis. Etiam semper sit amet dolor
-    in blandit. Maecenas consequat vehicula lacus, id accumsan urna lacinia vel.
-    Nulla posuere est eu magna suscipit, sit amet iaculis ligula suscipit. Aenean
-    placerat leo sed consectetur varius. Proin commodo eros et purus porttitor, sed
-    mattis felis iaculis. Proin ut sapien ut ligula pulvinar efficitur eu eget purus.
-    Maecenas vehicula nec lacus nec gravida. Vivamus interdum pellentesque consequat.
-    Nunc sed lectus tortor. In ullamcorper efficitur malesuada. Aliquam accumsan
-    placerat condimentum. Aliquam ullamcorper sed nisl ut scelerisque.
-
-
-    Nunc
-    et congue erat, non commodo turpis. Nulla risus metus, consequat eget purus in,
-    vulputate suscipit orci. Integer purus nisi, pellentesque vitae sodales ut, vehicula
-    et dui. Suspendisse id porttitor mauris, elementum aliquam lacus. Fusce viverra
-    nisl purus, at ornare metus lobortis at. Suspendisse semper aliquam vulputate.
-    Ut non erat tortor. Donec eget facilisis justo. Donec blandit nunc porttitor
-    ante interdum cursus in ac sapien. Etiam ultrices ante ante, luctus tincidunt
-    leo scelerisque at. Suspendisse potenti. Praesent convallis odio leo, sit amet
-    ullamcorper erat tempus eu. Aliquam pretium lorem quis eleifend consectetur.
-    Cras accumsan arcu at lectus cursus lacinia. Curabitur ut velit in turpis mollis
-    tempus. Nunc ac viverra nulla.
-
-
-    Morbi mi nisl, aliquet sed sapien vel, viverra
-    consectetur arcu. Pellentesque habitant morbi tristique senectus et netus et
-    malesuada fames ac turpis egestas. Aliquam vel dapibus tortor. Aliquam quis est
-    est. Phasellus eget neque diam. Mauris velit nunc, commodo sit amet elementum
-    id, sagittis ut metus. Ut sapien risus, porttitor eget porttitor sit amet, feugiat
-    at eros. Praesent placerat mattis quam vitae malesuada. Aenean sit amet justo
-    nec mauris hendrerit convallis vitae hendrerit augue. Morbi semper quis elit
-    id blandit. Maecenas feugiat ante turpis, gravida efficitur urna semper elementum.
-
-
-    In
-    neque sapien, sagittis lobortis velit semper, dapibus imperdiet ex. Nulla non
-    fringilla quam. Sed tincidunt nisi eget magna tempor, in auctor nisi dapibus.
-    Praesent interdum purus id tortor semper, ut imperdiet nulla facilisis. Sed cursus
-    bibendum metus sit amet pellentesque. Nulla ut felis in risus tristique egestas
-    ornare et justo. Donec quis varius magna, at ultricies nunc. Etiam egestas tortor
-    sed ultrices fermentum. Etiam turpis ante, ullamcorper at tristique non, viverra
-    ac augue. Morbi suscipit tortor sapien, a posuere augue sollicitudin eget.'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

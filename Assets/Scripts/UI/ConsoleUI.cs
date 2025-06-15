@@ -106,7 +106,7 @@ public class ConsoleUI : UIBehaviour
         // add new input to front of array
         _inputMemory[0] = input;
 
-        if (_currentInputMemCapacity < _inputMemoryCapacity - 1)
+        if (_currentInputMemCapacity < _inputMemoryCapacity)
             _currentInputMemCapacity++;
     }
 
@@ -124,13 +124,13 @@ public class ConsoleUI : UIBehaviour
         _inputField.text = _inputMemory[_inputMemoryIndex];
 
         _inputMemoryIndex++;
-        if (_inputMemoryIndex > _currentInputMemCapacity)
+        if (_inputMemoryIndex >= _currentInputMemCapacity)
             _inputMemoryIndex -= 1;
     }
 
     private void PrintInputMemory()
     {
-        OutputToConsole("Input Memory:");
+        OutputToConsole($"Input Memory: ({_currentInputMemCapacity})");
         for (int i = 0; i < _inputMemoryCapacity; i++)
         {
             OutputToConsole($"{i}. \"{_inputMemory[i]}\"");

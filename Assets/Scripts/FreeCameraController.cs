@@ -6,6 +6,7 @@ public class FreeCameraController : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float _cameraSpeed;
+    [SerializeField] private float _cameraSprintSpeed;
     [SerializeField] private float _cameraSensitivity;
     [SerializeField] private bool _invertYLook;
     [SerializeField] private float botCamAngleClamp = 0.75f;      // Clamp the top angle of vertical look
@@ -19,6 +20,7 @@ public class FreeCameraController : MonoBehaviour
     [SerializeField] private bool _debug;
 
     private bool _cameraToggle = false;
+    private float _currentCameraSpeed;
 
     // Initial Camera Values
     private Vector3 _initCameraPivotTransformPos;
@@ -40,6 +42,10 @@ public class FreeCameraController : MonoBehaviour
         _initCameraOffsetTransformPos = _cameraOffsetTransform.localPosition;
         _initCameraOffsetTransformRot = _cameraOffsetTransform.localRotation;
         _initCameraOffsetTransformScale = _cameraOffsetTransform.localScale;
+
+        _currentCameraSpeed = _cameraSpeed;
+
+        InputHandler.OnFreeCamSprint += ToggleSprint;
     }
 
     private void Update()
@@ -112,7 +118,7 @@ public class FreeCameraController : MonoBehaviour
 
         if (movement != Vector3.zero)
         {
-            _cameraPivotTransform.position += movement * _cameraSpeed * Time.deltaTime;
+            _cameraPivotTransform.position += movement * _currentCameraSpeed * Time.deltaTime;
         }
     }
 
@@ -145,5 +151,15 @@ public class FreeCameraController : MonoBehaviour
             verticalLook = Vector3.zero;
         else                                        // Rotate the camera vertically explicitly
             _cameraOffsetTransform.Rotate(verticalLook);
+    }
+
+    private void ToggleSprint(bool toggle)
+    {
+        if (toggle)
+            _currentCameraSpeed = _cameraSprintSpeed;
+        else
+            _currentCameraSpeed = _cameraSpeed;
+
+        if (_debug) Debug.Log($"Free Camera: Camera Sprint = {toggle}");
     }
 }
