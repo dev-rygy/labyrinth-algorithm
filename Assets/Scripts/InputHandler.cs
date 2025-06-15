@@ -11,6 +11,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
+public enum InputMap
+{
+    Player,
+    FreeCam,
+    Console
+}
+
 namespace RyansLibrary.Input
 {
     public class InputHandler : MonoBehaviour
@@ -36,6 +43,10 @@ namespace RyansLibrary.Input
         public static event System.Action OnEmote;
         public static event System.Action OnConsoleOpen;
 
+        // Free Camera Input Events
+        public static event System.Action OnFreeCamMove;
+        public static event System.Action OnFreeCamLook;
+
         // Console Input Events
         public static event System.Action OnConsoleClose;
         public static event System.Action OnAutoComplete;
@@ -52,14 +63,24 @@ namespace RyansLibrary.Input
         public Vector2 MovementInput { get; private set; }
         // The player's Normalized Input
         public Vector2 MoveDirectionNormalized { get; private set; }
-        public Vector2 LookInput { get; private set; }
+        // public Vector2 LookInput { get; private set; }   DEPRICATED
         // public bool JumpKeyPressed { get; private set; } DEPRICATED
         public bool IsHoldingPrimaryCombo { get; private set; }
         public bool IsHoldingSecondaryCombo { get; private set; }
         public bool IsHoldingPrimaryPower { get; private set; }
         public bool IsHoldingSecondaryPower { get; private set; }
 
+        public Vector2 FreeCamMoveInput { get; private set; }
+        public Vector2 FreeCamMoveInputNormalized { get; private set; }
+        public Vector2 FreeCamLookInput { get; private set; }
         private PlayerControls _playerControls;
+
+        private InputActionMap _playerInputActionMap;
+        private InputActionMap _consoleInputActionMap;
+        private InputActionMap _freeCamInputActionMap;
+
+        private InputActionMap _activeActionMap;
+        private InputActionMap _prevActionMap;
 
         private void Awake()
         {
@@ -74,6 +95,11 @@ namespace RyansLibrary.Input
             // Initialize
             if (_playerControls == null)
                 _playerControls = new PlayerControls();
+
+            // Assign input maps
+            _playerInputActionMap = _playerControls.Player;
+            _consoleInputActionMap = _playerControls.Console;
+            _freeCamInputActionMap = _playerControls.FreeCamera;
 
             SubscribeToPlayerEvents();
             SubscribeToFreeCameraEvents();
@@ -133,11 +159,11 @@ namespace RyansLibrary.Input
         private void SubscribeToFreeCameraEvents()
         {
             // Free Camera Events
-            _playerControls.FreeCamera.Move.performed += context => OnMovementInput(context);
-            _playerControls.FreeCamera.Move.canceled += context => OnMovementInput(context);
+            _playerControls.FreeCamera.Move.performed += context => OnFreeCamMovementInput(context);
+            _playerControls.FreeCamera.Move.canceled += context => OnFreeCamMovementInput(context);
 
-            _playerControls.FreeCamera.Look.performed += context => OnLookInput(context);
-            _playerControls.FreeCamera.Look.canceled += context => OnLookInput(context);
+            _playerControls.FreeCamera.Look.performed += context => OnFreeCamLookInput(context);
+            _playerControls.FreeCamera.Look.canceled += context => OnFreeCamLookInput(context);
 
             _playerControls.FreeCamera.OpenConsole.performed += _ => OnConsoleOpenInput();
         }
@@ -161,21 +187,71 @@ namespace RyansLibrary.Input
         {
             TogglePlayerInput(true);
             ToggleConsoleInput(false);
+            ToggleFreeCameraInput(false);
+
+            _activeActionMap = _playerInputActionMap;
+            _prevActionMap = null;
         }
 
         private void OnDisable()
         {
             TogglePlayerInput(false);
             ToggleConsoleInput(false);
-        }
+            ToggleFreeCameraInput(false);
 
-        private void OnDestroy()
-        {
-            TogglePlayerInput(false);
-            ToggleConsoleInput(false);
+            _activeActionMap = null;
+            _prevActionMap = null;
         }
 
         #region Player Controls
+        public void SwitchActionMap(InputMap map)
+        {
+            _prevActionMap = _activeActionMap;
+
+            _prevActionMap.Disable();       // Disable previous action map
+
+            // Search for desired action map
+            _activeActionMap = GetActionMap(map);
+
+            _activeActionMap.Enable();      // Enable new action map
+        }
+
+        private void SwitchActionMap(InputActionMap map)
+        {
+            _prevActionMap = _activeActionMap;      // Store previous map
+
+            _prevActionMap.Disable();       // Disable previous action map
+
+            _activeActionMap = map;     // Store new map
+
+            _activeActionMap.Enable();      // Enable new action map
+        }
+
+        public void AssignPrevActionMap(InputMap map)
+        {
+            // Search for desired action map
+            _prevActionMap = GetActionMap(map);
+        }
+
+        // Switch Input Action Map
+        private InputActionMap GetActionMap(InputMap map)
+        {
+            switch (map)
+            {
+                case InputMap.Player:
+                    if (_debug) Debug.Log("Switched to Player Map");
+                    return _playerInputActionMap;
+                case InputMap.Console:
+                    if (_debug) Debug.Log("Switched to Console Map");
+                    return _consoleInputActionMap;
+                case InputMap.FreeCam:
+                    if (_debug) Debug.Log("Switched to FreeCamera Map");
+                    return _freeCamInputActionMap;
+                default:
+                    Debug.LogError("Invalid Input Map");
+                    return null;
+            }
+        }
 
         // Toggles 'Player' input actions
         public void TogglePlayerInput(bool toggle)
@@ -214,6 +290,28 @@ namespace RyansLibrary.Input
 
             if (_debug) Debug.Log("The Movement Input read was = " + MovementInput);
             if (_debug) Debug.Log("The Normalized Movement Input read was = " + MoveDirectionNormalized);
+        }
+
+        private void OnFreeCamMovementInput(InputAction.CallbackContext context)
+        {
+            // Read value from input and set the movementInput Vector to it
+            FreeCamMoveInput = context.ReadValue<Vector2>();       // This is an unnormalized Input
+            if (context.performed)
+                FreeCamMoveInputNormalized = (context.ReadValue<Vector2>()).normalized;
+
+            OnFreeCamMove?.Invoke();
+
+            if (_debug) Debug.Log("The Free Cam Movement Input read was = " + FreeCamMoveInput);
+            if (_debug) Debug.Log("The Free Cam Normalized Movement Input read was = " + FreeCamMoveInputNormalized);
+        }
+
+        private void OnFreeCamLookInput(InputAction.CallbackContext context)
+        {
+            // Read value from input and set the movementInput Vector to it
+            FreeCamLookInput = context.ReadValue<Vector2>();
+            OnFreeCamLook?.Invoke();
+
+            if (_debug) Debug.Log("The Free Cam Look Input read was = " + FreeCamLookInput);
         }
 
         private void OnPrimaryComboInput(InputAction.CallbackContext context)
@@ -262,9 +360,8 @@ namespace RyansLibrary.Input
 
         private void OnConsoleOpenInput()
         {
-            // Toggle Action Maps
-            TogglePlayerInput(false);
-            ToggleConsoleInput(true);
+            // Toggle Action Map
+            SwitchActionMap(_consoleInputActionMap);
 
             // Open Console
             OnConsoleOpen?.Invoke();
@@ -272,9 +369,8 @@ namespace RyansLibrary.Input
 
         private void OnConsoleCloseInput()
         {
-            // Toggle Action Maps
-            TogglePlayerInput(true);
-            ToggleConsoleInput(false);
+            // Toggle Action Map
+            SwitchActionMap(_prevActionMap);
 
             // Close Console
             OnConsoleClose?.Invoke();
@@ -288,7 +384,7 @@ namespace RyansLibrary.Input
 
             OnJump?.Invoke();
         }
-        */
+
         private void OnLookInput(InputAction.CallbackContext context)
         {
             // Read value from input and set the movementInput Vector to it
@@ -297,6 +393,7 @@ namespace RyansLibrary.Input
 
             if (_debug) Debug.Log("The Look Input read was = " + LookInput);
         }
+        */
 
         /*      Interact Input Functions (DEPRICATED)
         private void OnInteract1Input(InputAction.CallbackContext context)
