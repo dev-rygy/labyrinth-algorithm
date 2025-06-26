@@ -150,7 +150,7 @@ public class AbilityUI : MonoBehaviour
             case AbilityType.Dash:      // Assign Secondary Power Ability
                 _dashImage.sprite = null;
                 _dashBGImage.sprite = null;
-                _dashImage.fillAmount = 0;
+                _dashBGImage.fillAmount = 0;
                 _dashText.enabled = false;
                 ability.OnAbilityCooldown -= DashCooldownUI;
                 return;
