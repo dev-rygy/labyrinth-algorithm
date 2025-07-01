@@ -18,6 +18,8 @@ namespace RyansLibrary.Labyrinth
         private bool triangulationGizmos = false;
         private bool boundGizmos = false;
 
+        private bool generationStarted = false;
+
         public override void OnInspectorGUI()
         {
             // Get the target script
@@ -28,40 +30,54 @@ namespace RyansLibrary.Labyrinth
 
             EditorGUILayout.Space();
 
-            isDebugging = EditorGUILayout.Toggle("Toggle Debug", isDebugging);
+            isDebugging = EditorGUILayout.BeginToggleGroup("Toggle Debug", isDebugging);
 
-            if (isDebugging)
+
+            if (GUILayout.Button("Toggle Logs"))
             {
-                if (GUILayout.Button("Toggle Logs"))
-                {
-                    showLogs = !showLogs;
-                }
+                showLogs = !showLogs;
+            }
 
-                if (showLogs)
-                {
-                    blueprintLogs = EditorGUILayout.Toggle("Blueprint Generator Logs", blueprintLogs);
-                    roomGenLogs = EditorGUILayout.Toggle("Room Generator Logs", roomGenLogs);
-                    pathfindingLogs = EditorGUILayout.Toggle("Pathfinding Logs", pathfindingLogs);
-                }
-                else
-                {
-                    blueprintLogs = false;
-                    roomGenLogs = false;
-                    pathfindingLogs = false;
-                }
+            if (showLogs)
+            {
+                blueprintLogs = EditorGUILayout.Toggle("Blueprint Generator Logs", blueprintLogs);
+                roomGenLogs = EditorGUILayout.Toggle("Room Generator Logs", roomGenLogs);
+                pathfindingLogs = EditorGUILayout.Toggle("Pathfinding Logs", pathfindingLogs);
+            }
+            else
+            {
+                blueprintLogs = false;
+                roomGenLogs = false;
+                pathfindingLogs = false;
+            }
 
-                if (GUILayout.Button("Toggle Gizmos"))
-                {
-                    showGizmos = !showGizmos;
-                }
+            if (GUILayout.Button("Toggle Gizmos"))
+            {
+                showGizmos = !showGizmos;
+            }
 
-                if (showGizmos)
+            if (showGizmos)
+            {
+                blueprintGizmos = EditorGUILayout.Toggle("Blueprint Generator Gizmos", blueprintGizmos);
+                triangulationGizmos = EditorGUILayout.Toggle("Triangulation Gizmos", triangulationGizmos);
+                boundGizmos = EditorGUILayout.Toggle("Bounds Gizmos", boundGizmos);
+            }
+
+            if (GUILayout.Button("Begin/Restart Generation"))
+            {
+                // TODO: Reset Map Generation
+                generationStarted = true;
+            }
+
+            if (generationStarted)
+            {
+                if (GUILayout.Button("Step Generation"))
                 {
-                    blueprintGizmos = EditorGUILayout.Toggle("Blueprint Generator Gizmos", blueprintGizmos);
-                    triangulationGizmos = EditorGUILayout.Toggle("Triangulation Gizmos", triangulationGizmos);
-                    boundGizmos = EditorGUILayout.Toggle("Bounds Gizmos", boundGizmos);
+                    // TODO: Step Through Map Generation
                 }
             }
+
+            EditorGUILayout.EndToggleGroup();
         }
     }
 }
