@@ -4,12 +4,8 @@
  * Last Modified:   06/12/2025 (Ryan)
  * Notes:           Input Handler
 */
-using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 public enum InputMap
 {
