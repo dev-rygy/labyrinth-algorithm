@@ -4,14 +4,15 @@
  * Last Modified:   05/20/2025 (Ryan)
  * Notes:           Map Generator
 */
+using RyansLibrary.AI;
+using RyansLibrary.Geometry;
+using RyansLibrary.Graphs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
-
-using RyansLibrary.Graphs;
-using RyansLibrary.Geometry;
-using RyansLibrary.AI;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -93,21 +94,6 @@ namespace RyansLibrary.Labyrinth
         private DelaunayTriangulation3D _triangulation;
         private List<Edge> _minimumSpanningTree;
 
-        private enum DebugState
-        {
-            Start = 0,
-            Initialize,
-            GenUniqueRooms,
-            GenDivergentRooms,
-            GenTriangulation,
-            GenMainPath,
-            GenPaths,
-            GenRooms,
-            NotifyListeners,
-            Done,
-            Failed
-        }
-        private DebugState _debugState = DebugState.Start;
         private bool _debugGizmos = false;
         private bool _debugLogs = false;
         #endregion
@@ -136,16 +122,15 @@ namespace RyansLibrary.Labyrinth
             if (!_enabled)
                 return;
 
-            // If debug is active; step through procedures with UI buttons
+            // If debug is active; step through procedures
             if (_debug)
             {
                 Debug.Log("Map Generator: Debug On");
-                _debugState = DebugState.Start;        // Jump to first step in debug
                 return;
             }
             else
                 Debug.Log("Map Generator: Debug Off");
-            
+
             try
             {
                 // Initialize Data Structures and Seed
@@ -316,8 +301,6 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Generation success or failure</returns>
         public bool GenerateMainPathBlueprint(Zone zone)
         {
-            _debugState = DebugState.GenMainPath;
-
             if (zone.MainPath == null)      // Throw error if MainPath for zone does not exist
             {
                 Debug.LogError($"Map Generator Error: The Main Path for zone {zone.Name} is not assigned.");
@@ -938,204 +921,6 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Debug
-        private void OnGUI()
-        {
-            if (!_debug)
-                return;
-
-            DebugProcedure();
-        }
-
-        /// <summary>
-        /// Draw Debug Buttons
-        /// </summary>
-        /// 
-        List<Edge> _debugMST = null;
-        private void DebugProcedure()
-        {
-            if (_debugState == DebugState.Failed)
-                return;
-
-            if (_debugState == DebugState.Start)
-                _debugState = DebugState.Initialize;
-
-            if (_debugState == DebugState.Initialize)
-            {
-                // Initialize Master Data Structures
-                if (generateRandomSeed)
-                {
-                    // Generate Random Seed
-                    _seed = Random.Range(int.MinValue, int.MaxValue);
-                }
-                else
-                    _seed = customSeed;
-
-                Random.InitState(_seed);
-
-                if (_debugLogs)
-                    Debug.Log($"Generating map with seed: {_seed}");
-
-                // Initialize Master Data Structures
-                InitializeMasters();
-
-                // Initialize Blueprint Generator
-                _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
-
-                // Initialize Room Generator
-                _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
-
-                // Initialize Zone Data Structures
-                foreach (Zone zone in _zones)
-                    InitializeZone(zone);
-
-                if (_zones[0] == null)
-                {
-                    Debug.LogError("Map Generator Error: Zone Entry Missing.");
-                    _debugState = DebugState.Failed;
-                    return;
-                }
-
-                // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-                if (!CheckZoneBoundedVolume(_zones[0]))
-                {
-                    Debug.LogError($"Map Generator Error: The amount of blueprint rooms for zone {_zones[0].Name} exceeds the bounding box's volume or the bounding box is inverted.");
-                    _debugState = DebugState.Failed;
-                    return;
-                }
-
-                _debugState = DebugState.GenUniqueRooms;
-            }
-
-            if (_debugState == DebugState.GenUniqueRooms)
-            {
-                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Unique Rooms"))       // Generates Unique Rooms
-                {
-                    // Generate Unique Rooms
-                    PlaceUniqueRooms(_zones[0]);
-                    _debugState = DebugState.GenDivergentRooms;
-                }
-            }
-
-            if (_debugState == DebugState.GenDivergentRooms)
-            {
-                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Divergent Rooms"))        // Generates Divergent Rooms
-                {
-                    // Generate Divergent Rooms
-                    PlaceDivergentRooms(_zones[0]);
-                    _debugState = DebugState.GenTriangulation;
-                }
-            }
-
-            if (_debugState == DebugState.GenTriangulation)
-            {
-                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Triangulation"))        // Generates triangulation of main path
-                {
-                    _debugMST = GenerateContigiousTriangulation(_zones[0]);
-                    _debugState = DebugState.GenMainPath;
-                }
-            }
-
-            if (_debugState == DebugState.GenMainPath)
-            {
-                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Main Path"))        // Generates main path
-                {
-                    if (_debugMST != null)
-                    {
-                        ConnectMainPath(_zones[0], _debugMST);
-                        _debugState = DebugState.GenPaths;
-                    }
-                    else
-                    {
-                        Debug.LogError("Map Generator Error: MST was null.");
-                        _debugState = DebugState.Failed;
-                    }
-                }
-            }
-
-            if (_debugState == DebugState.GenPaths)
-            {
-                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Alt Blueprint Paths"))        // Generates alt paths that diverge from the main path
-                {
-                    GenerateAltPathBlueprints(_zones[0]);
-                    _debugState = DebugState.GenRooms;
-                }
-            }
-
-            if (_debugState == DebugState.GenRooms)
-            {
-                if (GUI.Button(new Rect(10, 10, 200, 30), "Generate Rooms From Paths"))        // Generates alt paths that diverge from the main path
-                {
-                    GenerateZoneRooms(_zones[0]);
-                    _debugState = DebugState.NotifyListeners;
-                }
-            }
-
-            if (_debugState == DebugState.NotifyListeners)
-            {
-                // Generate random loot when the room generation is complete through subscribing to this event
-                OnGenerationDone?.Invoke();
-                _debugState = DebugState.Done;
-            }
-
-            if (GUI.Button(new Rect(10, 50, 200, 30), "Show Gizmos"))       // Enables Gizmos
-            {
-                _debugGizmos = !_debugGizmos;
-                Debug.Log($"Toggle Gizmos: {_debugGizmos}");
-            }
-
-            if (GUI.Button(new Rect(10, 90, 200, 30), "Show Logs"))       // Enables Logs
-            {
-                _debugLogs = !_debugLogs;
-                Debug.Log($"Toggle Logs: {_debugLogs}");
-            }
-
-            if (GUI.Button(new Rect(10, 130, 200, 30), "Reload Scene"))        // Reload the scene
-            {
-                ScenesManager.Instance.ReloadScene();
-                Debug.Log($"Scene Reloaded.");
-            }
-
-            if (_debugState != DebugState.Done)
-            {
-                if (GUI.Button(new Rect(10, 170, 200, 30), "Do All"))        // Generates everything no matter what state the process is in
-                {
-                    if (_debugState == DebugState.GenUniqueRooms)
-                    {
-                        // Generate Critical Rooms
-                        // TODO: Add Critical Room Procedure
-                        _debugState = DebugState.GenDivergentRooms;
-                    }
-                    if (_debugState == DebugState.GenDivergentRooms)
-                    {
-                        // Generate Critical Rooms
-                        // TODO: Add Divergent Room Procedure
-                        _debugState = DebugState.GenMainPath;
-                    }
-                    if (_debugState == DebugState.GenMainPath)
-                    {
-                        GenerateMainPathBlueprint(_zones[0]);
-                        _debugState = DebugState.GenPaths;
-                    }
-                    if (_debugState == DebugState.GenPaths)
-                    {
-                        GenerateAltPathBlueprints(_zones[0]);
-                        _debugState = DebugState.GenRooms;
-                    }
-                    if (_debugState == DebugState.GenRooms)
-                    {
-                        GenerateZoneRooms(_zones[0]);
-                        _debugState = DebugState.NotifyListeners;
-                    }
-                    if (_debugState == DebugState.NotifyListeners)
-                    {
-                        // Generate random loot when the room generation is complete through subscribing to this event
-                        OnGenerationDone?.Invoke();
-                        _debugState = DebugState.Done;
-                    }
-                }
-            }
-        }
-
         private void OnDrawGizmos()
         {
             if (!_debugGizmos)

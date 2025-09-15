@@ -1,36 +1,38 @@
 using UnityEditor;
 using UnityEngine;
-using RyansLibrary.Labyrinth;
 
-[CustomEditor(typeof(MapGenerator))]
-public class MapGeneratorEditor : Editor
+namespace RyansLibrary.Labyrinth
 {
-    private bool isDebugging = true;
-
-    private bool showLogs = false;
-    private bool blueprintLogs = false;
-    private bool roomGenLogs = false;
-    private bool pathfindingLogs = false;
-
-    private bool showGizmos = false;
-    private bool blueprintGizmos = false;
-    private bool triangulationGizmos = false;
-    private bool boundGizmos = false;
-
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(MapGenerator))]
+    public class MapGeneratorEditor : Editor
     {
-        // Get the target script
-        MapGenerator generator = (MapGenerator)target;
+        private bool isDebugging = true;
 
-        // Default inspector
-        DrawDefaultInspector();
+        private bool showLogs = false;
+        private bool blueprintLogs = false;
+        private bool roomGenLogs = false;
+        private bool pathfindingLogs = false;
 
-        EditorGUILayout.Space();
+        private bool showGizmos = false;
+        private bool blueprintGizmos = false;
+        private bool triangulationGizmos = false;
+        private bool boundGizmos = false;
 
-        isDebugging = EditorGUILayout.Toggle("Toggle Debug", isDebugging);
+        private bool generationStarted = false;
 
-        if (isDebugging)
+        public override void OnInspectorGUI()
         {
+            // Get the target script
+            MapGenerator generator = (MapGenerator)target;
+
+            // Default inspector
+            DrawDefaultInspector();
+
+            EditorGUILayout.Space();
+
+            isDebugging = EditorGUILayout.BeginToggleGroup("Toggle Debug", isDebugging);
+
+
             if (GUILayout.Button("Toggle Logs"))
             {
                 showLogs = !showLogs;
@@ -60,6 +62,22 @@ public class MapGeneratorEditor : Editor
                 triangulationGizmos = EditorGUILayout.Toggle("Triangulation Gizmos", triangulationGizmos);
                 boundGizmos = EditorGUILayout.Toggle("Bounds Gizmos", boundGizmos);
             }
+
+            if (GUILayout.Button("Begin/Restart Generation"))
+            {
+                // TODO: Reset Map Generation
+                generationStarted = true;
+            }
+
+            if (generationStarted)
+            {
+                if (GUILayout.Button("Step Generation"))
+                {
+                    // TODO: Step Through Map Generation
+                }
+            }
+
+            EditorGUILayout.EndToggleGroup();
         }
     }
 }

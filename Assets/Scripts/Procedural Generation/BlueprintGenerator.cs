@@ -8,13 +8,13 @@
  *                  multiple techniques. Most common techniques are 
  *                  cached in BlueprintGenerator class
 */
+using RyansLibrary.AI;
+using RyansLibrary.Graphs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
-
-using RyansLibrary.Graphs;
-using RyansLibrary.AI;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -54,6 +54,9 @@ namespace RyansLibrary.Labyrinth
 
         private bool _debugGizmos = true;
         private bool _debugLogs = false;
+
+        private Coroutine stepwiseCoroutine = null;
+        private bool readyForNextStep = false;
 
         public BlueprintGenerator(Path masterPath, Dictionary<Vector3Int, BlueprintRoom> masterDictionary)
         {
@@ -702,5 +705,17 @@ namespace RyansLibrary.Labyrinth
             return MasterDictionary.TryGetValue(position, out collidedRoom);
         }
         #endregion
+
+        public void ProceedToNextStep()
+        {
+            readyForNextStep = true;
+        }
+
+        private IEnumerator WaitForStep()
+        {
+            readyForNextStep = false;
+            while (!readyForNextStep)
+                yield return null;
+        }
     }
 }
