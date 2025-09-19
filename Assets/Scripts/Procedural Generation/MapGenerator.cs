@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   05/20/2025 (Ryan)
+ * Last Modified:   09/18/2025 (Ryan)
  * Notes:           Map Generator
 */
 using RyansLibrary.AI;
@@ -92,11 +92,16 @@ namespace RyansLibrary.Labyrinth
         private DelaunayTriangulation3D _triangulation;
         private List<Edge> _minimumSpanningTree;
 
+        // Logs
+        private bool _debugLogs = false;
+        private bool _debugBlueprintLogs = false;
+        private bool _debugRoomGeneratorLogs = false;
+
+        // Gizmos
         private bool _debugGizmos = false;
         private bool _debugBlueprintGizmos = false;
         private bool _debugTriangulationGizmos = false;
         private bool _debugBoundsGizmos = false;
-        private bool _debugLogs = false;
         #endregion
 
         #region Mono
@@ -168,9 +173,11 @@ namespace RyansLibrary.Labyrinth
 
             // Initialize Blueprint Generator
             _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
+            _blueprintGenerator.ToggleDebugLogs(_debugBlueprintLogs);
 
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
+            _roomGenerator.ToggleDebugLogs(_debugRoomGeneratorLogs);
 
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
@@ -922,6 +929,24 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Debug
+        
+        // Log Toggles
+        public void ToggleLogs(bool toggle)
+        {
+            _debugLogs = toggle;
+        }
+
+        public void ToggleBlueprintLogs(bool toggle)
+        {
+            _debugBlueprintLogs = toggle;
+        }
+
+        public void ToggleRoomGeneratorLogs(bool toggle)
+        {
+            _debugRoomGeneratorLogs = toggle;
+        }
+
+        // Gizmo Toggles
         public void ToggleGizmos(bool toggle)
         {
             _debugGizmos = toggle;

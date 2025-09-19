@@ -1,6 +1,13 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    09/18/2024
+ * Last Modified:   09/18/2025 (Ryan)
+ * Notes:           Map Generator Debugging Editor
+*/
 using UnityEditor;
 using UnityEngine;
 using System;
+using TMPro;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -9,11 +16,12 @@ namespace RyansLibrary.Labyrinth
     {
         private bool isDebugging = true;
 
+        // Logs
         private bool showLogs = false;
-        private bool blueprintLogs = false;
-        private bool roomGenLogs = false;
-        private bool pathfindingLogs = false;
+        private bool showBlueprintLogs = false;
+        private bool showRoomGenLogs = false;
 
+        // Gizmos
         private bool showGizmos = false;
         private bool showBlueprintGizmos = false;
         private bool showTriangulationGizmos = false;
@@ -26,6 +34,9 @@ namespace RyansLibrary.Labyrinth
             // Get the target script
             MapGenerator generator = (MapGenerator)target;
 
+            if (generator == null)
+                return;
+
             // Default inspector
             DrawDefaultInspector();
 
@@ -33,7 +44,7 @@ namespace RyansLibrary.Labyrinth
 
             isDebugging = EditorGUILayout.BeginToggleGroup("Toggle Debug", isDebugging);
 
-
+            // Logs
             if (GUILayout.Button("Toggle Logs"))
             {
                 showLogs = !showLogs;
@@ -41,17 +52,20 @@ namespace RyansLibrary.Labyrinth
 
             if (showLogs)
             {
-                blueprintLogs = EditorGUILayout.Toggle("Blueprint Generator Logs", blueprintLogs);
-                roomGenLogs = EditorGUILayout.Toggle("Room Generator Logs", roomGenLogs);
-                pathfindingLogs = EditorGUILayout.Toggle("Pathfinding Logs", pathfindingLogs);
+                showBlueprintLogs = EditorGUILayout.Toggle("Blueprint Generator Logs", showBlueprintLogs);
+                showRoomGenLogs = EditorGUILayout.Toggle("Room Generator Logs", showRoomGenLogs);
             }
             else
             {
-                blueprintLogs = false;
-                roomGenLogs = false;
-                pathfindingLogs = false;
+                showBlueprintLogs = false;
+                showRoomGenLogs = false;
             }
 
+            // Communicate with Map Generator script
+            generator.ToggleBlueprintLogs(showBlueprintLogs);
+            generator.ToggleRoomGeneratorLogs(showRoomGenLogs);
+
+            // Gizmos
             if (GUILayout.Button("Toggle Gizmos"))
             {
                 showGizmos = !showGizmos;
@@ -63,11 +77,18 @@ namespace RyansLibrary.Labyrinth
                 showBlueprintGizmos = EditorGUILayout.Toggle("Blueprint Generator Gizmos", showBlueprintGizmos);
                 showTriangulationGizmos = EditorGUILayout.Toggle("Triangulation Gizmos", showTriangulationGizmos);
                 showBoundGizmos = EditorGUILayout.Toggle("Bounds Gizmos", showBoundGizmos);
-
-                generator.ToggleBlueprintGizmos(showBlueprintGizmos);
-                generator.ToggleTriangulationGizmos(showTriangulationGizmos);
-                generator.ToggleBoundsGizmos(showBoundGizmos);
             }
+            else
+            {
+                showBlueprintGizmos = false;
+                showTriangulationGizmos = false;
+                showBoundGizmos = false;
+            }
+
+            // Communicate with Map Generator script
+            generator.ToggleBlueprintGizmos(showBlueprintGizmos);
+            generator.ToggleTriangulationGizmos(showTriangulationGizmos);
+            generator.ToggleBoundsGizmos(showBoundGizmos);
 
             if (GUILayout.Button("Begin/Restart Generation"))
             {

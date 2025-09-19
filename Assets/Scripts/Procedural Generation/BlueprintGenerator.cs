@@ -29,6 +29,9 @@ namespace RyansLibrary.Labyrinth
         public bool Available { get; set; }
         public bool[] entrancewayFlags;
 
+        // Debugging
+        private bool _debugLogs;
+
         // Constructor
         public BlueprintRoom(Vector3Int postion, string roomName = "Blueprint Room")
         {
@@ -52,7 +55,6 @@ namespace RyansLibrary.Labyrinth
         // Keys are in room coords
         public Dictionary<Vector3Int, BlueprintRoom> MasterDictionary { get; private set; }
 
-        private bool _debugGizmos = true;
         private bool _debugLogs = false;
 
         private Coroutine stepwiseCoroutine = null;
@@ -706,6 +708,12 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
+        #region Debug
+        public void ToggleDebugLogs(bool toggle)
+        {
+            _debugLogs = toggle;
+        }
+
         public void ProceedToNextStep()
         {
             readyForNextStep = true;
@@ -717,5 +725,6 @@ namespace RyansLibrary.Labyrinth
             while (!readyForNextStep)
                 yield return null;
         }
+        #endregion
     }
 }

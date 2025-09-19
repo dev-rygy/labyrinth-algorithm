@@ -33,6 +33,12 @@ namespace RyansLibrary.Labyrinth
         // Keys are in room coords
         public Dictionary<Vector3Int, BlueprintRoom> MasterDictionary { get; private set; }
 
+        private int _gridUnitSize;          // Conventional size of a 1:1 room
+        private Transform _roomContainer;   // GameObject that will hold rooms
+
+        // Debugging
+        private bool _debugLogs;
+
         public RoomGenerator(Path masterPath, Dictionary<Vector3Int, BlueprintRoom> masterDictionary, int gridUnitSize, Transform roomContainer)
         {
             MasterPath = masterPath;
@@ -41,11 +47,6 @@ namespace RyansLibrary.Labyrinth
             _gridUnitSize = gridUnitSize;
             _roomContainer = roomContainer;
         }
-
-        private int _gridUnitSize;          // Conventional size of a 1:1 room
-        private Transform _roomContainer;   // GameObject that will hold rooms
-        private bool _debugGizmos = true;
-        private bool _debugLogs = false;
 
         #region Room Parser
         /// <summary>
@@ -653,6 +654,13 @@ namespace RyansLibrary.Labyrinth
 
             Debug.LogError("Map Generator Error: Probability of Room Weights Failed, unknown error.");
             return null;
+        }
+        #endregion
+
+        #region Debug
+        public void ToggleDebugLogs(bool toggle)
+        {
+            _debugLogs = toggle;
         }
         #endregion
     }
