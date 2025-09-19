@@ -90,6 +90,7 @@ namespace RyansLibrary.Labyrinth
         // Debugging
         private bool _debug = false;
         private List<DelaunayTriangulation3D> _triangulations;
+        private List<List<Edge>> _minimumSpanningTrees;
         private List<Edge> _minimumSpanningTree;
 
         // Logs
@@ -181,6 +182,7 @@ namespace RyansLibrary.Labyrinth
 
             // Initialize Debugging Lists
             _triangulations = new List<DelaunayTriangulation3D>();
+            _minimumSpanningTrees = new List<List<Edge>>();
 
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
@@ -506,11 +508,11 @@ namespace RyansLibrary.Labyrinth
 
             List<Edge> MST = _blueprintGenerator.FindMinimumSpanningTree(triangulation.Edges, triangulation.Edges[0].U);
 
-            if (triangulation == null)      // MST/Prim's failed
+            if (MST == null)      // MST/Prim's failed
                 return null;
 
             // Store MST for debug gizmo
-            _minimumSpanningTree = MST;
+            _minimumSpanningTrees.Add(MST);
 
             return MST;
         }
@@ -1005,6 +1007,9 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation()
         {
+            if (_triangulations == null)
+                return;
+
             foreach (DelaunayTriangulation3D triangulation in _triangulations)
             {
                 // Draw circumcircles in remaining tetrahedron from triangulation
@@ -1020,9 +1025,16 @@ namespace RyansLibrary.Labyrinth
                     Gizmos.color = _triangulationColor;
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
                 }
+            }
+
+            if (_minimumSpanningTrees == null)
+                return;
+
+            foreach (List<Edge> edgeList in _minimumSpanningTrees)
+            {
 
                 // Draw the minimum spanning tree of the zone
-                foreach (Edge e in _minimumSpanningTree)
+                foreach (Edge e in edgeList)
                 {
                     Gizmos.color = _minimumSpanningTreeColor;
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);

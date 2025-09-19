@@ -23,7 +23,7 @@ namespace RyansLibrary.Input
         // Player Input Events
         public static event System.Action OnAny;
         public static event System.Action OnMove;
-        public static event System.Action OnLook;
+        // public static event System.Action OnLook;        DEPRICATED
         // public static event System.Action OnLookRight;   DEPRICATED
         // public static event System.Action OnLookLeft;    DEPRICATED
         public static event System.Action OnJump;
