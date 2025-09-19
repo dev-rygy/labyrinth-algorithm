@@ -7,10 +7,13 @@
 using UnityEditor;
 using UnityEngine;
 using System;
-using TMPro;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Edit's the Map Generator's Inspector Editor.
+    /// Class has total dependancy on the Map Generator Script.
+    /// </summary>
     [CustomEditor(typeof(MapGenerator))]
     public class MapGeneratorEditor : Editor
     {
@@ -110,7 +113,7 @@ namespace RyansLibrary.Labyrinth
                 OnGenerationRestart?.Invoke();
             }
 
-            if (generationStarted)
+            if (generator.IsGenerating)
             {
                 if (GUILayout.Button("Step Generation"))
                 {

@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    02/12/2025
- * Last Modified:   02/19/2025 (Ryan)
+ * Last Modified:   09/18/2025 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Abilities;
@@ -56,7 +56,7 @@ public class AbilityUI : MonoBehaviour
         PlayerStateMachine.Instance.OnAbilityChanged -= AssignAbility;  // Receive callbacks for equipped abilities
     }
 
-    private void Awake()
+    private void Start()
     {
         if (PlayerStateMachine.Instance == null)
         {
