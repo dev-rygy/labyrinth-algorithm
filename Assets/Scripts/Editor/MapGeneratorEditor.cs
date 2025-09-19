@@ -14,6 +14,8 @@ namespace RyansLibrary.Labyrinth
     [CustomEditor(typeof(MapGenerator))]
     public class MapGeneratorEditor : Editor
     {
+        public event Action OnGenerationRestart;
+
         private bool isDebugging = true;
 
         // Logs
@@ -92,8 +94,8 @@ namespace RyansLibrary.Labyrinth
 
             if (GUILayout.Button("Begin/Restart Generation"))
             {
-                // TODO: Reset Map Generation
-                generationStarted = true;
+                // Reset Map Generation
+                OnGenerationRestart?.Invoke();
             }
 
             if (generationStarted)

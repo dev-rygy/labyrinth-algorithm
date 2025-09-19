@@ -934,7 +934,6 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Debug
-        
         // Log Toggles
         public void ToggleLogs(bool toggle)
         {
@@ -1032,7 +1031,6 @@ namespace RyansLibrary.Labyrinth
 
             foreach (List<Edge> edgeList in _minimumSpanningTrees)
             {
-
                 // Draw the minimum spanning tree of the zone
                 foreach (Edge e in edgeList)
                 {

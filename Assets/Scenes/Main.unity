@@ -973,6 +973,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -400
       objectReference: {fileID: 0}
+    - target: {fileID: 3344645367247575600, guid: ea4379ffa3cc78549a609c693a2ee9b3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3395340507123671767, guid: ea4379ffa3cc78549a609c693a2ee9b3,
         type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -1285,7 +1290,7 @@ MonoBehaviour:
   topCamAngleClamp: -0.75
   _cameraPivotTransform: {fileID: 1769615166}
   _cameraOffsetTransform: {fileID: 1273520057}
-  _debug: 1
+  _debug: 0
 --- !u!1 &879215206
 GameObject:
   m_ObjectHideFlags: 0
@@ -1803,7 +1808,7 @@ MonoBehaviour:
       type: 2}
   _boundingBoxColor: {r: 1, g: 0.31442907, b: 0, a: 1}
   _triangulationColor: {r: 1, g: 0.10849059, b: 0.32239568, a: 1}
-  _circumcircleColor: {r: 0.9996939, g: 1, b: 0, a: 0.050980393}
+  _circumcircleColor: {r: 0.9996939, g: 1, b: 0, a: 0.011764706}
   _minimumSpanningTreeColor: {r: 0.18752226, g: 0.8337331, b: 0.9245283, a: 1}
 --- !u!1 &1185124817
 GameObject:
