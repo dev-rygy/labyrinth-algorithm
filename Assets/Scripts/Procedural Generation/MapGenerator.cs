@@ -8,9 +8,7 @@ using RyansLibrary.AI;
 using RyansLibrary.Geometry;
 using RyansLibrary.Graphs;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
 
@@ -95,6 +93,9 @@ namespace RyansLibrary.Labyrinth
         private List<Edge> _minimumSpanningTree;
 
         private bool _debugGizmos = false;
+        private bool _debugBlueprintGizmos = false;
+        private bool _debugTriangulationGizmos = false;
+        private bool _debugBoundsGizmos = false;
         private bool _debugLogs = false;
         #endregion
 
@@ -479,8 +480,8 @@ namespace RyansLibrary.Labyrinth
             if (triangulation == null)      // Triangulation failed
                 return null;
 
-            if (_debug)     // Store triangulation for debug gizmo
-                _triangulation = triangulation;
+            // Store triangulation for debug gizmo
+            _triangulation = triangulation;
 
             // Turn off blueprint room availability for unique rooms 
             foreach (RoomEntry entry in zone.UniqueRooms)
@@ -498,8 +499,8 @@ namespace RyansLibrary.Labyrinth
             if (triangulation == null)      // MST/Prim's failed
                 return null;
 
-            if (_debug)     // Store MST for debug gizmo
-                _minimumSpanningTree = MST;
+            // Store MST for debug gizmo
+            _minimumSpanningTree = MST;
 
             return MST;
         }
@@ -921,6 +922,26 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Debug
+        public void ToggleGizmos(bool toggle)
+        {
+            _debugGizmos = toggle;
+        }
+
+        public void ToggleBlueprintGizmos(bool toggle)
+        {
+            _debugBlueprintGizmos = toggle;
+        }
+
+        public void ToggleTriangulationGizmos(bool toggle)
+        {
+            _debugTriangulationGizmos = toggle;
+        }
+
+        public void ToggleBoundsGizmos(bool toggle)
+        {
+            _debugBoundsGizmos = toggle;
+        }
+
         private void OnDrawGizmos()
         {
             if (!_debugGizmos)
@@ -928,14 +949,20 @@ namespace RyansLibrary.Labyrinth
 
             foreach (Zone zone in _zones)
             {
-                DrawBoundingBox(zone.Bounds);
-                DrawTriangulation();
-                DrawBluePrintGizmos(zone);
+                if (_debugBlueprintGizmos)
+                    DrawBluePrintGizmos(zone);
+
+                if (_debugTriangulationGizmos)
+                    DrawTriangulation();
+
+                if (_debugBoundsGizmos)
+                    DrawBoundingBox(zone.Bounds);
             }
 
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
-                DrawBluePrintGizmos(entry.ConnectionPath);
+                if (_debugBlueprintGizmos)
+                    DrawBluePrintGizmos(entry.ConnectionPath);
             }
         }
 
@@ -950,7 +977,7 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation()
         {
-            if (_triangulation == null) 
+            if (_triangulation == null)
                 return;
 
             // Draw circumcircles in remaining tetrahedron from triangulation

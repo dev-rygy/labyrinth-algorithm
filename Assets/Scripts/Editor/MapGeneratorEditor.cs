@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using System;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -14,9 +15,9 @@ namespace RyansLibrary.Labyrinth
         private bool pathfindingLogs = false;
 
         private bool showGizmos = false;
-        private bool blueprintGizmos = false;
-        private bool triangulationGizmos = false;
-        private bool boundGizmos = false;
+        private bool showBlueprintGizmos = false;
+        private bool showTriangulationGizmos = false;
+        private bool showBoundGizmos = false;
 
         private bool generationStarted = false;
 
@@ -54,13 +55,18 @@ namespace RyansLibrary.Labyrinth
             if (GUILayout.Button("Toggle Gizmos"))
             {
                 showGizmos = !showGizmos;
+                generator.ToggleGizmos(showGizmos);
             }
 
             if (showGizmos)
             {
-                blueprintGizmos = EditorGUILayout.Toggle("Blueprint Generator Gizmos", blueprintGizmos);
-                triangulationGizmos = EditorGUILayout.Toggle("Triangulation Gizmos", triangulationGizmos);
-                boundGizmos = EditorGUILayout.Toggle("Bounds Gizmos", boundGizmos);
+                showBlueprintGizmos = EditorGUILayout.Toggle("Blueprint Generator Gizmos", showBlueprintGizmos);
+                showTriangulationGizmos = EditorGUILayout.Toggle("Triangulation Gizmos", showTriangulationGizmos);
+                showBoundGizmos = EditorGUILayout.Toggle("Bounds Gizmos", showBoundGizmos);
+
+                generator.ToggleBlueprintGizmos(showBlueprintGizmos);
+                generator.ToggleTriangulationGizmos(showTriangulationGizmos);
+                generator.ToggleBoundsGizmos(showBoundGizmos);
             }
 
             if (GUILayout.Button("Begin/Restart Generation"))
