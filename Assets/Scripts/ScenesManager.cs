@@ -17,10 +17,17 @@ public class ScenesManager : MonoBehaviour
     private void Awake()
     {
         // Handle singleton
-        if (Instance && Instance != this)
+        if (Instance != null)
+        {
+            Debug.LogWarning("Scenes Manager Warning: Another instance of ScenesManager already exists. Deleting Object...");
             Destroy(gameObject);
-        else
-            Instance = this;
+            return;
+        }
+        
+        Instance = this;
+
+        gameObject.transform.parent = null;     // Parent must be cleared to be DNDOL
+        DontDestroyOnLoad(gameObject);
     }
 
     public void ReloadScene()

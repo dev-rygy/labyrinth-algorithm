@@ -101,7 +101,7 @@ namespace RyansLibrary.Labyrinth
         /// Clear the referenced blueprint rooms in this path.
         /// Warning: Dangerous unless you know what you're doing
         /// </summary>
-        public void ClearBluePrintRooms()
+        public void ClearBlueprintRooms()
         {
             BlueprintRooms.Clear();
         }

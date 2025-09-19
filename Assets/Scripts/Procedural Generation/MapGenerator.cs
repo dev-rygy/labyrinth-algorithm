@@ -54,6 +54,8 @@ namespace RyansLibrary.Labyrinth
         // Keys are in room coords
         public Dictionary<Vector3Int, BlueprintRoom> MasterDictionary { get; private set; }
         
+        public bool IsGenerating { get; private set; }
+
         // ***** Inspector Values *****
         [Tooltip("Enables map generation.")]
         [SerializeField] private bool _enabled = true;
@@ -91,7 +93,6 @@ namespace RyansLibrary.Labyrinth
         private bool _debug = false;
         private List<DelaunayTriangulation3D> _triangulations;
         private List<List<Edge>> _minimumSpanningTrees;
-        private List<Edge> _minimumSpanningTree;
 
         // Logs
         private bool _debugLogs = false;
@@ -123,7 +124,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         // TODO: Handle this in some sort of application manager
-        private void Start()
+        private void StartGeneration()
         {
             // Return if the Map Generator is not enabled
             if (!_enabled)
@@ -140,9 +141,6 @@ namespace RyansLibrary.Labyrinth
 
             try
             {
-                // Initialize Data Structures and Seed
-                InitializeLabyrinth();
-
                 // Generate Labyrinth Blueprint and Rooms
                 GenerateLabyrinth();
             }
@@ -212,10 +210,19 @@ namespace RyansLibrary.Labyrinth
         /// 
         /// The map generator is the top level of the system, this script is in charge of generating zones and zone connections.
         /// </summary>
-        public void GenerateLabyrinth()
+        private void GenerateLabyrinth()
         {
+            // Do not Generate a labyrinth if one is already generating
+            if (IsGenerating)
+                return;
+
+            IsGenerating = true;
+
             // Event to signal when map generation has begun
             OnGenerationStarted?.Invoke();
+
+            // Initialize Data Structures and Seed
+            InitializeLabyrinth();
 
             // ******* Generate Blueprints *******
             // Generate Zone Connection Paths
@@ -258,9 +265,18 @@ namespace RyansLibrary.Labyrinth
                 // TODO: Implement perlin noise height Map
             }
 
+            IsGenerating = false;
+
             // Labyrinth Generation Success
             // Event to signal when map generation is complete
             OnGenerationDone?.Invoke();
+        }
+
+        public void ResetLabyrinth()
+        {
+            DestroyAllRooms();      // Destroy all rooms from last generation
+            ScenesManager.Instance.ReloadScene();       // Reload to destroy all objects and reset player
+            StartGeneration();
         }
         #endregion
 
@@ -930,6 +946,12 @@ namespace RyansLibrary.Labyrinth
                 return false;
 
             return true;        // The zone's cell requirements are met with the bounded volume
+        }
+
+        private void DestroyAllRooms()
+        {
+            foreach (Transform child in _roomContainer.transform) 
+                Destroy(child.gameObject);
         }
         #endregion
 

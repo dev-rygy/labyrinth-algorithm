@@ -31,11 +31,23 @@ namespace RyansLibrary.Labyrinth
 
         private bool generationStarted = false;
 
-        public override void OnInspectorGUI()
+        private MapGenerator generator;
+
+        private void OnEnable()
         {
             // Get the target script
-            MapGenerator generator = (MapGenerator)target;
+            generator = (MapGenerator)target;
 
+            OnGenerationRestart += generator.ResetLabyrinth;
+        }
+
+        private void OnDisable()
+        {
+            OnGenerationRestart -= generator.ResetLabyrinth;
+        }
+
+        public override void OnInspectorGUI()
+        {
             if (generator == null)
                 return;
 

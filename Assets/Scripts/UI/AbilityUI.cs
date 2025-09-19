@@ -46,15 +46,6 @@ public class AbilityUI : MonoBehaviour
         _secondaryComboText.enabled = false;
         _secondaryPowerText.enabled = false;
         _dashText.enabled = false;
-
-        if (PlayerStateMachine.Instance == null)
-        {
-            Debug.LogError("Ability UI Error: PlayerStateMachine instance is null. Unable to subscribe to OnAbilityChanged.");
-            this.enabled = false;
-            return;
-        }
-
-        PlayerStateMachine.Instance.OnAbilityChanged += AssignAbility;  // Receive callbacks for equipped abilities
     }
 
     private void OnDisable()
@@ -63,6 +54,18 @@ public class AbilityUI : MonoBehaviour
             return;
 
         PlayerStateMachine.Instance.OnAbilityChanged -= AssignAbility;  // Receive callbacks for equipped abilities
+    }
+
+    private void Awake()
+    {
+        if (PlayerStateMachine.Instance == null)
+        {
+            Debug.LogError("Ability UI Error: PlayerStateMachine instance is null. Unable to subscribe to OnAbilityChanged.");
+            this.enabled = false;
+            return;
+        }
+
+        PlayerStateMachine.Instance.OnAbilityChanged += AssignAbility;  // Receive callbacks for equipped abilities
     }
 
     // Ability Assignment
