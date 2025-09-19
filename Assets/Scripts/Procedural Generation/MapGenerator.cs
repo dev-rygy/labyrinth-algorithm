@@ -89,7 +89,7 @@ namespace RyansLibrary.Labyrinth
 
         // Debugging
         private bool _debug = false;
-        private DelaunayTriangulation3D _triangulation;
+        private List<DelaunayTriangulation3D> _triangulations;
         private List<Edge> _minimumSpanningTree;
 
         // Logs
@@ -178,6 +178,9 @@ namespace RyansLibrary.Labyrinth
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
             _roomGenerator.ToggleDebugLogs(_debugRoomGeneratorLogs);
+
+            // Initialize Debugging Lists
+            _triangulations = new List<DelaunayTriangulation3D>();
 
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
@@ -488,7 +491,7 @@ namespace RyansLibrary.Labyrinth
                 return null;
 
             // Store triangulation for debug gizmo
-            _triangulation = triangulation;
+            _triangulations.Add(triangulation);
 
             // Turn off blueprint room availability for unique rooms 
             foreach (RoomEntry entry in zone.UniqueRooms)
@@ -1002,28 +1005,28 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation()
         {
-            if (_triangulation == null)
-                return;
-
-            // Draw circumcircles in remaining tetrahedron from triangulation
-            foreach (Tetrahedron t in _triangulation.Tetrahedra)
+            foreach (DelaunayTriangulation3D triangulation in _triangulations)
             {
-                Gizmos.color = _circumcircleColor;
-                Gizmos.DrawSphere(t.Circumcenter * _gridUnitSize, Mathf.Sqrt(t.CircumradiusSquared) * _gridUnitSize);
-            }
+                // Draw circumcircles in remaining tetrahedron from triangulation
+                foreach (Tetrahedron t in triangulation.Tetrahedra)
+                {
+                    Gizmos.color = _circumcircleColor;
+                    Gizmos.DrawSphere(t.Circumcenter * _gridUnitSize, Mathf.Sqrt(t.CircumradiusSquared) * _gridUnitSize);
+                }
 
-            // Draw remaining edges from triangulation
-            foreach (Edge e in _triangulation.Edges)
-            {
-                Gizmos.color = _triangulationColor;
-                Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
-            }
+                // Draw remaining edges from triangulation
+                foreach (Edge e in triangulation.Edges)
+                {
+                    Gizmos.color = _triangulationColor;
+                    Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
+                }
 
-            // Draw the minimum spanning tree of the zone
-            foreach (Edge e in _minimumSpanningTree)
-            {
-                Gizmos.color = _minimumSpanningTreeColor;
-                Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
+                // Draw the minimum spanning tree of the zone
+                foreach (Edge e in _minimumSpanningTree)
+                {
+                    Gizmos.color = _minimumSpanningTreeColor;
+                    Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
+                }
             }
         }
 
