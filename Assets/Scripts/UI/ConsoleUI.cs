@@ -35,7 +35,7 @@ public class ConsoleUI : UIBehaviour
     private int _inputMemoryIndex = 0;
     private int _currentInputMemCapacity = 0;
 
-    private void Start()
+    private void OnEnable()
     {
         CommandRegistry = new ConsoleCommandRegistry();          // Init. registry
         _inputMemory = new string[_inputMemoryCapacity];        // Init. command memory        
@@ -53,6 +53,18 @@ public class ConsoleUI : UIBehaviour
         OnClearConsole += ClearConsole;
 
         AddBasicConsoleCommandsToRegistry();
+    }
+
+    private void OnDisable()
+    {
+        InputHandler.OnConsoleOpen -= OpenConsole;
+        InputHandler.OnConsoleClose -= CloseConsole;
+        InputHandler.OnSubmit -= SubmitTicket;
+        InputHandler.OnNext -= GetNextInput;
+        InputHandler.OnPrevious -= GetPrevInput;
+
+        OnNewConsoleOutput -= OutputToConsole;
+        OnClearConsole -= ClearConsole;
     }
 
     private void OpenConsole()

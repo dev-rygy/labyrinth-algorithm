@@ -104,6 +104,7 @@ namespace RyansLibrary.Input
 
             TogglePlayerInput(true);
             ToggleConsoleInput(false);
+            ToggleUIInput(true);
         }
 
         private void SubscribeToPlayerEvents()
@@ -188,6 +189,7 @@ namespace RyansLibrary.Input
             TogglePlayerInput(true);
             ToggleConsoleInput(false);
             ToggleFreeCameraInput(false);
+            ToggleUIInput(true);
 
             _activeActionMap = _playerInputActionMap;
             _prevActionMap = null;
@@ -198,9 +200,30 @@ namespace RyansLibrary.Input
             TogglePlayerInput(false);
             ToggleConsoleInput(false);
             ToggleFreeCameraInput(false);
+            ToggleUIInput(true);
 
             _activeActionMap = null;
             _prevActionMap = null;
+        }
+
+        public void UnsubscribePlayerInputEvents()
+        {
+            OnAny = null;
+            OnMove = null;
+            // OnLook = null;
+            // OnLookRight = null;
+            // OnLookLeft = null;
+            OnJump = null;
+            OnInteract1 = null;
+            OnInteract2 = null;
+            OnComboPrimary = null;
+            OnComboSecondary = null;
+            OnPowerPrimary = null;
+            OnPowerSecondary = null;
+            OnDash = null;
+            OnTwoHand = null;
+            OnSheathe = null;
+            OnEmote = null;
         }
 
         #region Player Controls
@@ -271,6 +294,7 @@ namespace RyansLibrary.Input
                 _playerControls.Console.Disable();
         }
 
+        // Toggles 'Free Camera' input actions
         public void ToggleFreeCameraInput(bool toggle)
         {
             if (toggle)
@@ -278,6 +302,15 @@ namespace RyansLibrary.Input
             else
                 _playerControls.FreeCamera.Disable();
         }
+
+        // Toggles 'UI' input actions
+        public void ToggleUIInput(bool toggle)
+        {
+            if (toggle)
+                _playerControls.UI.Enable();
+            else 
+                _playerControls.UI.Disable();
+        }    
 
         private void OnMovementInput(InputAction.CallbackContext context)
         {

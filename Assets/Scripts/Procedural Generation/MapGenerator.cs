@@ -123,8 +123,7 @@ namespace RyansLibrary.Labyrinth
             DontDestroyOnLoad(gameObject);  // Have this gameObject persist
         }
 
-        // TODO: Handle this in some sort of application manager
-        private void StartGeneration()
+        public void StartGeneration()
         {
             // Return if the Map Generator is not enabled
             if (!_enabled)
@@ -272,13 +271,14 @@ namespace RyansLibrary.Labyrinth
             OnGenerationDone?.Invoke();
         }
 
+        // Only to be used in the inspector
         public void ResetLabyrinth()
         {
             if (!Application.isPlaying)     // Only run code when game is executing
                 return;
 
             DestroyAllRooms();      // Destroy all rooms from last generation
-            ScenesManager.Instance.ReloadScene();       // Reload to destroy all objects and reset player
+            ScenesManager.Instance.ReloadScene();       // Reload to reset data
             StartGeneration();
         }
         #endregion
@@ -951,7 +951,7 @@ namespace RyansLibrary.Labyrinth
             return true;        // The zone's cell requirements are met with the bounded volume
         }
 
-        private void DestroyAllRooms()
+        public void DestroyAllRooms()
         {
             foreach (Transform child in _roomContainer.transform) 
                 Destroy(child.gameObject);

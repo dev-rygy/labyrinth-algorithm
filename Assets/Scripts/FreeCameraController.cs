@@ -30,7 +30,7 @@ public class FreeCameraController : MonoBehaviour
     private Quaternion _initCameraOffsetTransformRot;
     private Vector3 _initCameraOffsetTransformScale;
 
-    private void Start()
+    private void OnEnable()
     {
         RegisterConsoleCommand();
 
@@ -46,6 +46,11 @@ public class FreeCameraController : MonoBehaviour
         _currentCameraSpeed = _cameraSpeed;
 
         InputHandler.OnFreeCamSprint += ToggleSprint;
+    }
+
+    private void OnDisable()
+    {
+        InputHandler.OnFreeCamSprint -= ToggleSprint;
     }
 
     private void Update()

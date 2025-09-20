@@ -14,6 +14,7 @@ using RyansLibrary.Input;
 using RyansLibrary.Abilities;
 using UnityEngine;
 using System;
+using UnityEngine.InputSystem;
 
 public enum PlayerStates
 {
@@ -174,6 +175,19 @@ public class PlayerStateMachine : StateMachine
 
     private void OnDisable()
     {
+        if (Health == null)
+            return;
+
+        // Unsubscribe to State Events
+        Health.OnTakeDamage -= HandleTakeDamage;
+        Health.OnDeath -= HandleDeath;
+    }
+
+    private void OnDestroy()
+    {
+        // Release player from input
+        Input.UnsubscribePlayerInputEvents();
+
         if (Health == null)
             return;
 
