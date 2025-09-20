@@ -77,21 +77,34 @@ namespace RyansLibrary.Labyrinth
             // *** Loop through all blueprint rooms ***
             for (int i = 0 + indexOffset; i < path.BlueprintCount(); i++)
             {
-                BlueprintRoom indexedRoom = path.BlueprintRooms[i];
+                // Initialize current room and blueprint room at start of each iteration
+                BlueprintRoom indexedBRoom = path.BlueprintRooms[i];
+                Room genRoom = null;
 
                 // Check if the indexed room is available; If not then skip iteration
-                if (!indexedRoom.Available)
+                if (!indexedBRoom.Available)
                     continue;
 
                 RoomDirection rDir = RoomDirection.PosX;        // Default Room Case
                 RoomType rType = RoomType.general;              // Default Room Type
 
+                // TODO: Remove this and do it another way. This is a bad way of getting the last room
+                switch (pathType)
+                {
+                    case PathType.prize:
+                        if (i == path.BlueprintCount() - 1)     // Final room in prize path is marked as prize
+                        {
+                            rType = RoomType.prize;
+                        }
+                        break;
+                }
+
                 // Check conditions to spawn a Big Room starting at the indexed room's position
-                if (RoomShapeCondition(indexedRoom, RoomShape.bigRoom, path, out rDir))
+                if (RoomShapeCondition(indexedBRoom, RoomShape.bigRoom, path, out rDir))
                 {
                     // spawn B-Room
                     // Hook up blueprintRoom.entrancewayflags to new room
-                    Room genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, indexedRoom, rDir);         // **** Spawn B-Room
+                    genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, indexedBRoom, rDir);         // **** Spawn B-Room
                     path.Add(genRoom);              // Add new room to paths
                     MasterPath.Add(genRoom);
 
@@ -106,9 +119,9 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Check conditions to spawn a Tall Room starting at the indexed room's position
-                else if (RoomShapeCondition(indexedRoom, RoomShape.tallRoom, path, out rDir))
+                else if (RoomShapeCondition(indexedBRoom, RoomShape.tallRoom, path, out rDir))
                 {
-                    Room genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, indexedRoom, rDir);        // **** Spawn T-Room
+                    genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, indexedBRoom, rDir);        // **** Spawn T-Room
                     path.Add(genRoom);              // Add new room to paths
                     MasterPath.Add(genRoom);
 
@@ -125,7 +138,7 @@ namespace RyansLibrary.Labyrinth
                 // Check conditions to spawn a Long Room starting at the indexed room's position
                 else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.longRoom, path, out rDir))
                 {
-                    Room genRoom = GenerateRoom(RoomShape.longRoom, rType, path, indexedRoom, rDir);        // **** Spawn L-Room
+                    genRoom = GenerateRoom(RoomShape.longRoom, rType, path, indexedBRoom, rDir);        // **** Spawn L-Room
 
                     if (genRoom == null)
                     {
@@ -146,7 +159,7 @@ namespace RyansLibrary.Labyrinth
                     // Make current blueprint space unavailable for future checks
                     path.BlueprintRooms[i].Available = false;
 
-                    Room genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, indexedRoom, 0); // Spawn S-Room
+                    genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, indexedBRoom, 0); // Spawn S-Room
                     if (genRoom == null)
                     {
                         Debug.LogError($"Map Generator Error: Path {path.Name} attempted to spawn a Small Room but failed.");
