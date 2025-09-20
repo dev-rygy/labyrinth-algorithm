@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   09/18/2025 (Ryan)
+ * Last Modified:   09/19/2025 (Ryan)
  * Notes:           Map Generator
 */
 using RyansLibrary.AI;
@@ -274,6 +274,9 @@ namespace RyansLibrary.Labyrinth
 
         public void ResetLabyrinth()
         {
+            if (!Application.isPlaying)     // Only run code when game is executing
+                return;
+
             DestroyAllRooms();      // Destroy all rooms from last generation
             ScenesManager.Instance.ReloadScene();       // Reload to destroy all objects and reset player
             StartGeneration();

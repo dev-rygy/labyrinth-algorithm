@@ -32,8 +32,6 @@ namespace RyansLibrary.Labyrinth
         private bool showTriangulationGizmos = false;
         private bool showBoundGizmos = false;
 
-        private bool generationStarted = false;
-
         private MapGenerator generator;
 
         private void OnEnable()
