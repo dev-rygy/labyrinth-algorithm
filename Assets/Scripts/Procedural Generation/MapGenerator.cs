@@ -45,6 +45,7 @@ namespace RyansLibrary.Labyrinth
         // ***** Events *****
         public static event Action OnGenerationStarted;
         public static event Action OnGenerationDone;
+        public static event Action OnGenerationFailed;
 
         // ***** Path Containers *****
         // The Master Path holds a reference to all bluprint rooms in an zone
@@ -228,20 +229,26 @@ namespace RyansLibrary.Labyrinth
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
                 // TODO: Option 1: Handle this after both zone A's and B's blueprints have been generated.
-                    // This is only needed here because of triangulation but can be handled with
-                    // an extra step of finding the shortest path to a room
+                // This is only needed here because of triangulation but can be handled with
+                // an extra step of finding the shortest path to a room
                 // TODO: Option 2: Connect blueprint with a unique room entry assiciated with the zone so
-                    // that the room can still be a part of triangulation and the pathfinding occurs after 
-                    // the zone's generation
+                // that the room can still be a part of triangulation and the pathfinding occurs after 
+                // the zone's generation
                 if (!GenerateZoneConnectionBlueprints(entry))
+                {
+                    GenerationFailed();
                     return;     // Blueprint failed for zone connection; stop algorithm
+                }
             }
 
             // Generate Blueprint Map For Each Zone
             foreach (Zone zone in _zones)
             {
                 if (!GenerateZoneBlueprints(zone))
+                {
+                    GenerationFailed();
                     return;     // Blueprint failed for zone; stop algorithm
+                }
             }
 
             // ******* Parse and Generate Rooms *******
@@ -251,7 +258,10 @@ namespace RyansLibrary.Labyrinth
             {
                 // Generate actual rooms for the zone connection
                 if (!GenerateZoneConnectionRooms(entry))
+                {
+                    GenerationFailed();
                     return;     // Room Generation failed for zone connection; stop algorithm
+                }
             }
 
             // Spawn rooms based on the blueprint map for each zone
@@ -259,7 +269,10 @@ namespace RyansLibrary.Labyrinth
             {
                 // Check room conditions and generate rooms using the blueprint map of the zone
                 if (!GenerateZoneRooms(zone))
+                {
+                    GenerationFailed();
                     return;     // Room Generation failed for zone; stop algorithm
+                }
 
                 // TODO: Implement perlin noise height Map
             }
@@ -280,6 +293,18 @@ namespace RyansLibrary.Labyrinth
             DestroyAllRooms();      // Destroy all rooms from last generation
             ScenesManager.Instance.ReloadScene();       // Reload to reset data
             StartGeneration();
+        }
+
+        private void GenerationFailed()
+        {
+            IsGenerating = false;
+
+            Debug.LogWarning("Map Generator Warning: Map generation failed, retrying...");
+            OnGenerationFailed?.Invoke();
+            Instance.DestroyAllRooms();
+
+            // TODO: Delete after demo.
+            ApplicationController.Instance.StartNewGame();
         }
         #endregion
 
@@ -317,7 +342,7 @@ namespace RyansLibrary.Labyrinth
             // Ganerate Alternative paths (prize, trial, etc.)
             if (!GenerateAltPathBlueprints(zone))
             {
-                Debug.LogError($"Map Generator Error: Alt. Path Generation for {zone.Name} zone failed.");
+                Debug.LogWarning($"Map Generator Warning: Alt. Path Generation for {zone.Name} zone failed.");
                 return false;
             }
 

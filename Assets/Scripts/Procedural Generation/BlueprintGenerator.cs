@@ -396,7 +396,7 @@ namespace RyansLibrary.Labyrinth
                     fail--;
                     if (fail < 0)
                     {
-                        Debug.LogError("Failed");
+                        Debug.LogWarning("Map Generator Warning: Failed Drundard Walk due to out of bounds error.");
                         return false;
                     }
 
