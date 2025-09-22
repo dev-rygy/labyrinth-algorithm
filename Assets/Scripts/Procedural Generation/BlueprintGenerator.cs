@@ -49,21 +49,21 @@ namespace RyansLibrary.Labyrinth
 
         // ***** Master References *****
         // The Master Path holds a reference to all bluprint rooms generated
-        public Path MasterPath { get; private set; }
+        private Path _masterPathReference;
         // Master Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions.
         // Holds reference to all blueprint rooms
         // Keys are in room coords
-        public Dictionary<Vector3Int, BlueprintRoom> MasterDictionary { get; private set; }
+        private Dictionary<Vector3Int, BlueprintRoom> _masterDictionaryReference;
 
         private bool _debugLogs = false;
 
-        private Coroutine stepwiseCoroutine = null;
-        private bool readyForNextStep = false;
+        private Coroutine _stepwiseCoroutine = null;
+        private bool _readyForNextStep = false;
 
         public BlueprintGenerator(Path masterPath, Dictionary<Vector3Int, BlueprintRoom> masterDictionary)
         {
-            MasterPath = masterPath;
-            MasterDictionary = masterDictionary;
+            _masterPathReference = masterPath;
+            _masterDictionaryReference = masterDictionary;
         }
 
         #region Unique Blueprint Placement
@@ -108,7 +108,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     Vector3Int cellPosition = adjustedSpawnPos + cell;      // Find the actual position in room space of the cell
 
-                    if (MasterDictionary.TryGetValue(cellPosition, out BlueprintRoom r))
+                    if (_masterDictionaryReference.TryGetValue(cellPosition, out BlueprintRoom r))
                         r.Available = true;
                     else
                         GenerateBlueprintRoom(path, cellPosition, true);
@@ -143,7 +143,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     Vector3Int actualPos = spawnPosition + cell;      // Find the actual position in room space of the cell
 
-                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                    if (_masterDictionaryReference.TryGetValue(actualPos, out BlueprintRoom r))
                         r.Available = true;
                     else
                         GenerateBlueprintRoom(path, actualPos, true);
@@ -273,7 +273,7 @@ namespace RyansLibrary.Labyrinth
                 if (pos != startPos && pos != endPos)
                     curRoom = GenerateBlueprintRoom(path, pos);
                 else
-                    curRoom = MasterDictionary[pos];
+                    curRoom = _masterDictionaryReference[pos];
 
                 if (prevRoom == null)
                 {
@@ -310,7 +310,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            MasterPath.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
+            _masterPathReference.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
 
             Vector3Int curPos = Vector3Int.zero;
             BlueprintRoom curRoom = null;
@@ -463,7 +463,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Blueprint room created in room coords.</returns>
         public BlueprintRoom GenerateBlueprintRoom(Path path, Vector3Int position, bool available = true)
         {
-            string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
+            string blueName = $"BlueprintRoom ({_masterPathReference.BlueprintCount()})";
             BlueprintRoom newRoom = new BlueprintRoom(position, blueName);
             newRoom.Available = available;
 
@@ -471,8 +471,8 @@ namespace RyansLibrary.Labyrinth
 
             // Update paths and masters with new blueprint room
             path?.Add(newRoom);
-            MasterPath?.Add(newRoom);                    // Add to Master List (required)
-            MasterDictionary?.Add(position, newRoom);    // Add to Master Dictionary (required)
+            _masterPathReference?.Add(newRoom);                    // Add to Master List (required)
+            _masterDictionaryReference?.Add(position, newRoom);    // Add to Master Dictionary (required)
             return newRoom;
         }
 
@@ -704,7 +704,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Collided or not collided</returns>
         public bool CheckCollision(Vector3Int position, out BlueprintRoom collidedRoom)
         {
-            return MasterDictionary.TryGetValue(position, out collidedRoom);
+            return _masterDictionaryReference.TryGetValue(position, out collidedRoom);
         }
         #endregion
 
@@ -716,13 +716,13 @@ namespace RyansLibrary.Labyrinth
 
         public void ProceedToNextStep()
         {
-            readyForNextStep = true;
+            _readyForNextStep = true;
         }
 
         private IEnumerator WaitForStep()
         {
-            readyForNextStep = false;
-            while (!readyForNextStep)
+            _readyForNextStep = false;
+            while (!_readyForNextStep)
                 yield return null;
         }
         #endregion
