@@ -56,7 +56,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5863528550629813726}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -81,6 +81,7 @@ MonoBehaviour:
   generateRandomSeed: 1
   _gridUnitSize: 13
   _roomContainer: {fileID: 688038257182604410}
+  maxPlacementAttempts: 50
   _zones:
   - {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c, type: 2}
   - {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691, type: 2}

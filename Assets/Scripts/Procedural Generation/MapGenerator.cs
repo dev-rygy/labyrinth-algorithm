@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   09/19/2025 (Ryan)
+ * Last Modified:   09/21/2025 (Ryan)
  * Notes:           Map Generator
 */
 using RyansLibrary.AI;
@@ -9,6 +9,7 @@ using RyansLibrary.Geometry;
 using RyansLibrary.Graphs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
 
@@ -33,6 +34,9 @@ namespace RyansLibrary.Labyrinth
     }
     #endregion
 
+    /// <summary>
+    /// Composition master class that wraps the Blueprint and Room Generator classes to build a contigious map.
+    /// </summary>
     public class MapGenerator : MonoBehaviour
     {
         #region Variables
@@ -70,6 +74,9 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private int _gridUnitSize = 13;                        // The unit size of the room grid's cell
         [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
 
+        [Header("Blueprint Settings")]
+        [SerializeField] private int maxPlacementAttempts = 50;
+
         [Header("Zones")]
         [SerializeField] private List<Zone> _zones;
 
@@ -82,7 +89,8 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _triangulationColor;
         [SerializeField] private Color _circumcircleColor;
-        [SerializeField] private Color _minimumSpanningTreeColor;
+        [SerializeField] private Color _contiguousGraphColor;
+        [SerializeField] private Color _randomCyclesColor;
 
         // ***** Private Variables *****
         private int _seed;      // TODO: For networking make the host generate this
@@ -94,6 +102,7 @@ namespace RyansLibrary.Labyrinth
         private bool _debug = false;
         private List<DelaunayTriangulation3D> _triangulations;
         private List<List<Edge>> _minimumSpanningTrees;
+        private List<Edge> _randomCycles;
 
         // Logs
         private bool _debugLogs = false;
@@ -130,6 +139,7 @@ namespace RyansLibrary.Labyrinth
             if (!_enabled)
                 return;
 
+            // TODO: Enable debug in editor script when stepwise is being worked on
             // If debug is active; step through procedures
             if (_debug)
             {
@@ -181,6 +191,7 @@ namespace RyansLibrary.Labyrinth
             // Initialize Debugging Lists
             _triangulations = new List<DelaunayTriangulation3D>();
             _minimumSpanningTrees = new List<List<Edge>>();
+            _randomCycles = new List<Edge>();
 
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
@@ -295,6 +306,9 @@ namespace RyansLibrary.Labyrinth
             StartGeneration();
         }
 
+        /// <summary>
+        /// Resets Labyrinth and retrys generation
+        /// </summary>
         private void GenerationFailed()
         {
             IsGenerating = false;
@@ -303,7 +317,7 @@ namespace RyansLibrary.Labyrinth
             OnGenerationFailed?.Invoke();
             Instance.DestroyAllRooms();
 
-            // TODO: Delete after demo.
+            // TODO: Delete after demo
             ApplicationController.Instance.StartNewGame();
         }
         #endregion
@@ -379,15 +393,15 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Generate Delauney Triangulation
-            List<Edge> MST = GenerateContigiousTriangulation(zone);
-            if (MST == null)
+            List<Edge> zoneGraph = GenerateContigiousTriangulation(zone);
+            if (zoneGraph == null)
             {
                 Debug.LogError($"Map Generator Error: MST failed to be found in {zone.Name} zone.");
                 return false;
             }
 
             // Pathfind and Connect Main Path
-            if (!ConnectMainPath(zone, MST))
+            if (!ConnectMainPath(zone, zoneGraph))
             {
                 Debug.LogError($"Map Generator Error: Main Path could not be connected in {zone.Name} zone.");
                 return false;
@@ -406,7 +420,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Placement success or failure</returns>
         public bool PlaceUniqueRooms(Zone zone)
         {
-            // 1.) Spawn Fixed Rooms
+            // 1.) Spawn Fixed Rooms (Rooms that have a set spawn destination)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
@@ -414,7 +428,7 @@ namespace RyansLibrary.Labyrinth
                     // Attempt to place fixed room (room with specified spawn position) in zone
                     bool hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry, zone.MainPath, zone.Bounds);
 
-                    if (!hasPlaced)
+                    if (!hasPlaced)     // Only one attempt needed for a fixed room, otherwise generation has failed entirely
                     {
                         // Fixed room failed to generate, stop all operations
                         Debug.LogError($"Map Generator Error: Fixed Room bluprints \"{entry}\" was outside of bounds and could not be placed.");
@@ -423,7 +437,7 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            // 2.) Spawn Constrained Rooms
+            // 2.) Spawn Constrained Rooms (Rooms that have a unique spawn area)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 bool hasPlaced = false;
@@ -438,7 +452,7 @@ namespace RyansLibrary.Labyrinth
                         placementAttempts++;
 
                         // If constrained room failed to generate a certain number of times then return false
-                        if (placementAttempts > 50)
+                        if (placementAttempts > maxPlacementAttempts)
                         {
                             Debug.LogError($"Map Generator Error: Constrained Room blueprints \"{entry}\" exhaused " +
                                 $"all of it's attempts to be placed.");
@@ -448,7 +462,7 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            // 3.) Spawn Free Rooms
+            // 3.) Spawn Free Rooms (Rooms that can spawn in any point inside the zone bounds)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 bool hasPlaced = false;
@@ -463,7 +477,7 @@ namespace RyansLibrary.Labyrinth
                         placementAttempts++;
 
                         // If free room failed to generate a certain number of times then return false
-                        if (placementAttempts > 50)
+                        if (placementAttempts > maxPlacementAttempts)
                         {
                             Debug.LogError($"Map Generator Error: Free Room blueprints \"{entry}\" exhaused all of it's attempts to be placed.");
                             return false;
@@ -505,7 +519,7 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // If divergent room failed to generate a certain number of times then return false
-                if (placementAttempts > 50)
+                if (placementAttempts > maxPlacementAttempts)
                 {
                     Debug.LogError($"Map Generator Error: A divergent room in zone {zone} exhaused all of it's placement attempts.");
                     return false;
@@ -558,7 +572,29 @@ namespace RyansLibrary.Labyrinth
             // Store MST for debug gizmo
             _minimumSpanningTrees.Add(MST);
 
-            return MST;
+            // TODO: Choose random edges from triangulation
+            List<Edge> zoneGraph = new List<Edge>(MST);
+            List<Edge> availableEdges = triangulation.Edges.Except(MST).ToList();               // Remove all MST edges from list; difference
+
+            // Choose random edges from the graph with none of the MST edges to add
+            // varience to the map
+            for (int i = 0; i < zone.RandomCyclesInGraph; i++)
+            {
+                if (availableEdges.Count <= 0)
+                {
+                    Debug.LogError("Map Generator Error: Too many random cycles in zone.");
+                    return null;
+                }
+
+                int randomEdgeIndex = Random.Range(0, availableEdges.Count);
+                Edge selectedEdge = availableEdges[randomEdgeIndex];
+
+                zoneGraph.Add(selectedEdge);
+                availableEdges.Remove(selectedEdge);
+                _randomCycles.Add(selectedEdge);
+            }
+
+            return zoneGraph;
         }
 
         /// <summary>
@@ -1084,9 +1120,18 @@ namespace RyansLibrary.Labyrinth
                 // Draw the minimum spanning tree of the zone
                 foreach (Edge e in edgeList)
                 {
-                    Gizmos.color = _minimumSpanningTreeColor;
+                    Gizmos.color = _contiguousGraphColor;
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
                 }
+            }
+
+            if (_randomCycles == null)
+                return;
+
+            foreach (Edge e in _randomCycles)
+            {
+                Gizmos.color = _randomCyclesColor;
+                Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
             }
         }
 
