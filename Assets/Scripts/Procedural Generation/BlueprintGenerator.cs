@@ -10,6 +10,7 @@
 */
 using RyansLibrary.AI;
 using RyansLibrary.Graphs;
+using RyansLibrary.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -306,84 +307,37 @@ namespace RyansLibrary.Labyrinth
             // Make sure the path has atleast one room cell that can spawn
             if (path.PathLength <= 0)
             {
-                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative");
+                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
+                return false;
+            }
+
+            if (startRoom == null)
+            {
+                Debug.LogError($"Map Generator Error: Starting Room for Drunkard Walk cannot be null.");
                 return false;
             }
 
             _masterPathReference.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
 
             Vector3Int curPos = Vector3Int.zero;
-            BlueprintRoom curRoom = null;
+            BlueprintRoom curRoom = startRoom;
+            curPos = startRoom.Position;            // Start at the desired Start Room
 
-            // Prime loop with starting room
-            if (startRoom == null)          // Generate Start Room if a start room was not passed in, generate a start room at position (0,0,0); TODO: Make the start position a desired position if we plan on having places where the player can teleport to.
-            {
-                //**** TODO: REMOVE!!! ****
-                Vector3Int tempStartRoomPos = new Vector3Int(5, 0, 5);      // Temp start room position for testing
-
-                curRoom = GenerateBlueprintRoom(path, tempStartRoomPos);
-                curPos = tempStartRoomPos;
-                startRoom = curRoom;
-            }
-            else                            // Start at the desired Start Room
-            {
-                curPos = startRoom.Position;
-                curRoom = startRoom;
-            }
-            if (_debugLogs) 
-                Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
+            if (_debugLogs)  Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
 
             // Chose a position in a random cardinal direction and check for collisions
             bool[] attempts = new bool[STANDARD_FACE_COUNT];
             int failedAttempts = 0;
-            int entrFlagIdx = 0;
             while (path.BlueprintCount() < path.PathLength)
             {
                 Vector3Int tempPos = curPos;
 
                 // Choose a random direction to be the potential position for the next room.
-                int faceIdx = Random.Range(1, STANDARD_FACE_COUNT);
+                int directionalIndex = Random.Range(0, STANDARD_FACE_COUNT);
 
-                while (attempts[faceIdx])                               // Store attempt direction in circular array to aviod choosing the same direction twice.
-                {                                                       // Loop though attempts to find a unique direction
-                    faceIdx++;
-                    if (faceIdx % STANDARD_FACE_COUNT == 0)           // Circle back in array
-                        faceIdx = 0;
-                }
+                directionalIndex = ArrayUtils.FindIndexCircular<bool>(attempts, directionalIndex, x => x == false);
 
-                // "Walk" in that direction from the current pos
-                switch (faceIdx)
-                {
-                    // E0 - E5 is the face count for a unit room, this will be used later for entranceways
-                    case 0:
-                        tempPos += Vector3Int.right;    // F0 : (1, 0, 0); Wall Right
-                        entrFlagIdx = 0;
-                        break;
-                    case 1:
-                        tempPos += Vector3Int.left;     // F1 : (-1, 0, 0); Wall Left
-                        entrFlagIdx = 1;
-                        break;
-                    case 2:
-                        tempPos += Vector3Int.forward;  // F2 : (0, 0, 1); Wall Forward
-                        entrFlagIdx = 2;
-                        break;
-                    case 3:
-                        tempPos += Vector3Int.back;     // F3 : (0, 0, -1); Wall Back
-                        entrFlagIdx = 3;
-                        break;
-                    case 4:
-                        tempPos += Vector3Int.up;       // F4 : (0, 1, 0); Wall Top
-                        entrFlagIdx = 4;
-                        break;
-                    case 5:
-                        tempPos += Vector3Int.down;     // F5 : (0, 1, 0); Wall Bot
-                        entrFlagIdx = 5;
-                        break;
-                    default:
-                        Debug.LogError("Map Generator Error: Direction choosen by gen alg does not exist.");
-                        entrFlagIdx = -1;
-                        break;
-                }
+                tempPos += GetDirectionFromIndex(directionalIndex);
 
                 // Check if the room is in the realm of the bounding box, if not then don't spawn
                 if (CheckOutOfBounds(tempPos, bounds))
@@ -394,14 +348,13 @@ namespace RyansLibrary.Labyrinth
 
                     // *** TODO: REMOVE ***
                     fail--;
-                    if (fail < 0)
+                    if (fail <= 0)
                     {
-                        Debug.LogWarning("Map Generator Warning: Failed Drundard Walk due to out of bounds error.");
+                        Debug.LogWarning($"Map Generator Warning: Failed Drundard Walk due to out of bounds error. Position: {tempPos}");
                         return false;
                     }
 
-                    if (_debugLogs) 
-                        Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
+                    if (_debugLogs) Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
                     continue;
                 }
 
@@ -411,7 +364,7 @@ namespace RyansLibrary.Labyrinth
                 // Check position in hash map; if failed then flag face attempt and try choosing a new position 
                 if (CheckCollision(tempPos, out collidedRoom))        // *** Test Failed; collision with another blueprintRoom
                 {
-                    attempts[entrFlagIdx] = true;
+                    attempts[directionalIndex] = true;
                     failedAttempts++;
                 }
                 else                                         // *** Test Passed; no collision
@@ -419,7 +372,7 @@ namespace RyansLibrary.Labyrinth
                     curPos = tempPos; // Change Current Position to new position
 
                     BlueprintRoom newBlueRoom = GenerateBlueprintRoom(path, curPos);
-                    FlagDoorways(newBlueRoom, curRoom, entrFlagIdx);                    // Flag the face that touches the opposite room
+                    FlagDoorways(newBlueRoom, curRoom, directionalIndex);                    // Flag the face that touches the opposite room
 
                     curRoom = newBlueRoom;
 
@@ -449,6 +402,29 @@ namespace RyansLibrary.Labyrinth
             }
 
             return true;
+        }
+
+        private Vector3Int GetDirectionFromIndex(int index)
+        {
+            switch (index)
+            {
+                // E0 - E5 is the face count for a unit room, this will be used later for entranceways
+                case 0:
+                    return Vector3Int.right;    // F0 : (1, 0, 0); Wall Right
+                case 1:
+                    return Vector3Int.left;     // F1 : (-1, 0, 0); Wall Left
+                case 2:
+                    return Vector3Int.forward;  // F2 : (0, 0, 1); Wall Forward
+                case 3:
+                    return Vector3Int.back;     // F3 : (0, 0, -1); Wall Back
+                case 4:
+                    return Vector3Int.up;       // F4 : (0, 1, 0); Wall Top
+                case 5:
+                    return Vector3Int.down;     // F5 : (0, 1, 0); Wall Bot
+                default:
+                    Debug.LogError("Map Generator Error: Direction choosen does not exist.");
+                    return Vector3Int.zero;
+            }
         }
         #endregion
 
