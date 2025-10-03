@@ -403,7 +403,7 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        int stackFrames = 0;
+        int _stackFrames = 0;
         /// <summary>
         /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
         /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
@@ -429,7 +429,7 @@ namespace RyansLibrary.Labyrinth
 
             if (_debugLogs) Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
 
-            stackFrames = 0;
+            _stackFrames = 0;
             if (BlueprintDrunkardWalkRecursive(path, bounds, startRoom) == null)
             {
                 Debug.LogError($"Map Generator Error: Path generation failed recursive algorithm");
@@ -444,22 +444,22 @@ namespace RyansLibrary.Labyrinth
             Debug.Log("Starting recursion");
 
             // Failsafe ****************
-            stackFrames++;
-            if (stackFrames >= 1000)
+            _stackFrames++;
+            if (_stackFrames >= 1000)
             {
                 Debug.LogError("Too many stack frames, stopping");
-                Application.Quit();
                 return null;
             }
             // *****************************
 
             if (path.BlueprintCount() > path.PathLength)
             {
-                Debug.Log("Path End");
+                //Debug.Log("Path End");
                 return prevRoom;
             }
 
-            Debug.Log("Attempting placement");
+
+            Debug.Log($"Attempting placement for {prevRoom.Position}");
             // Attempt to place a new room
             BlueprintRoom newRoom = AttemptPlaceRoomRandom(path, bounds, prevRoom);
 
@@ -471,19 +471,19 @@ namespace RyansLibrary.Labyrinth
                 if (nextRoom == null)       // next room could not be placed? Continuation of path failed -> try prev room again
                 {
                     Debug.Log("Backtracking Collision");
-                    stackFrames--;
+                    _stackFrames--;
                     return BlueprintDrunkardWalkRecursive(path, bounds, prevRoom);          // Backtrack
                 }
                 else
                 {
                     Debug.Log("Backtracking success");
-                    stackFrames--;
+                    _stackFrames--;
                     return prevRoom;
                 }
             }
 
             Debug.Log("Collision");
-            stackFrames--;
+            _stackFrames--;
             return null;    // No room could be placed
         }
 
@@ -503,6 +503,8 @@ namespace RyansLibrary.Labyrinth
                     return null;
 
                 Vector3Int tempPos = prevRoom.Position + GetDirectionFromIndex(directionalIndex);
+
+                // Debug.Log($"Attempting placement at {tempPos}");
 
                 // Check position in hash map; if failed then flag face attempt and try choosing a new position 
                 if (!CheckOutOfBounds(tempPos, bounds) && !CheckCollision(tempPos))     // If position is not out of bounds and not colliding with another room

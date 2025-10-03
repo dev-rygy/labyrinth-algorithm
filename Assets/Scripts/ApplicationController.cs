@@ -19,9 +19,8 @@ public class ApplicationController : MonoBehaviour
     public static ApplicationController Instance { get; private set; }
 
     [SerializeField] private GameObject playerPrefab;
-    
     [SerializeField] private Vector3 playerSpawnPoint = new Vector3(65, 0, 0);
-
+    [SerializeField] private bool _clearConsoleOnGameStart = false;
 
     private void Awake()
     {
@@ -41,6 +40,9 @@ public class ApplicationController : MonoBehaviour
 
     public void StartNewGame()
     {
+        if (_clearConsoleOnGameStart) 
+            Debug.ClearDeveloperConsole();
+
         StartCoroutine(LoadNewGame());
     }
 
