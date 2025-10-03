@@ -403,6 +403,124 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
+        int stackFrames = 0;
+        /// <summary>
+        /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
+        /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
+        /// </summary>
+        /// <param name="path">A path with a length of atleast one.</param>
+        /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
+        public bool BlueprintDrunkardWalkNew(Path path, BoundsInt bounds, BlueprintRoom startRoom)
+        {
+            // Make sure the path has atleast one room cell that can spawn
+            if (path.PathLength <= 0)
+            {
+                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
+                return false;
+            }
+
+            if (startRoom == null)
+            {
+                Debug.LogError($"Map Generator Error: Starting Room for Drunkard Walk cannot be null.");
+                return false;
+            }
+
+            _masterPathReference.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
+
+            if (_debugLogs) Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
+
+            stackFrames = 0;
+            if (BlueprintDrunkardWalkRecursive(path, bounds, startRoom) == null)
+            {
+                Debug.LogError($"Map Generator Error: Path generation failed recursive algorithm");
+                return false;
+            }
+
+            return true;
+        }
+
+        private BlueprintRoom BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
+        {
+            Debug.Log("Starting recursion");
+
+            // Failsafe ****************
+            stackFrames++;
+            if (stackFrames >= 1000)
+            {
+                Debug.LogError("Too many stack frames, stopping");
+                Application.Quit();
+                return null;
+            }
+            // *****************************
+
+            if (path.BlueprintCount() > path.PathLength)
+            {
+                Debug.Log("Path End");
+                return prevRoom;
+            }
+
+            Debug.Log("Attempting placement");
+            // Attempt to place a new room
+            BlueprintRoom newRoom = AttemptPlaceRoomRandom(path, bounds, prevRoom);
+
+            if (newRoom != null)    // New room was placed -> place next room
+            {
+                Debug.Log("Placed Room");
+                BlueprintRoom nextRoom = BlueprintDrunkardWalkRecursive(path, bounds, newRoom);
+
+                if (nextRoom == null)       // next room could not be placed? Continuation of path failed -> try prev room again
+                {
+                    Debug.Log("Backtracking Collision");
+                    stackFrames--;
+                    return BlueprintDrunkardWalkRecursive(path, bounds, prevRoom);          // Backtrack
+                }
+                else
+                {
+                    Debug.Log("Backtracking success");
+                    stackFrames--;
+                    return prevRoom;
+                }
+            }
+
+            Debug.Log("Collision");
+            stackFrames--;
+            return null;    // No room could be placed
+        }
+
+        private BlueprintRoom AttemptPlaceRoomRandom(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
+        {
+            // Chose a position in a random cardinal direction and check for collisions
+            bool[] attempts = new bool[STANDARD_FACE_COUNT];
+            int failedAttempts = 0;
+
+            while (failedAttempts < STANDARD_FACE_COUNT)
+            {
+                // Choose a random direction to be the potential position for the next room.
+                int directionalIndex = Random.Range(0, STANDARD_FACE_COUNT);
+                directionalIndex = ArrayUtils.FindIndexCircular<bool>(attempts, directionalIndex, x => x == false);
+
+                if (directionalIndex < 0)
+                    return null;
+
+                Vector3Int tempPos = prevRoom.Position + GetDirectionFromIndex(directionalIndex);
+
+                // Check position in hash map; if failed then flag face attempt and try choosing a new position 
+                if (!CheckOutOfBounds(tempPos, bounds) && !CheckCollision(tempPos))     // If position is not out of bounds and not colliding with another room
+                {
+                    // Return new blueprint room
+                    BlueprintRoom newBlueRoom = GenerateBlueprintRoom(path, tempPos);
+                    FlagDoorways(newBlueRoom, prevRoom, directionalIndex);                    // Flag the face that touches the opposite room
+
+                    return newBlueRoom;
+                }
+
+                attempts[directionalIndex] = true;
+                failedAttempts++;
+            }
+
+            return null;
+        }
+
         private Vector3Int GetDirectionFromIndex(int index)
         {
             switch (index)
@@ -680,6 +798,17 @@ namespace RyansLibrary.Labyrinth
         public bool CheckCollision(Vector3Int position, out BlueprintRoom collidedRoom)
         {
             return _masterDictionaryReference.TryGetValue(position, out collidedRoom);
+        }
+
+        /// <summary>
+        /// Checks for a collision with another blueprint cell
+        /// </summary>
+        /// <param name="position">The position of the blueprint room</param>
+        /// <param name="collidedRoom">If any room was found to collide then return the room otherwise will be null</param>
+        /// <returns>Collided or not collided</returns>
+        public bool CheckCollision(Vector3Int position)
+        {
+            return _masterDictionaryReference.ContainsKey(position);
         }
         #endregion
 

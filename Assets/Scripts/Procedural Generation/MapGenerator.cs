@@ -73,6 +73,8 @@ namespace RyansLibrary.Labyrinth
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
         [SerializeField] private int _gridUnitSize = 13;                        // The unit size of the room grid's cell
         [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
+        [SerializeField] private bool _retryGenerationOnFail;
+        [SerializeField] private bool _useNewDrunkardWalkAlg;
 
         [Header("Blueprint Settings")]
         [SerializeField] private int maxPlacementAttempts = 50;
@@ -313,8 +315,12 @@ namespace RyansLibrary.Labyrinth
         {
             IsGenerating = false;
 
-            Debug.LogWarning("Map Generator Warning: Map generation failed, retrying...");
+            Debug.LogWarning("Map Generator Warning: Map generation failed");
             OnGenerationFailed?.Invoke();
+
+            if (!_retryGenerationOnFail)
+                return;
+
             Instance.DestroyAllRooms();
 
             // TODO: Delete after demo
@@ -663,7 +669,12 @@ namespace RyansLibrary.Labyrinth
                 // start at index 1 as to not choose the starting room of the game
                 BlueprintRoom startRoom = _blueprintGenerator.ChooseRandomRoomInPath(zone.MainPath, 1);
                 path.Initialize(pathStartingIndex, pathEndingIndex);
-                bool result = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
+
+                bool result;
+                if (_useNewDrunkardWalkAlg)
+                    result = _blueprintGenerator.BlueprintDrunkardWalkNew(path, zone.Bounds, startRoom);
+                else
+                    result = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
 
                 if (!result)        // Dunkard Walk exausted all attempts; failed
                     return false;
