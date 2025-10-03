@@ -4,10 +4,10 @@
  * Last Modified:   09/19/2025 (Ryan)
  * Notes:           Controls the execution order of application
 */
-using RyansLibrary.Labyrinth;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
+using RyansLibrary.Labyrinth;
 
 /// <summary>
 /// Controls the execution order and game states.

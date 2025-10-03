@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/20/2025
- * Last Modified:   03/19/2025 (Ryan)
+ * Last Modified:   10/03/2025 (Ryan)
  * Notes:           Path in a scriptable object
 */
 using System;
@@ -55,6 +55,8 @@ namespace RyansLibrary.Labyrinth
         public int startMasterIdx { get; set; }  // Start index in master path
         public int endMasterIdx { get; set; }    // End index in master path
 
+        public bool IsInitialized => CheckInitialize();
+
         // Constructor for path; gets it's start and end index in the master path
         public void Initialize(int startIdx = 0, int endIdx = 0)
         {
@@ -63,6 +65,14 @@ namespace RyansLibrary.Labyrinth
 
             startMasterIdx = startIdx;
             endMasterIdx = endIdx;
+        }
+
+        private bool CheckInitialize()
+        {
+            if (BlueprintRooms != null && Rooms != null)
+                return true;
+
+            return false;
         }
 
         /// <summary>

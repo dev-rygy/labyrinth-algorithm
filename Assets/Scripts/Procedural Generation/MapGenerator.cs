@@ -1,17 +1,19 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   09/21/2025 (Ryan)
+ * Last Modified:   10/03/2025 (Ryan)
  * Notes:           Map Generator
 */
-using RyansLibrary.AI;
-using RyansLibrary.Geometry;
-using RyansLibrary.Graphs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
+using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
+
+using RyansLibrary.AI;
+using RyansLibrary.Geometry;
+using RyansLibrary.Graphs;
+using RyansLibrary.UnityEditor;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -68,6 +70,7 @@ namespace RyansLibrary.Labyrinth
         [Header("Seed")]
         [SerializeField] private int customSeed = 0;
         [SerializeField] private bool generateRandomSeed = true;
+        [SerializeField, ReadOnly] private int _seed = 0;
 
         [Header("Global Settings")]
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
@@ -95,7 +98,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _randomCyclesColor;
 
         // ***** Private Variables *****
-        private int _seed;      // TODO: For networking make the host generate this
+        // private int _seed;      // TODO: For networking make the host generate this
 
         private BlueprintGenerator _blueprintGenerator;
         private RoomGenerator _roomGenerator;
@@ -652,7 +655,7 @@ namespace RyansLibrary.Labyrinth
             // Set base for paths
             int baseIndex = zone.MainPath.BlueprintCount() - 1;
 
-            foreach (Path path in zone.Paths)
+            foreach (Path path in zone.Paths)       // O(n * m) where n is the path and m is the room range
             {
                 if (path == null)
                 {
@@ -660,20 +663,20 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                // Path starting index and ending index
+                // Initialize path
                 int pathStartingIndex = baseIndex;
                 int pathEndingIndex = baseIndex + path.PathLength;
                 path.Initialize(pathStartingIndex, pathEndingIndex);
 
                 // Create new path and walk
                 // TODO: Later use Dijkstra maps to find a more controllable starting and ending index
-                // start at index 1 as to not choose the starting room of the game
-                // Choose a random room respecting the constraints and return
                 bool pathPlaced = false;
+                // TODO: Store startIndex and endIndex in the path itself
                 int startIndex = 1;
-                int endIndex = zone.MainPath.BlueprintCount() - 1;
-                int randomStartingIndex = Random.Range(startIndex, endIndex);
+                int endIndex = zone.MainPath.BlueprintCount() - 1;      // Start at index 1 as to not choose the starting room of the game
+                int randomStartingIndex = Random.Range(startIndex, endIndex);   // Choose a random room respecting the constraints
 
+                // Attempt to place path in range
                 Func<int, int> circularIncrement = x => (x < endIndex + 1) ? ++x : x = startIndex;
                 for (int i = randomStartingIndex; i != randomStartingIndex - 1; i = circularIncrement(i))
                 {
@@ -683,6 +686,7 @@ namespace RyansLibrary.Labyrinth
 
                     pathPlaced = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
 
+                    // Break out of loop to prevent duplicate path placement
                     if (pathPlaced)
                         break;
                 }

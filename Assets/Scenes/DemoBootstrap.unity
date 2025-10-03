@@ -2357,13 +2357,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
         type: 3}
+      propertyPath: _seed
+      value: 1232312312
+      objectReference: {fileID: 0}
+    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
+        type: 3}
       propertyPath: customSeed
-      value: 1212548750
+      value: 725250860
       objectReference: {fileID: 0}
     - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
         type: 3}
       propertyPath: generateRandomSeed
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
         type: 3}

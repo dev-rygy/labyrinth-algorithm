@@ -1,21 +1,21 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    05/11/2025
- * Last Modified:   09/18/2025 (Ryan)
+ * Last Modified:   10/03/2025 (Ryan)
  * Notes:           Blueprint Generator
  *                  Handles all blueprint cell generation
  *                  Has many functions to generate blueprint rooms using
  *                  multiple techniques. Most common techniques are 
  *                  cached in BlueprintGenerator class
 */
-using RyansLibrary.AI;
-using RyansLibrary.Graphs;
-using RyansLibrary.Utils;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
+
+using RyansLibrary.AI;
+using RyansLibrary.Graphs;
+using RyansLibrary.Utils;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -29,9 +29,6 @@ namespace RyansLibrary.Labyrinth
         public Vector3Int Position { get; private set; }        // Position of blueprint room in room coords
         public bool Available { get; set; }
         public bool[] entrancewayFlags;
-
-        // Debugging
-        private bool _debugLogs;
 
         // Constructor
         public BlueprintRoom(Vector3Int postion, string roomName = "Blueprint Room")
@@ -293,7 +290,6 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Blueprint Random
-        /*  DEPRICATED 
         /// <summary>
         /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
         /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
@@ -302,8 +298,11 @@ namespace RyansLibrary.Labyrinth
         /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
         public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom)
         {
-            // *** TODO: REMOVE ***
-            int fail = 1000;
+            if (!path.IsInitialized)
+            {
+                Debug.LogWarning($"Map Generator Error: Path {path.Name} must be initialized for Drunkard Walk.");
+                return false;
+            }
 
             // Make sure the path has atleast one room cell that can spawn
             if (path.PathLength <= 0)
@@ -318,129 +317,23 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            _masterPathReference.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
-
-            BlueprintRoom curRoom = startRoom;
-            Vector3Int curPos = startRoom.Position;            // Start at the desired Start Room
-
-            if (_debugLogs)  Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
-
-            // Chose a position in a random cardinal direction and check for collisions
-            bool[] attempts = new bool[STANDARD_FACE_COUNT];
-            int failedAttempts = 0;
-            while (path.BlueprintCount() < path.PathLength)     // TODO: Add random path lengths?
-            {
-                Vector3Int tempPos = curPos;
-
-                // Choose a random direction to be the potential position for the next room.
-                int directionalIndex = Random.Range(0, STANDARD_FACE_COUNT);
-
-                directionalIndex = ArrayUtils.FindIndexCircular<bool>(attempts, directionalIndex, x => x == false);
-
-                tempPos += GetDirectionFromIndex(directionalIndex);
-
-                // Check if the room is in the realm of the bounding box, if not then don't spawn
-                if (CheckOutOfBounds(tempPos, bounds))
-                {
-                    // TODO: Enable the stuff below, we need a prev room in order to do this because you cannot set the collided room as the bound
-                    // attempts[entrFlagIdx] = true;
-                    // failedAttempts++;
-
-                    // *** TODO: REMOVE ***
-                    fail--;
-                    if (fail <= 0)
-                    {
-                        Debug.LogWarning($"Map Generator Warning: Failed Drundard Walk due to out of bounds error. Position: {tempPos}");
-                        return false;
-                    }
-
-                    if (_debugLogs) Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
-                    continue;
-                }
-
-                // Check Master Path for collisions (the temp pos ends up being inside another designated room space)
-                BlueprintRoom collidedRoom = null;
-
-                // Check position in hash map; if failed then flag face attempt and try choosing a new position 
-                if (CheckCollision(tempPos, out collidedRoom))        // *** Test Failed; collision with another blueprintRoom
-                {
-                    attempts[directionalIndex] = true;
-                    failedAttempts++;
-                }
-                else                                         // *** Test Passed; no collision
-                {
-                    curPos = tempPos; // Change Current Position to new position
-
-                    BlueprintRoom newBlueRoom = GenerateBlueprintRoom(path, curPos);
-                    FlagDoorways(newBlueRoom, curRoom, directionalIndex);                    // Flag the face that touches the opposite room
-
-                    curRoom = newBlueRoom;
-
-                    // Reset Attempts Array because we sucessfully spawned blueprint room
-                    Array.Clear(attempts, 0, attempts.Length);
-                    failedAttempts = 0;
-                }
-
-                // TODO: This is a bad way of handling collisions, implement backtracking later!
-                // If failed too many times -> try another room (rare)
-                if (failedAttempts >= STANDARD_FACE_COUNT)        // All spaces adjacent to the current room are covered
-                {
-                    // Make the current room the collided room and try to gen again
-                    curPos = tempPos;
-                    curRoom = collidedRoom;
-
-                    // Reset Array
-                    Array.Clear(attempts, 0, attempts.Length);
-                    failedAttempts = 0;
-
-                    if (curRoom == null)
-                    {
-                        Debug.LogError("Map Generator Error: No more availible spaces exist for a new bluprint room where a conflict does not occur.");
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-        */
-
-        int _stackFrames = 0;
-        /// <summary>
-        /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
-        /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
-        /// </summary>
-        /// <param name="path">A path with a length of atleast one.</param>
-        /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
-        public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom)
-        {
-            // Make sure the path has atleast one room cell that can spawn
-            if (path.PathLength <= 0)
-            {
-                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
-                return false;
-            }
-
-            if (startRoom == null)
-            {
-                Debug.LogError($"Map Generator Error: Starting Room for Drunkard Walk cannot be null.");
-                return false;
-            }
-
-            _masterPathReference.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
+            // Extend master path's end index
+            _masterPathReference.endMasterIdx = path.endMasterIdx;
 
             if (_debugLogs) Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
 
-            _stackFrames = 0;
-            if (BlueprintDrunkardWalkRecursive(path, bounds, startRoom) == null)
+            // Attempt to place path
+            if (!BlueprintDrunkardWalkRecursive(path, bounds, startRoom))
             {
-                Debug.LogWarning($"Map Generator Warning: Path generation failed recursive algorithm at {startRoom.RoomName}");
+                if (_debugLogs) Debug.LogWarning($"Map Generator Warning: Path generation failed recursive algorithm at {startRoom.RoomName}");
                 return false;
             }
 
             return true;
         }
 
+        /* OLD RECURSIVE ALG (DEPRICATED)
+        int _stackFrames = 0;
         private BlueprintRoom BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
         {
             // Failsafe ****************
@@ -478,8 +371,29 @@ namespace RyansLibrary.Labyrinth
             _stackFrames--;
             return null;    // No room could be placed
         }
+        */
 
-        private BlueprintRoom AttemptPlaceRoomRandom(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
+        private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
+        {
+            if (path.BlueprintCount() > path.PathLength)
+                return true;
+
+            // Attempt to place a new room
+            BlueprintRoom newRoom = PlaceBlueprintInRandomDirection(path, bounds, prevRoom);
+
+            if (newRoom != null)    // New room was placed -> place next room
+            {
+                bool placed = BlueprintDrunkardWalkRecursive(path, bounds, newRoom);
+
+                if (!placed)       // next room could not be placed? Continuation of path failed -> try prev room again
+                    return BlueprintDrunkardWalkRecursive(path, bounds, prevRoom);          // Backtrack
+                else
+                    return true;
+            }
+            return false;    // No room could be placed
+        }
+
+        private BlueprintRoom PlaceBlueprintInRandomDirection(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
         {
             // Chose a position in a random cardinal direction and check for collisions
             bool[] attempts = new bool[STANDARD_FACE_COUNT];

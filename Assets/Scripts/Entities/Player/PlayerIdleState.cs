@@ -4,11 +4,9 @@
  * Last Modified:   02/11/2025 (Ryan)
  * Notes:           Player Idle State
 */
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
 using RyansLibrary.Input;
-using UnityEngine.Rendering;
 
 /// <summary>
 /// This is the default state for the player. Every state the player transitions to

@@ -5,10 +5,10 @@
  * Notes:           Holds all the path's in an zone and the 
  *                      bounds that they may spawn rooms in
 */
-using RyansLibrary.AI;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+using RyansLibrary.AI;
 
 namespace RyansLibrary.Labyrinth
 {
