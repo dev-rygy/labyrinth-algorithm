@@ -1870,6 +1870,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6288163642289274413, guid: 3a55df7c24309c74798865a78e36de5f,
         type: 3}
+    - target: {fileID: 1323803375079589868, guid: 6ab9a3f62de25f545aee86b11d767568,
+        type: 3}
+      propertyPath: _clearConsoleOnGameStart
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5157115898237139377, guid: 6ab9a3f62de25f545aee86b11d767568,
         type: 3}
       propertyPath: m_Name
@@ -2350,6 +2355,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
+        type: 3}
+      propertyPath: customSeed
+      value: 1212548750
+      objectReference: {fileID: 0}
+    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
+        type: 3}
+      propertyPath: generateRandomSeed
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
         type: 3}
       propertyPath: _randomCyclesColor.a

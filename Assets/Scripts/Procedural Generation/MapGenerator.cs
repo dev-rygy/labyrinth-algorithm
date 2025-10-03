@@ -663,26 +663,34 @@ namespace RyansLibrary.Labyrinth
                     Debug.LogError($"Map Generator Error: A path {path.Name} for zone {zone.name} is not assigned.");
                     return false;
                 }
-                
+
                 // Create new path and walk
                 // TODO: Later use Dijkstra maps to find a more controllable starting and ending index
                 // start at index 1 as to not choose the starting room of the game
-                BlueprintRoom startRoom = _blueprintGenerator.ChooseRandomRoomInPath(zone.MainPath, 1);
-                path.Initialize(pathStartingIndex, pathEndingIndex);
+                // BlueprintRoom startRoom = _blueprintGenerator.ChooseRandomRoomInPath(zone.MainPath, 1);
+                // Choose a random room respecting the constraints and return
+                bool pathPlaced = false;
+                int randomStartingIndex = Random.Range(pathStartingIndex, pathEndingIndex);
+                int roomIndex = randomStartingIndex;
 
-                bool result;
-                if (_useNewDrunkardWalkAlg)
-                    result = _blueprintGenerator.BlueprintDrunkardWalkNew(path, zone.Bounds, startRoom);
-                else
-                    result = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
+                Func<int, int> circularIncrement = x => (x < pathEndingIndex) ? x++ : x = pathStartingIndex;
+                for (int i = randomStartingIndex; i != randomStartingIndex - 1; i = circularIncrement(i))
+                {
+                    path.Initialize(pathStartingIndex, pathEndingIndex);
+                    BlueprintRoom startRoom = path.BlueprintRooms[roomIndex];
 
-                if (!result)        // Dunkard Walk exausted all attempts; failed
-                    return false;
+                    if (_useNewDrunkardWalkAlg)
+                        pathPlaced = _blueprintGenerator.BlueprintDrunkardWalkNew(path, zone.Bounds, startRoom);
+                    else
+                        pathPlaced = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
 
-                baseIndex = pathEndingIndex;    // Reset base index for next path
-
-                if (_debugLogs) 
-                    Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
+                    if (pathPlaced)        // Dunkard Walk exausted all attempts; failed
+                    {
+                        baseIndex = pathEndingIndex;    // Reset base index for next path
+                        break;
+                    }
+                }
+                if (_debugLogs) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
             }
 
             return true;
