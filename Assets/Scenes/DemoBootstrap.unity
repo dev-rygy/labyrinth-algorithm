@@ -2363,7 +2363,7 @@ PrefabInstance:
     - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
         type: 3}
       propertyPath: generateRandomSeed
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
         type: 3}
@@ -2384,6 +2384,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _randomCyclesColor.r
       value: 0.7088518
+      objectReference: {fileID: 0}
+    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
+        type: 3}
+      propertyPath: _retryGenerationOnFail
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
         type: 3}

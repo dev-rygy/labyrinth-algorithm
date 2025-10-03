@@ -359,7 +359,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            // Ganerate Alternative paths (prize, trial, etc.)
+            // Generate Alternative paths (prize, trial, etc.)
             if (!GenerateAltPathBlueprints(zone))
             {
                 Debug.LogWarning($"Map Generator Warning: Alt. Path Generation for {zone.Name} zone failed.");
@@ -654,43 +654,49 @@ namespace RyansLibrary.Labyrinth
 
             foreach (Path path in zone.Paths)
             {
-                // Path starting index and ending index
-                int pathStartingIndex = baseIndex;
-                int pathEndingIndex = baseIndex + path.PathLength;
-
                 if (path == null)
                 {
                     Debug.LogError($"Map Generator Error: A path {path.Name} for zone {zone.name} is not assigned.");
                     return false;
                 }
 
+                // Path starting index and ending index
+                int pathStartingIndex = baseIndex;
+                int pathEndingIndex = baseIndex + path.PathLength;
+                path.Initialize(pathStartingIndex, pathEndingIndex);
+
                 // Create new path and walk
                 // TODO: Later use Dijkstra maps to find a more controllable starting and ending index
                 // start at index 1 as to not choose the starting room of the game
-                // BlueprintRoom startRoom = _blueprintGenerator.ChooseRandomRoomInPath(zone.MainPath, 1);
                 // Choose a random room respecting the constraints and return
                 bool pathPlaced = false;
-                int randomStartingIndex = Random.Range(pathStartingIndex, pathEndingIndex);
-                int roomIndex = randomStartingIndex;
+                int startIndex = 1;
+                int endIndex = zone.MainPath.BlueprintCount() - 1;
+                int randomStartingIndex = Random.Range(startIndex, endIndex);
 
-                Func<int, int> circularIncrement = x => (x < pathEndingIndex) ? x++ : x = pathStartingIndex;
+                Func<int, int> circularIncrement = x => (x < endIndex + 1) ? ++x : x = startIndex;
                 for (int i = randomStartingIndex; i != randomStartingIndex - 1; i = circularIncrement(i))
                 {
-                    path.Initialize(pathStartingIndex, pathEndingIndex);
-                    BlueprintRoom startRoom = path.BlueprintRooms[roomIndex];
+                    // Choose new start room
+                    BlueprintRoom startRoom = zone.MainPath.BlueprintRooms[i];
+                    path.ClearBlueprintRooms();
 
-                    if (_useNewDrunkardWalkAlg)
-                        pathPlaced = _blueprintGenerator.BlueprintDrunkardWalkNew(path, zone.Bounds, startRoom);
-                    else
-                        pathPlaced = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
+                    pathPlaced = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
 
-                    if (pathPlaced)        // Dunkard Walk exausted all attempts; failed
-                    {
-                        baseIndex = pathEndingIndex;    // Reset base index for next path
+                    if (pathPlaced)
                         break;
-                    }
                 }
-                if (_debugLogs) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
+
+                if (pathPlaced)
+                {
+                    baseIndex = pathEndingIndex;    // Reset base index for next path
+                    if (_debugLogs) Debug.Log($"Map Generator: {path.name} generated with {path.BlueprintCount()} rooms.");
+                }
+                else
+                {
+                    Debug.LogError("Map Generator Error: Path could not be generated off of given rooms. Path obstructed.");
+                    return false;
+                }
             }
 
             return true;

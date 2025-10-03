@@ -293,6 +293,7 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Blueprint Random
+        /*  DEPRICATED 
         /// <summary>
         /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
         /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
@@ -402,6 +403,7 @@ namespace RyansLibrary.Labyrinth
 
             return true;
         }
+        */
 
         int _stackFrames = 0;
         /// <summary>
@@ -410,7 +412,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="path">A path with a length of atleast one.</param>
         /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
-        public bool BlueprintDrunkardWalkNew(Path path, BoundsInt bounds, BlueprintRoom startRoom)
+        public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom)
         {
             // Make sure the path has atleast one room cell that can spawn
             if (path.PathLength <= 0)
@@ -432,7 +434,7 @@ namespace RyansLibrary.Labyrinth
             _stackFrames = 0;
             if (BlueprintDrunkardWalkRecursive(path, bounds, startRoom) == null)
             {
-                Debug.LogError($"Map Generator Error: Path generation failed recursive algorithm");
+                Debug.LogWarning($"Map Generator Warning: Path generation failed recursive algorithm at {startRoom.RoomName}");
                 return false;
             }
 
@@ -441,8 +443,6 @@ namespace RyansLibrary.Labyrinth
 
         private BlueprintRoom BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
         {
-            Debug.Log("Starting recursion");
-
             // Failsafe ****************
             _stackFrames++;
             if (_stackFrames >= 1000)
@@ -454,35 +454,27 @@ namespace RyansLibrary.Labyrinth
 
             if (path.BlueprintCount() > path.PathLength)
             {
-                //Debug.Log("Path End");
                 return prevRoom;
             }
 
-
-            Debug.Log($"Attempting placement for {prevRoom.Position}");
             // Attempt to place a new room
             BlueprintRoom newRoom = AttemptPlaceRoomRandom(path, bounds, prevRoom);
 
             if (newRoom != null)    // New room was placed -> place next room
             {
-                Debug.Log("Placed Room");
                 BlueprintRoom nextRoom = BlueprintDrunkardWalkRecursive(path, bounds, newRoom);
 
                 if (nextRoom == null)       // next room could not be placed? Continuation of path failed -> try prev room again
                 {
-                    Debug.Log("Backtracking Collision");
                     _stackFrames--;
                     return BlueprintDrunkardWalkRecursive(path, bounds, prevRoom);          // Backtrack
                 }
                 else
                 {
-                    Debug.Log("Backtracking success");
                     _stackFrames--;
                     return prevRoom;
                 }
             }
-
-            Debug.Log("Collision");
             _stackFrames--;
             return null;    // No room could be placed
         }
