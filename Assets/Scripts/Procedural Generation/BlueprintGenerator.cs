@@ -299,7 +299,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="path">A path with a length of atleast one.</param>
         /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
-        public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom = null)
+        public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom)
         {
             // *** TODO: REMOVE ***
             int fail = 1000;
@@ -319,16 +319,15 @@ namespace RyansLibrary.Labyrinth
 
             _masterPathReference.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
 
-            Vector3Int curPos = Vector3Int.zero;
             BlueprintRoom curRoom = startRoom;
-            curPos = startRoom.Position;            // Start at the desired Start Room
+            Vector3Int curPos = startRoom.Position;            // Start at the desired Start Room
 
             if (_debugLogs)  Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
 
             // Chose a position in a random cardinal direction and check for collisions
             bool[] attempts = new bool[STANDARD_FACE_COUNT];
             int failedAttempts = 0;
-            while (path.BlueprintCount() < path.PathLength)
+            while (path.BlueprintCount() < path.PathLength)     // TODO: Add random path lengths?
             {
                 Vector3Int tempPos = curPos;
 
