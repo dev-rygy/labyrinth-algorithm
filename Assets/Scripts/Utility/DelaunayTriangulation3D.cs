@@ -26,6 +26,9 @@ namespace RyansLibrary
         private List<Triangle> _badTriangles;
         private List<Tetrahedron> _badTetrahedra;
 
+        // Debugging
+        private bool _debugLogs;
+
         DelaunayTriangulation3D()
         {
             Edges = new List<Edge>();
@@ -216,6 +219,11 @@ namespace RyansLibrary
                     Edges.Add(dc);
                 }
             }
+        }
+
+        public void ToggleDebugLogs(bool toggle)
+        {
+            _debugLogs = toggle;
         }
     }
 }

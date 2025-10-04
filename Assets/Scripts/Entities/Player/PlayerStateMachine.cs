@@ -119,10 +119,14 @@ public class PlayerStateMachine : StateMachine
     private void Awake()
     {
         // Handle singleton; if instance has a reference and the reference is not this object
-        if (Instance != null && Instance != this)
+        if (Instance != null)
+        {
+            Debug.LogWarning("Player State Machine Warning: Another instance of PlayerStateMachine already exists. Deleting Object...");
             Destroy(gameObject);
-        else
-            Instance = this;
+            return;
+        }
+        
+        Instance = this;
 
         // Assign references on object
         Controller = GetComponent<CharacterController>();           // The player must have a character controller
@@ -152,11 +156,12 @@ public class PlayerStateMachine : StateMachine
         // Transition to the first state
         TransitionStates(PlayerStates.Idle);
 
+        // DISABLED FOR DEMO
         // Equip Primary and Secondary Weapons off rip if assigned in the inspector
-        EquipPrimaryWeapon(PrimaryWeapon);
-        EquipSecondaryWeapon(SecondaryWeapon);
+        //EquipPrimaryWeapon(PrimaryWeapon);
+        //EquipSecondaryWeapon(SecondaryWeapon);
 
-        SetAbility(DashAbility);
+        //SetAbility(DashAbility);
     }
 
     private void OnEnable()
@@ -174,6 +179,19 @@ public class PlayerStateMachine : StateMachine
 
     private void OnDisable()
     {
+        if (Health == null)
+            return;
+
+        // Unsubscribe to State Events
+        Health.OnTakeDamage -= HandleTakeDamage;
+        Health.OnDeath -= HandleDeath;
+    }
+
+    private void OnDestroy()
+    {
+        // Release player from input
+        Input.UnsubscribePlayerInputEvents();
+
         if (Health == null)
             return;
 

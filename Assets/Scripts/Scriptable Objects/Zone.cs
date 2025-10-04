@@ -5,10 +5,10 @@
  * Notes:           Holds all the path's in an zone and the 
  *                      bounds that they may spawn rooms in
 */
-using RyansLibrary.AI;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+using RyansLibrary.AI;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -52,6 +52,7 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public Path MainPath { get; set; }
         [field: SerializeField] public List<RoomEntry> UniqueRooms { get; private set; }        // Must be spawned no matter what
         [field: SerializeField] public int DivergentRoomsCellOccupancy { get; private set; }
+        [field: SerializeField] public int RandomCyclesInGraph { get; private set; }
 
         [field: Header("Alt Paths")]
         [field: SerializeField] public List<Path> Paths { get; set; }

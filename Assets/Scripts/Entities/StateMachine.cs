@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/04/2025
- * Last Modified:   01/04/2025
+ * Last Modified:   09/20/2025
  * Notes:           State machine class is instatiated on any
  *                      entity that utalizes a statemachine
 */
@@ -46,6 +46,21 @@ namespace RyansLibrary.StateMachine
             _currentState = state;
             _currentState?.Enter();
             if (DebugStateMachine && _currentState != null) Debug.Log("State " + _currentState + " Entered");
+        }
+
+        /// <summary>
+        /// Exits a state prematurely. Used for destroying a state machine.
+        /// </summary>
+        public void CancelState()
+        {
+            _currentState?.Exit();
+            if (DebugStateMachine && _currentState != null) Debug.Log("State " + _currentState + " Exited");
+            _currentState = null;
+        }
+
+        private void OnDestroy()
+        {
+            CancelState();
         }
     }
 }

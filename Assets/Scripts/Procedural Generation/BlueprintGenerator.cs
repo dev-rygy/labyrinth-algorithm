@@ -1,20 +1,21 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    05/11/2025
- * Last Modified:   05/20/2025 (Ryan)
+ * Last Modified:   10/03/2025 (Ryan)
  * Notes:           Blueprint Generator
  *                  Handles all blueprint cell generation
  *                  Has many functions to generate blueprint rooms using
  *                  multiple techniques. Most common techniques are 
  *                  cached in BlueprintGenerator class
 */
-using RyansLibrary.AI;
-using RyansLibrary.Graphs;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
+
+using RyansLibrary.AI;
+using RyansLibrary.Graphs;
+using RyansLibrary.Utils;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -46,22 +47,21 @@ namespace RyansLibrary.Labyrinth
 
         // ***** Master References *****
         // The Master Path holds a reference to all bluprint rooms generated
-        public Path MasterPath { get; private set; }
+        private Path _masterPathReference;
         // Master Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions.
         // Holds reference to all blueprint rooms
         // Keys are in room coords
-        public Dictionary<Vector3Int, BlueprintRoom> MasterDictionary { get; private set; }
+        private Dictionary<Vector3Int, BlueprintRoom> _masterDictionaryReference;
 
-        private bool _debugGizmos = true;
         private bool _debugLogs = false;
 
-        private Coroutine stepwiseCoroutine = null;
-        private bool readyForNextStep = false;
+        private Coroutine _stepwiseCoroutine = null;
+        private bool _readyForNextStep = false;
 
         public BlueprintGenerator(Path masterPath, Dictionary<Vector3Int, BlueprintRoom> masterDictionary)
         {
-            MasterPath = masterPath;
-            MasterDictionary = masterDictionary;
+            _masterPathReference = masterPath;
+            _masterDictionaryReference = masterDictionary;
         }
 
         #region Unique Blueprint Placement
@@ -106,7 +106,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     Vector3Int cellPosition = adjustedSpawnPos + cell;      // Find the actual position in room space of the cell
 
-                    if (MasterDictionary.TryGetValue(cellPosition, out BlueprintRoom r))
+                    if (_masterDictionaryReference.TryGetValue(cellPosition, out BlueprintRoom r))
                         r.Available = true;
                     else
                         GenerateBlueprintRoom(path, cellPosition, true);
@@ -141,7 +141,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     Vector3Int actualPos = spawnPosition + cell;      // Find the actual position in room space of the cell
 
-                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                    if (_masterDictionaryReference.TryGetValue(actualPos, out BlueprintRoom r))
                         r.Available = true;
                     else
                         GenerateBlueprintRoom(path, actualPos, true);
@@ -271,7 +271,7 @@ namespace RyansLibrary.Labyrinth
                 if (pos != startPos && pos != endPos)
                     curRoom = GenerateBlueprintRoom(path, pos);
                 else
-                    curRoom = MasterDictionary[pos];
+                    curRoom = _masterDictionaryReference[pos];
 
                 if (prevRoom == null)
                 {
@@ -296,157 +296,160 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="path">A path with a length of atleast one.</param>
         /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
-        public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom = null)
+        public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, BlueprintRoom startRoom)
         {
-            // *** TODO: REMOVE ***
-            int fail = 1000;
+            if (!path.IsInitialized)
+            {
+                Debug.LogWarning($"Map Generator Error: Path {path.Name} must be initialized for Drunkard Walk.");
+                return false;
+            }
 
             // Make sure the path has atleast one room cell that can spawn
             if (path.PathLength <= 0)
             {
-                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative");
+                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
                 return false;
             }
 
-            MasterPath.endMasterIdx = path.endMasterIdx;                     // Extend master path's end index
-
-            Vector3Int curPos = Vector3Int.zero;
-            BlueprintRoom curRoom = null;
-
-            // Prime loop with starting room
-            if (startRoom == null)          // Generate Start Room if a start room was not passed in, generate a start room at position (0,0,0); TODO: Make the start position a desired position if we plan on having places where the player can teleport to.
+            if (startRoom == null)
             {
-                //**** TODO: REMOVE!!! ****
-                Vector3Int tempStartRoomPos = new Vector3Int(5, 0, 5);      // Temp start room position for testing
-
-                curRoom = GenerateBlueprintRoom(path, tempStartRoomPos);
-                curPos = tempStartRoomPos;
-                startRoom = curRoom;
+                Debug.LogError($"Map Generator Error: Starting Room for Drunkard Walk cannot be null.");
+                return false;
             }
-            else                            // Start at the desired Start Room
+
+            // Extend master path's end index
+            _masterPathReference.endMasterIdx = path.endMasterIdx;
+
+            if (_debugLogs) Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
+
+            // Attempt to place path
+            if (!BlueprintDrunkardWalkRecursive(path, bounds, startRoom))
             {
-                curPos = startRoom.Position;
-                curRoom = startRoom;
-            }
-            if (_debugLogs) 
-                Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startRoom.RoomName}");
-
-            // Chose a position in a random cardinal direction and check for collisions
-            bool[] attempts = new bool[STANDARD_FACE_COUNT];
-            int failedAttempts = 0;
-            int entrFlagIdx = 0;
-            while (path.BlueprintCount() < path.PathLength)
-            {
-                Vector3Int tempPos = curPos;
-
-                // Choose a random direction to be the potential position for the next room.
-                int faceIdx = Random.Range(1, STANDARD_FACE_COUNT);
-
-                while (attempts[faceIdx])                               // Store attempt direction in circular array to aviod choosing the same direction twice.
-                {                                                       // Loop though attempts to find a unique direction
-                    faceIdx++;
-                    if (faceIdx % STANDARD_FACE_COUNT == 0)           // Circle back in array
-                        faceIdx = 0;
-                }
-
-                // "Walk" in that direction from the current pos
-                switch (faceIdx)
-                {
-                    // E0 - E5 is the face count for a unit room, this will be used later for entranceways
-                    case 0:
-                        tempPos += Vector3Int.right;    // F0 : (1, 0, 0); Wall Right
-                        entrFlagIdx = 0;
-                        break;
-                    case 1:
-                        tempPos += Vector3Int.left;     // F1 : (-1, 0, 0); Wall Left
-                        entrFlagIdx = 1;
-                        break;
-                    case 2:
-                        tempPos += Vector3Int.forward;  // F2 : (0, 0, 1); Wall Forward
-                        entrFlagIdx = 2;
-                        break;
-                    case 3:
-                        tempPos += Vector3Int.back;     // F3 : (0, 0, -1); Wall Back
-                        entrFlagIdx = 3;
-                        break;
-                    case 4:
-                        tempPos += Vector3Int.up;       // F4 : (0, 1, 0); Wall Top
-                        entrFlagIdx = 4;
-                        break;
-                    case 5:
-                        tempPos += Vector3Int.down;     // F5 : (0, 1, 0); Wall Bot
-                        entrFlagIdx = 5;
-                        break;
-                    default:
-                        Debug.LogError("Map Generator Error: Direction choosen by gen alg does not exist.");
-                        entrFlagIdx = -1;
-                        break;
-                }
-
-                // Check if the room is in the realm of the bounding box, if not then don't spawn
-                if (CheckOutOfBounds(tempPos, bounds))
-                {
-                    // TODO: Enable the stuff below, we need a prev room in order to do this because you cannot set the collided room as the bound
-                    // attempts[entrFlagIdx] = true;
-                    // failedAttempts++;
-
-                    // *** TODO: REMOVE ***
-                    fail--;
-                    if (fail < 0)
-                    {
-                        Debug.LogError("Failed");
-                        return false;
-                    }
-
-                    if (_debugLogs) 
-                        Debug.Log("Map Generator: Blueprint room was out of bounds so it was not spawned.");
-                    continue;
-                }
-
-                // Check Master Path for collisions (the temp pos ends up being inside another designated room space)
-                BlueprintRoom collidedRoom = null;
-
-                // Check position in hash map; if failed then flag face attempt and try choosing a new position 
-                if (CheckCollision(tempPos, out collidedRoom))        // *** Test Failed; collision with another blueprintRoom
-                {
-                    attempts[entrFlagIdx] = true;
-                    failedAttempts++;
-                }
-                else                                         // *** Test Passed; no collision
-                {
-                    curPos = tempPos; // Change Current Position to new position
-
-                    BlueprintRoom newBlueRoom = GenerateBlueprintRoom(path, curPos);
-                    FlagDoorways(newBlueRoom, curRoom, entrFlagIdx);                    // Flag the face that touches the opposite room
-
-                    curRoom = newBlueRoom;
-
-                    // Reset Attempts Array because we sucessfully spawned blueprint room
-                    Array.Clear(attempts, 0, attempts.Length);
-                    failedAttempts = 0;
-                }
-
-                // TODO: This is a bad way of handling collisions, implement backtracking later!
-                // If failed too many times -> try another room (rare)
-                if (failedAttempts >= STANDARD_FACE_COUNT)        // All spaces adjacent to the current room are covered
-                {
-                    // Make the current room the collided room and try to gen again
-                    curPos = tempPos;
-                    curRoom = collidedRoom;
-
-                    // Reset Array
-                    Array.Clear(attempts, 0, attempts.Length);
-                    failedAttempts = 0;
-
-                    if (curRoom == null)
-                    {
-                        Debug.LogError("Map Generator Error: No more availible spaces exist for a new bluprint room where a conflict does not occur.");
-                        return false;
-                    }
-                }
+                if (_debugLogs) Debug.LogWarning($"Map Generator Warning: Path generation failed recursive algorithm at {startRoom.RoomName}");
+                return false;
             }
 
             return true;
+        }
+
+        /* OLD RECURSIVE ALG (DEPRICATED)
+        int _stackFrames = 0;
+        private BlueprintRoom BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
+        {
+            // Failsafe ****************
+            _stackFrames++;
+            if (_stackFrames >= 1000)
+            {
+                Debug.LogError("Too many stack frames, stopping");
+                return null;
+            }
+            // *****************************
+
+            if (path.BlueprintCount() > path.PathLength)
+            {
+                return prevRoom;
+            }
+
+            // Attempt to place a new room
+            BlueprintRoom newRoom = AttemptPlaceRoomRandom(path, bounds, prevRoom);
+
+            if (newRoom != null)    // New room was placed -> place next room
+            {
+                BlueprintRoom nextRoom = BlueprintDrunkardWalkRecursive(path, bounds, newRoom);
+
+                if (nextRoom == null)       // next room could not be placed? Continuation of path failed -> try prev room again
+                {
+                    _stackFrames--;
+                    return BlueprintDrunkardWalkRecursive(path, bounds, prevRoom);          // Backtrack
+                }
+                else
+                {
+                    _stackFrames--;
+                    return prevRoom;
+                }
+            }
+            _stackFrames--;
+            return null;    // No room could be placed
+        }
+        */
+
+        private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
+        {
+            if (path.BlueprintCount() > path.PathLength)
+                return true;
+
+            // Attempt to place a new room
+            BlueprintRoom newRoom = PlaceBlueprintInRandomDirection(path, bounds, prevRoom);
+
+            if (newRoom != null)    // New room was placed -> place next room
+            {
+                bool placed = BlueprintDrunkardWalkRecursive(path, bounds, newRoom);
+
+                if (!placed)       // next room could not be placed? Continuation of path failed -> try prev room again
+                    return BlueprintDrunkardWalkRecursive(path, bounds, prevRoom);          // Backtrack
+                else
+                    return true;
+            }
+            return false;    // No room could be placed
+        }
+
+        private BlueprintRoom PlaceBlueprintInRandomDirection(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
+        {
+            // Chose a position in a random cardinal direction and check for collisions
+            bool[] attempts = new bool[STANDARD_FACE_COUNT];
+            int failedAttempts = 0;
+
+            while (failedAttempts < STANDARD_FACE_COUNT)
+            {
+                // Choose a random direction to be the potential position for the next room.
+                int directionalIndex = Random.Range(0, STANDARD_FACE_COUNT);
+                directionalIndex = ArrayUtils.FindIndexCircular<bool>(attempts, directionalIndex, x => x == false);
+
+                if (directionalIndex < 0)
+                    return null;
+
+                Vector3Int tempPos = prevRoom.Position + GetDirectionFromIndex(directionalIndex);
+
+                // Debug.Log($"Attempting placement at {tempPos}");
+
+                // Check position in hash map; if failed then flag face attempt and try choosing a new position 
+                if (!CheckOutOfBounds(tempPos, bounds) && !CheckCollision(tempPos))     // If position is not out of bounds and not colliding with another room
+                {
+                    // Return new blueprint room
+                    BlueprintRoom newBlueRoom = GenerateBlueprintRoom(path, tempPos);
+                    FlagDoorways(newBlueRoom, prevRoom, directionalIndex);                    // Flag the face that touches the opposite room
+
+                    return newBlueRoom;
+                }
+
+                attempts[directionalIndex] = true;
+                failedAttempts++;
+            }
+
+            return null;
+        }
+
+        private Vector3Int GetDirectionFromIndex(int index)
+        {
+            switch (index)
+            {
+                // E0 - E5 is the face count for a unit room, this will be used later for entranceways
+                case 0:
+                    return Vector3Int.right;    // F0 : (1, 0, 0); Wall Right
+                case 1:
+                    return Vector3Int.left;     // F1 : (-1, 0, 0); Wall Left
+                case 2:
+                    return Vector3Int.forward;  // F2 : (0, 0, 1); Wall Forward
+                case 3:
+                    return Vector3Int.back;     // F3 : (0, 0, -1); Wall Back
+                case 4:
+                    return Vector3Int.up;       // F4 : (0, 1, 0); Wall Top
+                case 5:
+                    return Vector3Int.down;     // F5 : (0, 1, 0); Wall Bot
+                default:
+                    Debug.LogError("Map Generator Error: Direction choosen does not exist.");
+                    return Vector3Int.zero;
+            }
         }
         #endregion
 
@@ -461,7 +464,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Blueprint room created in room coords.</returns>
         public BlueprintRoom GenerateBlueprintRoom(Path path, Vector3Int position, bool available = true)
         {
-            string blueName = $"BlueprintRoom ({MasterPath.BlueprintCount()})";
+            string blueName = $"BlueprintRoom ({_masterPathReference.BlueprintCount()})";
             BlueprintRoom newRoom = new BlueprintRoom(position, blueName);
             newRoom.Available = available;
 
@@ -469,8 +472,8 @@ namespace RyansLibrary.Labyrinth
 
             // Update paths and masters with new blueprint room
             path?.Add(newRoom);
-            MasterPath?.Add(newRoom);                    // Add to Master List (required)
-            MasterDictionary?.Add(position, newRoom);    // Add to Master Dictionary (required)
+            _masterPathReference?.Add(newRoom);                    // Add to Master List (required)
+            _masterDictionaryReference?.Add(position, newRoom);    // Add to Master Dictionary (required)
             return newRoom;
         }
 
@@ -702,20 +705,38 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Collided or not collided</returns>
         public bool CheckCollision(Vector3Int position, out BlueprintRoom collidedRoom)
         {
-            return MasterDictionary.TryGetValue(position, out collidedRoom);
+            return _masterDictionaryReference.TryGetValue(position, out collidedRoom);
+        }
+
+        /// <summary>
+        /// Checks for a collision with another blueprint cell
+        /// </summary>
+        /// <param name="position">The position of the blueprint room</param>
+        /// <param name="collidedRoom">If any room was found to collide then return the room otherwise will be null</param>
+        /// <returns>Collided or not collided</returns>
+        public bool CheckCollision(Vector3Int position)
+        {
+            return _masterDictionaryReference.ContainsKey(position);
         }
         #endregion
 
+        #region Debug
+        public void ToggleDebugLogs(bool toggle)
+        {
+            _debugLogs = toggle;
+        }
+
         public void ProceedToNextStep()
         {
-            readyForNextStep = true;
+            _readyForNextStep = true;
         }
 
         private IEnumerator WaitForStep()
         {
-            readyForNextStep = false;
-            while (!readyForNextStep)
+            _readyForNextStep = false;
+            while (!_readyForNextStep)
                 yield return null;
         }
+        #endregion
     }
 }

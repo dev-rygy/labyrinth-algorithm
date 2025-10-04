@@ -6,10 +6,8 @@
  *                      parent class in order to inherent the interface
 */
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
-using UnityEngine.UI;
 
 namespace RyansLibrary.Abilities
 {

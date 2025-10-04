@@ -4,11 +4,9 @@
  * Last Modified:   02/11/2025 (Ryan)
  * Notes:           Player Idle State
 */
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
 using RyansLibrary.Input;
-using UnityEngine.Rendering;
 
 /// <summary>
 /// This is the default state for the player. Every state the player transitions to
@@ -30,13 +28,14 @@ public class PlayerIdleState : PlayerState
     public PlayerIdleState(PlayerStateMachine stateMachine) : base(stateMachine) { }
 
     public override void Enter()
-    {   
+    {
         // Input Events
-        InputHandler.OnComboPrimary += OnComboPrimary;          // Input: right_shoulder 
-        InputHandler.OnComboSecondary += OnComboSecondary;      // Input: left_shoulder
-        InputHandler.OnPowerPrimary += OnPoweredPrimary;        // Input: right_trigger
-        InputHandler.OnPowerSecondary += OnPoweredSecondary;    // Input: left_trigger
-        InputHandler.OnDash += OnDash;                          // Input: dash
+        // ABILITIES DISABLED FOR DEMO
+        //InputHandler.OnComboPrimary += OnComboPrimary;          // Input: right_shoulder 
+        //InputHandler.OnComboSecondary += OnComboSecondary;      // Input: left_shoulder
+        //InputHandler.OnPowerPrimary += OnPoweredPrimary;        // Input: right_trigger
+        //InputHandler.OnPowerSecondary += OnPoweredSecondary;    // Input: left_trigger
+        //InputHandler.OnDash += OnDash;                          // Input: dash
         InputHandler.OnInteract1 += OnInteract1;                // Input: interact
         InputHandler.OnEmote += OnEmote;                        // Input: emote
 
@@ -81,11 +80,12 @@ public class PlayerIdleState : PlayerState
     public override void Exit()
     {
         // Unsubscribe to transition events
-        InputHandler.OnComboPrimary -= OnComboPrimary;
-        InputHandler.OnComboSecondary -= OnComboSecondary;
-        InputHandler.OnPowerPrimary -= OnPoweredPrimary;
-        InputHandler.OnPowerSecondary -= OnPoweredSecondary;
-        InputHandler.OnDash -= OnDash;
+        // ABILITIES DISABLED FOR DEMO
+        //InputHandler.OnComboPrimary -= OnComboPrimary;
+        //InputHandler.OnComboSecondary -= OnComboSecondary;
+        //InputHandler.OnPowerPrimary -= OnPoweredPrimary;
+        //InputHandler.OnPowerSecondary -= OnPoweredSecondary;
+        //InputHandler.OnDash -= OnDash;
         InputHandler.OnInteract1 -= OnInteract1;
         InputHandler.OnEmote -= OnEmote;
     }
