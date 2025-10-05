@@ -252,8 +252,9 @@ namespace RyansLibrary.Labyrinth
                 if (roomPos == startPos || roomPos == endPos)
                     continue;
 
-                // TODO: Only make non available blueprint rooms obstructions
-                obstructions.Add(roomPos);
+                // Only make non-available blueprint rooms obstructions
+                if (!room.Available)
+                    obstructions.Add(roomPos);
             }
 
             // Find a sequence of points in room coordinates
@@ -269,14 +270,14 @@ namespace RyansLibrary.Labyrinth
             BlueprintRoom prevRoom = null;
             foreach (Vector3Int pos in sequence)
             {
-                if (pos != startPos && pos != endPos)
+                if (_masterDictionaryReference.TryGetValue(pos, out var occupiedRoom))
                 {
-                    // TODO: Do not generate blueprint rooms if the space is already occupied
-                    curRoom = GenerateBlueprintRoom(path, pos);
-                    // TODO: Make the occupied blueprint room the currentRoom instead
+                    // Do not generate blueprint rooms if the space is already occupied
+                    // Make the occupied blueprint room the currentRoom instead
+                    curRoom = occupiedRoom;
                 }
                 else
-                    curRoom = _masterDictionaryReference[pos];
+                    curRoom = GenerateBlueprintRoom(path, pos);
 
                 if (prevRoom == null)
                 {

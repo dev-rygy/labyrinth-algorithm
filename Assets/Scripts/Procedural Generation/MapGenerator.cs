@@ -631,7 +631,6 @@ namespace RyansLibrary.Labyrinth
             // Pathfind each edge
             foreach (Edge e in edges)
             {
-                Debug.Log("Assigning Current Edge");
                 _currentEdge = e;
 
                 Vector3Int startPos = new Vector3Int((int)e.U.Position.x, (int)e.U.Position.y, (int)e.U.Position.z);        // Starting Vertex
