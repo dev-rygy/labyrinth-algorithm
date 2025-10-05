@@ -4,16 +4,18 @@
  * Last Modified:   10/03/2025 (Ryan)
  * Notes:           Map Generator
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
-
 using RyansLibrary.AI;
 using RyansLibrary.Geometry;
 using RyansLibrary.Graphs;
 using RyansLibrary.UnityEditor;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
 {
@@ -96,6 +98,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _circumcircleColor;
         [SerializeField] private Color _contiguousGraphColor;
         [SerializeField] private Color _randomCyclesColor;
+        [SerializeField] private Color _currentEdgeColor;
 
         // ***** Private Variables *****
         // private int _seed;      // TODO: For networking make the host generate this
@@ -108,6 +111,9 @@ namespace RyansLibrary.Labyrinth
         private List<DelaunayTriangulation3D> _triangulations;
         private List<List<Edge>> _minimumSpanningTrees;
         private List<Edge> _randomCycles;
+        private Edge _currentEdge;
+        private Coroutine _edgeFlashCo;
+        private float _flashTime = 0.5f;
 
         // Logs
         private bool _debugLogs = false;
@@ -625,6 +631,9 @@ namespace RyansLibrary.Labyrinth
             // Pathfind each edge
             foreach (Edge e in edges)
             {
+                Debug.Log("Assigning Current Edge");
+                _currentEdge = e;
+
                 Vector3Int startPos = new Vector3Int((int)e.U.Position.x, (int)e.U.Position.y, (int)e.U.Position.z);        // Starting Vertex
                 Vector3Int endPos = new Vector3Int((int)e.V.Position.x, (int)e.V.Position.y, (int)e.V.Position.z);          // Ending Vertex
 
@@ -1121,9 +1130,6 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation()
         {
-            if (_triangulations == null)
-                return;
-
             foreach (DelaunayTriangulation3D triangulation in _triangulations)
             {
                 // Draw circumcircles in remaining tetrahedron from triangulation
@@ -1141,9 +1147,6 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            if (_minimumSpanningTrees == null)
-                return;
-
             foreach (List<Edge> edgeList in _minimumSpanningTrees)
             {
                 // Draw the minimum spanning tree of the zone
@@ -1154,13 +1157,16 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            if (_randomCycles == null)
-                return;
-
             foreach (Edge e in _randomCycles)
             {
                 Gizmos.color = _randomCyclesColor;
                 Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
+            }
+
+            if (_currentEdge is not null)
+            {
+                Gizmos.color = _currentEdgeColor;
+                Gizmos.DrawLine(_currentEdge.V.Position * _gridUnitSize, _currentEdge.U.Position * _gridUnitSize);
             }
         }
 

@@ -252,6 +252,7 @@ namespace RyansLibrary.Labyrinth
                 if (roomPos == startPos || roomPos == endPos)
                     continue;
 
+                // TODO: Only make non available blueprint rooms obstructions
                 obstructions.Add(roomPos);
             }
 
@@ -269,7 +270,11 @@ namespace RyansLibrary.Labyrinth
             foreach (Vector3Int pos in sequence)
             {
                 if (pos != startPos && pos != endPos)
+                {
+                    // TODO: Do not generate blueprint rooms if the space is already occupied
                     curRoom = GenerateBlueprintRoom(path, pos);
+                    // TODO: Make the occupied blueprint room the currentRoom instead
+                }
                 else
                     curRoom = _masterDictionaryReference[pos];
 
