@@ -692,6 +692,9 @@ namespace RyansLibrary.Labyrinth
                     BlueprintRoom startRoom = zone.MainPath.BlueprintRooms[i];
                     path.ClearBlueprintRooms();
 
+                    if (!startRoom.Available)       // Check if start room is available
+                        continue;
+
                     pathPlaced = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
 
                     // Break out of loop to prevent duplicate path placement
