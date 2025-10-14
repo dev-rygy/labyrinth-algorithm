@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.02
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -2355,96 +2355,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _seed
-      value: 1232312312
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: customSeed
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: generateRandomSeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _currentEdgeColor.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _currentEdgeColor.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _currentEdgeColor.g
-      value: 0.9532509
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _currentEdgeColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _circumcircleColor.a
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _randomCyclesColor.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _randomCyclesColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _randomCyclesColor.g
-      value: 0.28773582
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _randomCyclesColor.r
-      value: 0.7088518
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _retryGenerationOnFail
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _useNewDrunkardWalkAlg
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _contiguousGraphColor.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _contiguousGraphColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _contiguousGraphColor.g
-      value: 0.9413085
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      propertyPath: _contiguousGraphColor.r
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5863528550629813726, guid: 73847e83561772c469ae908640004d11,
         type: 3}
       propertyPath: m_Name
