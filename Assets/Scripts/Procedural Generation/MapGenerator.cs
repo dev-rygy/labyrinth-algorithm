@@ -110,8 +110,6 @@ namespace RyansLibrary.Labyrinth
         private List<List<Edge>> _minimumSpanningTrees;
         private List<Edge> _randomCycles;
         private Edge _currentEdge;
-        private Coroutine _edgeFlashCo;
-        private float _flashTime = 0.5f;
 
         // Logs
         private bool _debugLogs = false;

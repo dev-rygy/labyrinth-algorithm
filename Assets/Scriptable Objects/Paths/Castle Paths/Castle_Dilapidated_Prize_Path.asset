@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab2be37bdc730874bbc2eaa4348fa132, type: 3}
+  m_Name: Castle_Dilapidated_Prize_Path
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Dilapidated Castle Prize Path
+  <Type>k__BackingField: 1
+  <PathLength>k__BackingField: 5
+  <startingRooms>k__BackingField: []
+  <rooms1x1x1>k__BackingField:
+  - Prefab: {fileID: 3555212718981034981, guid: 20d2b2f60a0cb964aa2a24583298cbaf,
+      type: 3}
+    Probability: 100
+  <rooms2x1x1>k__BackingField: []
+  <rooms1x2x1>k__BackingField: []
+  <rooms2x1x2>k__BackingField: []
+  <endingRooms>k__BackingField: []
+  <TallRoomSpawnChance>k__BackingField: 0
+  <LongRoomSpawnChance>k__BackingField: 0
+  <BigRoomSpawnChance>k__BackingField: 0
+  PathGizmoColor: {r: 1, g: 0.99215686, b: 0.09019607, a: 0.29803923}
