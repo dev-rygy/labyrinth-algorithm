@@ -47,16 +47,13 @@ namespace RyansLibrary.Labyrinth
 
         // ***** Master References *****
         // The Master Path holds a reference to all bluprint rooms generated
-        private Path _masterPathReference;
+        private readonly Path _masterPathReference;
         // Master Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions.
         // Holds reference to all blueprint rooms
         // Keys are in room coords
-        private Dictionary<Vector3Int, BlueprintRoom> _masterDictionaryReference;
+        private readonly Dictionary<Vector3Int, BlueprintRoom> _masterDictionaryReference;
 
         private bool _debugLogs = false;
-
-        private Coroutine _stepwiseCoroutine = null;
-        private bool _readyForNextStep = false;
 
         public BlueprintGenerator(Path masterPath, Dictionary<Vector3Int, BlueprintRoom> masterDictionary)
         {
@@ -75,7 +72,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns></returns>
         public bool PlaceFixedUniqueRoomBlueprints(RoomEntry entry, Path path, BoundsInt bounds)
         {
-            if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
+            if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component
             {
                 // Adjust parameters to fit the zone's actual position
                 Vector3Int zoneOffset = bounds.position;
@@ -730,18 +727,6 @@ namespace RyansLibrary.Labyrinth
         public void ToggleDebugLogs(bool toggle)
         {
             _debugLogs = toggle;
-        }
-
-        public void ProceedToNextStep()
-        {
-            _readyForNextStep = true;
-        }
-
-        private IEnumerator WaitForStep()
-        {
-            _readyForNextStep = false;
-            while (!_readyForNextStep)
-                yield return null;
         }
         #endregion
     }
