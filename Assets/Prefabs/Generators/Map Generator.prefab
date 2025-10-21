@@ -79,8 +79,11 @@ MonoBehaviour:
   _enabled: 1
   customSeed: 0
   generateRandomSeed: 1
+  _seed: 1232312312
   _gridUnitSize: 13
   _roomContainer: {fileID: 688038257182604410}
+  _retryGenerationOnFail: 0
+  _useNewDrunkardWalkAlg: 1
   maxPlacementAttempts: 50
   _zones:
   - {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c, type: 2}
@@ -114,5 +117,7 @@ MonoBehaviour:
       type: 2}
   _boundingBoxColor: {r: 1, g: 0.31442907, b: 0, a: 1}
   _triangulationColor: {r: 1, g: 0.10849059, b: 0.32239568, a: 1}
-  _circumcircleColor: {r: 0.9996939, g: 1, b: 0, a: 0.011764706}
-  _minimumSpanningTreeColor: {r: 0.18752226, g: 0.8337331, b: 0.9245283, a: 1}
+  _circumcircleColor: {r: 0.9996939, g: 1, b: 0, a: 0}
+  _contiguousGraphColor: {r: 0, g: 0.9413085, b: 1, a: 1}
+  _randomCyclesColor: {r: 0.7088518, g: 0.28773582, b: 1, a: 1}
+  _currentEdgeColor: {r: 1, g: 0.9532509, b: 0, a: 1}

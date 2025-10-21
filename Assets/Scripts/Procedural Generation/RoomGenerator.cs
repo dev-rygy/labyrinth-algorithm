@@ -28,10 +28,10 @@ namespace RyansLibrary.Labyrinth
 
         // ***** Master References *****
         // The Master Path holds a reference to all bluprint rooms in an zone
-        private Path _masterPathReference;
+        private readonly Path _masterPathReference;
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
-        private Dictionary<Vector3Int, BlueprintRoom> _masterDictionaryReference;
+        private readonly Dictionary<Vector3Int, BlueprintRoom> _masterDictionaryReference;
 
         private int _gridUnitSize;          // Conventional size of a 1:1 room
         private Transform _roomContainer;   // GameObject that will hold rooms

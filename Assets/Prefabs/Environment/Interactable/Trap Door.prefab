@@ -71,7 +71,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   blinkDistance: {x: 0, y: -12, z: 0}
-  useAltInteract: 1
   _debug: 0
 --- !u!1 &8172744456997669932
 GameObject:
@@ -97,14 +96,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8172744456997669932}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5654807623079342309}
   m_Father: {fileID: 2411092661344431302}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &5328691775302129422
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -116,17 +115,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
@@ -146,22 +145,22 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.70710677
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0.70710677
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4c8b1f58eb138fe48a761e8b9c904653,
         type: 3}
@@ -182,6 +181,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: trap_door
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4c8b1f58eb138fe48a761e8b9c904653,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
