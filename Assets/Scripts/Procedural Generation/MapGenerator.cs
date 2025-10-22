@@ -781,12 +781,13 @@ namespace RyansLibrary.Labyrinth
             }
 
             // ***** Find a path from Room A to Room B
+            // Create shared bounds between two zones
+            BoundsInt combinedBounds = new BoundsInt();
             Vector3Int position = new Vector3Int(
                                 (int)(entry.ZoneA.Bounds.position.x + entry.ZoneB.Bounds.position.x) / 2,
                                 (int)(entry.ZoneA.Bounds.position.y + entry.ZoneB.Bounds.position.y) / 2,
                                 (int)(entry.ZoneA.Bounds.position.z + entry.ZoneB.Bounds.position.z) / 2);
             Vector3Int size = entry.ZoneA.Bounds.size + entry.ZoneB.Bounds.size;
-            BoundsInt combinedBounds = new BoundsInt();
             combinedBounds.position = position;
             combinedBounds.size = size;
 

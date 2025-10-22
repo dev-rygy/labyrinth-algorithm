@@ -140,7 +140,7 @@ namespace RyansLibrary.AI
                     if (!neighbor.Traversable)                          // Can you traverse over neighbor? No, then skip node
                         continue;
 
-                    float newGScore = current.gScore + 1;      // Compute new g(n) using manhatten distance
+                    float newGScore = current.gScore + 1;      // Compute new g(n)
 
                     if (newGScore < neighbor.gScore)
                     {

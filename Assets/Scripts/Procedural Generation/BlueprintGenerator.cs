@@ -165,8 +165,7 @@ namespace RyansLibrary.Labyrinth
 
             // Choose random spawn pos in the room's bounds;
             // NOTE: this random position is in room coords
-            Vector3Int randomSpawnPos = new Vector3Int
-            (
+            Vector3Int randomSpawnPos = new Vector3Int(
                 Random.Range(bounds.xMin, adjUpperBound.x + 1),
                 Random.Range(bounds.yMin, adjUpperBound.y + 1),
                 Random.Range(bounds.zMin, adjUpperBound.z + 1)
@@ -188,7 +187,7 @@ namespace RyansLibrary.Labyrinth
         #region Blueprint Graphs
         public DelaunayTriangulation3D GenerateTriangulationFromPath(Path path)
         {
-            List<Vertex> vertices = new List<Vertex>();
+            List<Vertex> waypoints = new List<Vertex>();
 
             foreach (BlueprintRoom room in path.BlueprintRooms)
             {
@@ -196,11 +195,11 @@ namespace RyansLibrary.Labyrinth
                 if (!room.Available)
                     continue;
 
-                vertices.Add(new Vertex<BlueprintRoom>(room.Position, room));
+                waypoints.Add(new Vertex<BlueprintRoom>(room.Position, room));
             }
 
             // Perform Delaunay Triangulation
-            return DelaunayTriangulation3D.Triangulate(vertices);
+            return DelaunayTriangulation3D.Triangulate(waypoints);
         }
 
         public List<Edge> FindMinimumSpanningTree(List<Edge> edges, Vertex startingVertex)
