@@ -207,7 +207,7 @@ namespace RyansLibrary.Labyrinth
             return PrimsAlgorithm.MinimumSpanningTree(edges, startingVertex);
         }
 
-        public BlueprintRoom FindClosestRoomInPath(Path path, Vector3Int point)
+        public BlueprintRoom FindClosestRoomInPath(Path path, Vector3Int point)     // UNUSED
         {
             if (path == null)
             {
@@ -333,47 +333,6 @@ namespace RyansLibrary.Labyrinth
 
             return true;
         }
-
-        /* OLD RECURSIVE ALG (DEPRICATED)
-        int _stackFrames = 0;
-        private BlueprintRoom BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
-        {
-            // Failsafe ****************
-            _stackFrames++;
-            if (_stackFrames >= 1000)
-            {
-                Debug.LogError("Too many stack frames, stopping");
-                return null;
-            }
-            // *****************************
-
-            if (path.BlueprintCount() > path.PathLength)
-            {
-                return prevRoom;
-            }
-
-            // Attempt to place a new room
-            BlueprintRoom newRoom = AttemptPlaceRoomRandom(path, bounds, prevRoom);
-
-            if (newRoom != null)    // New room was placed -> place next room
-            {
-                BlueprintRoom nextRoom = BlueprintDrunkardWalkRecursive(path, bounds, newRoom);
-
-                if (nextRoom == null)       // next room could not be placed? Continuation of path failed -> try prev room again
-                {
-                    _stackFrames--;
-                    return BlueprintDrunkardWalkRecursive(path, bounds, prevRoom);          // Backtrack
-                }
-                else
-                {
-                    _stackFrames--;
-                    return prevRoom;
-                }
-            }
-            _stackFrames--;
-            return null;    // No room could be placed
-        }
-        */
 
         private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
         {
