@@ -70,7 +70,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">Path to store blueprints in</param>
         /// <param name="bounds">Bounds to constrict placement</param>
         /// <returns></returns>
-        public bool PlaceFixedUniqueRoomBlueprints(RoomEntry entry, Path path, BoundsInt bounds)
+        public bool PlaceFixedUniqueRoomBlueprints(Path path, RoomEntry entry, BoundsInt bounds)
         {
             if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component
             {
@@ -115,7 +115,7 @@ namespace RyansLibrary.Labyrinth
             return false;
         }
 
-        public bool PlaceBoundedUniqueRoomBlueprints(RoomEntry entry, Path path, BoundsInt bounds)
+        public bool PlaceBoundedUniqueRoomBlueprints(Path path, RoomEntry entry, BoundsInt bounds)
         {
             if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
             {
@@ -179,6 +179,35 @@ namespace RyansLibrary.Labyrinth
             // do not advance iteration if nothing was spawned
             if (newRooms == null)
                 return false;
+
+            return true;
+        }
+
+        public bool PlaceDivergentBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, int cellCount, int maxPlacementAttempts, bool available = true)
+        {
+            int indexOffset = dimensions.x * dimensions.y;      // Increment by the cells taken up from the room dimensions
+
+            for (int i = 0; i < cellCount; i += indexOffset)
+            {
+                bool successfullyPlaced = false;
+                int placementAttempts = 0;
+
+                while (!successfullyPlaced && placementAttempts < maxPlacementAttempts)
+                {
+                    // Attempt to spawn blueprints
+                    successfullyPlaced = PlaceBoundedBlueprints(path, bounds, Vector3Int.one, out Vector3Int spawnPos);
+
+                    if (!successfullyPlaced)     // Failed placement
+                        placementAttempts++;        // Increase attempts
+                }
+
+                // If divergent room failed to generate a certain number of times then return false
+                if (!successfullyPlaced)
+                {
+                    Debug.LogError($"Map Generator Error: A divergent room in path {path.name} has exhaused all of it's placement attempts.");
+                    return false;
+                }
+            }
 
             return true;
         }

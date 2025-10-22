@@ -80,7 +80,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private bool _useNewDrunkardWalkAlg;
 
         [Header("Blueprint Settings")]
-        [SerializeField] private int maxPlacementAttempts = 50;
+        [SerializeField] private int _maxPlacementAttempts = 50;
 
         [Header("Zones")]
         [SerializeField] private List<Zone> _zones;
@@ -437,7 +437,7 @@ namespace RyansLibrary.Labyrinth
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
                     // Attempt to place fixed room (room with specified spawn position) in zone
-                    bool hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry, zone.MainPath, zone.Bounds);
+                    bool hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(zone.MainPath, entry, zone.Bounds);
 
                     if (!hasPlaced)     // Only one attempt needed for a fixed room, otherwise generation has failed entirely
                     {
@@ -459,11 +459,11 @@ namespace RyansLibrary.Labyrinth
                     // Attempt to place the constrained room in it's own bounded zone
                     while (!hasPlaced)
                     {
-                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(entry, zone.MainPath, entry.Bounds);
+                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(zone.MainPath, entry, entry.Bounds);
                         placementAttempts++;
 
                         // If constrained room failed to generate a certain number of times then return false
-                        if (placementAttempts > maxPlacementAttempts)
+                        if (placementAttempts > _maxPlacementAttempts)
                         {
                             Debug.LogError($"Map Generator Error: Constrained Room blueprints \"{entry}\" exhaused " +
                                 $"all of it's attempts to be placed.");
@@ -484,11 +484,11 @@ namespace RyansLibrary.Labyrinth
                     // Attempt to place the free room in the zone's bounded zone
                     while (!hasPlaced)
                     {
-                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(entry, zone.MainPath, zone.Bounds);
+                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(zone.MainPath, entry, zone.Bounds);
                         placementAttempts++;
 
                         // If free room failed to generate a certain number of times then return false
-                        if (placementAttempts > maxPlacementAttempts)
+                        if (placementAttempts > _maxPlacementAttempts)
                         {
                             Debug.LogError($"Map Generator Error: Free Room blueprints \"{entry}\" exhaused all of it's attempts to be placed.");
                             return false;
@@ -510,34 +510,9 @@ namespace RyansLibrary.Labyrinth
         {
             Path mainPath = zone.MainPath;
             int occupancy = zone.DivergentRoomsCellOccupancy;
-            int indexOffset = 1;
-            int placementAttempts = 0;
-
-            for (int i = 0; i < occupancy; i += indexOffset)
-            {
-                // Attempt to spawn blueprints
-                bool result = _blueprintGenerator.PlaceBoundedBlueprints(zone.MainPath, zone.Bounds, Vector3Int.one, out Vector3Int spawnPos);
-
-                if (result)     // Successful placement
-                {
-                    placementAttempts = 0;      // Reset attempts
-                    indexOffset = 1;        // Increase iteration
-                }
-                else            // Failed placement 
-                {
-                    placementAttempts++;        // Increase attempts
-                    indexOffset = 0;        // Stagnate iteration
-                }
-
-                // If divergent room failed to generate a certain number of times then return false
-                if (placementAttempts > maxPlacementAttempts)
-                {
-                    Debug.LogError($"Map Generator Error: A divergent room in zone {zone} exhaused all of it's placement attempts.");
-                    return false;
-                }
-            }
-
-            return true;
+            
+            // Attempt to spawn blueprints
+            return _blueprintGenerator.PlaceDivergentBlueprints(mainPath, zone.Bounds, Vector3Int.one, occupancy, _maxPlacementAttempts);
         }
 
         /// <summary>
@@ -742,7 +717,7 @@ namespace RyansLibrary.Labyrinth
             // Handle Room A Placement
             bool hasPlaced = false;
             if (entry.RoomA.PlacementType == RoomPlacementType.Fixed)
-                hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry.RoomA, entry.ZoneA.MainPath, entry.ZoneA.Bounds);
+                hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry.ZoneA.MainPath, entry.RoomA, entry.ZoneA.Bounds);
             //else if (entry.RoomA.PlacementType == RoomPlacementType.Constrained)
             //    hasPlaced = PlaceConstrainedRoomBlueprints(entry.RoomA, entry.zoneA);
             //else if (entry.RoomA.PlacementType == RoomPlacementType.Free)
@@ -768,7 +743,7 @@ namespace RyansLibrary.Labyrinth
 
             hasPlaced = false;
             if (entry.RoomB.PlacementType == RoomPlacementType.Fixed)
-                hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry.RoomB, entry.ZoneB.MainPath, entry.ZoneB.Bounds);
+                hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry.ZoneB.MainPath, entry.RoomB, entry.ZoneB.Bounds);
             //else if (entry.RoomA.PlacementType == RoomPlacementType.Constrained)
             //    hasPlaced = PlaceConstrainedRoomBlueprints(entry.RoomA, entry.zoneA);
             //else if (entry.RoomA.PlacementType == RoomPlacementType.Free)
