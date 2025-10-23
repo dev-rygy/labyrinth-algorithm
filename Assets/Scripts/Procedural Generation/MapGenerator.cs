@@ -4,16 +4,17 @@
  * Last Modified:   10/03/2025 (Ryan)
  * Notes:           Map Generator
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
-
 using RyansLibrary.AI;
 using RyansLibrary.Geometry;
 using RyansLibrary.Graphs;
 using RyansLibrary.UnityEditor;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
+using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
 {
@@ -93,7 +94,7 @@ namespace RyansLibrary.Labyrinth
         [Space]
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _triangulationColor;
-        [SerializeField] private Color _circumcircleColor;
+        // [SerializeField] private Color _circumcircleColor;   DEPRICATED
         [SerializeField] private Color _contiguousGraphColor;
         [SerializeField] private Color _randomCyclesColor;
         [SerializeField] private Color _currentEdgeColor;
@@ -106,7 +107,7 @@ namespace RyansLibrary.Labyrinth
 
         // Debugging
         private bool _debug = false;
-        private List<DelaunayTriangulation3D> _triangulations;
+        private List<List<Edge>> _triangulations;
         private List<List<Edge>> _minimumSpanningTrees;
         private List<Edge> _randomCycles;
         private Edge _currentEdge;
@@ -196,8 +197,8 @@ namespace RyansLibrary.Labyrinth
             _roomGenerator.ToggleDebugLogs(_debugRoomGeneratorLogs);
 
             // Initialize Debugging Lists
-            _triangulations = new List<DelaunayTriangulation3D>();
-            _minimumSpanningTrees = new List<List<Edge>>();
+            _triangulations = new();
+            _minimumSpanningTrees = new();
             _randomCycles = new List<Edge>();
 
             // Initialize the Main Path in each Zone
@@ -531,15 +532,13 @@ namespace RyansLibrary.Labyrinth
                 return null;
             }
 
-            DelaunayTriangulation3D triangulation = _blueprintGenerator.GenerateTriangulationFromPath(zone.MainPath);
+            // TODO: Make the triangulation return an List<Edge> to simplify.
+            List<Edge> triangulatedGraph = Triangulate(zone.MainPath);
 
-            if (triangulation == null)      // Triangulation failed
+            if (triangulatedGraph == null)      // Triangulation failed
                 return null;
 
-            // Store triangulation for debug gizmo
-            _triangulations.Add(triangulation);
-
-            // Turn off blueprint room availability for unique rooms 
+            // Turn off blueprint room availability for unique rooms; we are done with those?
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 foreach (Vector3Int cell in entry.AvailableCells)
@@ -550,21 +549,52 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            List<Edge> MST = _blueprintGenerator.FindMinimumSpanningTree(triangulation.Edges, triangulation.Edges[0].U);
+            List<Edge> MST = FindMinimumSpanningTree(triangulatedGraph);
 
             if (MST == null)      // MST/Prim's failed
                 return null;
 
-            // Store MST for debug gizmo
-            _minimumSpanningTrees.Add(MST);
-
-            // TODO: Choose random edges from triangulation
             List<Edge> zoneGraph = new List<Edge>(MST);
-            List<Edge> availableEdges = triangulation.Edges.Except(MST).ToList();               // Remove all MST edges from list; difference
+            List<Edge> availableEdges = triangulatedGraph.Except(MST).ToList();               // Remove all MST edges from list; difference
+            zoneGraph.AddRange(ChooseRandomEdgesFromGraph(availableEdges, zone.RandomCyclesInGraph));       // MST + Random Edges
 
-            // Choose random edges from the graph with none of the MST edges to add
-            // varience to the map
-            for (int i = 0; i < zone.RandomCyclesInGraph; i++)
+            return zoneGraph;
+        }
+
+        private List<Edge> Triangulate(Path path)
+        {
+            List<Edge> triangulatedGraph = _blueprintGenerator.GenerateTriangulationFromPath(path);
+
+            if (triangulatedGraph != null)      // Triangulation succeeded
+            {
+                // Store Triangulation for debug gizmo
+                _triangulations.Add(triangulatedGraph);
+                return triangulatedGraph;
+            }
+            
+            return null;
+        }
+
+        private List<Edge> FindMinimumSpanningTree(List<Edge> edges)
+        {
+            List<Edge> MST = _blueprintGenerator.FindMinimumSpanningTree(edges, edges[0].U);
+
+            if (MST != null)      // MST/Prim's succeeded
+            {
+                // Store MST for debug gizmo
+                _minimumSpanningTrees.Add(MST);
+                return MST;
+            }
+
+            return null;
+        }
+
+        private List<Edge> ChooseRandomEdgesFromGraph(List<Edge> availableEdges, int count)
+        {
+            List<Edge> selectedEdges = new List<Edge>();
+
+            // Choose random edges from the graph with none of the MST edges to add varience to the map
+            for (int i = 0; i < count; i++)
             {
                 if (availableEdges.Count <= 0)
                 {
@@ -575,12 +605,11 @@ namespace RyansLibrary.Labyrinth
                 int randomEdgeIndex = Random.Range(0, availableEdges.Count);
                 Edge selectedEdge = availableEdges[randomEdgeIndex];
 
-                zoneGraph.Add(selectedEdge);
-                availableEdges.Remove(selectedEdge);
-                _randomCycles.Add(selectedEdge);
+                selectedEdges.Add(selectedEdge);            // Add selected edge to result
+                availableEdges.Remove(selectedEdge);        // Remove selected edge from pool so it does not get selected again
             }
 
-            return zoneGraph;
+            return selectedEdges;
         }
 
         /// <summary>
@@ -607,7 +636,23 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int startPos = new Vector3Int((int)e.U.Position.x, (int)e.U.Position.y, (int)e.U.Position.z);        // Starting Vertex
                 Vector3Int endPos = new Vector3Int((int)e.V.Position.x, (int)e.V.Position.y, (int)e.V.Position.z);          // Ending Vertex
 
-                bool result = _blueprintGenerator.PathfindBlueprintFromPath(zone.MainPath, zone.Bounds, startPos, endPos, zone.PathfindingHeuristic);
+                // Create obstructions
+                HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
+                foreach (BlueprintRoom room in zone.MainPath.BlueprintRooms)
+                {
+                    // if the room is the start room or ending room of the edge then don't add to obstructions
+                    Vector3Int roomPos = room.Position;
+                    if (roomPos == startPos || roomPos == endPos)
+                        continue;
+
+                    // Only make non-available blueprint rooms obstructions
+                    if (!room.Available)
+                        obstructions.Add(roomPos);
+                }
+
+                bool result = _blueprintGenerator.PathfindBlueprintFromPath(zone.MainPath, zone.Bounds, MasterDictionary[startPos],
+                                                                            MasterDictionary[endPos], obstructions, zone.PathfindingHeuristic);
+
                 if (!result)        // Pathfinding failed for edge
                 {
                     Debug.LogError($"Map Generator Error: A* failed to pathfind for edge {e}");
@@ -653,25 +698,8 @@ namespace RyansLibrary.Labyrinth
                 // TODO: Store startIndex and endIndex in the path itself
                 int startIndex = 1;
                 int endIndex = zone.MainPath.BlueprintCount() - 1;      // Start at index 1 as to not choose the starting room of the game
-                int randomStartingIndex = Random.Range(startIndex, endIndex);   // Choose a random room respecting the constraints
 
-                // Attempt to place path in range
-                Func<int, int> circularIncrement = x => (x < endIndex + 1) ? ++x : x = startIndex;
-                for (int i = randomStartingIndex; i != randomStartingIndex - 1; i = circularIncrement(i))
-                {
-                    // Choose new start room
-                    BlueprintRoom startRoom = zone.MainPath.BlueprintRooms[i];
-                    path.ClearBlueprintRooms();
-
-                    if (!startRoom.Available)       // Check if start room is available
-                        continue;
-
-                    pathPlaced = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.Bounds, startRoom);
-
-                    // Break out of loop to prevent duplicate path placement
-                    if (pathPlaced)
-                        break;
-                }
+                pathPlaced = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.MainPath, zone.Bounds, startIndex, endIndex);
 
                 if (pathPlaced)
                 {
@@ -755,20 +783,13 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            // ***** Find a path from Room A to Room B
-            // Create shared bounds between two zones
-            BoundsInt combinedBounds = new BoundsInt();
-            Vector3Int position = new Vector3Int(
-                                (int)(entry.ZoneA.Bounds.position.x + entry.ZoneB.Bounds.position.x) / 2,
-                                (int)(entry.ZoneA.Bounds.position.y + entry.ZoneB.Bounds.position.y) / 2,
-                                (int)(entry.ZoneA.Bounds.position.z + entry.ZoneB.Bounds.position.z) / 2);
-            Vector3Int size = entry.ZoneA.Bounds.size + entry.ZoneB.Bounds.size;
-            combinedBounds.position = position;
-            combinedBounds.size = size;
+            BoundsInt ZoneABounds = entry.ZoneA.Bounds;
+            BoundsInt ZoneBBounds = entry.ZoneB.Bounds;
+            BoundsInt combinedBounds = CombineBounds(ZoneABounds, ZoneBBounds);
 
             // Adjust parameters to fit the room's actual positions
-            Vector3Int zoneAOffset = entry.ZoneA.Bounds.position;
-            Vector3Int zoneBOffset = entry.ZoneB.Bounds.position;
+            Vector3Int zoneAOffset = ZoneABounds.position;
+            Vector3Int zoneBOffset = ZoneBBounds.position;
             Vector3Int startPos = entry.RoomA.SpawnPosition + zoneAOffset;
             Vector3Int endPos = entry.RoomB.SpawnPosition + zoneBOffset;
 
@@ -776,53 +797,15 @@ namespace RyansLibrary.Labyrinth
             HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
             obstructions.Clear();
 
-            SimpleAStar3D aStar = new SimpleAStar3D(combinedBounds, combinedBounds.position);
-            List<Vector3Int> path = aStar.FindPath(startPos, endPos, obstructions, Heuristic.Manhattan);
+            bool result = _blueprintGenerator.PathfindBlueprintFromPath(entry.ConnectionPath, combinedBounds, MasterDictionary[startPos], 
+                                                            MasterDictionary[endPos], obstructions, Heuristic.Manhattan);
 
-            if (path == null)
+            if (!result)
             {
                 Debug.LogError($"Map Generator Error: Pathfinding failed for Zone connection.");
                 return false;
             }
 
-            // ***** Generate Blueprint Rooms from path
-            BlueprintRoom curRoom = null;
-            BlueprintRoom prevRoom = null;
-            foreach (Vector3Int pos in path)
-            {
-                if (pos != startPos && pos != endPos)
-                    curRoom = _blueprintGenerator.GenerateBlueprintRoom(entry.ConnectionPath, pos);
-                else
-                    curRoom = MasterDictionary[pos];
-                if (prevRoom == null)
-                {
-                    prevRoom = curRoom;
-                    continue;
-                }
-
-                // TODO: figure out a better way this is really jank
-                Vector3Int difference = curRoom.Position - prevRoom.Position;
-
-                int entrFlagIdx;
-                if (difference == Vector3Int.right)
-                    entrFlagIdx = 0;
-                else if (difference == Vector3Int.left)
-                    entrFlagIdx = 1;
-                else if (difference == Vector3Int.forward)
-                    entrFlagIdx = 2;
-                else if (difference == Vector3Int.back)
-                    entrFlagIdx = 3;
-                else if (difference == Vector3Int.up)
-                    entrFlagIdx = 4;
-                else if (difference == Vector3Int.down)
-                    entrFlagIdx = 5;
-                else
-                    entrFlagIdx = -1;   // Default or error case
-
-                _blueprintGenerator.FlagDoorways(curRoom, prevRoom, entrFlagIdx);
-
-                prevRoom = curRoom;
-            }
             return true;
         }
         #endregion
@@ -1024,6 +1007,21 @@ namespace RyansLibrary.Labyrinth
             return true;        // The zone's cell requirements are met with the bounded volume
         }
 
+        private BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
+        {
+            // Create shared bounds between two zones
+            BoundsInt combinedBounds = new BoundsInt();
+            Vector3Int position = new Vector3Int(
+                                (int)(boundsA.position.x + boundsB.position.x) / 2,
+                                (int)(boundsA.position.y + boundsB.position.y) / 2,
+                                (int)(boundsA.position.z + boundsB.position.z) / 2);
+            Vector3Int size = boundsA.size + boundsB.size;
+            combinedBounds.position = position;
+            combinedBounds.size = size;
+
+            return combinedBounds;
+        }
+
         public void DestroyAllRooms()
         {
             foreach (Transform child in _roomContainer.transform) 
@@ -1104,17 +1102,19 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation()
         {
-            foreach (DelaunayTriangulation3D triangulation in _triangulations)
+            foreach (List<Edge> edgeList in _triangulations)
             {
+                /*      DEPRICATED (NEED DELAUNYTRIANGULATION OBJECT FOR THIS DATA)
                 // Draw circumcircles in remaining tetrahedron from triangulation
                 foreach (Tetrahedron t in triangulation.Tetrahedra)
                 {
                     Gizmos.color = _circumcircleColor;
                     Gizmos.DrawSphere(t.Circumcenter * _gridUnitSize, Mathf.Sqrt(t.CircumradiusSquared) * _gridUnitSize);
                 }
+                */
 
                 // Draw remaining edges from triangulation
-                foreach (Edge e in triangulation.Edges)
+                foreach (Edge e in edgeList)
                 {
                     Gizmos.color = _triangulationColor;
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);

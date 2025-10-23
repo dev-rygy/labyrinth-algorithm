@@ -58,11 +58,11 @@ namespace RyansLibrary.AI
         private Grid3D<Node> grid;
         private Vector3Int offset;
 
-        public SimpleAStar3D(BoundsInt bounds, Vector3Int offset)
+        public SimpleAStar3D(BoundsInt bounds)
         {
             grid = new Grid3D<Node>(bounds);
             var size = grid.Size;
-            this.offset = offset;
+            offset = bounds.position;
 
             openSet = new SimplePriorityQueue<Node, float>();
             closedSet = new HashSet<Node>();

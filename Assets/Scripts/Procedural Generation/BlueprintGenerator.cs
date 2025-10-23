@@ -8,14 +8,16 @@
  *                  multiple techniques. Most common techniques are 
  *                  cached in BlueprintGenerator class
 */
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
-
 using RyansLibrary.AI;
 using RyansLibrary.Graphs;
 using RyansLibrary.Utils;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
 {
@@ -214,21 +216,28 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Blueprint Graphs
-        public DelaunayTriangulation3D GenerateTriangulationFromPath(Path path)
+        // TODO: make a graph class/struct that can hold edges and return that instead of a DelaunayTriangulation3D value
+        public List<Edge> GenerateTriangulationFromPath(Path path)
+        {
+            // Make a new list and remove all rooms that are not available
+            List<BlueprintRoom> availableBlueprints = path.BlueprintRooms.Where(room => room.Available).ToList();
+
+            return GenerateTriangulation(availableBlueprints);
+        }
+
+        // TODO: make a graph class/struct that can hold edges and return that instead of a DelaunayTriangulation3D value
+        public List<Edge> GenerateTriangulation(List<BlueprintRoom> blueprints)
         {
             List<Vertex> waypoints = new List<Vertex>();
 
-            foreach (BlueprintRoom room in path.BlueprintRooms)
+            foreach (BlueprintRoom room in blueprints)
             {
-                // if room is not available then forget about triangulating/pathfinding to it
-                if (!room.Available)
-                    continue;
-
                 waypoints.Add(new Vertex<BlueprintRoom>(room.Position, room));
             }
 
-            // Perform Delaunay Triangulation
-            return DelaunayTriangulation3D.Triangulate(waypoints);
+            DelaunayTriangulation3D triangulation = DelaunayTriangulation3D.Triangulate(waypoints);
+
+            return triangulation.Edges;
         }
 
         public List<Edge> FindMinimumSpanningTree(List<Edge> edges, Vertex startingVertex)
@@ -264,26 +273,13 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Blueprint Pathfind
-        public bool PathfindBlueprintFromPath(Path path, BoundsInt bounds, Vector3Int startPos, Vector3Int endPos, Heuristic heuristic = Heuristic.Euclidean)
+        public bool PathfindBlueprintFromPath(Path path, BoundsInt bounds, BlueprintRoom startRoom, BlueprintRoom endRoom, HashSet<Vector3Int> obstructions, 
+            Heuristic heuristic = Heuristic.Euclidean)
         {
-            SimpleAStar3D aStar = new SimpleAStar3D(bounds, bounds.position);
-
-            // Add obstructions
-            HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
-            foreach (BlueprintRoom room in path.BlueprintRooms)
-            {
-                // if the room is the start room or ending room of the edge then don't add to obstructions
-                Vector3Int roomPos = room.Position;
-                if (roomPos == startPos || roomPos == endPos)
-                    continue;
-
-                // Only make non-available blueprint rooms obstructions
-                if (!room.Available)
-                    obstructions.Add(roomPos);
-            }
+            SimpleAStar3D aStar = new SimpleAStar3D(bounds);
 
             // Find a sequence of points in room coordinates
-            List<Vector3Int> sequence = aStar.FindPath(startPos, endPos, obstructions, heuristic);
+            List<Vector3Int> sequence = aStar.FindPath(startRoom.Position, endRoom.Position, obstructions, heuristic);
 
             if (sequence == null)
             {
@@ -321,6 +317,54 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Blueprint Random
+        /// <summary>
+        /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
+        /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
+        /// </summary>
+        /// <param name="path">A path with a length of atleast one.</param>
+        /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
+        public bool BlueprintDrunkardWalk(Path path, Path branchedPath, BoundsInt bounds, int startIndex, int endIndex)
+        {
+            if (!path.IsInitialized)
+            {
+                Debug.LogWarning($"Map Generator Error: Path {path.Name} must be initialized for Drunkard Walk.");
+                return false;
+            }
+
+            // Make sure the path has atleast one room cell that can spawn
+            if (path.PathLength <= 0)
+            {
+                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
+                return false;
+            }
+
+            // Extend master path's end index
+            _masterPathReference.endMasterIdx = path.endMasterIdx;
+
+            int randomStartingIndex = Random.Range(startIndex, endIndex);   // Choose a random room respecting the constraints
+
+            // Attempt to place path in range
+            bool pathPlaced = false;
+            Func<int, int> circularIncrement = x => (x < endIndex + 1) ? ++x : x = startIndex;
+            for (int i = randomStartingIndex; i != randomStartingIndex - 1; i = circularIncrement(i))
+            {
+                // Choose new start room
+                BlueprintRoom startRoom = branchedPath.BlueprintRooms[i];
+                path.ClearBlueprintRooms();
+
+                if (!startRoom.Available)       // Check if start room is available
+                    continue;
+
+                pathPlaced = BlueprintDrunkardWalk(path, bounds, startRoom);
+
+                // Break out of loop to prevent duplicate path placement
+                if (pathPlaced)
+                    break;
+            }
+
+            return pathPlaced;
+        }
+
         /// <summary>
         /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
         /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
@@ -365,7 +409,7 @@ namespace RyansLibrary.Labyrinth
 
         private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, BlueprintRoom prevRoom)
         {
-            if (path.BlueprintCount() > path.PathLength)
+            if (path.BlueprintCount() >= path.PathLength)
                 return true;
 
             // Attempt to place a new room
@@ -399,8 +443,6 @@ namespace RyansLibrary.Labyrinth
                     return null;
 
                 Vector3Int tempPos = prevRoom.Position + GetDirectionFromIndex(directionalIndex);
-
-                // Debug.Log($"Attempting placement at {tempPos}");
 
                 // Check position in hash map; if failed then flag face attempt and try choosing a new position 
                 if (!CheckOutOfBounds(tempPos, bounds) && !CheckCollision(tempPos))     // If position is not out of bounds and not colliding with another room
