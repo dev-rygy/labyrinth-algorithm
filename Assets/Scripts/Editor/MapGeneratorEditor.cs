@@ -14,7 +14,7 @@ namespace RyansLibrary.Labyrinth
     /// Edit's the Map Generator's Inspector Editor.
     /// Class has total dependancy on the Map Generator Script.
     /// </summary>
-    [CustomEditor(typeof(MapGenerator))]
+    [CustomEditor(typeof(MapGeneratorController))]
     public class MapGeneratorEditor : Editor
     {
         public event Action OnGenerationRestart;
@@ -32,12 +32,12 @@ namespace RyansLibrary.Labyrinth
         private bool showTriangulationGizmos = false;
         private bool showBoundGizmos = false;
 
-        private MapGenerator generator;
+        private MapGeneratorController generator;
 
         private void OnEnable()
         {
             // Get the target script
-            generator = (MapGenerator)target;
+            generator = (MapGeneratorController)target;
 
             OnGenerationRestart += generator.ResetLabyrinth;
         }

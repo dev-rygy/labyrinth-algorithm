@@ -50,7 +50,7 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public Color PathGizmoColor;
 
         // Data Storage 
-        public List<BlueprintRoom> BlueprintRooms { get; private set; }
+        public List<Blueprint> BlueprintList { get; private set; }
         public List<Room> Rooms { get; private set; }
         public int startMasterIdx { get; set; }  // Start index in master path
         public int endMasterIdx { get; set; }    // End index in master path
@@ -60,7 +60,7 @@ namespace RyansLibrary.Labyrinth
         // Constructor for path; gets it's start and end index in the master path
         public void Initialize(int startIdx = 0, int endIdx = 0)
         {
-            BlueprintRooms = new List<BlueprintRoom>();
+            BlueprintList = new List<Blueprint>();
             Rooms = new List<Room>();
 
             startMasterIdx = startIdx;
@@ -69,7 +69,7 @@ namespace RyansLibrary.Labyrinth
 
         private bool CheckInitialize()
         {
-            if (BlueprintRooms != null && Rooms != null)
+            if (BlueprintList != null && Rooms != null)
                 return true;
 
             return false;
@@ -80,7 +80,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         public int BlueprintCount()
         {
-            return BlueprintRooms.Count;
+            return BlueprintList.Count;
         }
 
         /// <summary>
@@ -94,9 +94,9 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Add a blueprint room to the path.
         /// </summary>
-        public void Add(BlueprintRoom room)
+        public void Add(Blueprint blueprint)
         {
-            BlueprintRooms.Add(room);
+            BlueprintList.Add(blueprint);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         public void ClearBlueprintRooms()
         {
-            BlueprintRooms.Clear();
+            BlueprintList.Clear();
         }
     }
 }

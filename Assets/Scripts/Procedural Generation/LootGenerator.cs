@@ -23,7 +23,7 @@ namespace RyansLibrary.Labyrinth
         private void Awake()
         {
             // Subscribe to "Done" event in map generator and spawn loot after
-            MapGenerator.OnGenerationDone += SpawnLoot;
+            MapGeneratorController.OnGenerationDone += SpawnLoot;
         }
 
         private void SpawnLoot()
@@ -33,7 +33,7 @@ namespace RyansLibrary.Labyrinth
                 return;
 
             // Get reference to MasterPath in Map Generator
-            _masterPathReference = MapGenerator.Instance?.MasterPath;
+            _masterPathReference = MapGeneratorController.Instance?.MasterPath;
 
             // Return if the masterpath is not initialized
             if (_masterPathReference == null)
