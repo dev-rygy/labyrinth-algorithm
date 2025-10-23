@@ -1096,12 +1096,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 624473071}
   m_CullTransparentMesh: 1
---- !u!4 &634396024 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 688038257182604410, guid: 73847e83561772c469ae908640004d11,
-    type: 3}
-  m_PrefabInstance: {fileID: 2008657241}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &720197579
 GameObject:
   m_ObjectHideFlags: 0
@@ -2088,79 +2082,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1850026533}
   m_CullTransparentMesh: 1
---- !u!1 &1895204781 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5863528550629813726, guid: 73847e83561772c469ae908640004d11,
-    type: 3}
-  m_PrefabInstance: {fileID: 2008657241}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1895204784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1895204781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbae4f7298c9aca458926d44722cbc4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RyansLibrary.Labyrinth.MapGeneratorController
-  _enabled: 1
-  customSeed: 0
-  generateRandomSeed: 1
-  _seed: 0
-  _gridUnitSize: 13
-  _roomContainer: {fileID: 634396024}
-  _retryGenerationOnFail: 0
-  _maxPlacementAttempts: 50
-  _zones:
-  - {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c, type: 2}
-  - {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691, type: 2}
-  _zoneConnections:
-  - <ZoneA>k__BackingField: {fileID: 0}
-    <ZoneB>k__BackingField: {fileID: 0}
-    <RoomA>k__BackingField:
-      <Prefab>k__BackingField: {fileID: 0}
-      <PlacementType>k__BackingField: 0
-      <SpawnPosition>k__BackingField: {x: 0, y: 0, z: 0}
-      <AvailableCells>k__BackingField: []
-      <Bounds>k__BackingField:
-        m_Position: {x: 0, y: 0, z: 0}
-        m_Size: {x: 0, y: 0, z: 0}
-    <RoomB>k__BackingField:
-      <Prefab>k__BackingField: {fileID: 0}
-      <PlacementType>k__BackingField: 0
-      <SpawnPosition>k__BackingField: {x: 0, y: 0, z: 0}
-      <AvailableCells>k__BackingField: []
-      <Bounds>k__BackingField:
-        m_Position: {x: 0, y: 0, z: 0}
-        m_Size: {x: 0, y: 0, z: 0}
-    <ConnectionPath>k__BackingField: {fileID: 0}
-  - <ZoneA>k__BackingField: {fileID: 0}
-    <ZoneB>k__BackingField: {fileID: 0}
-    <RoomA>k__BackingField:
-      <Prefab>k__BackingField: {fileID: 0}
-      <PlacementType>k__BackingField: 0
-      <SpawnPosition>k__BackingField: {x: 0, y: 0, z: 0}
-      <AvailableCells>k__BackingField: []
-      <Bounds>k__BackingField:
-        m_Position: {x: 0, y: 0, z: 0}
-        m_Size: {x: 0, y: 0, z: 0}
-    <RoomB>k__BackingField:
-      <Prefab>k__BackingField: {fileID: 0}
-      <PlacementType>k__BackingField: 0
-      <SpawnPosition>k__BackingField: {x: 0, y: 0, z: 0}
-      <AvailableCells>k__BackingField: []
-      <Bounds>k__BackingField:
-        m_Position: {x: 0, y: 0, z: 0}
-        m_Size: {x: 0, y: 0, z: 0}
-    <ConnectionPath>k__BackingField: {fileID: 0}
-  _boundingBoxColor: {r: 0, g: 0, b: 0, a: 0}
-  _triangulationColor: {r: 0, g: 0, b: 0, a: 0}
-  _contiguousGraphColor: {r: 0, g: 0, b: 0, a: 0}
-  _randomCyclesColor: {r: 0, g: 0, b: 0, a: 0}
-  _currentEdgeColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1964473698
 GameObject:
   m_ObjectHideFlags: 0
@@ -2490,15 +2411,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5782121226659276570, guid: 73847e83561772c469ae908640004d11, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5863528550629813726, guid: 73847e83561772c469ae908640004d11,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1895204784}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 73847e83561772c469ae908640004d11, type: 3}
 --- !u!1 &2047436906
 GameObject:
