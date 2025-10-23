@@ -31,7 +31,7 @@ namespace RyansLibrary.Labyrinth
         private readonly Path _masterPathReference;
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
-        private readonly Dictionary<Vector3Int, BlueprintRoom> _masterDictionaryReference;
+        private readonly Dictionary<Vector3Int, Blueprint> _masterDictionaryReference;
 
         private int _gridUnitSize;          // Conventional size of a 1:1 room
         private Transform _roomContainer;   // GameObject that will hold rooms
@@ -39,7 +39,7 @@ namespace RyansLibrary.Labyrinth
         // Debugging
         private bool _debugLogs;
 
-        public RoomGenerator(Path masterPath, Dictionary<Vector3Int, BlueprintRoom> masterDictionary, int gridUnitSize, Transform roomContainer)
+        public RoomGenerator(Path masterPath, Dictionary<Vector3Int, Blueprint> masterDictionary, int gridUnitSize, Transform roomContainer)
         {
             _masterPathReference = masterPath;
             _masterDictionaryReference = masterDictionary;
@@ -66,10 +66,10 @@ namespace RyansLibrary.Labyrinth
             // If the path has starting room(s) then spawn the start room
             if (path.startingRooms.Count > 0)
             {
-                path.Rooms.Add(GenerateRoom(RoomShape.smallRoom, RoomType.start, path, path.BlueprintRooms[0], 0));
+                path.Rooms.Add(GenerateRoom(RoomShape.smallRoom, RoomType.start, path, path.BlueprintList[0], 0));
 
                 // Mark room space as unavailable
-                path.BlueprintRooms[0].Available = false;
+                path.BlueprintList[0].Available = false;
                 indexOffset = 1;
             }
 
@@ -78,11 +78,11 @@ namespace RyansLibrary.Labyrinth
             for (int i = 0 + indexOffset; i < path.BlueprintCount(); i++)
             {
                 // Initialize current room and blueprint room at start of each iteration
-                BlueprintRoom indexedBRoom = path.BlueprintRooms[i];
+                Blueprint indexedBlueprint = path.BlueprintList[i];
                 Room genRoom = null;
 
                 // Check if the indexed room is available; If not then skip iteration
-                if (!indexedBRoom.Available)
+                if (!indexedBlueprint.Available)
                     continue;
 
                 RoomDirection rDir = RoomDirection.PosX;        // Default Room Case
@@ -100,11 +100,11 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Check conditions to spawn a Big Room starting at the indexed room's position
-                if (RoomShapeCondition(indexedBRoom, RoomShape.bigRoom, path, out rDir))
+                if (RoomShapeCondition(indexedBlueprint, RoomShape.bigRoom, path, out rDir))
                 {
                     // spawn B-Room
                     // Hook up blueprintRoom.entrancewayflags to new room
-                    genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, indexedBRoom, rDir);         // **** Spawn B-Room
+                    genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, indexedBlueprint, rDir);         // **** Spawn B-Room
                     path.Add(genRoom);              // Add new room to paths
                     _masterPathReference.Add(genRoom);
 
@@ -119,9 +119,9 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Check conditions to spawn a Tall Room starting at the indexed room's position
-                else if (RoomShapeCondition(indexedBRoom, RoomShape.tallRoom, path, out rDir))
+                else if (RoomShapeCondition(indexedBlueprint, RoomShape.tallRoom, path, out rDir))
                 {
-                    genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, indexedBRoom, rDir);        // **** Spawn T-Room
+                    genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, indexedBlueprint, rDir);        // **** Spawn T-Room
                     path.Add(genRoom);              // Add new room to paths
                     _masterPathReference.Add(genRoom);
 
@@ -136,9 +136,9 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Check conditions to spawn a Long Room starting at the indexed room's position
-                else if (RoomShapeCondition(path.BlueprintRooms[i], RoomShape.longRoom, path, out rDir))
+                else if (RoomShapeCondition(path.BlueprintList[i], RoomShape.longRoom, path, out rDir))
                 {
-                    genRoom = GenerateRoom(RoomShape.longRoom, rType, path, indexedBRoom, rDir);        // **** Spawn L-Room
+                    genRoom = GenerateRoom(RoomShape.longRoom, rType, path, indexedBlueprint, rDir);        // **** Spawn L-Room
 
                     if (genRoom == null)
                     {
@@ -157,9 +157,9 @@ namespace RyansLibrary.Labyrinth
                 else                                                                                        // **** Spawn S-Room
                 {
                     // Make current blueprint space unavailable for future checks
-                    path.BlueprintRooms[i].Available = false;
+                    path.BlueprintList[i].Available = false;
 
-                    genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, indexedBRoom, 0); // Spawn S-Room
+                    genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, indexedBlueprint, 0); // Spawn S-Room
                     if (genRoom == null)
                     {
                         Debug.LogError($"Map Generator Error: Path {path.Name} attempted to spawn a Small Room but failed.");
@@ -182,17 +182,17 @@ namespace RyansLibrary.Labyrinth
         /// it also passes out the potential direction of the room so that rotations can be handled acordingly.
         /// If a room can be spawned the method will mark all rooms that take up the potential room's space.
         /// </summary>
-        /// <param name="currRoom">The current blueprint room to be checked.</param>
+        /// <param name="currentBlueprint">The current blueprint room to be checked.</param>
         /// <param name="roomShape">The desired room shape to attempt to spawn.</param>
         /// <param name="path">The path to spawn the room in.</param>
         /// <param name="rDir">THe directional code of the spawned room, if succeeded.</param>
         /// <returns>true if the room can spawn, false otherwise.</returns>
-        private bool RoomShapeCondition(BlueprintRoom currRoom, RoomShape roomShape, Path path, out RoomDirection rDir)
+        private bool RoomShapeCondition(Blueprint currentBlueprint, RoomShape roomShape, Path path, out RoomDirection rDir)
         {
             rDir = 0;               // Initialize the direction as default
             float roomRoll = Random.Range(0, 1.01f);        // Roll for room based on it's % chance of spawning
 
-            BlueprintRoom[] availBlueRooms = CheckAvailableAdjacentRooms(currRoom, path);
+            Blueprint[] availBlueRooms = CheckAvailableAdjacentBlueprints(currentBlueprint, path);
 
             switch (roomShape)
             {
@@ -209,32 +209,32 @@ namespace RyansLibrary.Labyrinth
 
                         if (availBlueRooms[0] != null)      // 1.) If there is a room on the right
                         {
-                            BlueprintRoom[] availBlueRoomsRight = CheckAvailableAdjacentRooms(availBlueRooms[0], path);
+                            Blueprint[] availBlueprintsRight = CheckAvailableAdjacentBlueprints(availBlueRooms[0], path);
 
-                            if (availBlueRoomsRight[2] != null)     // a.) If there is a room forward
+                            if (availBlueprintsRight[2] != null)     // a.) If there is a room forward
                             {
-                                BlueprintRoom[] availBlueRoomsFwd = CheckAvailableAdjacentRooms(availBlueRoomsRight[2], path);
+                                Blueprint[] availBlueprintsFwd = CheckAvailableAdjacentBlueprints(availBlueprintsRight[2], path);
 
-                                if (availBlueRoomsFwd[1] != null)       // I.) If there is a room on the left
+                                if (availBlueprintsFwd[1] != null)       // I.) If there is a room on the left
                                 {
-                                    currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                                    currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                                     availBlueRooms[0].Available = false;        // Lock room right so it's not used in other checks
-                                    availBlueRoomsRight[2].Available = false;        // Lock room right so it's not used in other checks
-                                    availBlueRoomsFwd[1].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsRight[2].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsFwd[1].Available = false;        // Lock room right so it's not used in other checks
                                     rDir = RoomDirection.PosX;
                                     return true;
                                 }
                             }
-                            if (availBlueRoomsRight[3] != null)     // b.) If there is a room backward
+                            if (availBlueprintsRight[3] != null)     // b.) If there is a room backward
                             {
-                                BlueprintRoom[] availBlueRoomsBwd = CheckAvailableAdjacentRooms(availBlueRoomsRight[3], path);
+                                Blueprint[] availBlueprintsBwd = CheckAvailableAdjacentBlueprints(availBlueprintsRight[3], path);
 
-                                if (availBlueRoomsBwd[1] != null)       // I.) If there is a room on the left
+                                if (availBlueprintsBwd[1] != null)       // I.) If there is a room on the left
                                 {
-                                    currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                                    currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                                     availBlueRooms[0].Available = false;        // Lock room right so it's not used in other checks
-                                    availBlueRoomsRight[3].Available = false;        // Lock room right so it's not used in other checks
-                                    availBlueRoomsBwd[1].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsRight[3].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsBwd[1].Available = false;        // Lock room right so it's not used in other checks
                                     rDir = RoomDirection.PosZ;
                                     return true;
                                 }
@@ -243,32 +243,32 @@ namespace RyansLibrary.Labyrinth
 
                         if (availBlueRooms[1] != null)      // 2.) If there is a room on the left
                         {
-                            BlueprintRoom[] availBlueRoomsLeft = CheckAvailableAdjacentRooms(availBlueRooms[1], path);
+                            Blueprint[] availBlueprintsLeft = CheckAvailableAdjacentBlueprints(availBlueRooms[1], path);
 
-                            if (availBlueRoomsLeft[2] != null)     // a.) If there is a room forward
+                            if (availBlueprintsLeft[2] != null)     // a.) If there is a room forward
                             {
-                                BlueprintRoom[] availBlueRoomsFwd = CheckAvailableAdjacentRooms(availBlueRoomsLeft[2], path);
+                                Blueprint[] availBlueprintsFwd = CheckAvailableAdjacentBlueprints(availBlueprintsLeft[2], path);
 
-                                if (availBlueRoomsFwd[0] != null)       // I.) If there is a room on the right
+                                if (availBlueprintsFwd[0] != null)       // I.) If there is a room on the right
                                 {
-                                    currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                                    currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                                     availBlueRooms[1].Available = false;        // Lock room right so it's not used in other checks
-                                    availBlueRoomsLeft[2].Available = false;        // Lock room right so it's not used in other checks
-                                    availBlueRoomsFwd[0].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsLeft[2].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsFwd[0].Available = false;        // Lock room right so it's not used in other checks
                                     rDir = RoomDirection.NegX;
                                     return true;
                                 }
                             }
-                            if (availBlueRoomsLeft[3] != null)     // b.) If there is a room backward
+                            if (availBlueprintsLeft[3] != null)     // b.) If there is a room backward
                             {
-                                BlueprintRoom[] availBlueRoomsBwd = CheckAvailableAdjacentRooms(availBlueRoomsLeft[3], path);
+                                Blueprint[] availBlueprintsBwd = CheckAvailableAdjacentBlueprints(availBlueprintsLeft[3], path);
 
-                                if (availBlueRoomsBwd[0] != null)       // I.) If there is a room on the right
+                                if (availBlueprintsBwd[0] != null)       // I.) If there is a room on the right
                                 {
-                                    currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                                    currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                                     availBlueRooms[1].Available = false;        // Lock room right so it's not used in other checks
-                                    availBlueRoomsLeft[3].Available = false;        // Lock room right so it's not used in other checks
-                                    availBlueRoomsBwd[0].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsLeft[3].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsBwd[0].Available = false;        // Lock room right so it's not used in other checks
                                     rDir = RoomDirection.NegZ;
                                     return true;
                                 }
@@ -292,7 +292,7 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's above the current room
                         if (availBlueRooms[4] != null)
                         {
-                            currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                             availBlueRooms[4].Available = false;        // Lock room above so it's not used in other checks
                             rDir = RoomDirection.PosY;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
@@ -301,7 +301,7 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's below the current room
                         if (availBlueRooms[5] != null)
                         {
-                            currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                             availBlueRooms[5].Available = false;        // Lock room below so it's not used in other checks
                             rDir = RoomDirection.NegY;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
@@ -324,7 +324,7 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's right to the current room
                         if (availBlueRooms[0] != null)
                         {
-                            currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                             availBlueRooms[0].Available = false;        // Lock room right so it's not used in other checks
                             rDir = RoomDirection.PosX;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
@@ -332,7 +332,7 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's left to current room
                         if (availBlueRooms[1] != null)
                         {
-                            currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                             availBlueRooms[1].Available = false;        // Lock room left so it's not used in other checks
                             rDir = RoomDirection.NegX;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
@@ -340,7 +340,7 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's forward from the current room
                         if (availBlueRooms[2] != null)
                         {
-                            currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                             availBlueRooms[2].Available = false;        // Lock room forward so it's not used in other checks
                             rDir = RoomDirection.PosZ;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
@@ -348,7 +348,7 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's backward from the current room
                         if (availBlueRooms[3] != null)
                         {
-                            currRoom.Available = false;                 // Lock the current room so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
                             availBlueRooms[3].Available = false;        // Lock room backward so it's not used in other checks
                             rDir = RoomDirection.NegZ;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
@@ -369,40 +369,40 @@ namespace RyansLibrary.Labyrinth
         /// Helper Function Test all spaces adjacent to the room being tested. If a room exists in that space then set 
         /// the return array to the BlueprintRoom Tied to that space.
         /// </summary>
-        /// <param name="room">The current blueprint room to check around.</param>
+        /// <param name="blueprint">The current blueprint room to check around.</param>
         /// <param name="path">The path to loop through.</param>
         /// <returns>A set of blueprint rooms that are adjacent to the room and available</returns>
-        private BlueprintRoom[] CheckAvailableAdjacentRooms(BlueprintRoom room, Path path)
+        private Blueprint[] CheckAvailableAdjacentBlueprints(Blueprint blueprint, Path path)
         {
             // Store availRooms here and return. All possible avail rooms are up to the face count (F0 - F5)
-            BlueprintRoom[] availBlueRooms = new BlueprintRoom[STANDARD_FACE_COUNT];
+            Blueprint[] availableBlueprints = new Blueprint[STANDARD_FACE_COUNT];
 
             // Get the positions of potential adjacent rooms to the room
-            Vector3Int rightRoomPos = room.Position + Vector3Int.right;     // F0: Right
-            Vector3Int leftRoomPos = room.Position + Vector3Int.left;       // F1: Left
-            Vector3Int fwdRoomPos = room.Position + Vector3Int.forward;     // F2: Forward
-            Vector3Int backRoomPos = room.Position + Vector3Int.back;       // F3: Back
-            Vector3Int topRoomPos = room.Position + Vector3Int.up;          // F4: Top
-            Vector3Int botRoomPos = room.Position + Vector3Int.down;        // F5: Bot
+            Vector3Int rightRoomPos = blueprint.Position + Vector3Int.right;     // F0: Right
+            Vector3Int leftRoomPos = blueprint.Position + Vector3Int.left;       // F1: Left
+            Vector3Int fwdRoomPos = blueprint.Position + Vector3Int.forward;     // F2: Forward
+            Vector3Int backRoomPos = blueprint.Position + Vector3Int.back;       // F3: Back
+            Vector3Int topRoomPos = blueprint.Position + Vector3Int.up;          // F4: Top
+            Vector3Int botRoomPos = blueprint.Position + Vector3Int.down;        // F5: Bot
 
             // Test each position; if the room does not exist the space is null, otherwise it's set to the Blueprint room tied to the position
-            _masterDictionaryReference.TryGetValue(rightRoomPos, out availBlueRooms[0]);        // F0: Right
-            _masterDictionaryReference.TryGetValue(leftRoomPos, out availBlueRooms[1]);         // F1: Left
-            _masterDictionaryReference.TryGetValue(fwdRoomPos, out availBlueRooms[2]);          // F2: Forward
-            _masterDictionaryReference.TryGetValue(backRoomPos, out availBlueRooms[3]);         // F3: Back 
-            _masterDictionaryReference.TryGetValue(topRoomPos, out availBlueRooms[4]);          // F4: Top
-            _masterDictionaryReference.TryGetValue(botRoomPos, out availBlueRooms[5]);          // F5: Bot
+            _masterDictionaryReference.TryGetValue(rightRoomPos, out availableBlueprints[0]);        // F0: Right
+            _masterDictionaryReference.TryGetValue(leftRoomPos, out availableBlueprints[1]);         // F1: Left
+            _masterDictionaryReference.TryGetValue(fwdRoomPos, out availableBlueprints[2]);          // F2: Forward
+            _masterDictionaryReference.TryGetValue(backRoomPos, out availableBlueprints[3]);         // F3: Back 
+            _masterDictionaryReference.TryGetValue(topRoomPos, out availableBlueprints[4]);          // F4: Top
+            _masterDictionaryReference.TryGetValue(botRoomPos, out availableBlueprints[5]);          // F5: Bot
 
             // Loop through available room spaces and eliminate spaces that have already been taken up by other generated rooms
-            for (int i = 0; i < availBlueRooms.Length; i++)
+            for (int i = 0; i < availableBlueprints.Length; i++)
             {
                 // If the room is not available due to it being used by another generated room
                 // OR if it is not a part of the path in question then remove it from the availBlueRooms list.
-                if (availBlueRooms[i] != null && (!availBlueRooms[i].Available || !path.BlueprintRooms.Contains(availBlueRooms[i])))
-                    availBlueRooms[i] = null;
+                if (availableBlueprints[i] != null && (!availableBlueprints[i].Available || !path.BlueprintList.Contains(availableBlueprints[i])))
+                    availableBlueprints[i] = null;
             }
 
-            return availBlueRooms;
+            return availableBlueprints;
         }
         #endregion
 
@@ -434,11 +434,11 @@ namespace RyansLibrary.Labyrinth
         /// <param name="shape">The shape type of the room</param>
         /// <param name="rType">The special type of the room</param>
         /// <param name="path">The path the room will be a part of</param>
-        /// <param name="originRoom">The room's origin blueprint room</param>
+        /// <param name="originBlueprint">The room's origin blueprint room</param>
         /// <param name="rDir">The direction code of the room.</param>
         /// <param name="prefabIndex">The prefab index in the room array; set to -1 to spawn a random room.</param>
         /// <returns></returns>
-        public Room GenerateRoom(RoomShape shape, RoomType rType, Path path, BlueprintRoom originRoom, RoomDirection rDir = 0, int prefabIndex = -1)      // prefabIndex = -1 means spawn random room
+        public Room GenerateRoom(RoomShape shape, RoomType rType, Path path, Blueprint originBlueprint, RoomDirection rDir = 0, int prefabIndex = -1)      // prefabIndex = -1 means spawn random room
         {
             Room generatedRoom = null;
             Quaternion rotation = Quaternion.identity;      // Take the rotation of the room into account
@@ -448,8 +448,8 @@ namespace RyansLibrary.Labyrinth
             if (rType == RoomType.start)
             {
                 // Generate Small Room; no direction condition needed
-                generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.startingRooms), ConvertToWorldCoords(originRoom.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
-                generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);   // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
+                generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.startingRooms), ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
+                generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);   // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
                 generatedRoom.Initialize(rType);
                 return generatedRoom;
             }
@@ -464,54 +464,54 @@ namespace RyansLibrary.Labyrinth
                     // Generate Big Room based on it's direction
                     if (rDir == RoomDirection.PosX)     // Right, Forward, Left
                     {
-                        BlueprintRoom rightRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.right];         // _>--
-                        BlueprintRoom fwdRoom = _masterDictionaryReference[rightRoom.Position + Vector3Int.forward];          // __-^
-                        BlueprintRoom leftRoom = _masterDictionaryReference[fwdRoom.Position + Vector3Int.left];              // __<-
+                        Blueprint rightBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.right];         // _>--
+                        Blueprint fwdBlueprint = _masterDictionaryReference[rightBlueprint.Position + Vector3Int.forward];          // __-^
+                        Blueprint leftBlueprint = _masterDictionaryReference[fwdBlueprint.Position + Vector3Int.left];              // __<-
 
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(originRoom.Position), rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
-                        generatedRoom.CopyBlueprintEntranceFlags(fwdRoom.entrancewayFlags, 2, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
-                        generatedRoom.CopyBlueprintEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(rightBlueprint.EntryPointFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintEntranceFlags(fwdBlueprint.EntryPointFlags, 2, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintEntranceFlags(leftBlueprint.EntryPointFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
                         generatedRoom.Initialize(rType);
                     }
                     else if (rDir == RoomDirection.NegX)        // Left, Forward, Right
                     {
-                        BlueprintRoom leftRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.left];           // <_--
-                        BlueprintRoom fwdRoom = _masterDictionaryReference[leftRoom.Position + Vector3Int.forward];           // __^-
-                        BlueprintRoom rightRoom = _masterDictionaryReference[fwdRoom.Position + Vector3Int.right];            // __->
+                        Blueprint leftBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.left];           // <_--
+                        Blueprint fwdBlueprint = _masterDictionaryReference[leftBlueprint.Position + Vector3Int.forward];           // __^-
+                        Blueprint rightBlueprint = _masterDictionaryReference[fwdBlueprint.Position + Vector3Int.right];            // __->
 
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(leftRoom.Position), rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 6 - 11)
-                        generatedRoom.CopyBlueprintEntranceFlags(rightRoom.entrancewayFlags, 2, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 12 - 17)
-                        generatedRoom.CopyBlueprintEntranceFlags(fwdRoom.entrancewayFlags, 3, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 18 - 23)
-                        generatedRoom.CopyBlueprintEntranceFlags(leftRoom.entrancewayFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 0 - 5)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(leftBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintEntranceFlags(rightBlueprint.EntryPointFlags, 2, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintEntranceFlags(fwdBlueprint.EntryPointFlags, 3, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 18 - 23)
+                        generatedRoom.CopyBlueprintEntranceFlags(leftBlueprint.EntryPointFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 0 - 5)
                         generatedRoom.Initialize(rType);
                     }
                     else if (rDir == RoomDirection.PosZ)        // Right, Back, Left
                     {
-                        BlueprintRoom rightRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.right];         // __->
-                        BlueprintRoom backRoom = _masterDictionaryReference[rightRoom.Position + Vector3Int.back];            // _v--
-                        BlueprintRoom leftRoom = _masterDictionaryReference[backRoom.Position + Vector3Int.left];             // <_--
+                        Blueprint rightBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.right];         // __->
+                        Blueprint backBlueprint = _masterDictionaryReference[rightBlueprint.Position + Vector3Int.back];            // _v--
+                        Blueprint leftBlueprint = _masterDictionaryReference[backBlueprint.Position + Vector3Int.left];             // <_--
 
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(leftRoom.Position), rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 3, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 18 - 23)
-                        generatedRoom.CopyBlueprintEntranceFlags(rightRoom.entrancewayFlags, 2, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 12 - 17)
-                        generatedRoom.CopyBlueprintEntranceFlags(backRoom.entrancewayFlags, 1, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 6 - 11)
-                        generatedRoom.CopyBlueprintEntranceFlags(leftRoom.entrancewayFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 0 - 5)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(leftBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 3, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 18 - 23)
+                        generatedRoom.CopyBlueprintEntranceFlags(rightBlueprint.EntryPointFlags, 2, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintEntranceFlags(backBlueprint.EntryPointFlags, 1, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintEntranceFlags(leftBlueprint.EntryPointFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 0 - 5)
                         generatedRoom.Initialize(rType);
                     }
                     else if (rDir == RoomDirection.NegZ)        // Left, Back, Right
                     {
-                        BlueprintRoom leftRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.left];           // __<-
-                        BlueprintRoom backRoom = _masterDictionaryReference[leftRoom.Position + Vector3Int.back];             // v_--
-                        BlueprintRoom rightRoom = _masterDictionaryReference[backRoom.Position + Vector3Int.right];           // _>--
+                        Blueprint leftBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.left];           // __<-
+                        Blueprint backBlueprint = _masterDictionaryReference[leftBlueprint.Position + Vector3Int.back];             // v_--
+                        Blueprint rightBlueprint = _masterDictionaryReference[backBlueprint.Position + Vector3Int.right];           // _>--
 
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(backRoom.Position), rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 2, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
-                        generatedRoom.CopyBlueprintEntranceFlags(rightRoom.entrancewayFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
-                        generatedRoom.CopyBlueprintEntranceFlags(backRoom.entrancewayFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintEntranceFlags(leftRoom.entrancewayFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(backBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 2, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.CopyBlueprintEntranceFlags(rightBlueprint.EntryPointFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintEntranceFlags(backBlueprint.EntryPointFlags, 0, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(leftBlueprint.EntryPointFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
                         generatedRoom.Initialize(rType);
                     }
                     else
@@ -526,20 +526,20 @@ namespace RyansLibrary.Labyrinth
                     // Generate Tall Room based on it's direction
                     if (rDir == RoomDirection.PosY)
                     {
-                        BlueprintRoom nextRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.up];
+                        Blueprint upBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.up];
 
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms1x2x1), ConvertToWorldCoords(originRoom.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintEntranceFlags(nextRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms1x2x1), ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(upBlueprint.EntryPointFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                                // Activate new rooms entranceways
                     }
                     else if (rDir == RoomDirection.NegY)
                     {
-                        BlueprintRoom nextRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.down];
+                        Blueprint downBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.down];
 
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms1x2x1), ConvertToWorldCoords(nextRoom.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 1, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintEntranceFlags(nextRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms1x2x1), ConvertToWorldCoords(downBlueprint.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x2x1-Room at position of indexed blueprint room; use a random room in the 1x2x1-Room list
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 1, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(downBlueprint.EntryPointFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                                // Activate new rooms entranceways
                     }
                     else
@@ -556,42 +556,42 @@ namespace RyansLibrary.Labyrinth
                     // Generate Long Room based on it's direction
                     if (rDir == RoomDirection.PosX)
                     {
-                        BlueprintRoom nextRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.right];
+                        Blueprint rightBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.right];
 
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), ConvertToWorldCoords(originRoom.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintEntranceFlags(nextRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(rightBlueprint.EntryPointFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                                // Activate new rooms entranceways
                     }
                     else if (rDir == RoomDirection.NegX)
                     {
-                        BlueprintRoom nextRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.left];
+                        Blueprint leftBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.left];
 
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), ConvertToWorldCoords(nextRoom.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 1, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintEntranceFlags(nextRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), ConvertToWorldCoords(leftBlueprint.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 2x1x1-Room at position of indexed blueprint room; use a random room in the 2x1x1-Room list
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 1, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(leftBlueprint.EntryPointFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);                                                                // Activate new rooms entranceways
                     }
                     else if (rDir == RoomDirection.PosZ)
                     {
-                        BlueprintRoom nextRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.forward];
+                        Blueprint fwdBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.forward];
 
                         rotation.SetFromToRotation(Vector3.right, Vector3.forward);
                         eulerRotation = new Vector3(0, 90, 0);
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), ConvertToWorldCoords(originRoom.Position), rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintEntranceFlags(nextRoom.entrancewayFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(fwdBlueprint.EntryPointFlags, 1, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);
                     }
                     else if (rDir == RoomDirection.NegZ)
                     {
-                        BlueprintRoom nextRoom = _masterDictionaryReference[originRoom.Position + Vector3Int.back];
+                        Blueprint backBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.back];
 
                         rotation.SetFromToRotation(Vector3.right, Vector3.forward);
                         eulerRotation = new Vector3(0, 90, 0);
-                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), ConvertToWorldCoords(nextRoom.Position), rotation, _roomContainer).GetComponent<Room>();
-                        generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 1, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
-                        generatedRoom.CopyBlueprintEntranceFlags(nextRoom.entrancewayFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x1), ConvertToWorldCoords(backBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 1, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(backBlueprint.EntryPointFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
                         generatedRoom.Initialize(rType);
                     }
                     else
@@ -604,8 +604,8 @@ namespace RyansLibrary.Labyrinth
                         return null;
 
                     // Generate Small Room; no direction condition neededd
-                    generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms1x1x1), ConvertToWorldCoords(originRoom.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
-                    generatedRoom.CopyBlueprintEntranceFlags(originRoom.entrancewayFlags, 0, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
+                    generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms1x1x1), ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
+                    generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);        // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
                     generatedRoom.Initialize(rType);                                                                // Activate new rooms entranceways
                     break;
 

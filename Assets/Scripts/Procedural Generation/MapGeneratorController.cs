@@ -38,14 +38,14 @@ namespace RyansLibrary.Labyrinth
     /// <summary>
     /// Composition master class that wraps the Blueprint and Room Generator classes to build a contigious map.
     /// </summary>
-    public class MapGenerator : MonoBehaviour
+    public class MapGeneratorController : MonoBehaviour
     {
         #region Variables
         // ***** CONSTANTS *****
         const string MASTER_PATH_NAME = "Master Path";
 
         // ***** Singleton Reference *****
-        public static MapGenerator Instance { get; private set; }
+        public static MapGeneratorController Instance { get; private set; }
 
         // ***** Events *****
         public static event Action OnGenerationStarted;
@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
 
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
-        public Dictionary<Vector3Int, BlueprintRoom> MasterDictionary { get; private set; }
+        public Dictionary<Vector3Int, Blueprint> MasterDictionary { get; private set; }
         
         public bool IsGenerating { get; private set; }
 
@@ -76,7 +76,6 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private int _gridUnitSize = 13;                        // The unit size of the room grid's cell
         [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
         [SerializeField] private bool _retryGenerationOnFail;
-        [SerializeField] private bool _useNewDrunkardWalkAlg;
 
         [Header("Blueprint Settings")]
         [SerializeField] private int _maxPlacementAttempts = 50;
@@ -207,7 +206,7 @@ namespace RyansLibrary.Labyrinth
         public void InitializeMasters()     // NOTE: This must be done before generating anything!
         {
             // Initialize Master Data Structures
-            MasterDictionary = new Dictionary<Vector3Int, BlueprintRoom>();
+            MasterDictionary = new Dictionary<Vector3Int, Blueprint>();
             MasterPath = ScriptableObject.CreateInstance<Path>();
             MasterPath.Initialize();
             MasterPath.Name = MASTER_PATH_NAME;
@@ -542,7 +541,7 @@ namespace RyansLibrary.Labyrinth
                 foreach (Vector3Int cell in entry.AvailableCells)
                 {
                     Vector3Int actualPos = entry.SpawnPosition + cell;      // Find the actual position in room space of the cell
-                    if (MasterDictionary.TryGetValue(actualPos, out BlueprintRoom r))
+                    if (MasterDictionary.TryGetValue(actualPos, out Blueprint r))
                         r.Available = false;
                 }
             }
@@ -636,15 +635,15 @@ namespace RyansLibrary.Labyrinth
 
                 // Create obstructions
                 HashSet<Vector3Int> obstructions = new HashSet<Vector3Int>();
-                foreach (BlueprintRoom room in zone.MainPath.BlueprintRooms)
+                foreach (Blueprint blueprint in zone.MainPath.BlueprintList)
                 {
                     // if the room is the start room or ending room of the edge then don't add to obstructions
-                    Vector3Int roomPos = room.Position;
+                    Vector3Int roomPos = blueprint.Position;
                     if (roomPos == startPos || roomPos == endPos)
                         continue;
 
                     // Only make non-available blueprint rooms obstructions
-                    if (!room.Available)
+                    if (!blueprint.Available)
                         obstructions.Add(roomPos);
                 }
 
@@ -878,9 +877,9 @@ namespace RyansLibrary.Labyrinth
                 {
                     for (int i = 0; i < entry.AvailableCells.Count; i++)
                     {
-                        if (MasterDictionary.TryGetValue(adjustedSpawnPos + entry.AvailableCells[i], out BlueprintRoom room))
+                        if (MasterDictionary.TryGetValue(adjustedSpawnPos + entry.AvailableCells[i], out Blueprint blueprint))
                         {
-                            generatedRoom.CopyBlueprintEntranceFlags(room.entrancewayFlags, i, Vector3.zero);
+                            generatedRoom.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
                         }
                         else
                         {
@@ -910,9 +909,9 @@ namespace RyansLibrary.Labyrinth
             {
                 for (int i = 0; i < entry.RoomA.AvailableCells.Count; i++)
                 {
-                    if (MasterDictionary.TryGetValue(adjustedSpawnPosA + entry.RoomA.AvailableCells[i], out BlueprintRoom room))
+                    if (MasterDictionary.TryGetValue(adjustedSpawnPosA + entry.RoomA.AvailableCells[i], out Blueprint blueprint))
                     {
-                        generatedRoomA.CopyBlueprintEntranceFlags(room.entrancewayFlags, i, Vector3.zero);
+                        generatedRoomA.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
                     }
                     else
                     {
@@ -936,9 +935,9 @@ namespace RyansLibrary.Labyrinth
             {
                 for (int i = 0; i < entry.RoomA.AvailableCells.Count; i++)
                 {
-                    if (MasterDictionary.TryGetValue(adjustedSpawnPosB + entry.RoomA.AvailableCells[i], out BlueprintRoom room))
+                    if (MasterDictionary.TryGetValue(adjustedSpawnPosB + entry.RoomA.AvailableCells[i], out Blueprint blueprint))
                     {
-                        generatedRoomB.CopyBlueprintEntranceFlags(room.entrancewayFlags, i, Vector3.zero);
+                        generatedRoomB.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
                     }
                     else
                     {
@@ -1144,44 +1143,44 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawBluePrintGizmos(Zone zone)
         {
-            if (zone.MainPath.BlueprintRooms == null)
+            if (zone.MainPath.BlueprintList == null)
                 return;
 
             Vector3 unitSize = Vector3.one * _gridUnitSize;
 
             // Draw Gizmos for main path
-            foreach (BlueprintRoom bRoom in zone.MainPath.BlueprintRooms)
+            foreach (Blueprint blueprint in zone.MainPath.BlueprintList)
             {
                 Gizmos.color = zone.MainPath.PathGizmoColor;
-                Gizmos.DrawCube(bRoom.Position * _gridUnitSize, unitSize);
+                Gizmos.DrawCube(blueprint.Position * _gridUnitSize, unitSize);
             }
 
             foreach (Path path in zone.Paths)
             {
-                if (path.BlueprintRooms == null)
+                if (path.BlueprintList == null)
                     return;
 
                 // Draw Gizmos for alt paths
-                foreach (BlueprintRoom bRoom in path.BlueprintRooms)
+                foreach (Blueprint blueprint in path.BlueprintList)
                 {
                     Gizmos.color = path.PathGizmoColor;
-                    Gizmos.DrawCube(bRoom.Position * _gridUnitSize, unitSize);
+                    Gizmos.DrawCube(blueprint.Position * _gridUnitSize, unitSize);
                 }
             }
         }
 
         private void DrawBluePrintGizmos(Path path)
         {
-            if (path.BlueprintRooms == null)
+            if (path.BlueprintList == null)
                 return;
 
             Vector3 unitSize = Vector3.one * _gridUnitSize;
 
             // Draw Gizmos for main path
-            foreach (BlueprintRoom bRoom in path.BlueprintRooms)
+            foreach (Blueprint blueprint in path.BlueprintList)
             {
                 Gizmos.color = path.PathGizmoColor;
-                Gizmos.DrawCube(bRoom.Position * _gridUnitSize, unitSize);
+                Gizmos.DrawCube(blueprint.Position * _gridUnitSize, unitSize);
             }
         }
         #endregion
