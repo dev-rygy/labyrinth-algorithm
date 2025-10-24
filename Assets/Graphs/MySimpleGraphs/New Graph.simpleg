@@ -1,0 +1,129 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 61
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 790b4d75d92f4b0984310a268dbd952f, type: 3}
+  m_Name: New Graph
+  m_EditorClassIdentifier: Unity.GraphToolkit.Editor::Unity.GraphToolkit.Editor.Implementation.GraphObjectImp
+  m_GraphModel:
+    rid: 4460302494989811915
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4460302494989811915
+      type: {class: GraphModelImp, ns: Unity.GraphToolkit.Editor.Implementation, asm: Unity.GraphToolkit.Editor}
+      data:
+        m_Guid:
+          m_Value0: 4533888482922668017
+          m_Value1: 8239752310233492827
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: f11fd7bb8d9beb3e5bedabf0117b5972
+        m_Name: 
+        m_GraphNodeModels:
+        - rid: -2
+        - rid: 4460302494989811942
+        m_GraphWireModels: []
+        m_GraphStickyNoteModels: []
+        m_GraphPlacematModels: []
+        m_GraphVariableModels: []
+        m_GraphPortalModels: []
+        m_SectionModels:
+        - rid: 4460302494989811916
+        m_LocalSubgraphs: []
+        m_LastKnownBounds:
+          serializedVersion: 2
+          x: 89
+          y: -283
+          width: 252
+          height: 87
+        m_GraphElementMetaData:
+        - m_Guid:
+            m_Value0: 8756436488571210624
+            m_Value1: 11729562722915246084
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: 804b8ebf971c857904e0068e26c7c7a2
+          m_Category: 0
+          m_Index: 0
+        - m_Guid:
+            m_Value0: 13059589637964753156
+            m_Value1: 5454557894167234487
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: 04e9424395fb3cb5b707a458817bb24b
+          m_Category: 0
+          m_Index: 1
+        m_EntryPoint:
+          rid: 4460302494989811942
+        m_Graph:
+          rid: 4460302494989811941
+    - rid: 4460302494989811916
+      type: {class: SectionModel, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Guid:
+          m_Value0: 4414145393202766779
+          m_Value1: 7258730024749609185
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: bb23c714d931423de1b0a9c57f30bc64
+        m_Version: 2
+        m_Items: []
+        m_Title: 
+    - rid: 4460302494989811941
+      type: {class: MySimpleGraph, ns: , asm: Assembly-CSharp-Editor}
+      data: 
+    - rid: 4460302494989811942
+      type: {class: UserNodeModelImp, ns: Unity.GraphToolkit.Editor.Implementation,
+        asm: Unity.GraphToolkit.Editor}
+      data:
+        m_Guid:
+          m_Value0: 13059589637964753156
+          m_Value1: 5454557894167234487
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: 04e9424395fb3cb5b707a458817bb24b
+        m_Version: 2
+        m_Position: {x: 88.60751, y: -283.01498}
+        m_Title: 
+        m_Tooltip: 
+        m_NodePreviewModel:
+          rid: -2
+        m_State: 0
+        m_InputConstantsById:
+          m_KeyList:
+          - Input
+          m_ValueList:
+          - rid: 4460302494989811943
+        m_InputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_OutputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_Collapsed: 0
+        m_CurrentModeIndex: 0
+        m_ElementColor:
+          m_Color: {r: 0, g: 0, b: 0, a: 0}
+          m_HasUserColor: 0
+        m_Node:
+          rid: 4460302494989811944
+    - rid: 4460302494989811943
+      type: {class: 'Constant`1[[System.Single, mscorlib]]', ns: Unity.GraphToolkit.Editor,
+        asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value: 0
+    - rid: 4460302494989811944
+      type: {class: MySimpleNode, ns: , asm: Assembly-CSharp-Editor}
+      data: 

@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/23/2025
- * Last Modified:   04/10/2025 (Ryan)
+ * Last Modified:   10/23/2025 (Ryan)
  * Notes:           Holds all the path's in an zone and the 
  *                      bounds that they may spawn rooms in
 */
@@ -41,7 +41,7 @@ namespace RyansLibrary.Labyrinth
     {
         [field: Header("General Settings")]
         [field: SerializeField] public string Name { get; private set; }
-        [field: SerializeField] public Heuristic PathfindingHeuristic { get; private set; }
+        [field: SerializeField] public Heuristic DefaultPathfindingHeuristic { get; private set; }
 
         // TODO: Convert Bounding Box Parameters to Vector3Int!
         [field: Header("Bounding Box")]
