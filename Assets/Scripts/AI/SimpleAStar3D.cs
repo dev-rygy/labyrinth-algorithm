@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    04/03/2025
- * Last Modified:   04/03/2025 (Ryan)
+ * Last Modified:   10/23/2025 (Ryan)
  * Notes:           A* Pathfinding Algorithm
  *                  Adapted from https://github.com/Bl4ckb0ne/delaunay-triangulation
  *                  Copyright (c) 2015-2019 Simon Zeni (simonzeni@gmail.com)
@@ -196,8 +196,8 @@ namespace RyansLibrary.AI
                         node.hScore = float.PositiveInfinity;
                         node.fScore = float.PositiveInfinity;
 
-                        // Cannot traverse nodes in obstuctions set
-                        if (obstructions.Contains(position + offset))
+                        // Cannot traverse nodes in obstuctions set; if obstructions = null then ignore
+                        if (obstructions is not null && obstructions.Contains(position + offset))
                         {
                             node.Traversable = false;
                         }

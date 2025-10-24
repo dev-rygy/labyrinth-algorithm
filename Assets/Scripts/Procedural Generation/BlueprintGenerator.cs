@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    05/11/2025
- * Last Modified:   10/22/2025 (Ryan)
+ * Last Modified:   10/23/2025 (Ryan)
  * Notes:           Blueprint Generator
  *                  Handles all blueprint cell generation
  *                  Has many functions to generate blueprint rooms using
@@ -77,10 +77,10 @@ namespace RyansLibrary.Labyrinth
             {
                 // Adjust parameters to fit the zone's actual position
                 Vector3Int zoneOffset = bounds.position;
-                Vector3Int adjustedSpawnPos = entry.SpawnPosition + zoneOffset;
+                Vector3Int roomOrigin = entry.SpawnPosition + zoneOffset;
 
                 // Check Collision with the zone's bounds
-                Vector3 difference = CheckOutOfBounds(adjustedSpawnPos, room.RoomDimensions, bounds);
+                Vector3 difference = CheckOutOfBounds(roomOrigin, room.RoomDimensions, bounds);
                 if (difference != Vector3.zero)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
@@ -91,23 +91,18 @@ namespace RyansLibrary.Labyrinth
                 // TODO: Use hash map instead of List for faster lookup maybe?
                 // Check Collision with other rooms
                 List<Blueprint> blueprintList;
-                blueprintList = GenerateBlueprintsFromDimensions(path, adjustedSpawnPos, room.RoomDimensions, false);      // Fill room space with blueprint rooms
-
-                if (blueprintList == null)     // Room was outside the bounds of the zone
+                blueprintList = GenerateBlueprintsFromDimensions(path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
+                if (blueprintList is null)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" was obstructed and could not be placed");
                     return false;
                 }
 
-                // Set cells that are supposed to be available to available
-                foreach (Vector3Int cell in entry.AvailableCells)
+                List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, entry.AvailableCells, roomOrigin);
+                if (availableBlueprints is null)
                 {
-                    Vector3Int cellPosition = adjustedSpawnPos + cell;      // Find the actual position in room space of the cell
-
-                    if (_masterDictionaryReference.TryGetValue(cellPosition, out Blueprint blueprint))
-                        blueprint.Available = true;
-                    else
-                        GenerateBlueprintRoom(path, cellPosition, true);
+                    Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" has no available blueprint cells.");
+                    return false;
                 }
 
                 return true;
@@ -118,7 +113,7 @@ namespace RyansLibrary.Labyrinth
 
         public bool PlaceBoundedUniqueRoomBlueprints(Path path, RoomEntry entry, BoundsInt bounds)
         {
-            if (entry.Prefab.TryGetComponent<Room>(out Room room))      // Prefab in entry does not have a Room Component
+            if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component
             {
                 bool result = PlaceBoundedBlueprints(path, bounds, room.RoomDimensions, out Vector3Int spawnPosition, false);
 
@@ -134,59 +129,50 @@ namespace RyansLibrary.Labyrinth
 
                 entry.SpawnPosition = spawnPosition;
 
-                // Set cells that are supposed to be available to available
-                foreach (Vector3Int cell in entry.AvailableCells)
+                List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, entry.AvailableCells, spawnPosition);
+                if (availableBlueprints is null)
                 {
-                    Vector3Int actualPos = spawnPosition + cell;      // Find the actual position in room space of the cell
-
-                    if (_masterDictionaryReference.TryGetValue(actualPos, out Blueprint blueprint))
-                        blueprint.Available = true;
-                    else
-                        GenerateBlueprintRoom(path, actualPos, true);
+                    Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" has no available blueprint cells.");
+                    return false;
                 }
+
                 return true;
             }
             Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
             return false;
         }
 
-        /// <summary>
-        /// Will place rooms randomly in an zone but will pull rooms randomly from the main path.
-        /// </summary>
-        /// <param name="zone"></param>
-        /// <returns></returns>
-        public bool PlaceBoundedBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true)
+        public List<Blueprint> ToggleAvailableCellsInUniqueRoom(Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)
         {
-            // Adjust the upper bounds so that the room's volume will properly fit within the bounded space
-            Vector3Int adjUpperBound = new Vector3Int(
-                bounds.xMax - dimensions.x,
-                bounds.yMax - dimensions.y,
-                bounds.zMax - dimensions.z
-            );
+            List<Blueprint> availibleBlueprints = new List<Blueprint>();
 
-            // Choose random spawn pos in the room's bounds;
-            // NOTE: this random position is in room coords
-            Vector3Int randomSpawnPos = new Vector3Int(
-                Random.Range(bounds.xMin, adjUpperBound.x + 1),
-                Random.Range(bounds.yMin, adjUpperBound.y + 1),
-                Random.Range(bounds.zMin, adjUpperBound.z + 1)
-            );
+            // Set cells that are supposed to be available to available
+            foreach (Vector3Int cell in availableCells)
+            {
+                Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
 
-            // Append the newly generated blueprint rooms to the end of the list
-            List<Blueprint> newBlueprints = GenerateBlueprintsFromDimensions(path, randomSpawnPos, dimensions, available);
+                if (_masterDictionaryReference.TryGetValue(cellPosition, out Blueprint blueprint))
+                {
+                    availibleBlueprints.Add(blueprint);
+                    blueprint.Available = available;
+                }
+                else
+                    availibleBlueprints.Add(GenerateBlueprintRoom(path, cellPosition, available));
+            }
 
-            spawnPosition = randomSpawnPos;
-
-            // do not advance iteration if nothing was spawned
-            if (newBlueprints == null)
-                return false;
-
-            return true;
+            return availibleBlueprints;
         }
 
-        public bool PlaceDivergentBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, int cellCount, int maxPlacementAttempts, bool available = true)
+        public bool PlaceDivergentBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, int cellCount, int maxPlacementAttempts)
         {
             int indexOffset = dimensions.x * dimensions.y;      // Increment by the cells taken up from the room dimensions
+
+            if (cellCount % indexOffset != 0)       // Not all cells desired can fit within the dimensions of the divergent rooms
+            {
+                Debug.LogError($"Map Generator Error: The path's disired cell spawn exceeds/falls short of the divergent " +
+                    $"rooms with dimensions ({dimensions.x},{dimensions.y},{dimensions.z}).");
+                return false;
+            }
 
             for (int i = 0; i < cellCount; i += indexOffset)
             {
@@ -209,6 +195,41 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
             }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Will place rooms randomly in an zone but will pull rooms randomly from the main path.
+        /// </summary>
+        /// <param name="zone"></param>
+        /// <returns></returns>
+        public bool PlaceBoundedBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true)
+        {
+            // Adjust the upper bounds so that the room's volume will properly fit within the bounded space; in
+            // other words it will never spawn outside it's bounds
+            Vector3Int adjUpperBound = new Vector3Int(
+                bounds.xMax - dimensions.x,
+                bounds.yMax - dimensions.y,
+                bounds.zMax - dimensions.z
+            );
+
+            // Choose random spawn pos in the room's bounds;
+            // NOTE: this random position is in room coords
+            Vector3Int randomSpawnPos = new Vector3Int(
+                Random.Range(bounds.xMin, adjUpperBound.x + 1),
+                Random.Range(bounds.yMin, adjUpperBound.y + 1),
+                Random.Range(bounds.zMin, adjUpperBound.z + 1)
+            );
+
+            // Append the newly generated blueprint rooms to the end of the list
+            List<Blueprint> newBlueprints = GenerateBlueprintsFromDimensions(path, randomSpawnPos, dimensions, available);
+
+            spawnPosition = randomSpawnPos;
+
+            // do not advance iteration if nothing was spawned
+            if (newBlueprints == null)
+                return false;
 
             return true;
         }
@@ -239,46 +260,28 @@ namespace RyansLibrary.Labyrinth
             return triangulation.Edges;
         }
 
-        public List<Edge> FindMinimumSpanningTree(List<Edge> edges, Vertex startingVertex)
+        public List<Edge> FindMinimumSpanningTree(List<Edge> edges)
         {
+            Vertex startingVertex = edges[0].U;
+
             return PrimsAlgorithm.MinimumSpanningTree(edges, startingVertex);
-        }
-
-        public Blueprint FindClosestBlueprintCellInPath(Path path, Vector3Int point)     // UNUSED
-        {
-            if (path == null)
-            {
-                Debug.LogError("Blueprint Generator Error: Path was null.");
-                return null;
-            }
-
-            Blueprint closestCell = null;
-            float distance = Mathf.Infinity;
-            foreach (Blueprint blueprint in path.BlueprintList)
-            {
-                if (blueprint.Available)
-                {
-                    float currentDistance = Vector3Int.Distance(point, blueprint.Position);
-                    if (currentDistance < distance)
-                    {
-                        closestCell = blueprint;
-                        distance = currentDistance;
-                    }
-                }
-            }
-
-            return closestCell;
         }
         #endregion
 
         #region Blueprint Pathfind
-        public bool PathfindBlueprintFromPath(Path path, BoundsInt bounds, Blueprint startBlueprint, Blueprint endBlueprint, HashSet<Vector3Int> obstructions, 
+        public bool PathfindBlueprintFromPath(Path path, BoundsInt bounds, Blueprint startBlueprint, Blueprint endBlueprint, List<Blueprint> obstructions, 
             Heuristic heuristic = Heuristic.Euclidean)
         {
-            SimpleAStar3D aStar = new SimpleAStar3D(bounds);
+            HashSet<Vector3Int> obstructionPositions = null;
+            if (obstructions is not null)
+            {
+                // Convert to HashSet for faster access
+                obstructionPositions = new HashSet<Vector3Int>(obstructions.Select(b => b.Position));
+            }
 
             // Find a sequence of points in room coordinates
-            List<Vector3Int> sequence = aStar.FindPath(startBlueprint.Position, endBlueprint.Position, obstructions, heuristic);
+            SimpleAStar3D aStar = new SimpleAStar3D(bounds);
+            List<Vector3Int> sequence = aStar.FindPath(startBlueprint.Position, endBlueprint.Position, obstructionPositions, heuristic);
 
             if (sequence == null)
             {
@@ -337,9 +340,6 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            // Extend master path's end index
-            _masterPathReference.endMasterIdx = path.endMasterIdx;
-
             int randomStartingIndex = Random.Range(startIndex, endIndex);   // Choose a random room respecting the constraints
 
             // Attempt to place path in range
@@ -354,7 +354,7 @@ namespace RyansLibrary.Labyrinth
                 if (!startBlueprint.Available)       // Check if start room is available
                     continue;
 
-                pathPlaced = BlueprintDrunkardWalk(path, bounds, startBlueprint);
+                pathPlaced = BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint);
 
                 // Break out of loop to prevent duplicate path placement
                 if (pathPlaced)
@@ -362,48 +362,6 @@ namespace RyansLibrary.Labyrinth
             }
 
             return pathPlaced;
-        }
-
-        /// <summary>
-        /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
-        /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.
-        /// </summary>
-        /// <param name="path">A path with a length of atleast one.</param>
-        /// <param name="startBlueprint">The starting room for the path. If null will create it's own start room</param>
-        public bool BlueprintDrunkardWalk(Path path, BoundsInt bounds, Blueprint startBlueprint)
-        {
-            if (!path.IsInitialized)
-            {
-                Debug.LogWarning($"Map Generator Error: Path {path.Name} must be initialized for Drunkard Walk.");
-                return false;
-            }
-
-            // Make sure the path has atleast one room cell that can spawn
-            if (path.PathLength <= 0)
-            {
-                Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
-                return false;
-            }
-
-            if (startBlueprint == null)
-            {
-                Debug.LogError($"Map Generator Error: Starting Room for Drunkard Walk cannot be null.");
-                return false;
-            }
-
-            // Extend master path's end index
-            _masterPathReference.endMasterIdx = path.endMasterIdx;
-
-            if (_debugLogs) Debug.Log($"Map Generator: Starting cell for path {path.name} generated as {startBlueprint.CellID}");
-
-            // Attempt to place path
-            if (!BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint))
-            {
-                if (_debugLogs) Debug.LogWarning($"Map Generator Warning: Path generation failed recursive algorithm at {startBlueprint.CellID}");
-                return false;
-            }
-
-            return true;
         }
 
         private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, Blueprint previousBlueprint)
@@ -491,12 +449,12 @@ namespace RyansLibrary.Labyrinth
         /// NOTE: Position must be in room coords
         /// </summary>
         /// <param name="path">The desired path to add the new blueprint room to.</param>
-        /// <param name="position">The desired position to spawn the new room at. Must be in world coords</param>
+        /// <param name="origin">The desired position to spawn the new room at. Must be in world coords</param>
         /// <returns>Blueprint room created in room coords.</returns>
-        public Blueprint GenerateBlueprintRoom(Path path, Vector3Int position, bool available = true)
+        public Blueprint GenerateBlueprintRoom(Path path, Vector3Int origin, bool available = true)
         {
             string blueprintName = $"BlueprintRoom ({_masterPathReference.BlueprintCount()})";
-            Blueprint newBlueprint = new Blueprint(position, blueprintName);
+            Blueprint newBlueprint = new Blueprint(origin, blueprintName);
             newBlueprint.Available = available;
 
             if (_debugLogs) Debug.Log($"Generated blueprint room {blueprintName}");
@@ -504,7 +462,7 @@ namespace RyansLibrary.Labyrinth
             // Update paths and masters with new blueprint room
             path?.Add(newBlueprint);
             _masterPathReference?.Add(newBlueprint);                    // Add to Master List (required)
-            _masterDictionaryReference?.Add(position, newBlueprint);    // Add to Master Dictionary (required)
+            _masterDictionaryReference?.Add(origin, newBlueprint);    // Add to Master Dictionary (required)
             return newBlueprint;
         }
 
@@ -514,36 +472,36 @@ namespace RyansLibrary.Labyrinth
         /// position and dimensions must be in room coordinates!
         /// </summary>
         /// <param name="path">Path to add blueprint rooms to</param>
-        /// <param name="position">Start position</param>
+        /// <param name="origin">Start position</param>
         /// <param name="roomDimensions"></param>
         /// <returns>Blueprint rooms generated in a list if needed.</returns>
-        public List<Blueprint> GenerateBlueprintsFromDimensions(Path path, Vector3Int position, Vector3Int roomDimensions, bool available = true)
+        public List<Blueprint> GenerateBlueprintsFromDimensions(Path path, Vector3Int origin, Vector3Int roomDimensions, bool available = true)
         {
             List<Blueprint> roomBlueprints = new List<Blueprint>();
-            List<Vector3Int> roomOrigins = new List<Vector3Int>();
+            List<Vector3Int> blueprintroomPositions = new List<Vector3Int>();
 
-            for (int x = position.x; x < (position.x + roomDimensions.x); x++)      // traverse x dimensions
+            for (int x = origin.x; x < (origin.x + roomDimensions.x); x++)      // traverse x dimensions
             {
-                for (int y = position.y; y < (position.y + roomDimensions.y); y++)      // traverse y dimensions
+                for (int y = origin.y; y < (origin.y + roomDimensions.y); y++)      // traverse y dimensions
                 {
-                    for (int z = position.z; z < (position.z + roomDimensions.z); z++)      // traverse z dimensions
+                    for (int z = origin.z; z < (origin.z + roomDimensions.z); z++)      // traverse z dimensions
                     {
-                        Vector3Int origin = new Vector3Int(x, y, z);
+                        Vector3Int blueprintroomPos = new Vector3Int(x, y, z);
 
-                        if (CheckCollision(origin, out Blueprint collidedBlueprint))
+                        if (CheckCollision(blueprintroomPos, out Blueprint collidedBlueprint))
                         {
                             if (_debugLogs) 
                                 Debug.LogWarning($"Map Generator Warning: Failed to generate blueprint room due to collision with {collidedBlueprint.CellID}");
                             return null;
                         }
 
-                        roomOrigins.Add(origin);
+                        blueprintroomPositions.Add(blueprintroomPos);
                     }
                 }
             }
 
             // If no errors then generate blueprint rooms from dimensions
-            foreach (Vector3Int spawnPosition in roomOrigins)
+            foreach (Vector3Int spawnPosition in blueprintroomPositions)
                 roomBlueprints.Add(GenerateBlueprintRoom(path, spawnPosition, available));      // Call to method above
 
             return roomBlueprints;
@@ -603,7 +561,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">The path to choose the starting room from</param>
         /// <param name="startIndex">Index to start from</param>
         /// <returns>The Choosen Blueprint Room.</returns>
-        public Blueprint ChooseRandomRoomInPath(Path path, int startIndex = 0, int endIndex = -1)
+        public Blueprint ChooseRandomBlueprintInPath(Path path, int startIndex = 0, int endIndex = -1)
         {
             // Default the endIndex to the path's end index
             if (endIndex == -1)
@@ -633,12 +591,82 @@ namespace RyansLibrary.Labyrinth
             if (!blueprint.Available)
             {
                 //Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
-                blueprint = ChooseRandomRoomInPath(path, startIndex, endIndex);
+                blueprint = ChooseRandomBlueprintInPath(path, startIndex, endIndex);
             }
 
             if (_debugLogs) Debug.Log($"Map Generator: Random room choosen from {path.Name} at index {randomBlueprintListIndex}");
 
             return blueprint;
+        }
+
+        public Blueprint FindClosestBlueprintInPath(Path path, Vector3Int point)     // UNUSED
+        {
+            if (path == null)
+            {
+                Debug.LogError("Blueprint Generator Error: Path was null.");
+                return null;
+            }
+
+            Blueprint closestCell = null;
+            float distance = Mathf.Infinity;
+            foreach (Blueprint blueprint in path.BlueprintList)
+            {
+                if (blueprint.Available)
+                {
+                    float currentDistance = Vector3Int.Distance(point, blueprint.Position);
+                    if (currentDistance < distance)
+                    {
+                        closestCell = blueprint;
+                        distance = currentDistance;
+                    }
+                }
+            }
+
+            return closestCell;
+        }
+
+        public List<Blueprint> FindBlueprintsWithAvailibility(List<Blueprint> blueprintList, bool availibility)
+        {
+            return new List<Blueprint>(blueprintList.Where(b => (b.Available == availibility)).ToList());
+        }
+
+        public Blueprint FindFirstBlueprintWithAvailibility(List<Blueprint> blueprintList, bool availibility)
+        {
+            return blueprintList.FirstOrDefault(b => (b.Available == availibility));
+        }
+
+        public BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
+        {
+            // Create shared bounds between two zones
+            BoundsInt combinedBounds = new BoundsInt();
+            Vector3Int position = new Vector3Int(
+                                (int)(boundsA.position.x + boundsB.position.x) / 2,
+                                (int)(boundsA.position.y + boundsB.position.y) / 2,
+                                (int)(boundsA.position.z + boundsB.position.z) / 2);
+            Vector3Int size = boundsA.size + boundsB.size;
+            combinedBounds.position = position;
+            combinedBounds.size = size;
+
+            return combinedBounds;
+        }
+
+        public BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, Vector3Int size, Vector3Int offset)
+        {
+            Vector3Int position = intersectedBounds.min + offset;
+
+            Vector3Int amountOutOfBounds = CheckOutOfBounds(position, size, intersectedBounds);
+            if (amountOutOfBounds != Vector3.zero)
+            {
+                Debug.LogWarning("Map Generator Warning: Desired intersecting bounds lies outside the overarching bounds. Adjusting size...");
+                size -= amountOutOfBounds;
+            }
+
+            return new BoundsInt(position, size);
+        }
+
+        public BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, BoundsInt intersectingBounds)
+        {
+            return CreateIntersectingBounds(intersectedBounds, intersectingBounds.size, intersectingBounds.position);
         }
 
         /// <summary>
@@ -703,29 +731,6 @@ namespace RyansLibrary.Labyrinth
                 difference.z = upperPoint.z - (bounds.max.z - 1);   // positive (front)
 
             return difference;
-
-            /* OLD CODE 
-            Vector3Int lowerDiff = bounds.min - lowerPoint;
-            Vector3Int upperDiff = bounds.max - upperPoint;
-
-            if (lowerDiff.x > 0 || lowerDiff.y > 0 || lowerDiff.z > 0)      // Invalid Space (Top Right)
-            {
-                return new Vector3Int(
-                   lowerDiff.x > 0 ? lowerDiff.x : 0,      // Return only the positive components of the lowerDiff
-                   lowerDiff.y > 0 ? lowerDiff.y : 0,
-                   lowerDiff.z > 0 ? lowerDiff.z : 0);
-            }
-
-            if (upperDiff.x < 0 || upperDiff.y < 0 || upperDiff.z < 0)      // Invalid Space (Bot Left)
-            {
-                return new Vector3Int(
-                   upperDiff.x < 0 ? upperDiff.x : 0,      // Return only the negative components of the lowerDiff
-                   upperDiff.y < 0 ? upperDiff.y : 0,
-                   upperDiff.z < 0 ? upperDiff.z : 0);
-            }
-
-            return Vector3Int.zero;        // Valid Space
-            */
         }
 
         /// <summary>
