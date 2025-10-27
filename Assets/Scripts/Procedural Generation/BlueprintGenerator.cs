@@ -26,8 +26,8 @@ namespace RyansLibrary.Labyrinth
     /// </summary>
     public class Blueprint
     {
-        public string CellID { get; private set; }
-        public Vector3Int Position { get; private set; }        // Position of blueprint room in room coords
+        public readonly string CellID;
+        public readonly Vector3Int Position;      // Position of blueprint room in room coords
         public bool Available { get; set; }
         public bool[] EntryPointFlags { get; set; }
 
