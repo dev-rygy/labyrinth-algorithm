@@ -40,9 +40,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7872630750884575665}
-  - component: {fileID: 1402997821078370780}
+  - component: {fileID: 7906538436134924266}
   m_Layer: 0
-  m_Name: Map Generator
+  m_Name: Old Map Generator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ Transform:
   - {fileID: 688038257182604410}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1402997821078370780
+--- !u!114 &7906538436134924266
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -73,9 +73,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5863528550629813726}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbae4f7298c9aca458926d44722cbc4b, type: 3}
+  m_Script: {fileID: 11500000, guid: 3088af2a0b2985546b31a56d394f7fbd, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RyansLibrary.Labyrinth.MapGeneratorController
+  m_EditorClassIdentifier: Assembly-CSharp::RyansLibrary.Labyrinth.OldMapGeneratorController
   _enabled: 1
   customSeed: 0
   generateRandomSeed: 1
@@ -114,8 +114,8 @@ MonoBehaviour:
         m_Size: {x: 0, y: 0, z: 0}
     <ConnectionPath>k__BackingField: {fileID: 11400000, guid: 790b058cc6213dc489c512e552fa7852,
       type: 2}
-  _boundingBoxColor: {r: 1, g: 0.3137255, b: 0, a: 0.8}
-  _triangulationColor: {r: 1, g: 0.10980392, b: 0.32156864, a: 0.8}
-  _contiguousGraphColor: {r: 0, g: 0.9411765, b: 1, a: 0.8}
-  _randomCyclesColor: {r: 0.70980394, g: 0.28627452, b: 1, a: 0.8}
-  _currentEdgeColor: {r: 1, g: 0.9529412, b: 0, a: 0.8}
+  _boundingBoxColor: {r: 0, g: 0, b: 0, a: 0}
+  _triangulationColor: {r: 0, g: 0, b: 0, a: 0}
+  _contiguousGraphColor: {r: 0, g: 0, b: 0, a: 0}
+  _randomCyclesColor: {r: 0, g: 0, b: 0, a: 0}
+  _currentEdgeColor: {r: 0, g: 0, b: 0, a: 0}
