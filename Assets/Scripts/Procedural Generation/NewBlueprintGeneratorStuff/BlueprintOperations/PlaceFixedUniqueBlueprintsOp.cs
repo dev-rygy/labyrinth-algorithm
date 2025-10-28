@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2025
- * Last Modified:   10/26/2025 (Ryan)
+ * Last Modified:   10/27/2025 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Labyrinth;
@@ -13,9 +13,10 @@ public class PlaceFixedUniqueBlueprintsOp : BlueprintOperation
     BlueprintGenerator _bpg;
     MapGenerationContext _context;
 
-    public PlaceFixedUniqueBlueprintsOp(MapGenerationContext context, string pathInput, string roomEntryInput, string boundsInput)
+    public PlaceFixedUniqueBlueprintsOp(BlueprintGenerator bpg, MapGenerationContext context, string pathInput, string roomEntryInput, string boundsInput) : base()
     {
         OperationID = $"PlaceFixedUniqueBlueprint:{context.ConsumeOperationID()}";
+        _bpg = bpg;
         _context = context;
 
         // Input Ports
@@ -34,7 +35,10 @@ public class PlaceFixedUniqueBlueprintsOp : BlueprintOperation
         BoundsInt bounds = (BoundsInt)_context.GrabFromMemory(InputPorts[2]);
 
         if (path == null || entry == null)
+        {
+            Debug.LogError($"The path or entry input was null.");
             return false;
+        }
 
         return PlaceFixedUniqueRoomBlueprints(path, entry, bounds);
     }
@@ -69,7 +73,6 @@ public class PlaceFixedUniqueBlueprintsOp : BlueprintOperation
                 return false;
             }
 
-            // TODO: Use hash map instead of List for faster lookup maybe?
             // Check Collision with other rooms
             List<Blueprint> blueprintList;
             blueprintList = _bpg.GenerateBlueprintsFromDimensions(path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
@@ -79,7 +82,7 @@ public class PlaceFixedUniqueBlueprintsOp : BlueprintOperation
                 return false;
             }
 
-            List<Blueprint> availableBlueprints = _bpg.ToggleAvailableCellsInUniqueRoom(path, entry.AvailableCells, roomOrigin);
+            List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, entry.AvailableCells, roomOrigin);
             if (availableBlueprints is null)
             {
                 Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" has no available blueprint cells.");
@@ -92,5 +95,26 @@ public class PlaceFixedUniqueBlueprintsOp : BlueprintOperation
         }
         Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
         return false;
+    }
+
+    public List<Blueprint> ToggleAvailableCellsInUniqueRoom(Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)
+    {
+        List<Blueprint> availibleBlueprints = new List<Blueprint>();
+
+        // Set cells that are supposed to be available to available
+        foreach (Vector3Int cell in availableCells)
+        {
+            Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
+
+            if (_bpg.GetMasterDictionary().TryGetValue(cellPosition, out Blueprint blueprint))
+            {
+                availibleBlueprints.Add(blueprint);
+                blueprint.Available = available;
+            }
+            else
+                availibleBlueprints.Add(_bpg.GenerateBlueprintRoom(path, cellPosition, available));
+        }
+
+        return availibleBlueprints;
     }
 }

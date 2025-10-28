@@ -33,13 +33,13 @@ public class DemoMenu : MonoBehaviour
 
     public void Regenerate()
     {
-        MapGeneratorController.Instance.DestroyAllRooms();
+        OldMapGeneratorController.Instance.DestroyAllRooms();
         ApplicationController.Instance.StartNewGame();
     }
 
     public void ExitToMenu()
     {
-        MapGeneratorController.Instance.DestroyAllRooms();
+        OldMapGeneratorController.Instance.DestroyAllRooms();
         ApplicationController.Instance.EndGame();
     }
 }

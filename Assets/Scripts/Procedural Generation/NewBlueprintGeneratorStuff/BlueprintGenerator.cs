@@ -1,0 +1,356 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    10/27/2025
+ * Last Modified:   10/27/2025 (Ryan)
+ * Notes:           
+*/
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
+
+namespace RyansLibrary.Labyrinth
+{
+    public class BlueprintGenerator
+    {
+        // ***** Master References *****
+        // The Master Path holds a reference to all bluprint rooms generated
+        private readonly Path _masterPathReference;
+        public Path GetMasterPath() => _masterPathReference;
+
+        // Master Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions.
+        // Holds reference to all blueprint rooms
+        // Keys are in room coords
+        private readonly Dictionary<Vector3Int, Blueprint> _masterDictionaryReference;
+        public Dictionary<Vector3Int, Blueprint> GetMasterDictionary() => _masterDictionaryReference;
+
+        private bool _debugLogs = false;
+
+        public BlueprintGenerator(Path masterPath, Dictionary<Vector3Int, Blueprint> masterDictionary)
+        {
+            _masterPathReference = masterPath;
+            _masterDictionaryReference = masterDictionary;
+        }
+        
+        #region Blueprint Room Generation
+        /// <summary>
+        /// Generate a new blueprint room at the desired location. Add it to the master path and
+        /// desired path passed in as an arguement. Generate a blueprint room gizmo if debug is enabled.
+        /// NOTE: Position must be in room coords
+        /// </summary>
+        /// <param name="path">The desired path to add the new blueprint room to.</param>
+        /// <param name="origin">The desired position to spawn the new room at. Must be in world coords</param>
+        /// <returns>Blueprint room created in room coords.</returns>
+        public Blueprint GenerateBlueprintRoom(Path path, Vector3Int origin, bool available = true)
+        {
+            string blueprintName = $"BlueprintRoom ({_masterPathReference.BlueprintCount()})";
+            Blueprint newBlueprint = new Blueprint(origin, blueprintName);
+            newBlueprint.Available = available;
+
+            if (_debugLogs) Debug.Log($"Generated blueprint room {blueprintName}");
+
+            // Update paths and masters with new blueprint room
+            path?.Add(newBlueprint);
+            _masterPathReference?.Add(newBlueprint);                    // Add to Master List (required)
+            _masterDictionaryReference?.Add(origin, newBlueprint);    // Add to Master Dictionary (required)
+            return newBlueprint;
+        }
+
+        /// <summary>
+        /// Generates a variety of blueprint rooms based on a given dimension starting at a point
+        /// If a collision occurs then the method returns a null list.
+        /// position and dimensions must be in room coordinates!
+        /// </summary>
+        /// <param name="path">Path to add blueprint rooms to</param>
+        /// <param name="origin">Start position</param>
+        /// <param name="roomDimensions"></param>
+        /// <returns>Blueprint rooms generated in a list if needed.</returns>
+        public List<Blueprint> GenerateBlueprintsFromDimensions(Path path, Vector3Int origin, Vector3Int roomDimensions, bool available = true)
+        {
+            List<Blueprint> roomBlueprints = new List<Blueprint>();
+            List<Vector3Int> blueprintroomPositions = new List<Vector3Int>();
+
+            for (int x = origin.x; x < (origin.x + roomDimensions.x); x++)      // traverse x dimensions
+            {
+                for (int y = origin.y; y < (origin.y + roomDimensions.y); y++)      // traverse y dimensions
+                {
+                    for (int z = origin.z; z < (origin.z + roomDimensions.z); z++)      // traverse z dimensions
+                    {
+                        Vector3Int blueprintroomPos = new Vector3Int(x, y, z);
+
+                        if (CheckCollision(blueprintroomPos, out Blueprint collidedBlueprint))
+                        {
+                            if (_debugLogs)
+                                Debug.LogWarning($"Map Generator Warning: Failed to generate blueprint room due to collision with {collidedBlueprint.CellID}");
+                            return null;
+                        }
+
+                        blueprintroomPositions.Add(blueprintroomPos);
+                    }
+                }
+            }
+
+            // If no errors then generate blueprint rooms from dimensions
+            foreach (Vector3Int spawnPosition in blueprintroomPositions)
+                roomBlueprints.Add(GenerateBlueprintRoom(path, spawnPosition, available));      // Call to method above
+
+            return roomBlueprints;
+        }
+
+        public void FlagEntryPoints(Blueprint blueprintA, Blueprint blueprintB, Vector3Int difference)
+        {
+            // TODO: Bad way of handling this. Find a better way
+            int entrFlagIdx;
+            if (difference == Vector3Int.right)
+                entrFlagIdx = 0;
+            else if (difference == Vector3Int.left)
+                entrFlagIdx = 1;
+            else if (difference == Vector3Int.forward)
+                entrFlagIdx = 2;
+            else if (difference == Vector3Int.back)
+                entrFlagIdx = 3;
+            else if (difference == Vector3Int.up)
+                entrFlagIdx = 4;
+            else if (difference == Vector3Int.down)
+                entrFlagIdx = 5;
+            else
+                entrFlagIdx = -1;   // Default or error case
+
+            FlagEntryPoints(blueprintA, blueprintB, entrFlagIdx);
+        }
+
+        /// <summary>
+        /// Pass in two rooms and link their entrancways together. 
+        /// </summary>
+        /// <param name="blueprintA">First blueprint room</param>
+        /// <param name="blueprintB">Second blueprint room</param>
+        /// <param name="entrFlagIdx">The index of the choosen face of the *first* room.</param>
+        public void FlagEntryPoints(Blueprint blueprintA, Blueprint blueprintB, int entrFlagIdx) // Flag the entranceways to be activated in each room
+        {
+            if (entrFlagIdx < 0)
+            {
+                Debug.LogError("Map Generator Error: Two rooms are invalid for entrance connection");
+                return;
+            }
+
+            // Flag the fact of the next room facing the prev. room
+            if (Math.IsEven(entrFlagIdx))                                   // If choosen an even numbered side then set opposite to true (Ex. F4 -> F3 = true)
+                blueprintA.EntryPointFlags[entrFlagIdx + 1] = true;
+            else                                                            // If choosen an odd numbered side then set opposite to true (Ex. F3 -> F4 = true)
+                blueprintA.EntryPointFlags[entrFlagIdx - 1] = true;
+
+            // Flag the face of the prev. room facing the next room
+            blueprintB.EntryPointFlags[entrFlagIdx] = true;
+        }
+        #endregion
+
+        #region Utility
+        /// <summary>
+        /// Choose a random room in a path. If endIndex = -1 => endIndex = path's last room.
+        /// </summary>
+        /// <param name="path">The path to choose the starting room from</param>
+        /// <param name="startIndex">Index to start from</param>
+        /// <returns>The Choosen Blueprint Room.</returns>
+        public Blueprint ChooseRandomBlueprintInPath(Path path, int startIndex = 0, int endIndex = -1)
+        {
+            // Default the endIndex to the path's end index
+            if (endIndex == -1)
+                endIndex = path.BlueprintCount() - 1;
+
+            // Check if range is valid
+            if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (path.BlueprintCount() - 1)))
+            {
+                Debug.LogError("Map Generator Error: Path index out of range or set incorrectly.");
+                return null;
+            }
+
+            // Check if path to choose from is valid
+            if (path.BlueprintCount() <= 0)
+            {
+                Debug.LogError($"Map Generator Error: A starting room could not be choosen because {path.Name} has no rooms.");
+                return null;
+            }
+
+            // TODO: Make a enum/layer mask perameter that can choose a room from a specific type or types
+
+            // Choose a random room respecting the constraints and return
+            int randomBlueprintListIndex = Random.Range(startIndex, endIndex);
+            Blueprint blueprint = path.BlueprintList[randomBlueprintListIndex];
+
+            // TODO: Make a circular array handle this
+            if (!blueprint.Available)
+            {
+                //Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
+                blueprint = ChooseRandomBlueprintInPath(path, startIndex, endIndex);
+            }
+
+            if (_debugLogs) Debug.Log($"Map Generator: Random room choosen from {path.Name} at index {randomBlueprintListIndex}");
+
+            return blueprint;
+        }
+
+        public Blueprint FindClosestBlueprintInPath(Path path, Vector3Int point)     // UNUSED
+        {
+            if (path == null)
+            {
+                Debug.LogError("Blueprint Generator Error: Path was null.");
+                return null;
+            }
+
+            Blueprint closestCell = null;
+            float distance = Mathf.Infinity;
+            foreach (Blueprint blueprint in path.BlueprintList)
+            {
+                if (blueprint.Available)
+                {
+                    float currentDistance = Vector3Int.Distance(point, blueprint.Position);
+                    if (currentDistance < distance)
+                    {
+                        closestCell = blueprint;
+                        distance = currentDistance;
+                    }
+                }
+            }
+
+            return closestCell;
+        }
+
+        public List<Blueprint> FindBlueprintsWithAvailibility(List<Blueprint> blueprintList, bool availibility)
+        {
+            return new List<Blueprint>(blueprintList.Where(b => (b.Available == availibility)).ToList());
+        }
+
+        public Blueprint FindFirstBlueprintWithAvailibility(List<Blueprint> blueprintList, bool availibility)
+        {
+            return blueprintList.FirstOrDefault(b => (b.Available == availibility));
+        }
+
+        public BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
+        {
+            // Create shared bounds between two zones
+            BoundsInt combinedBounds = new BoundsInt();
+            Vector3Int position = new Vector3Int(
+                                (int)(boundsA.position.x + boundsB.position.x) / 2,
+                                (int)(boundsA.position.y + boundsB.position.y) / 2,
+                                (int)(boundsA.position.z + boundsB.position.z) / 2);
+            Vector3Int size = boundsA.size + boundsB.size;
+            combinedBounds.position = position;
+            combinedBounds.size = size;
+
+            return combinedBounds;
+        }
+
+        public BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, Vector3Int size, Vector3Int offset)
+        {
+            Vector3Int position = intersectedBounds.min + offset;
+
+            Vector3Int amountOutOfBounds = CheckOutOfBounds(position, size, intersectedBounds);
+            if (amountOutOfBounds != Vector3.zero)
+            {
+                Debug.LogWarning("Map Generator Warning: Desired intersecting bounds lies outside the overarching bounds. Adjusting size...");
+                size -= amountOutOfBounds;
+            }
+
+            return new BoundsInt(position, size);
+        }
+
+        public BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, BoundsInt intersectingBounds)
+        {
+            return CreateIntersectingBounds(intersectedBounds, intersectingBounds.size, intersectingBounds.position);
+        }
+
+        /// <summary>
+        /// Check if a point lies outside the bounds of the zone.
+        /// *** The point must be in world coords ***
+        /// </summary>
+        /// <param name="desiredPosition">The desired position to spawn the next room</param>
+        /// <returns>Returns TRUE if the space is out of bounds and FALSE otherwise.</returns>
+        public bool CheckOutOfBounds(Vector3Int desiredPosition, Vector3Int upperBound, Vector3Int lowerBound)
+        {
+            Vector3Int differenceUpper = upperBound - desiredPosition;
+            Vector3Int differenceLower = lowerBound - desiredPosition;
+            if (differenceUpper.x <= 0 || differenceUpper.y <= 0 || differenceUpper.z <= 0)        // Valid space
+                return false;
+            if (differenceLower.x > 0 || differenceLower.y > 0 || differenceLower.z > 0)        // Valid space
+                return false;
+
+            return true;           // Invalid space
+        }
+
+        public bool CheckOutOfBounds(Vector3Int desiredPos, BoundsInt bounds)
+        {
+            if (bounds.Contains(desiredPos))        // Valid space
+                return false;
+
+            return true;           // Invalid space
+        }
+
+        /// <summary>
+        /// Checks if a room is out of bounds with just it's origin and dimensions.
+        /// Returns the difference of how much of the room lied outside the bounds.
+        /// **** Points and dimensions must be in world coords ****
+        /// </summary>
+        /// <param name="origin">Blueprint origin</param>
+        /// <param name="dimensions">Blueprint dimensions</param>
+        /// <param name="bounds">Bounds</param>
+        /// <returns>Zero if in bounds, otherwise will return the offset amount in room coords</returns>
+        public Vector3Int CheckOutOfBounds(Vector3Int origin, Vector3Int dimensions, BoundsInt bounds)
+        {
+            // Find the lower and upper cell point of the blueprint
+            Vector3Int lowerPoint = origin;
+            Vector3Int upperPoint = origin + (dimensions - Vector3Int.one);
+
+            Vector3Int difference = Vector3Int.zero;
+
+            // X Axis
+            if (lowerPoint.x < bounds.min.x)
+                difference.x = lowerPoint.x - bounds.min.x;         // negative (left out of bounds)
+            else if (upperPoint.x > bounds.max.x - 1)
+                difference.x = upperPoint.x - (bounds.max.x - 1);   // positive (right out of bounds)
+
+            // Y Axis
+            if (lowerPoint.y < bounds.min.y)
+                difference.y = lowerPoint.y - bounds.min.y;         // negative (below)
+            else if (upperPoint.y > bounds.max.y - 1)
+                difference.y = upperPoint.y - (bounds.max.y - 1);   // positive (above)
+
+            // Z Axis
+            if (lowerPoint.z < bounds.min.z)
+                difference.z = lowerPoint.z - bounds.min.z;         // negative (back)
+            else if (upperPoint.z > bounds.max.z - 1)
+                difference.z = upperPoint.z - (bounds.max.z - 1);   // positive (front)
+
+            return difference;
+        }
+
+        /// <summary>
+        /// Checks for a collision with another blueprint cell
+        /// </summary>
+        /// <param name="position">The position of the blueprint room</param>
+        /// <param name="collidedBlueprint">If any room was found to collide then return the room otherwise will be null</param>
+        /// <returns>Collided or not collided</returns>
+        public bool CheckCollision(Vector3Int position, out Blueprint collidedBlueprint)
+        {
+            return _masterDictionaryReference.TryGetValue(position, out collidedBlueprint);
+        }
+
+        /// <summary>
+        /// Checks for a collision with another blueprint cell
+        /// </summary>
+        /// <param name="position">The position of the blueprint room</param>
+        /// <param name="collidedRoom">If any room was found to collide then return the room otherwise will be null</param>
+        /// <returns>Collided or not collided</returns>
+        public bool CheckCollision(Vector3Int position)
+        {
+            return _masterDictionaryReference.ContainsKey(position);
+        }
+        #endregion
+
+        #region Debug
+        public void ToggleDebugLogs(bool toggle)
+        {
+            _debugLogs = toggle;
+        }
+        #endregion
+    }
+}

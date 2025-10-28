@@ -50,7 +50,7 @@ public class ApplicationController : MonoBehaviour
     {
         yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(MAIN_SCENE_NAME));
 
-        MapGeneratorController.Instance.StartGeneration();
+        OldMapGeneratorController.Instance.StartGeneration();
 
         Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
     }

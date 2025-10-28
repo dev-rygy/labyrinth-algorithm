@@ -37,14 +37,14 @@ namespace RyansLibrary.Labyrinth
     /// <summary>
     /// Composition master class that wraps the Blueprint and Room Generator classes to build a contigious map.
     /// </summary>
-    public class MapGeneratorController : MonoBehaviour
+    public class OldMapGeneratorController : MonoBehaviour
     {
         #region Variables
         // ***** CONSTANTS *****
         const string MASTER_PATH_NAME = "Master Path";
 
         // ***** Singleton Reference *****
-        public static MapGeneratorController Instance { get; private set; }
+        public static OldMapGeneratorController Instance { get; private set; }
 
         // ***** Events *****
         public static event Action OnGenerationStarted;
@@ -98,7 +98,7 @@ namespace RyansLibrary.Labyrinth
         // ***** Private Variables *****
         // private int _seed;      // TODO: For networking make the host generate this
 
-        private BlueprintGenerator _blueprintGenerator;
+        private OldBlueprintGenerator _blueprintGenerator;
         private RoomGenerator _roomGenerator;
 
         // Debugging
@@ -185,7 +185,7 @@ namespace RyansLibrary.Labyrinth
             InitializeMasters();
 
             // Initialize Blueprint Generator
-            _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
+            _blueprintGenerator = new OldBlueprintGenerator(MasterPath, MasterDictionary);
             _blueprintGenerator.ToggleDebugLogs(_debugBlueprintLogs);
 
             // Initialize Room Generator

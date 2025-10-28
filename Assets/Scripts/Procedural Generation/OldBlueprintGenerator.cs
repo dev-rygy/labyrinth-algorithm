@@ -41,7 +41,7 @@ namespace RyansLibrary.Labyrinth
         }
     }
 
-    public class BlueprintGenerator
+    public class OldBlueprintGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
         const int STANDARD_FACE_COUNT = 6;
@@ -56,7 +56,7 @@ namespace RyansLibrary.Labyrinth
 
         private bool _debugLogs = false;
 
-        public BlueprintGenerator(Path masterPath, Dictionary<Vector3Int, Blueprint> masterDictionary)
+        public OldBlueprintGenerator(Path masterPath, Dictionary<Vector3Int, Blueprint> masterDictionary)
         {
             _masterPathReference = masterPath;
             _masterDictionaryReference = masterDictionary;

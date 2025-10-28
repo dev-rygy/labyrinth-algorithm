@@ -10,9 +10,14 @@ public class MapGenerationContext
 {
     private Dictionary<string, object> _memory;
 
-    public int OperationIDCounter { get; private set; } = 0;
-    public int MemoryIDCounter { get; private set; } = 0;
-    public int OutputIDCounter { get; private set; } = 0;
+    public int OperationIDCounter { get; private set; } = 10000;
+    public int MemoryIDCounter { get; private set; } = 10000;
+    public int OutputIDCounter { get; private set; } = 10000;
+
+    public MapGenerationContext()
+    {
+        _memory = new Dictionary<string, object>();
+    }
 
     // Get Data
     public object GrabFromMemory(string inputID)
@@ -25,22 +30,22 @@ public class MapGenerationContext
 
     public void AllocateOrModifyMem(string id, object data)
     {
-        bool mod = ModifyInputMemory(id, data);
+        bool mod = ModifyMemory(id, data);
 
         if (!mod)
         {
-            AllocateInputMem(id, data);
+            AllocateMemory(id, data);
         }
     }
 
     // Create New Data
-    public void AllocateInputMem(string id, object data)
+    public void AllocateMemory(string id, object data)
     {
         _memory.Add(id, data);
     }
 
     // Change Data
-    public bool ModifyInputMemory(string id, object data)
+    public bool ModifyMemory(string id, object data)
     {
         if (_memory.ContainsKey(id))
         {

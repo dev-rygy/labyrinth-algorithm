@@ -35,6 +35,12 @@ public abstract class BlueprintOperation
     public List<string> InputPorts { get; protected set; }
     public List<string> OutputPorts { get; protected set; }
 
+    public BlueprintOperation()
+    {
+        InputPorts = new List<string>();
+        OutputPorts = new List<string>();
+    }
+
     public abstract bool Execute();
 
     public abstract bool Undo();
