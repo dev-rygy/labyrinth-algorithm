@@ -7,16 +7,18 @@ public class BoundsIntBlueprintData : BlueprintData
 
     public BoundsIntBlueprintData(MapGenerationContext context, BoundsInt bounds) : base()
     {
-        DataID = $"PlaceFixedUniqueBlueprint:{context.ConsumeOperationID()}";
+        string memoryID = context.ConsumeMemoryID().ToString();
+        DataID = $"PlaceFixedUniqueBlueprint:{memoryID}";
         _context = context;
         _bounds = bounds;
 
         // Output Ports
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());
+        OutputPorts.Add(memoryID);
     }
 
     public override void LoadIntoMemory()
     {
         _context.AllocateMemory(OutputPorts[0], _bounds);
+        Debug.Log($"BoundsInt Data Loaded Into Memory with ID {OutputPorts[0]}");
     }
 }

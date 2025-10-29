@@ -4,6 +4,7 @@
  * Last Modified:   10/26/2025 (Ryan)
  * Notes:           
 */
+using RyansLibrary.Labyrinth;
 using System;
 using System.Collections.Generic;
 
@@ -35,10 +36,18 @@ public abstract class BlueprintOperation
     public List<string> InputPorts { get; protected set; }
     public List<string> OutputPorts { get; protected set; }
 
-    public BlueprintOperation()
+    protected BlueprintGenerator _bpg;
+    protected MapGenerationContext _context;
+
+    protected bool _debugLogs;
+
+    public BlueprintOperation(MapGenerationContext context, BlueprintGenerator bpg)
     {
         InputPorts = new List<string>();
         OutputPorts = new List<string>();
+
+        _context = context;
+        _bpg = bpg;
     }
 
     public abstract bool Execute();

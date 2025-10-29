@@ -10,10 +10,8 @@ using UnityEngine;
 
 public class PlaceFixedUniqueBlueprintsOp : BlueprintOperation
 {
-    BlueprintGenerator _bpg;
-    MapGenerationContext _context;
-
-    public PlaceFixedUniqueBlueprintsOp(BlueprintGenerator bpg, MapGenerationContext context, string pathInput, string roomEntryInput, string boundsInput) : base()
+    public PlaceFixedUniqueBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput) 
+        : base(context, bpg)
     {
         OperationID = $"PlaceFixedUniqueBlueprint:{context.ConsumeOperationID()}";
         _bpg = bpg;
@@ -68,7 +66,7 @@ public class PlaceFixedUniqueBlueprintsOp : BlueprintOperation
             Vector3 difference = _bpg.CheckOutOfBounds(roomOrigin, room.RoomDimensions, bounds);
             if (difference != Vector3.zero)     // Room was outside the bounds of the zone
             {
-                Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
+                Debug.LogError($"Blueprint Generator Error: Unique Fixed Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
                     $"It was {difference} units outside the bounds of the zone.");
                 return false;
             }
@@ -78,7 +76,7 @@ public class PlaceFixedUniqueBlueprintsOp : BlueprintOperation
             blueprintList = _bpg.GenerateBlueprintsFromDimensions(path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
             if (blueprintList is null)     // Room was outside the bounds of the zone
             {
-                Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" was obstructed and could not be placed");
+                Debug.LogError($"Blueprint Generator Error: Unique Fixed Room \"{room.name}\" was obstructed and could not be placed");
                 return false;
             }
 

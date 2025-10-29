@@ -19,5 +19,6 @@ public class PathBlueprintData : BlueprintData
     public override void LoadIntoMemory()
     {
         _context.AllocateMemory(OutputPorts[0], _path);
+        Debug.Log($"Path Data Loaded Into Memory with ID {OutputPorts[0]}");
     }
 }

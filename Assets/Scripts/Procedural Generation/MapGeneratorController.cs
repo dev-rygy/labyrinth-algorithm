@@ -55,9 +55,6 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
         [SerializeField] private bool _retryGenerationOnFail;
 
-        [Header("Blueprint Settings")]
-        [SerializeField] private int _maxPlacementAttempts = 50;
-
         [Header("Zones")]
         [SerializeField] private List<Zone> _zones;
 
@@ -97,12 +94,12 @@ namespace RyansLibrary.Labyrinth
         private bool _debugBlueprintGizmos = false;
         private bool _debugTriangulationGizmos = false;
         private bool _debugBoundsGizmos = false;
-        #endregion
 
         private Queue<BlueprintOperation> operationQueue;
         private Stack<BlueprintOperation> operationHistory;
 
         private MapGenerationContext context;
+        #endregion
 
         private void LoadOperations()
         {
@@ -137,14 +134,10 @@ namespace RyansLibrary.Labyrinth
             }
             */
             // Generate Blueprint Map For Each Zone
-            foreach (Zone zone in _zones)
-            {
-                if (!GenerateZoneBlueprints(zone))
-                {
-                    GenerationFailed();
-                    return;     // Blueprint failed for zone; stop algorithm
-                }
-            }
+            //foreach (Zone zone in _zones)
+            //{
+            LoadZoneBlueprints(_zones[0]);
+            //}
 
             /*
             // ******* Parse and Generate Rooms *******
@@ -186,15 +179,21 @@ namespace RyansLibrary.Labyrinth
         {
             while (operationQueue.Count > 0)
             {
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(3.5f);
 
-                BlueprintOperation op = operationQueue.Dequeue();
+                BlueprintOperation op = operationQueue.Peek();
+                Debug.Log($"Running Operation {op.OperationID}");
                 bool result = op.Execute();
 
                 if (result)
+                {
                     Debug.Log("Execution Successs!");
+                    operationQueue.Dequeue();
+                    operationHistory.Push(op);
+                }
                 else
-                    Debug.Log("Execution Failure.");
+                    Debug.Log("Execution Failure. Retrying...");
+                
             }
 
             Debug.Log("End of execution.");
@@ -347,13 +346,13 @@ namespace RyansLibrary.Labyrinth
         /// in zone and makes sure they are contiguous.
         /// </summary>
         /// <returns>Generation Success or Failure</returns>
-        public bool GenerateZoneBlueprints(Zone zone)
+        public void LoadZoneBlueprints(Zone zone)
         {
             // Must have a zone to generate anything
             if (zone == null)
             {
                 Debug.LogError("Map Generator Error: Zone Entry Missing for blueprint procedure.");
-                return false;
+                return;
             }
 
             // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
@@ -361,16 +360,12 @@ namespace RyansLibrary.Labyrinth
             {
                 Debug.LogError($"Map Generator Error: The amount of blueprint rooms desired for zone {zone.Name} exceeds " +
                     $"the bounding box's volume or the bounding box is inverted.");
-                return false;
+                return;
             }
 
             // ******* Generate Zone Blueprints *******
             // Generate Main Path to boss
-            if (!LoadMainPathOperations(zone))
-            {
-                Debug.LogError($"Map Generator Error: Main Path Generation for {zone.Name} zone failed.");
-                return false;
-            }
+            LoadMainPathOperations(zone);
 
             /*
             // Generate Alternative paths (prize, trial, etc.)
@@ -380,7 +375,6 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
             */
-            return true;
         }
 
         /// <summary>
@@ -390,20 +384,16 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="zone">Zone who's Main Path to generate.</param>
         /// <returns>Generation success or failure</returns>
-        public bool LoadMainPathOperations(Zone zone)
+        public void LoadMainPathOperations(Zone zone)
         {
             if (zone.MainPath == null)      // Throw error if MainPath for zone does not exist
             {
                 Debug.LogError($"Map Generator Error: The Main Path for zone {zone.Name} is not assigned.");
-                return false;
+                return;
             }
 
             // Unique Room Placement
-            if (!LoadUniqueRoomOperations(zone))
-            {
-                Debug.LogError($"Map Generator Error: Placing Unique Rooms failed in {zone.Name} zone.");
-                return false;
-            }
+            LoadUniqueRoomOperations(zone);
 
             /*
             // Divergent Room Placement
@@ -430,8 +420,6 @@ namespace RyansLibrary.Labyrinth
             */
             if (_debugLogs)
                 Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
-
-            return true;
         }
 
         /// <summary>
@@ -439,78 +427,61 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="zone">Zone to place unique rooms in</param>
         /// <returns>Placement success or failure</returns>
-        public bool LoadUniqueRoomOperations(Zone zone)
+        public void LoadUniqueRoomOperations(Zone zone)
         {
+            PathBlueprintData pathBlueprintData = new PathBlueprintData(context, zone.MainPath);
+            pathBlueprintData.LoadIntoMemory();
+            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(context, zone.Bounds);
+            zoneBoundsBlueprintData.LoadIntoMemory();
+
             // 1.) Spawn Fixed Rooms (Rooms that have a set spawn destination)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
-                    PathBlueprintData pathBlueprintData = new PathBlueprintData(context, zone.MainPath);
-                    pathBlueprintData.LoadIntoMemory();
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
-                    BoundsIntBlueprintData boundsIntBlueprintData = new BoundsIntBlueprintData(context, zone.Bounds);
-                    boundsIntBlueprintData.LoadIntoMemory();
 
-                    PlaceFixedUniqueBlueprintsOp placeFixedBlueprintOp = new PlaceFixedUniqueBlueprintsOp(_blueprintGenerator, context,
-                        pathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], boundsIntBlueprintData.OutputPorts[0]);
+                    PlaceFixedUniqueBlueprintsOp placeFixedBlueprintOp = new PlaceFixedUniqueBlueprintsOp(context, _blueprintGenerator,
+                        pathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     operationQueue.Enqueue(placeFixedBlueprintOp);
                 }
             }
 
-            /*
-            // 2.) Spawn Constrained Rooms (Rooms that have a unique spawn area)
+            // 2.) Spawn Bounded Rooms (Rooms that have a unique spawn area)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                bool hasPlaced = false;
-
                 if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
-                    int placementAttempts = 0;
-                    // Attempt to place the constrained room in it's own bounded zone
-                    while (!hasPlaced)
-                    {
-                        BoundsInt adjustedBounds = _blueprintGenerator.CreateIntersectingBounds(zone.Bounds, entry.Bounds);
-                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(zone.MainPath, entry, adjustedBounds);
-                        placementAttempts++;
+                    // Attempt to place the bounded room in it's own bounded zone
+                    // BoundsInt adjustedBounds = _blueprintGenerator.CreateIntersectingBounds(zone.Bounds, entry.Bounds);
 
-                        // If constrained room failed to generate a certain number of times then return false
-                        if (placementAttempts > _maxPlacementAttempts)
-                        {
-                            Debug.LogError($"Map Generator Error: Constrained Room blueprints \"{entry}\" exhaused " +
-                                $"all of it's attempts to be placed.");
-                            return false;
-                        }
-                    }
+                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
+                    roomEntryBlueprintData.LoadIntoMemory();
+
+                    CreateIntersectingBoundsOp adjBoundsBlueprintOp = new CreateIntersectingBoundsOp(context, _blueprintGenerator,
+                        zoneBoundsBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[1]);
+                    operationQueue.Enqueue(adjBoundsBlueprintOp);
+
+                    PlaceBoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedUniqueBlueprintsOp(context, _blueprintGenerator,
+                        pathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], adjBoundsBlueprintOp.OutputPorts[0]);
+                    operationQueue.Enqueue(placeBoundedBlueprintsOp);
                 }
             }
 
             // 3.) Spawn Free Rooms (Rooms that can spawn in any point inside the zone bounds)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                bool hasPlaced = false;
-
                 if (entry.PlacementType == RoomPlacementType.Free)
                 {
-                    int placementAttempts = 0;
-                    // Attempt to place the free room in the zone's bounded zone
-                    while (!hasPlaced)
-                    {
-                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(zone.MainPath, entry, zone.Bounds);
-                        placementAttempts++;
+                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
+                    roomEntryBlueprintData.LoadIntoMemory();
 
-                        // If free room failed to generate a certain number of times then return false
-                        if (placementAttempts > _maxPlacementAttempts)
-                        {
-                            Debug.LogError($"Map Generator Error: Free Room blueprints \"{entry}\" exhaused all of it's attempts to be placed.");
-                            return false;
-                        }
-                    }
+                    PlaceBoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedUniqueBlueprintsOp(context, _blueprintGenerator,
+                        pathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
+                    operationQueue.Enqueue(placeBoundedBlueprintsOp);
                 }
             }
-            */
-            return true;
         }
         #endregion
 

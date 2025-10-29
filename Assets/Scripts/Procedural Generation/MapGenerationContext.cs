@@ -11,8 +11,8 @@ public class MapGenerationContext
     private Dictionary<string, object> _memory;
 
     public int OperationIDCounter { get; private set; } = 10000;
-    public int MemoryIDCounter { get; private set; } = 10000;
-    public int OutputIDCounter { get; private set; } = 10000;
+    public int MemoryIDCounter { get; private set; } = 20000;
+    public int OutputIDCounter { get; private set; } = 30000;
 
     public MapGenerationContext()
     {
