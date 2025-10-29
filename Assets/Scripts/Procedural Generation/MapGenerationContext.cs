@@ -6,63 +6,66 @@
 */
 using System.Collections.Generic;
 
-public class MapGenerationContext
+namespace RyansLibrary.Labyrinth
 {
-    private Dictionary<string, object> _memory;
-
-    public int OperationIDCounter { get; private set; } = 10000;
-    public int MemoryIDCounter { get; private set; } = 20000;
-    public int OutputIDCounter { get; private set; } = 30000;
-
-    public MapGenerationContext()
+    public class MapGenerationContext
     {
-        _memory = new Dictionary<string, object>();
-    }
+        private Dictionary<string, object> _memory;
 
-    // Get Data
-    public object GrabFromMemory(string inputID)
-    {
-        if (_memory.TryGetValue(inputID, out object value))
-            return value;
+        public int OperationIDCounter { get; private set; } = 10000;
+        public int MemoryIDCounter { get; private set; } = 20000;
+        public int OutputIDCounter { get; private set; } = 30000;
 
-        return null;
-    }
-
-    public void AllocateOrModifyMem(string id, object data)
-    {
-        bool mod = ModifyMemory(id, data);
-
-        if (!mod)
+        public MapGenerationContext()
         {
-            AllocateMemory(id, data);
+            _memory = new Dictionary<string, object>();
         }
-    }
 
-    // Create New Data
-    public void AllocateMemory(string id, object data)
-    {
-        _memory.Add(id, data);
-    }
-
-    // Change Data
-    public bool ModifyMemory(string id, object data)
-    {
-        if (_memory.ContainsKey(id))
+        // Get Data
+        public object GrabFromMemory(string inputID)
         {
-            _memory[id] = data;
-            return true;
+            if (_memory.TryGetValue(inputID, out object value))
+                return value;
+
+            return null;
         }
-        else
-            return false;
-    }
 
-    public int ConsumeOperationID()
-    {
-        return OperationIDCounter++;
-    }
+        public void AllocateOrModifyMem(string id, object data)
+        {
+            bool mod = ModifyMemory(id, data);
 
-    public int ConsumeMemoryID()
-    {
-        return MemoryIDCounter++;
+            if (!mod)
+            {
+                AllocateMemory(id, data);
+            }
+        }
+
+        // Create New Data
+        public void AllocateMemory(string id, object data)
+        {
+            _memory.Add(id, data);
+        }
+
+        // Change Data
+        public bool ModifyMemory(string id, object data)
+        {
+            if (_memory.ContainsKey(id))
+            {
+                _memory[id] = data;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public int ConsumeOperationID()
+        {
+            return OperationIDCounter++;
+        }
+
+        public int ConsumeMemoryID()
+        {
+            return MemoryIDCounter++;
+        }
     }
 }

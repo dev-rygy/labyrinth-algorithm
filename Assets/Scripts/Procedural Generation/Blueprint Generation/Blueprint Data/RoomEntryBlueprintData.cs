@@ -1,27 +1,31 @@
-using RyansLibrary.Labyrinth;
 using UnityEngine;
 
-public class RoomEntryBlueprintData : BlueprintData
+namespace RyansLibrary.Labyrinth
 {
-    MapGenerationContext _context;
-    RoomEntry _roomEntry;
-
-    public RoomEntryBlueprintData(MapGenerationContext context, RoomEntry roomEntry) : base()
+    public class RoomEntryBlueprintData : BlueprintData
     {
-        DataID = $"PlaceFixedUniqueBlueprint:{context.ConsumeOperationID()}";
-        _context = context;
-        _roomEntry = roomEntry;
+        MapGenerationContext _context;
+        RoomEntry _roomEntry;
 
-        // Output Ports
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());      // RoomEntry
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());      // Bounds
-    }
+        public RoomEntryBlueprintData(MapGenerationContext context, RoomEntry roomEntry) : base()
+        {
+            string memoryID1 = context.ConsumeMemoryID().ToString();
+            string memoryID2 = context.ConsumeMemoryID().ToString();
+            DataID = $"RoomEntryData:{memoryID1}, {memoryID2}";
+            _context = context;
+            _roomEntry = roomEntry;
 
-    public override void LoadIntoMemory()
-    {
-        _context.AllocateMemory(OutputPorts[0], _roomEntry);
-        _context.AllocateMemory(OutputPorts[1], _roomEntry.Bounds);
-        Debug.Log($"RoomEntry Data Loaded Into Memory with ID {OutputPorts[0]}");
-        Debug.Log($"Bounds Data Loaded Into Memory with ID {OutputPorts[1]}");
+            // Output Ports
+            OutputPorts.Add(memoryID1);      // RoomEntry
+            OutputPorts.Add(memoryID2);      // Bounds
+        }
+
+        public override void LoadIntoMemory()
+        {
+            _context.AllocateMemory(OutputPorts[0], _roomEntry);
+            _context.AllocateMemory(OutputPorts[1], _roomEntry.Bounds);
+            Debug.Log($"RoomEntry Data Loaded Into Memory with ID {OutputPorts[0]}");
+            Debug.Log($"Bounds Data Loaded Into Memory with ID {OutputPorts[1]}");
+        }
     }
 }

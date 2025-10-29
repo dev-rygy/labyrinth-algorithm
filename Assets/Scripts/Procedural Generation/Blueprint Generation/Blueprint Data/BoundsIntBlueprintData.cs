@@ -1,24 +1,27 @@
 using UnityEngine;
 
-public class BoundsIntBlueprintData : BlueprintData
+namespace RyansLibrary.Labyrinth
 {
-    MapGenerationContext _context;
-    BoundsInt _bounds;
-
-    public BoundsIntBlueprintData(MapGenerationContext context, BoundsInt bounds) : base()
+    public class BoundsIntBlueprintData : BlueprintData
     {
-        string memoryID = context.ConsumeMemoryID().ToString();
-        DataID = $"PlaceFixedUniqueBlueprint:{memoryID}";
-        _context = context;
-        _bounds = bounds;
+        MapGenerationContext _context;
+        BoundsInt _bounds;
 
-        // Output Ports
-        OutputPorts.Add(memoryID);
-    }
+        public BoundsIntBlueprintData(MapGenerationContext context, BoundsInt bounds) : base()
+        {
+            string memoryID = context.ConsumeMemoryID().ToString();
+            DataID = $"BoundsIntData:{memoryID}";
+            _context = context;
+            _bounds = bounds;
 
-    public override void LoadIntoMemory()
-    {
-        _context.AllocateMemory(OutputPorts[0], _bounds);
-        Debug.Log($"BoundsInt Data Loaded Into Memory with ID {OutputPorts[0]}");
+            // Output Ports
+            OutputPorts.Add(memoryID);
+        }
+
+        public override void LoadIntoMemory()
+        {
+            _context.AllocateMemory(OutputPorts[0], _bounds);
+            Debug.Log($"BoundsInt Data Loaded Into Memory with ID {OutputPorts[0]}");
+        }
     }
 }

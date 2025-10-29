@@ -1,16 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BlueprintData
+namespace RyansLibrary.Labyrinth
 {
-    public string DataID { get; protected set; }
-
-    public List<string> OutputPorts { get; protected set; }
-
-    public BlueprintData() 
+    public abstract class BlueprintData
     {
-        OutputPorts = new List<string>();
-    }
+        public string DataID { get; protected set; }
 
-    public abstract void LoadIntoMemory();
+        public List<string> OutputPorts { get; protected set; }
+
+        public BlueprintData()
+        {
+            OutputPorts = new List<string>();
+        }
+
+        public abstract void LoadIntoMemory();
+    }
 }

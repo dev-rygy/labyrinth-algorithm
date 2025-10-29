@@ -4,53 +4,54 @@
  * Last Modified:   10/26/2025 (Ryan)
  * Notes:           
 */
-using RyansLibrary.Labyrinth;
-using System;
 using System.Collections.Generic;
 
-/*
-public interface IBlueprintOperationPort
+namespace RyansLibrary.Labyrinth
 {
-    string ID { get; set; }
-    object Data { get; set; }
-}
-
-[Serializable]
-public struct BlueprintOperationPort<T> : IBlueprintOperationPort
-{
-    public string ID { get; set; }
-    public T Data { get; set; }
-
-    object IBlueprintOperationPort.Data
+    /*
+    public interface IBlueprintOperationPort
     {
-        get => Data;
-        set => Data = (T)value;
-    }
-}
-*/
-
-public abstract class BlueprintOperation
-{
-    public string OperationID { get; protected set; }
-
-    public List<string> InputPorts { get; protected set; }
-    public List<string> OutputPorts { get; protected set; }
-
-    protected BlueprintGenerator _bpg;
-    protected MapGenerationContext _context;
-
-    protected bool _debugLogs;
-
-    public BlueprintOperation(MapGenerationContext context, BlueprintGenerator bpg)
-    {
-        InputPorts = new List<string>();
-        OutputPorts = new List<string>();
-
-        _context = context;
-        _bpg = bpg;
+        string ID { get; set; }
+        object Data { get; set; }
     }
 
-    public abstract bool Execute();
+    [Serializable]
+    public struct BlueprintOperationPort<T> : IBlueprintOperationPort
+    {
+        public string ID { get; set; }
+        public T Data { get; set; }
 
-    public abstract bool Undo();
+        object IBlueprintOperationPort.Data
+        {
+            get => Data;
+            set => Data = (T)value;
+        }
+    }
+    */
+
+    public abstract class BlueprintOperation
+    {
+        public string OperationID { get; protected set; }
+
+        public List<string> InputPorts { get; protected set; }
+        public List<string> OutputPorts { get; protected set; }
+
+        protected BlueprintGenerator _bpg;
+        protected MapGenerationContext _context;
+
+        protected bool _debugLogs;
+
+        public BlueprintOperation(MapGenerationContext context, BlueprintGenerator bpg)
+        {
+            InputPorts = new List<string>();
+            OutputPorts = new List<string>();
+
+            _context = context;
+            _bpg = bpg;
+        }
+
+        public abstract bool Execute();
+
+        public abstract bool Undo();
+    }
 }

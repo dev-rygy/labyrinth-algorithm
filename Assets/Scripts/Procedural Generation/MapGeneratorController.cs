@@ -55,6 +55,9 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
         [SerializeField] private bool _retryGenerationOnFail;
 
+        [Header("Blueprint Settings")]
+        [SerializeField] private int _maxPlacementAttempts = 50;
+
         [Header("Zones")]
         [SerializeField] private List<Zone> _zones;
 
@@ -74,7 +77,7 @@ namespace RyansLibrary.Labyrinth
         // ***** Private Variables *****
         // private int _seed;      // TODO: For networking make the host generate this
 
-        private BlueprintGenerator _blueprintGenerator;
+        private BlueprintGenerator _bpg;
         private RoomGenerator _roomGenerator;
 
         // Debugging
@@ -222,7 +225,7 @@ namespace RyansLibrary.Labyrinth
             operationHistory = new();
 
             context = new();
-            _blueprintGenerator = new(MasterPath, MasterDictionary);
+            _bpg = new(MasterPath, MasterDictionary);
 
             StartGeneration();
         }
@@ -277,8 +280,8 @@ namespace RyansLibrary.Labyrinth
             InitializeMasters();
 
             // Initialize Blueprint Generator
-            _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
-            _blueprintGenerator.ToggleDebugLogs(_debugBlueprintLogs);
+            _bpg = new BlueprintGenerator(MasterPath, MasterDictionary);
+            _bpg.ToggleDebugLogs(_debugBlueprintLogs);
 
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
@@ -395,14 +398,10 @@ namespace RyansLibrary.Labyrinth
             // Unique Room Placement
             LoadUniqueRoomOperations(zone);
 
-            /*
             // Divergent Room Placement
-            if (!PlaceDivergentRooms(zone))
-            {
-                Debug.LogError($"Map Generator Error: Placing Divergent Rooms failed in {zone.Name} zone.");
-                return false;
-            }
+            LoadDivergentRoomOperation(zone);
 
+            /*
             // Generate Delauney Triangulation
             List<Edge> zoneGraph = GenerateContigiousTriangulation(zone);
             if (zoneGraph == null)
@@ -429,8 +428,8 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Placement success or failure</returns>
         public void LoadUniqueRoomOperations(Zone zone)
         {
-            PathBlueprintData pathBlueprintData = new PathBlueprintData(context, zone.MainPath);
-            pathBlueprintData.LoadIntoMemory();
+            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(context, zone.MainPath);
+            mainPathBlueprintData.LoadIntoMemory();
             BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(context, zone.Bounds);
             zoneBoundsBlueprintData.LoadIntoMemory();
 
@@ -442,8 +441,8 @@ namespace RyansLibrary.Labyrinth
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    PlaceFixedUniqueBlueprintsOp placeFixedBlueprintOp = new PlaceFixedUniqueBlueprintsOp(context, _blueprintGenerator,
-                        pathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
+                    FixedUniqueBlueprintsOp placeFixedBlueprintOp = new FixedUniqueBlueprintsOp(context, _bpg,
+                        mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     operationQueue.Enqueue(placeFixedBlueprintOp);
                 }
             }
@@ -454,17 +453,15 @@ namespace RyansLibrary.Labyrinth
                 if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
                     // Attempt to place the bounded room in it's own bounded zone
-                    // BoundsInt adjustedBounds = _blueprintGenerator.CreateIntersectingBounds(zone.Bounds, entry.Bounds);
-
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    CreateIntersectingBoundsOp adjBoundsBlueprintOp = new CreateIntersectingBoundsOp(context, _blueprintGenerator,
+                    IntersectingBoundsOp adjBoundsBlueprintOp = new IntersectingBoundsOp(context, _bpg,
                         zoneBoundsBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[1]);
                     operationQueue.Enqueue(adjBoundsBlueprintOp);
 
-                    PlaceBoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedUniqueBlueprintsOp(context, _blueprintGenerator,
-                        pathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], adjBoundsBlueprintOp.OutputPorts[0]);
+                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(context, _bpg,
+                        mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], adjBoundsBlueprintOp.OutputPorts[0]);
                     operationQueue.Enqueue(placeBoundedBlueprintsOp);
                 }
             }
@@ -477,11 +474,30 @@ namespace RyansLibrary.Labyrinth
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    PlaceBoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedUniqueBlueprintsOp(context, _blueprintGenerator,
-                        pathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
+                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(context, _bpg,
+                        mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     operationQueue.Enqueue(placeBoundedBlueprintsOp);
                 }
             }
+        }
+
+        private void LoadDivergentRoomOperation(Zone zone)
+        {
+            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(context, zone.MainPath);
+            mainPathBlueprintData.LoadIntoMemory();
+            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(context, zone.Bounds);
+            zoneBoundsBlueprintData.LoadIntoMemory();
+            Vector3IntBlueprintData dimensionsData = new Vector3IntBlueprintData(context, Vector3Int.one);
+            dimensionsData.LoadIntoMemory();
+            IntBlueprintData cellCountData = new IntBlueprintData(context, zone.DivergentRoomsCellOccupancy);
+            cellCountData.LoadIntoMemory();
+            IntBlueprintData maxPlacementAttemptsData = new IntBlueprintData(context, _maxPlacementAttempts);
+            maxPlacementAttemptsData.LoadIntoMemory();
+
+
+            DivergentBlueprintsOp divergentRoomsOp = new DivergentBlueprintsOp(context, _bpg, mainPathBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0],
+                dimensionsData.OutputPorts[0], cellCountData.OutputPorts[0], maxPlacementAttemptsData.OutputPorts[0]);
+            operationQueue.Enqueue(divergentRoomsOp);
         }
         #endregion
 
