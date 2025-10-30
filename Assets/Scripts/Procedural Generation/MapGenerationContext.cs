@@ -5,10 +5,11 @@
  * Notes:           
 */
 using System.Collections.Generic;
+using RyansLibrary.Graphs;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class MapGenerationContext
+    public sealed class MapGenerationContext
     {
         private Dictionary<string, object> _memory;
 
@@ -16,15 +17,24 @@ namespace RyansLibrary.Labyrinth
         public int MemoryIDCounter { get; private set; } = 20000;
         public int OutputIDCounter { get; private set; } = 30000;
 
+        public List<List<Edge>> Triangulations { get; private set; }
+        public List<List<Edge>> MinimumSpanningTrees { get; private set; }
+        public List<List<Edge>> RandomCycles { get; private set; }
+
         public MapGenerationContext()
         {
             _memory = new Dictionary<string, object>();
+
+            // Initialize Debugging Lists
+            Triangulations = new();
+            MinimumSpanningTrees = new();
+            RandomCycles = new();
         }
 
         // Get Data
-        public object GrabFromMemory(string inputID)
+        public object GrabFromMemory(string memoryID)
         {
-            if (_memory.TryGetValue(inputID, out object value))
+            if (_memory.TryGetValue(memoryID, out object value))
                 return value;
 
             return null;
@@ -66,6 +76,21 @@ namespace RyansLibrary.Labyrinth
         public int ConsumeMemoryID()
         {
             return MemoryIDCounter++;
+        }
+
+        public void AddToTriangulationsList(List<Edge> triangulation)
+        {
+            Triangulations.Add(triangulation);
+        }
+
+        public void AddToMSTList(List<Edge> mst)
+        {
+            MinimumSpanningTrees.Add(mst);
+        }
+
+        public void AddToRandomCyclesList(List<Edge> rcList)
+        {
+            RandomCycles.Add(rcList);
         }
     }
 }

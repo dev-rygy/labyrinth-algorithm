@@ -5,6 +5,7 @@
  * Notes:           
 */
 using RyansLibrary.AI;
+using RyansLibrary.Geometry;
 using RyansLibrary.Graphs;
 using RyansLibrary.UnityEditor;
 using RyansLibrary.Utils;
@@ -82,10 +83,6 @@ namespace RyansLibrary.Labyrinth
 
         // Debugging
         private bool _debug = false;
-        private List<List<Edge>> _triangulations;
-        private List<List<Edge>> _minimumSpanningTrees;
-        private List<List<Edge>> _randomCycles;
-        private Edge _currentEdge;
 
         // Logs
         private bool _debugLogs = false;
@@ -101,7 +98,7 @@ namespace RyansLibrary.Labyrinth
         private Queue<BlueprintOperation> operationQueue;
         private Stack<BlueprintOperation> operationHistory;
 
-        private MapGenerationContext context;
+        private MapGenerationContext _context;
         #endregion
 
         private void LoadOperations()
@@ -182,7 +179,7 @@ namespace RyansLibrary.Labyrinth
         {
             while (operationQueue.Count > 0)
             {
-                yield return new WaitForSeconds(3.5f);
+                yield return new WaitForSeconds(1.5f);
 
                 BlueprintOperation op = operationQueue.Peek();
                 Debug.Log($"Running Operation {op.OperationID}");
@@ -224,7 +221,7 @@ namespace RyansLibrary.Labyrinth
             operationQueue = new();
             operationHistory = new();
 
-            context = new();
+            _context = new();
             _bpg = new(MasterPath, MasterDictionary);
 
             StartGeneration();
@@ -286,11 +283,6 @@ namespace RyansLibrary.Labyrinth
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
             _roomGenerator.ToggleDebugLogs(_debugRoomGeneratorLogs);
-
-            // Initialize Debugging Lists
-            _triangulations = new();
-            _minimumSpanningTrees = new();
-            _randomCycles = new();
 
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
@@ -399,26 +391,12 @@ namespace RyansLibrary.Labyrinth
             LoadUniqueRoomOperations(zone);
 
             // Divergent Room Placement
-            LoadDivergentRoomOperation(zone);
+            LoadDivergentRoomOperations(zone);
 
-            /*
             // Generate Delauney Triangulation
-            List<Edge> zoneGraph = GenerateContigiousTriangulation(zone);
-            if (zoneGraph == null)
-            {
-                Debug.LogError($"Map Generator Error: MST failed to be found in {zone.Name} zone.");
-                return false;
-            }
+            ConnectMainPathOperations(zone);
 
-            // Pathfind and Connect Main Path
-            if (!ConnectMainPath(zone, zoneGraph))
-            {
-                Debug.LogError($"Map Generator Error: Main Path could not be connected in {zone.Name} zone.");
-                return false;
-            }
-            */
-            if (_debugLogs)
-                Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
+            if (_debugLogs) Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
         }
 
         /// <summary>
@@ -428,9 +406,9 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Placement success or failure</returns>
         public void LoadUniqueRoomOperations(Zone zone)
         {
-            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(context, zone.MainPath);
+            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
             mainPathBlueprintData.LoadIntoMemory();
-            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(context, zone.Bounds);
+            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
             zoneBoundsBlueprintData.LoadIntoMemory();
 
             // 1.) Spawn Fixed Rooms (Rooms that have a set spawn destination)
@@ -438,10 +416,10 @@ namespace RyansLibrary.Labyrinth
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
-                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
+                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    FixedUniqueBlueprintsOp placeFixedBlueprintOp = new FixedUniqueBlueprintsOp(context, _bpg,
+                    FixedUniqueBlueprintsOp placeFixedBlueprintOp = new FixedUniqueBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     operationQueue.Enqueue(placeFixedBlueprintOp);
                 }
@@ -453,14 +431,14 @@ namespace RyansLibrary.Labyrinth
                 if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
                     // Attempt to place the bounded room in it's own bounded zone
-                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
+                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    IntersectingBoundsOp adjBoundsBlueprintOp = new IntersectingBoundsOp(context, _bpg,
+                    IntersectingBoundsOp adjBoundsBlueprintOp = new IntersectingBoundsOp(_context, _bpg,
                         zoneBoundsBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[1]);
                     operationQueue.Enqueue(adjBoundsBlueprintOp);
 
-                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(context, _bpg,
+                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], adjBoundsBlueprintOp.OutputPorts[0]);
                     operationQueue.Enqueue(placeBoundedBlueprintsOp);
                 }
@@ -471,32 +449,48 @@ namespace RyansLibrary.Labyrinth
             {
                 if (entry.PlacementType == RoomPlacementType.Free)
                 {
-                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(context, entry);
+                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(context, _bpg,
+                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     operationQueue.Enqueue(placeBoundedBlueprintsOp);
                 }
             }
         }
 
-        private void LoadDivergentRoomOperation(Zone zone)
+        private void LoadDivergentRoomOperations(Zone zone)
         {
-            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(context, zone.MainPath);
+            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
             mainPathBlueprintData.LoadIntoMemory();
-            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(context, zone.Bounds);
+            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
             zoneBoundsBlueprintData.LoadIntoMemory();
-            Vector3IntBlueprintData dimensionsData = new Vector3IntBlueprintData(context, Vector3Int.one);
+            Vector3IntBlueprintData dimensionsData = new Vector3IntBlueprintData(_context, Vector3Int.one);
             dimensionsData.LoadIntoMemory();
-            IntBlueprintData cellCountData = new IntBlueprintData(context, zone.DivergentRoomsCellOccupancy);
+            IntBlueprintData cellCountData = new IntBlueprintData(_context, zone.DivergentRoomsCellOccupancy);
             cellCountData.LoadIntoMemory();
-            IntBlueprintData maxPlacementAttemptsData = new IntBlueprintData(context, _maxPlacementAttempts);
+            IntBlueprintData maxPlacementAttemptsData = new IntBlueprintData(_context, _maxPlacementAttempts);
             maxPlacementAttemptsData.LoadIntoMemory();
 
-            DivergentBlueprintsOp divergentRoomsOp = new DivergentBlueprintsOp(context, _bpg, mainPathBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0],
+            DivergentBlueprintsOp divergentRoomsOp = new DivergentBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0],
                 dimensionsData.OutputPorts[0], cellCountData.OutputPorts[0], maxPlacementAttemptsData.OutputPorts[0]);
             operationQueue.Enqueue(divergentRoomsOp);
+        }
+
+        private void ConnectMainPathOperations(Zone zone)
+        {
+            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
+            mainPathBlueprintData.LoadIntoMemory();
+            BoolBlueprintData availibilityBlueprintData = new BoolBlueprintData(_context, true);
+            availibilityBlueprintData.LoadIntoMemory();
+
+            GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], 
+                availibilityBlueprintData.OutputPorts[0]);
+            operationQueue.Enqueue(availibleBlueprintsOp);
+            TriangulateBlueprintsOp triangulationOp = new TriangulateBlueprintsOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
+            operationQueue.Enqueue(triangulationOp);
+            FindMSTOp mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
+            operationQueue.Enqueue(mstOp);
         }
         #endregion
 
@@ -598,7 +592,11 @@ namespace RyansLibrary.Labyrinth
                     DrawBluePrintGizmos(zone);
 
                 if (_debugTriangulationGizmos)
+                {
                     DrawTriangulation();
+                    DrawMSTs();
+                    DrawRandomCycles();
+                }
 
                 if (_debugBoundsGizmos)
                     DrawBoundingBox(zone.Bounds);
@@ -622,17 +620,11 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation()
         {
-            foreach (List<Edge> edgeList in _triangulations)
-            {
-                /*      DEPRICATED (NEED DELAUNYTRIANGULATION OBJECT FOR THIS DATA)
-                // Draw circumcircles in remaining tetrahedron from triangulation
-                foreach (Tetrahedron t in triangulation.Tetrahedra)
-                {
-                    Gizmos.color = _circumcircleColor;
-                    Gizmos.DrawSphere(t.Circumcenter * _gridUnitSize, Mathf.Sqrt(t.CircumradiusSquared) * _gridUnitSize);
-                }
-                */
+            if (_context.Triangulations is null)
+                return;
 
+            foreach (List<Edge> edgeList in _context.Triangulations)
+            {
                 // Draw remaining edges from triangulation
                 foreach (Edge e in edgeList)
                 {
@@ -640,9 +632,18 @@ namespace RyansLibrary.Labyrinth
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
                 }
             }
+        }
 
-            foreach (List<Edge> edgeList in _minimumSpanningTrees)
+        private void DrawMSTs()
+        {
+            if (_context.MinimumSpanningTrees is null)
+                return;
+
+            foreach (List<Edge> edgeList in _context.MinimumSpanningTrees)
             {
+                if (edgeList is null)
+                    continue;
+
                 // Draw the minimum spanning tree of the zone
                 foreach (Edge e in edgeList)
                 {
@@ -650,20 +651,23 @@ namespace RyansLibrary.Labyrinth
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
                 }
             }
+        }
 
-            foreach (List<Edge> edgeList in _randomCycles)
+        private void DrawRandomCycles()
+        {
+            if (_context.RandomCycles is null) 
+                return;
+
+            foreach (List<Edge> edgeList in _context.RandomCycles)
             {
+                if (edgeList is null)
+                    continue;
+
                 foreach (Edge e in edgeList)
                 {
                     Gizmos.color = _randomCyclesColor;
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
                 }
-            }
-
-            if (_currentEdge is not null)
-            {
-                Gizmos.color = _currentEdgeColor;
-                Gizmos.DrawLine(_currentEdge.V.Position * _gridUnitSize, _currentEdge.U.Position * _gridUnitSize);
             }
         }
 
