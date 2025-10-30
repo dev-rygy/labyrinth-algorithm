@@ -483,14 +483,30 @@ namespace RyansLibrary.Labyrinth
             mainPathBlueprintData.LoadIntoMemory();
             BoolBlueprintData availibilityBlueprintData = new BoolBlueprintData(_context, true);
             availibilityBlueprintData.LoadIntoMemory();
+            StringBlueprintData edgeTypeBlueprintData = new StringBlueprintData(_context, "Edge");
+            edgeTypeBlueprintData.LoadIntoMemory();
+            IntBlueprintData elementCountBlueprintData = new IntBlueprintData(_context, zone.RandomCyclesInGraph);
+            elementCountBlueprintData.LoadIntoMemory();
 
             GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], 
                 availibilityBlueprintData.OutputPorts[0]);
             operationQueue.Enqueue(availibleBlueprintsOp);
+
             TriangulateBlueprintsOp triangulationOp = new TriangulateBlueprintsOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
             operationQueue.Enqueue(triangulationOp);
+
             FindMSTOp mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
             operationQueue.Enqueue(mstOp);
+
+            ListDifferenceOp listDiffOp = new ListDifferenceOp(_context, _bpg, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
+            operationQueue.Enqueue(listDiffOp);
+
+            SelectRandomSetFromListOp randomCyclesListOp = new SelectRandomSetFromListOp(_context, _bpg, listDiffOp.OutputPorts[0], 
+                elementCountBlueprintData.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
+            operationQueue.Enqueue(randomCyclesListOp);
+
+            ListUnionOp zoneGraphUnionOp = new ListUnionOp(_context, _bpg, mstOp.OutputPorts[0], randomCyclesListOp.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
+            operationQueue.Enqueue(zoneGraphUnionOp);
         }
         #endregion
 
