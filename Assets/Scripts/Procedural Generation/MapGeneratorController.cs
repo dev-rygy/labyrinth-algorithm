@@ -494,7 +494,6 @@ namespace RyansLibrary.Labyrinth
             IntBlueprintData maxPlacementAttemptsData = new IntBlueprintData(context, _maxPlacementAttempts);
             maxPlacementAttemptsData.LoadIntoMemory();
 
-
             DivergentBlueprintsOp divergentRoomsOp = new DivergentBlueprintsOp(context, _bpg, mainPathBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0],
                 dimensionsData.OutputPorts[0], cellCountData.OutputPorts[0], maxPlacementAttemptsData.OutputPorts[0]);
             operationQueue.Enqueue(divergentRoomsOp);
