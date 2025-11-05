@@ -95,9 +95,6 @@ namespace RyansLibrary.Labyrinth
         private bool _debugTriangulationGizmos = false;
         private bool _debugBoundsGizmos = false;
 
-        private Queue<BlueprintOperation> operationQueue;
-        private Stack<BlueprintOperation> operationHistory;
-
         private MapGenerationContext _context;
         #endregion
 
@@ -177,19 +174,18 @@ namespace RyansLibrary.Labyrinth
 
         private IEnumerator ExecuteOperations()
         {
-            while (operationQueue.Count > 0)
+            while (_context.OperationQueue.Count > 0)
             {
                 yield return new WaitForSeconds(1.5f);
 
-                BlueprintOperation op = operationQueue.Peek();
+                BlueprintOperation op = _context.OperationQueueDequeue();
                 Debug.Log($"Running Operation {op.OperationID}");
+                _context.OperationHistory.Push(op);
                 bool result = op.Execute();
 
                 if (result)
                 {
                     Debug.Log("Execution Successs!");
-                    operationQueue.Dequeue();
-                    operationHistory.Push(op);
                 }
                 else
                     Debug.Log("Execution Failure. Retrying...");
@@ -218,9 +214,6 @@ namespace RyansLibrary.Labyrinth
 
         private void Start()
         {
-            operationQueue = new();
-            operationHistory = new();
-
             _context = new();
             _bpg = new(MasterPath, MasterDictionary);
 
@@ -421,7 +414,7 @@ namespace RyansLibrary.Labyrinth
 
                     FixedUniqueBlueprintsOp placeFixedBlueprintOp = new FixedUniqueBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
-                    operationQueue.Enqueue(placeFixedBlueprintOp);
+                    _context.OperationQueueEnqueue(placeFixedBlueprintOp);
                 }
             }
 
@@ -436,11 +429,11 @@ namespace RyansLibrary.Labyrinth
 
                     IntersectingBoundsOp adjBoundsBlueprintOp = new IntersectingBoundsOp(_context, _bpg,
                         zoneBoundsBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[1]);
-                    operationQueue.Enqueue(adjBoundsBlueprintOp);
+                    _context.OperationQueueEnqueue(adjBoundsBlueprintOp);
 
                     BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], adjBoundsBlueprintOp.OutputPorts[0]);
-                    operationQueue.Enqueue(placeBoundedBlueprintsOp);
+                    _context.OperationQueueEnqueue(placeBoundedBlueprintsOp);
                 }
             }
 
@@ -454,7 +447,7 @@ namespace RyansLibrary.Labyrinth
 
                     BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
-                    operationQueue.Enqueue(placeBoundedBlueprintsOp);
+                    _context.OperationQueueEnqueue(placeBoundedBlueprintsOp);
                 }
             }
         }
@@ -474,7 +467,7 @@ namespace RyansLibrary.Labyrinth
 
             DivergentBlueprintsOp divergentRoomsOp = new DivergentBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0],
                 dimensionsData.OutputPorts[0], cellCountData.OutputPorts[0], maxPlacementAttemptsData.OutputPorts[0]);
-            operationQueue.Enqueue(divergentRoomsOp);
+            _context.OperationQueueEnqueue(divergentRoomsOp);
         }
 
         private void ConnectMainPathOperations(Zone zone)
@@ -490,23 +483,67 @@ namespace RyansLibrary.Labyrinth
 
             GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], 
                 availibilityBlueprintData.OutputPorts[0]);
-            operationQueue.Enqueue(availibleBlueprintsOp);
+            _context.OperationQueueEnqueue(availibleBlueprintsOp);
 
             TriangulateBlueprintsOp triangulationOp = new TriangulateBlueprintsOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
-            operationQueue.Enqueue(triangulationOp);
+            _context.OperationQueueEnqueue(triangulationOp);
 
             FindMSTOp mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
-            operationQueue.Enqueue(mstOp);
+            _context.OperationQueueEnqueue(mstOp);
 
             ListDifferenceOp listDiffOp = new ListDifferenceOp(_context, _bpg, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
-            operationQueue.Enqueue(listDiffOp);
+            _context.OperationQueueEnqueue(listDiffOp);
 
             SelectRandomSetFromListOp randomCyclesListOp = new SelectRandomSetFromListOp(_context, _bpg, listDiffOp.OutputPorts[0], 
                 elementCountBlueprintData.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
-            operationQueue.Enqueue(randomCyclesListOp);
+            _context.OperationQueueEnqueue(randomCyclesListOp);
 
             ListUnionOp zoneGraphUnionOp = new ListUnionOp(_context, _bpg, mstOp.OutputPorts[0], randomCyclesListOp.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
-            operationQueue.Enqueue(zoneGraphUnionOp);
+            _context.OperationQueueEnqueue(zoneGraphUnionOp);
+
+            // Pathfinding
+            IntBlueprintData currentIndexBlueprintData = new IntBlueprintData(_context, 0);
+            currentIndexBlueprintData.LoadIntoMemory();
+            IntBlueprintData totalIterationsBlueprintData = new IntBlueprintData(_context, 3);
+            totalIterationsBlueprintData.LoadIntoMemory();
+            IntBlueprintData intOneBlueprintData = new IntBlueprintData(_context, 1);        // Increment
+            intOneBlueprintData.LoadIntoMemory();
+            
+            StringBlueprintData targetOpIDBlueprintData = new StringBlueprintData(_context, "");
+            targetOpIDBlueprintData.LoadIntoMemory();
+
+            BranchGreaterOrEqualOp bgeOp = new BranchGreaterOrEqualOp(_context, _bpg, targetOpIDBlueprintData.OutputPorts[0], currentIndexBlueprintData.OutputPorts[0],
+                totalIterationsBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(bgeOp);
+
+            StringBlueprintData branchIDBlueprintData = new StringBlueprintData(_context, bgeOp.OperationID);
+            branchIDBlueprintData.LoadIntoMemory();
+
+            StringBlueprintData line1BlueprintData = new StringBlueprintData(_context, "line 1");
+            line1BlueprintData.LoadIntoMemory();
+            ConsolePrintOp printIter1 = new ConsolePrintOp(_context, _bpg, line1BlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(printIter1);
+
+            StringBlueprintData line2BlueprintData = new StringBlueprintData(_context, "line 2");
+            line2BlueprintData.LoadIntoMemory();
+            ConsolePrintOp printIter2 = new ConsolePrintOp(_context, _bpg, line2BlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(printIter2);
+
+            StringBlueprintData line3BlueprintData = new StringBlueprintData(_context, "line 3");
+            line3BlueprintData.LoadIntoMemory();
+            ConsolePrintOp printIter3 = new ConsolePrintOp(_context, _bpg, line3BlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(printIter3);
+
+            AddIntOp incrementOp = new AddIntOp(_context, _bpg, currentIndexBlueprintData.OutputPorts[0], intOneBlueprintData.OutputPorts[0], 
+                currentIndexBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(incrementOp);
+
+            JumpOp jumpOp = new JumpOp(_context, _bpg, branchIDBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(jumpOp);
+
+            NoOp targetIDNoOp = new NoOp(_context, _bpg);                       // Load this operation after loop; jump target for bge
+            targetOpIDBlueprintData.ModifyData(targetIDNoOp.OperationID);
+            _context.OperationQueueEnqueue(targetIDNoOp);
         }
         #endregion
 

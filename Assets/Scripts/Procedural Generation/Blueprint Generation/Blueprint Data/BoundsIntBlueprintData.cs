@@ -10,14 +10,12 @@ namespace RyansLibrary.Labyrinth
 {
     public class BoundsIntBlueprintData : BlueprintData
     {
-        MapGenerationContext _context;
         BoundsInt _bounds;
 
-        public BoundsIntBlueprintData(MapGenerationContext context, BoundsInt bounds) : base()
+        public BoundsIntBlueprintData(MapGenerationContext context, BoundsInt bounds) : base(context)
         {
             string memoryID = context.ConsumeMemoryID().ToString();
             DataID = $"BoundsIntData:{memoryID}";
-            _context = context;
             _bounds = bounds;
 
             // Output Ports

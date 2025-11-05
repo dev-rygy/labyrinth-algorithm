@@ -10,10 +10,9 @@ namespace RyansLibrary.Labyrinth
 {
     public class RoomEntryBlueprintData : BlueprintData
     {
-        MapGenerationContext _context;
         RoomEntry _roomEntry;
 
-        public RoomEntryBlueprintData(MapGenerationContext context, RoomEntry roomEntry) : base()
+        public RoomEntryBlueprintData(MapGenerationContext context, RoomEntry roomEntry) : base(context)
         {
             string memoryID1 = context.ConsumeMemoryID().ToString();
             string memoryID2 = context.ConsumeMemoryID().ToString();

@@ -10,14 +10,12 @@ namespace RyansLibrary.Labyrinth
 {
     public class PathBlueprintData : BlueprintData
     {
-        MapGenerationContext _context;
         Path _path;
 
-        public PathBlueprintData(MapGenerationContext context, Path path) : base()
+        public PathBlueprintData(MapGenerationContext context, Path path) : base(context)
         {
             string memoryID = context.ConsumeMemoryID().ToString();
             DataID = $"PathData:{memoryID}";
-            _context = context;
             _path = path;
 
             // Output Ports

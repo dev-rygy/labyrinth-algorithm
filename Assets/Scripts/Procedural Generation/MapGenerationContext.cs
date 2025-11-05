@@ -5,7 +5,9 @@
  * Notes:           
 */
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using RyansLibrary.Graphs;
+using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -21,6 +23,9 @@ namespace RyansLibrary.Labyrinth
         public List<List<Edge>> MinimumSpanningTrees { get; private set; }
         public List<List<Edge>> RandomCycles { get; private set; }
 
+        public LinkedList<BlueprintOperation> OperationQueue { get; private set; }
+        public Stack<BlueprintOperation> OperationHistory { get; private set; }
+
         public MapGenerationContext()
         {
             _memory = new Dictionary<string, object>();
@@ -29,6 +34,55 @@ namespace RyansLibrary.Labyrinth
             Triangulations = new();
             MinimumSpanningTrees = new();
             RandomCycles = new();
+
+            // Initialize operations
+            OperationQueue = new();
+            OperationHistory = new();
+        }
+
+        public BlueprintOperation OperationQueuePeek()
+        {
+            return OperationQueue.First.Value;
+        }
+
+        public void OperationQueueEnqueue(BlueprintOperation op)
+        {
+            OperationQueue.AddLast(op);
+        }
+
+        public void OperationQueueAddFront(BlueprintOperation op)
+        {
+            OperationQueue.AddFirst(op);
+        }
+
+        public BlueprintOperation OperationQueueDequeue()
+        {
+            BlueprintOperation op = OperationQueue.First.Value;
+            OperationQueue.RemoveFirst();
+
+            return op;
+        }
+
+        public void Jump(string operatorID)
+        {
+            int targetOperationNum = int.Parse(operatorID.Split(':')[1]);
+
+            while (OperationQueuePeek().OperationID != operatorID)
+            {
+                int currOperationNum = int.Parse(OperationQueuePeek().OperationID.Split(':')[1]);
+
+
+                if (targetOperationNum > currOperationNum)       // Skip to operation
+                {
+                    OperationHistory.Push(OperationQueueDequeue());
+                }
+                else                                            // Reverse to operation
+                {
+                    OperationQueueAddFront(OperationHistory.Pop());
+                }
+            }
+
+            Debug.Log($"FirstInQueue = {OperationQueuePeek().OperationID}");
         }
 
         // Get Data

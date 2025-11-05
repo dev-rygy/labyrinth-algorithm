@@ -3,14 +3,12 @@ using UnityEngine;
 
 public class StringBlueprintData : BlueprintData
 {
-    MapGenerationContext _context;
     string stringData;
 
-    public StringBlueprintData(MapGenerationContext context, string stringData) : base()
+    public StringBlueprintData(MapGenerationContext context, string stringData) : base(context)
     {
         string memoryID = context.ConsumeMemoryID().ToString();
         DataID = $"StringData:{memoryID}";
-        _context = context;
         this.stringData = stringData;
 
         // Output Ports

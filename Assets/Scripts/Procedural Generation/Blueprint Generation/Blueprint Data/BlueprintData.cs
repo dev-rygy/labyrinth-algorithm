@@ -15,11 +15,19 @@ namespace RyansLibrary.Labyrinth
 
         public List<string> OutputPorts { get; protected set; }
 
-        public BlueprintData()
+        protected MapGenerationContext _context;
+
+        public BlueprintData(MapGenerationContext context)
         {
             OutputPorts = new List<string>();
+            _context = context;
         }
 
         public abstract void LoadIntoMemory();
+
+        public void ModifyData(object newData)
+        {
+            _context.ModifyMemory(OutputPorts[0], newData);
+        }
     }
 }

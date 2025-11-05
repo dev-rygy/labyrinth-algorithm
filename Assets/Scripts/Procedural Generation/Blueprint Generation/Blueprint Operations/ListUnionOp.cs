@@ -20,6 +20,7 @@ public class ListUnionOp : BlueprintOperation
 
         // Output Ports
         OutputPorts.Add(context.ConsumeMemoryID().ToString());
+        OutputPorts.Add(context.ConsumeMemoryID().ToString());
     }
 
 
@@ -34,12 +35,14 @@ public class ListUnionOp : BlueprintOperation
                 List<Edge> listBEdge = _context.GrabFromMemory(InputPorts[1]) as List<Edge>;
                 List<Edge> resultListEdge = TakeListUnion(listAEdge, listBEdge);
                 _context.AllocateOrModifyMem(OutputPorts[0], resultListEdge);
+                _context.AllocateMemory(OutputPorts[1], resultListEdge.Count);
                 return true;
             case "Blueprint":
                 List<Blueprint> listABlueprint = _context.GrabFromMemory(InputPorts[0]) as List<Blueprint>;
                 List<Blueprint> listBBlueprint = _context.GrabFromMemory(InputPorts[1]) as List<Blueprint>;
                 List<Blueprint> resultListBlueprint = TakeListUnion(listABlueprint, listBBlueprint);
                 _context.AllocateOrModifyMem(OutputPorts[0], resultListBlueprint);
+                _context.AllocateOrModifyMem(OutputPorts[0], resultListBlueprint.Count);
                 return true;
             default:
                 Debug.LogError("Blueprint Operator Error: Invalid Type for Union Operator.");

@@ -3,14 +3,12 @@ using UnityEngine;
 
 public class BoolBlueprintData : BlueprintData
 {
-    MapGenerationContext _context;
     bool boolean;
 
-    public BoolBlueprintData(MapGenerationContext context, bool boolean) : base()
+    public BoolBlueprintData(MapGenerationContext context, bool boolean) : base(context)
     {
         string memoryID = context.ConsumeMemoryID().ToString();
         DataID = $"BoolData:{memoryID}";
-        _context = context;
         this.boolean = boolean;
 
         // Output Ports
@@ -20,6 +18,6 @@ public class BoolBlueprintData : BlueprintData
     public override void LoadIntoMemory()
     {
         _context.AllocateMemory(OutputPorts[0], boolean);
-        Debug.Log($"Int Data Loaded Into Memory with ID {OutputPorts[0]}");
+        Debug.Log($"Bool Data Loaded Into Memory with ID {OutputPorts[0]}");
     }
 }
