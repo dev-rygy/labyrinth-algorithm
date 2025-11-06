@@ -7,8 +7,6 @@ public class AddIntOp : BlueprintOperation
             : base(context, bpg)
     {
         OperationID = $"AddIntOp:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
         InputPorts.Add(intAInput);

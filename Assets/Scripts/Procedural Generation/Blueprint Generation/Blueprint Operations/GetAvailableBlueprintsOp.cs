@@ -9,8 +9,6 @@ public class GetAvailableBlueprintsOp : BlueprintOperation
             : base(context, bpg)
     {
         OperationID = $"GetAvailableBlueprintsOp:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
         InputPorts.Add(pathInput);

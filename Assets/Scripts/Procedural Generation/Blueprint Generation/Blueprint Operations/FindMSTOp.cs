@@ -9,8 +9,6 @@ public class FindMSTOp : BlueprintOperation
             : base(context, bpg)
     {
         OperationID = $"FindMST:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
         InputPorts.Add(edgeListInput);

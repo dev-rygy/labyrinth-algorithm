@@ -176,7 +176,7 @@ namespace RyansLibrary.Labyrinth
         {
             while (_context.OperationQueue.Count > 0)
             {
-                yield return new WaitForSeconds(1.5f);
+                yield return new WaitForSeconds(0.5f);
 
                 BlueprintOperation op = _context.OperationQueueDequeue();
                 Debug.Log($"Running Operation {op.OperationID}");
@@ -184,9 +184,7 @@ namespace RyansLibrary.Labyrinth
                 bool result = op.Execute();
 
                 if (result)
-                {
                     Debug.Log("Execution Successs!");
-                }
                 else
                     Debug.Log("Execution Failure. Retrying...");
                 
@@ -472,17 +470,20 @@ namespace RyansLibrary.Labyrinth
 
         private void ConnectMainPathOperations(Zone zone)
         {
+            // ***** Triangulation
             PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
             mainPathBlueprintData.LoadIntoMemory();
-            BoolBlueprintData availibilityBlueprintData = new BoolBlueprintData(_context, true);
-            availibilityBlueprintData.LoadIntoMemory();
+            BoolBlueprintData availableBlueprintData = new BoolBlueprintData(_context, true);
+            availableBlueprintData.LoadIntoMemory();
+            BoolBlueprintData unavailableBlueprintData = new BoolBlueprintData(_context, false);
+            unavailableBlueprintData.LoadIntoMemory();
             StringBlueprintData edgeTypeBlueprintData = new StringBlueprintData(_context, "Edge");
             edgeTypeBlueprintData.LoadIntoMemory();
             IntBlueprintData elementCountBlueprintData = new IntBlueprintData(_context, zone.RandomCyclesInGraph);
             elementCountBlueprintData.LoadIntoMemory();
 
             GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], 
-                availibilityBlueprintData.OutputPorts[0]);
+                availableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(availibleBlueprintsOp);
 
             TriangulateBlueprintsOp triangulationOp = new TriangulateBlueprintsOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
@@ -501,38 +502,48 @@ namespace RyansLibrary.Labyrinth
             ListUnionOp zoneGraphUnionOp = new ListUnionOp(_context, _bpg, mstOp.OutputPorts[0], randomCyclesListOp.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(zoneGraphUnionOp);
 
-            // Pathfinding
-            IntBlueprintData currentIndexBlueprintData = new IntBlueprintData(_context, 0);
+            // **** Pathfinding
+            IntBlueprintData currentIndexBlueprintData = new IntBlueprintData(_context, 0);     // i = 0
             currentIndexBlueprintData.LoadIntoMemory();
-            IntBlueprintData totalIterationsBlueprintData = new IntBlueprintData(_context, 3);
-            totalIterationsBlueprintData.LoadIntoMemory();
-            IntBlueprintData intOneBlueprintData = new IntBlueprintData(_context, 1);        // Increment
+            IntBlueprintData intOneBlueprintData = new IntBlueprintData(_context, 1);           // Increment amount
             intOneBlueprintData.LoadIntoMemory();
-            
-            StringBlueprintData targetOpIDBlueprintData = new StringBlueprintData(_context, "");
+            StringBlueprintData targetOpIDBlueprintData = new StringBlueprintData(_context, "");    // NOP operation ID; filled in later
             targetOpIDBlueprintData.LoadIntoMemory();
+            PathfindingHeuristicBlueprintData pathfindingHeuristicData = new PathfindingHeuristicBlueprintData(_context, zone.DefaultPathfindingHeuristic);
+            pathfindingHeuristicData.LoadIntoMemory();
+            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
+            zoneBoundsBlueprintData.LoadIntoMemory();
 
+            // Loop
             BranchGreaterOrEqualOp bgeOp = new BranchGreaterOrEqualOp(_context, _bpg, targetOpIDBlueprintData.OutputPorts[0], currentIndexBlueprintData.OutputPorts[0],
-                totalIterationsBlueprintData.OutputPorts[0]);
+                zoneGraphUnionOp.OutputPorts[1]);
             _context.OperationQueueEnqueue(bgeOp);
 
             StringBlueprintData branchIDBlueprintData = new StringBlueprintData(_context, bgeOp.OperationID);
             branchIDBlueprintData.LoadIntoMemory();
 
-            StringBlueprintData line1BlueprintData = new StringBlueprintData(_context, "line 1");
-            line1BlueprintData.LoadIntoMemory();
-            ConsolePrintOp printIter1 = new ConsolePrintOp(_context, _bpg, line1BlueprintData.OutputPorts[0]);
-            _context.OperationQueueEnqueue(printIter1);
+            // Pathfinding logic
+            AccessListElementOp currentEdgeOp = new AccessListElementOp(_context, _bpg, currentIndexBlueprintData.OutputPorts[0], zoneGraphUnionOp.OutputPorts[0],
+                edgeTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(currentEdgeOp);
 
-            StringBlueprintData line2BlueprintData = new StringBlueprintData(_context, "line 2");
-            line2BlueprintData.LoadIntoMemory();
-            ConsolePrintOp printIter2 = new ConsolePrintOp(_context, _bpg, line2BlueprintData.OutputPorts[0]);
-            _context.OperationQueueEnqueue(printIter2);
+            ExtractVerticesFromEdgeOp verticiesFromEdgeOp = new ExtractVerticesFromEdgeOp(_context, _bpg, currentEdgeOp.OutputPorts[0]);
+            _context.OperationQueueEnqueue(verticiesFromEdgeOp);
 
-            StringBlueprintData line3BlueprintData = new StringBlueprintData(_context, "line 3");
-            line3BlueprintData.LoadIntoMemory();
-            ConsolePrintOp printIter3 = new ConsolePrintOp(_context, _bpg, line3BlueprintData.OutputPorts[0]);
-            _context.OperationQueueEnqueue(printIter3);
+            FindBlueprintFromPositionOp blueprintStart = new FindBlueprintFromPositionOp(_context, _bpg, verticiesFromEdgeOp.OutputPorts[2]);
+            _context.OperationQueueEnqueue(blueprintStart);
+
+            FindBlueprintFromPositionOp blueprintEnd = new FindBlueprintFromPositionOp(_context, _bpg, verticiesFromEdgeOp.OutputPorts[3]);
+            _context.OperationQueueEnqueue(blueprintEnd);
+
+            GetAvailableBlueprintsOp findObstructionsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], 
+                unavailableBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(findObstructionsOp);
+
+            PathfindingBlueprintOp pathFindingOp = new PathfindingBlueprintOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], blueprintStart.OutputPorts[0], 
+                blueprintEnd.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0], findObstructionsOp.OutputPorts[0], pathfindingHeuristicData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(pathFindingOp);
+            // End of Pathfinding logic
 
             AddIntOp incrementOp = new AddIntOp(_context, _bpg, currentIndexBlueprintData.OutputPorts[0], intOneBlueprintData.OutputPorts[0], 
                 currentIndexBlueprintData.OutputPorts[0]);
@@ -540,6 +551,7 @@ namespace RyansLibrary.Labyrinth
 
             JumpOp jumpOp = new JumpOp(_context, _bpg, branchIDBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(jumpOp);
+            // End loop
 
             NoOp targetIDNoOp = new NoOp(_context, _bpg);                       // Load this operation after loop; jump target for bge
             targetOpIDBlueprintData.ModifyData(targetIDNoOp.OperationID);

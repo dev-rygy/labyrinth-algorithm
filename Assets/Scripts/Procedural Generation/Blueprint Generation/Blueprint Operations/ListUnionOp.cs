@@ -10,8 +10,6 @@ public class ListUnionOp : BlueprintOperation
             : base(context, bpg)
     {
         OperationID = $"ListUnionOp:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
         InputPorts.Add(listAInput);
