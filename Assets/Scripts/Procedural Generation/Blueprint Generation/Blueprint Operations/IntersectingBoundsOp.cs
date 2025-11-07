@@ -14,25 +14,34 @@ namespace RyansLibrary.Labyrinth
             : base(context, bpg)
         {
             OperationID = $"CreateIntersectingBounds:{context.ConsumeOperationID()}";
-            _bpg = bpg;
-            _context = context;
 
             // Input Ports
             InputPorts.Add(boundsAInput);
             InputPorts.Add(boundsBInput);
 
             // Output Ports
-            OutputPorts.Add(context.ConsumeMemoryID().ToString());
+            string memoryID = context.ConsumeMemoryID().ToString();
+            OutputPorts.Add(memoryID);
+            Debug.Log($"BoundsInt space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
         {
-            BoundsInt boundsA = (BoundsInt)_context.GrabFromMemory(InputPorts[0]);
-            BoundsInt boundsB = (BoundsInt)_context.GrabFromMemory(InputPorts[1]);
+            if (!_context.TryGet(InputPorts[0], out BoundsInt boundsA))
+            {
+                LogInputError(0);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[1], out BoundsInt boundsB))
+            {
+                LogInputError(1);
+                return false;
+            }
 
             BoundsInt intersectingBounds = CreateIntersectingBounds(boundsA, boundsB);
 
-            _context.AllocateOrModifyMem(OutputPorts[0], intersectingBounds);
+            _context.Set(OutputPorts[0], intersectingBounds);
+            
             return true;
         }
 

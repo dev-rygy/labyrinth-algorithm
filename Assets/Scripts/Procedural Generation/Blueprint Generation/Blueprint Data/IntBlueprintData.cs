@@ -24,7 +24,7 @@ namespace RyansLibrary.Labyrinth
 
         public override void LoadIntoMemory()
         {
-            _context.AllocateMemory(OutputPorts[0], integer);
+            _context.Set(OutputPorts[0], integer);
             Debug.Log($"Int Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }

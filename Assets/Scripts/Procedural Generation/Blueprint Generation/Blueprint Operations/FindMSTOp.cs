@@ -14,16 +14,30 @@ public class FindMSTOp : BlueprintOperation
         InputPorts.Add(edgeListInput);
 
         // Output Ports
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());
+        string memoryID = context.ConsumeMemoryID().ToString();
+        OutputPorts.Add(memoryID);
+        Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
     }
 
     public override bool Execute()
     {
-        List<Edge> edgeList = _context.GrabFromMemory(InputPorts[0]) as List<Edge>;
+        if (!_context.TryGet(InputPorts[0], out List<Edge> edgeList))
+        {
+            LogInputError(0);
+            return false;
+        }
+
+        if (edgeList is null)
+        {
+            LogNullError();
+            return false;
+        }
+
         List<Edge> mst = FindMinimumSpanningTree(edgeList);
 
-        _context.AllocateOrModifyMem(OutputPorts[0], mst);
+        _context.Set(OutputPorts[0], mst);
         _context.AddToMSTList(mst);
+
         return true;
     }
 

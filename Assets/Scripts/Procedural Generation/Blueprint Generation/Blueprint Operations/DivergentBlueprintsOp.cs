@@ -15,8 +15,6 @@ namespace RyansLibrary.Labyrinth
             string maxPlacementAttempsInput) : base(context, bpg)
         {
             OperationID = $"PlaceDivergentBlueprints:{context.ConsumeOperationID()}";
-            _bpg = bpg;
-            _context = context;
 
             // Input Ports
             InputPorts.Add(pathInput);
@@ -28,15 +26,35 @@ namespace RyansLibrary.Labyrinth
 
         public override bool Execute()
         {
-            Path path = _context.GrabFromMemory(InputPorts[0]) as Path;
-            BoundsInt bounds = (BoundsInt)_context.GrabFromMemory(InputPorts[1]);
-            Vector3Int dimensions = (Vector3Int)_context.GrabFromMemory(InputPorts[2]);
-            int cellCount = (int)_context.GrabFromMemory(InputPorts[3]);
-            int maxPlacementAttempts = (int)_context.GrabFromMemory(InputPorts[4]);
-
-            if (path == null)
+            if (!_context.TryGet(InputPorts[0], out Path path))
             {
-                Debug.LogError($"The path was null.");
+                LogInputError(0);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[1], out BoundsInt bounds))
+            {
+                LogInputError(1);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[2], out Vector3Int dimensions))
+            {
+                LogInputError(2);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[3], out int cellCount))
+            {
+                LogInputError(3);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[4], out int maxPlacementAttempts))
+            {
+                LogInputError(4);
+                return false;
+            }
+
+            if (path is null)
+            {
+                LogNullError();
                 return false;
             }
 

@@ -3,21 +3,23 @@ using UnityEngine;
 
 public class ConsolePrintOp : BlueprintOperation
 {
-    public ConsolePrintOp(MapGenerationContext context, BlueprintGenerator bpg, string printInput) : base(context, bpg)
+    public ConsolePrintOp(MapGenerationContext context, BlueprintGenerator bpg, string messageInput) : base(context, bpg)
     {
         OperationID = $"PrintOp:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
-        InputPorts.Add(printInput);
+        InputPorts.Add(messageInput);
     }
 
     public override bool Execute()
     {
-        object input = _context.GrabFromMemory(InputPorts[0]);
+        if (!_context.TryGet(InputPorts[0], out string msg))
+        {
+            LogInputError(0);
+            return false;
+        }
 
-        Debug.Log(input);
+        Debug.Log($"Map Generator Print: {msg}");
 
         return true;
     }

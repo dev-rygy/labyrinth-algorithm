@@ -17,7 +17,7 @@ public class StringBlueprintData : BlueprintData
 
     public override void LoadIntoMemory()
     {
-        _context.AllocateMemory(OutputPorts[0], stringData);
+        _context.Set(OutputPorts[0], stringData);
         Debug.Log($"String Data Loaded Into Memory with ID {OutputPorts[0]}");
     }
 }

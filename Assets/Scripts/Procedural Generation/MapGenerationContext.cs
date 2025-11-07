@@ -13,11 +13,8 @@ namespace RyansLibrary.Labyrinth
 {
     public sealed class MapGenerationContext
     {
-        private Dictionary<string, object> _memory;
-
         public int OperationIDCounter { get; private set; } = 10000;
         public int MemoryIDCounter { get; private set; } = 20000;
-        public int OutputIDCounter { get; private set; } = 30000;
 
         public List<List<Edge>> Triangulations { get; private set; }
         public List<List<Edge>> MinimumSpanningTrees { get; private set; }
@@ -25,6 +22,8 @@ namespace RyansLibrary.Labyrinth
 
         public LinkedList<BlueprintOperation> OperationQueue { get; private set; }
         public Stack<BlueprintOperation> OperationHistory { get; private set; }
+
+        private Dictionary<string, object> _memory;
 
         public MapGenerationContext()
         {
@@ -81,46 +80,34 @@ namespace RyansLibrary.Labyrinth
                     OperationQueueAddFront(OperationHistory.Pop());
                 }
             }
-
-            Debug.Log($"FirstInQueue = {OperationQueuePeek().OperationID}");
         }
 
-        // Get Data
-        public object GrabFromMemory(string memoryID)
+        public bool TryGet<T>(string memoryID, out T value)
         {
-            if (_memory.TryGetValue(memoryID, out object value))
-                return value;
-
-            return null;
-        }
-
-        public void AllocateOrModifyMem(string id, object data)
-        {
-            bool mod = ModifyMemory(id, data);
-
-            if (!mod)
+            if (_memory.TryGetValue(memoryID, out object obj) && obj is T castValue)
             {
-                AllocateMemory(id, data);
-            }
-        }
-
-        // Create New Data
-        public void AllocateMemory(string id, object data)
-        {
-            _memory.Add(id, data);
-        }
-
-        // Change Data
-        public bool ModifyMemory(string id, object data)
-        {
-            if (_memory.ContainsKey(id))
-            {
-                _memory[id] = data;
+                value = castValue;
                 return true;
             }
-            else
-                return false;
+
+            value = default; 
+            return false;
         }
+
+        public void Set(string memoryID, object value)
+        {
+            _memory[memoryID] = value;
+        }
+
+        public bool Contains(string memoryID) => _memory.ContainsKey(memoryID);
+
+        public void Remove(string memoryID)
+        {
+            if (_memory.ContainsKey(memoryID))
+                _memory.Remove(memoryID);
+        }
+
+        internal void Clear() => _memory.Clear();
 
         public int ConsumeOperationID()
         {

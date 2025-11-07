@@ -5,6 +5,7 @@
  * Notes:           
 */
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -53,5 +54,15 @@ namespace RyansLibrary.Labyrinth
         public abstract bool Execute();
 
         public abstract bool Undo();
+
+        protected void LogInputError(int inputPortIndex, string type = "")
+        {
+            Debug.LogError($"Map Generator Error: {OperationID} failed to execute due to invalid {type} input with memory ID ({InputPorts[inputPortIndex]}).");
+        }
+
+        protected void LogNullError()
+        {
+            Debug.LogError($"Map Generator Error: {OperationID} failed to execute due to a required value being null.");
+        }
     }
 }

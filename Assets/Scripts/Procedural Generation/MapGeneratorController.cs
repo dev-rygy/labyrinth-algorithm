@@ -13,6 +13,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.HDROutputUtils;
 using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
@@ -179,15 +180,18 @@ namespace RyansLibrary.Labyrinth
             {
                 yield return new WaitForSeconds(0.1f);
 
-                BlueprintOperation op = _context.OperationQueueDequeue();
-                Debug.Log($"Running Operation {op.OperationID}");
-                _context.OperationHistory.Push(op);
-                bool result = op.Execute();
+                BlueprintOperation operation = _context.OperationQueueDequeue();
+                if (operation is null)
+                    throw new ArgumentNullException(nameof(operation));
+
+                if (_debugBlueprintLogs) Debug.Log($"Running Operation {operation.OperationID}");
+                _context.OperationHistory.Push(operation);
+                bool result = operation.Execute();
 
                 if (result)
-                    Debug.Log("Execution Successs!");
+                    if (_debugBlueprintLogs) Debug.Log("Execution Successs!");
                 else
-                    Debug.Log("Execution Failure. Retrying...");
+                    if (_debugBlueprintLogs) Debug.Log("Execution Failure. Retrying...");
                 
             }
 
@@ -198,7 +202,7 @@ namespace RyansLibrary.Labyrinth
                 Debug.LogError("Rooms failed to generate.");
             }
 
-            Debug.Log("End of execution.");
+            if (_debugBlueprintLogs) Debug.Log("End of execution.");
         }
 
         #region Mono
@@ -253,7 +257,6 @@ namespace RyansLibrary.Labyrinth
             {
                 Debug.LogError($"Map Generator Error: Failed to generate labyrinth: {e.Message}");
             }
-
         }
         #endregion
 

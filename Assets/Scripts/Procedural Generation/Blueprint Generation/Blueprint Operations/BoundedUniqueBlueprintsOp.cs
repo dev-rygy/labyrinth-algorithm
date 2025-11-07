@@ -11,12 +11,9 @@ namespace RyansLibrary.Labyrinth
 {
     public class BoundedUniqueBlueprintsOp : BlueprintOperation
     {
-        public BoundedUniqueBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput)
-            : base(context, bpg)
+        public BoundedUniqueBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput) : base(context, bpg)
         {
             OperationID = $"PlaceBoundedUniqueBlueprint:{context.ConsumeOperationID()}";
-            _bpg = bpg;
-            _context = context;
 
             // Input Ports
             InputPorts.Add(pathInput);
@@ -26,13 +23,25 @@ namespace RyansLibrary.Labyrinth
 
         public override bool Execute()
         {
-            Path path = _context.GrabFromMemory(InputPorts[0]) as Path;
-            RoomEntry entry = _context.GrabFromMemory(InputPorts[1]) as RoomEntry;
-            BoundsInt bounds = (BoundsInt)_context.GrabFromMemory(InputPorts[2]);
-
-            if (path == null || entry == null)
+            if (!_context.TryGet(InputPorts[0], out Path path))
             {
-                Debug.LogError($"The path or entry input was null.");
+                LogInputError(0);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[1], out RoomEntry entry))
+            {
+                LogInputError(1);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[2], out BoundsInt bounds))
+            {
+                LogInputError(2);
+                return false;
+            }
+
+            if (path is null || entry is null)
+            {
+                LogNullError();
                 return false;
             }
 

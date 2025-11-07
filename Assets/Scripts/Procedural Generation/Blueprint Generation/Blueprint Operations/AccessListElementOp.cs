@@ -10,33 +10,61 @@ public class AccessListElementOp : BlueprintOperation
         OperationID = $"AccessListElementOp:{context.ConsumeOperationID()}";
 
         // Input Ports
-        InputPorts.Add(indexInput);
-        InputPorts.Add(listInput);
-        InputPorts.Add(listType);
+        InputPorts.Add(indexInput);     // Index of element
+        InputPorts.Add(listInput);      // The list itself
+        InputPorts.Add(listType);       // The list's type
 
         // Output Ports
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());
+        string memoryID = context.ConsumeMemoryID().ToString();
+        OutputPorts.Add(memoryID);      // Element
+        Debug.Log($"Object space allocated for memory with ID {memoryID}");
     }
 
     public override bool Execute()
     {
-        int index = (int)_context.GrabFromMemory(InputPorts[0]);
-        string listType = (string)_context.GrabFromMemory(InputPorts[2]);
+        if (!_context.TryGet(InputPorts[0], out int index))
+        {
+            LogInputError(0);
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[2], out string listType))
+        {
+            LogInputError(2);
+            return false;
+        }
 
         switch (listType)
         {
             case "Edge":
-                List<Edge> edgeList = _context.GrabFromMemory(InputPorts[1]) as List<Edge>;
+                if (!_context.TryGet(InputPorts[1], out List<Edge> edgeList))
+                {
+                    LogInputError(1);
+                    return false;
+                }
+                if (edgeList is null)
+                {
+                    LogNullError();
+                    return false;
+                }
                 Edge edgeElement = edgeList[index];
-                _context.AllocateOrModifyMem(OutputPorts[0], edgeElement);
+                _context.Set(OutputPorts[0], edgeElement);
                 return true;
             case "Blueprint":
-                List<Blueprint> blueprintList = _context.GrabFromMemory(InputPorts[1]) as List<Blueprint>;
+                if (!_context.TryGet(InputPorts[1], out List<Blueprint> blueprintList))
+                {
+                    LogInputError(1);
+                    return false;
+                }
+                if (blueprintList is null)
+                {
+                    LogNullError();
+                    return false;
+                }
                 Blueprint blueprintElement = blueprintList[index];
-                _context.AllocateOrModifyMem(OutputPorts[0], blueprintElement);
+                _context.Set(OutputPorts[0], blueprintElement);
                 return true;
             default:
-                Debug.LogError("Blueprint Operator Error: Invalid Type for Union Operator.");
+                Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
                 return false;
         }
     }

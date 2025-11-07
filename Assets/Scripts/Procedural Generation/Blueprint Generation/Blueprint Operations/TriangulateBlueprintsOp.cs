@@ -10,23 +10,35 @@ public class TriangulateBlueprintsOp : BlueprintOperation
             : base(context, bpg)
     {
         OperationID = $"TriangulateBlueprints:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
         InputPorts.Add(blueprintListInput);
 
         // Output Ports
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());
+        string memoryID = context.ConsumeMemoryID().ToString();
+        OutputPorts.Add(memoryID);
+        Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
     }
 
     public override bool Execute()
     {
-        List<Blueprint> blueprintList = _context.GrabFromMemory(InputPorts[0]) as List<Blueprint>;
+        if (!_context.TryGet(InputPorts[0], out List<Blueprint> blueprintList))
+        {
+            LogInputError(0);
+            return false;
+        }
+
+        if (blueprintList is null)
+        {
+            LogNullError();
+            return false;
+        }
+
         List<Edge> edgeList = GenerateTriangulation(blueprintList);
 
-        _context.AllocateOrModifyMem(OutputPorts[0], edgeList);
+        _context.Set(OutputPorts[0], edgeList);
         _context.AddToTriangulationsList(edgeList);
+
         return true;
     }
 

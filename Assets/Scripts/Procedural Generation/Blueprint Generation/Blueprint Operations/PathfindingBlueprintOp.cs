@@ -18,23 +18,55 @@ public class PathfindingBlueprintOp : BlueprintOperation
         InputPorts.Add(boundsInput);                // Bounds
         InputPorts.Add(obstructionsInput);          // Obstruction Blueprint List
         InputPorts.Add(heuristicInput);             // Pathfinding Heuristic
-
-        // Output Ports
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());      // Blueprint List
     }
 
     public override bool Execute()
     {
-        Path path = _context.GrabFromMemory(InputPorts[0]) as Path;
-        Blueprint startBlueprint = _context.GrabFromMemory(InputPorts[1]) as Blueprint;
-        Blueprint endBlueprint = _context.GrabFromMemory(InputPorts[2]) as Blueprint;
-        BoundsInt bounds = (BoundsInt)_context.GrabFromMemory(InputPorts[3]);
+        if (!_context.TryGet(InputPorts[0], out Path path))
+        {
+            LogInputError(0, "path");
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[1], out Blueprint startBlueprint))
+        {
+            LogInputError(1, "startBlueprint");
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[2], out Blueprint endBlueprint))
+        {
+            LogInputError(2, "endBlueprint");
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[3], out BoundsInt bounds))
+        {
+            LogInputError(3, "boundsInt");
+            return false;
+        }
+
         List<Blueprint> obstructionList = null;
         Heuristic heuristic = Heuristic.Euclidean;
-        if (InputPorts[0] != "")
-            obstructionList = _context.GrabFromMemory(InputPorts[4]) as List<Blueprint>;
-        if (InputPorts[1] != "")
-            heuristic = (Heuristic)_context.GrabFromMemory(InputPorts[5]);
+        if (InputPorts[4] != "")
+        {
+            if (!_context.TryGet(InputPorts[4], out obstructionList))
+            {
+                LogInputError(4, "obstructions");
+                return false;
+            }
+        }
+        if (InputPorts[5] != "")
+        {
+            if (!_context.TryGet(InputPorts[5], out heuristic))
+            {
+                LogInputError(5, "heuristic");
+                return false;
+            }
+        }
+
+        if (path is null || startBlueprint is null || endBlueprint is null)
+        {
+            LogNullError();
+            return false;
+        }
 
         bool result = PathfindBlueprintFromPath(path, bounds, startBlueprint, endBlueprint, obstructionList, heuristic);
 
@@ -102,6 +134,7 @@ public class PathfindingBlueprintOp : BlueprintOperation
 
             previousBlueprint = currentBlueprint;
         }
+
         return true;
     }
 }

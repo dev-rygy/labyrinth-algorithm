@@ -3,32 +3,38 @@ using UnityEngine;
 
 public class BranchGreaterOrEqualOp : BlueprintOperation
 {
-    public BranchGreaterOrEqualOp(MapGenerationContext context, BlueprintGenerator bpg, string operatorIDInput, string intAInput, string intBInput)
-            : base(context, bpg)
+    public BranchGreaterOrEqualOp(MapGenerationContext context, BlueprintGenerator bpg, string targetOpIDInput, string intAInput, string intBInput) : base(context, bpg)
     {
         OperationID = $"BranchGreaterOrEqualOp:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
-        InputPorts.Add(operatorIDInput);
-        InputPorts.Add(intAInput);
-        InputPorts.Add(intBInput);
+        InputPorts.Add(targetOpIDInput);        // Target for jump
+        InputPorts.Add(intAInput);              // int input left
+        InputPorts.Add(intBInput);              // int input right
     }
 
     public override bool Execute()
     {
-        string operatorID = (string)_context.GrabFromMemory(InputPorts[0]);
-        int itemA = (int)_context.GrabFromMemory(InputPorts[1]);
-        int itemB = (int)_context.GrabFromMemory(InputPorts[2]);
-
-        Debug.Log($"Branching if {itemA} >= {itemB}");
+        if (!_context.TryGet(InputPorts[0], out string targetOpID))
+        {
+            LogInputError(0, "string");
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[1], out int itemA))
+        {
+            LogInputError(1, "intA");
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[2], out int itemB))
+        {
+            LogInputError(2, "intB");
+            return false;
+        }
 
         if (itemA >= itemB)
         {
-            Debug.Log("Branching");
             // Branch to specified id
-            _context.Jump(operatorID);
+            _context.Jump(targetOpID);
         }
 
         return true;

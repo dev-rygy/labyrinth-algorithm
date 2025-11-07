@@ -17,7 +17,7 @@ public class BoolBlueprintData : BlueprintData
 
     public override void LoadIntoMemory()
     {
-        _context.AllocateMemory(OutputPorts[0], boolean);
+        _context.Set(OutputPorts[0], boolean);
         Debug.Log($"Bool Data Loaded Into Memory with ID {OutputPorts[0]}");
     }
 }

@@ -1,6 +1,6 @@
+using RyansLibrary.Graphs;
 using RyansLibrary.Labyrinth;
 using RyansLibrary.Utils;
-using RyansLibrary.Graphs;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,8 +9,6 @@ public class SelectRandomSetFromListOp : BlueprintOperation
     public SelectRandomSetFromListOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string elementCountInput, string listType) : base(context, bpg)
     {
         OperationID = $"SelectRandomFromListOp:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
         InputPorts.Add(listInput);
@@ -18,30 +16,58 @@ public class SelectRandomSetFromListOp : BlueprintOperation
         InputPorts.Add(listType);
 
         // Output Ports
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());
+        string memoryID = context.ConsumeMemoryID().ToString();
+        OutputPorts.Add(memoryID);
+        Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
     }
 
 
     public override bool Execute()
     {
-        int elementCount = (int)_context.GrabFromMemory(InputPorts[1]);
-        string listType = (string)_context.GrabFromMemory(InputPorts[2]);
+        if (!_context.TryGet(InputPorts[1], out int elementCount))
+        {
+            LogInputError(1);
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[2], out string listType))
+        {
+            LogInputError(2);
+            return false;
+        }
 
         switch (listType)
         {
             case "Edge":
-                List<Edge> listEdge = _context.GrabFromMemory(InputPorts[0]) as List<Edge>;
-                List<Edge> resultListEdge = SelectRandomSetFromList(listEdge, elementCount);
-                _context.AllocateOrModifyMem(OutputPorts[0], resultListEdge);
+                if (!_context.TryGet(InputPorts[0], out List<Edge> edgeList))
+                {
+                    LogInputError(0);
+                    return false;
+                }
+                if (edgeList is null)
+                {
+                    LogNullError();
+                    return false;
+                }
+                List<Edge> resultListEdge = SelectRandomSetFromList(edgeList, elementCount);
+                _context.Set(OutputPorts[0], resultListEdge);
                 _context.AddToRandomCyclesList(resultListEdge);
                 return true;
             case "Blueprint":
-                List<Blueprint> listBlueprint = _context.GrabFromMemory(InputPorts[0]) as List<Blueprint>;
-                List<Blueprint> resultListBlueprint = SelectRandomSetFromList(listBlueprint, elementCount);
-                _context.AllocateOrModifyMem(OutputPorts[0], resultListBlueprint);
+                if (!_context.TryGet(InputPorts[1], out List<Blueprint> blueprintList))
+                {
+                    LogInputError(0);
+                    return false;
+                }
+                if (blueprintList is null)
+                {
+                    LogNullError();
+                    return false;
+                }
+                List<Blueprint> resultListBlueprint = SelectRandomSetFromList(blueprintList, elementCount);
+                _context.Set(OutputPorts[0], resultListBlueprint);
                 return true;
             default:
-                Debug.LogError("Blueprint Operator Error: Invalid Type for Select Random Set Operator.");
+                Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
                 return false;
         }
     }

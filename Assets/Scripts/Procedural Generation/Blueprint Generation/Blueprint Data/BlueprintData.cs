@@ -27,7 +27,7 @@ namespace RyansLibrary.Labyrinth
 
         public void ModifyData(object newData)
         {
-            _context.ModifyMemory(OutputPorts[0], newData);
+            _context.Set(OutputPorts[0], newData);
         }
     }
 }

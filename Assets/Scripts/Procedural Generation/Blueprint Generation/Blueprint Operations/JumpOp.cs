@@ -3,25 +3,25 @@ using UnityEngine;
 
 public class JumpOp : BlueprintOperation
 {
-    public JumpOp(MapGenerationContext context, BlueprintGenerator bpg, string operatorIDInput)
+    public JumpOp(MapGenerationContext context, BlueprintGenerator bpg, string targetOpIDInput)
             : base(context, bpg)
     {
         OperationID = $"JumpOp:{context.ConsumeOperationID()}";
-        _bpg = bpg;
-        _context = context;
 
         // Input Ports
-        InputPorts.Add(operatorIDInput);
+        InputPorts.Add(targetOpIDInput);
     }
 
     public override bool Execute()
     {
-        string operatorID = (string)_context.GrabFromMemory(InputPorts[0]);
-
-        Debug.Log($"Jumping to operation with ID {operatorID}");
+        if (!_context.TryGet(InputPorts[0], out string targetOpID))
+        {
+            LogInputError(0);
+            return false;
+        }
 
         // Branch to specified id
-        _context.Jump(operatorID);
+        _context.Jump(targetOpID);
 
         return true;
     }

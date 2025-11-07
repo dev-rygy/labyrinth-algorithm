@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class AddIntOp : BlueprintOperation
 {
-    public AddIntOp(MapGenerationContext context, BlueprintGenerator bpg, string intAInput, string intBInput, string dataID = "")
-            : base(context, bpg)
+    public AddIntOp(MapGenerationContext context, BlueprintGenerator bpg, string intAInput, string intBInput, string dataID = "") : base(context, bpg)
     {
         OperationID = $"AddIntOp:{context.ConsumeOperationID()}";
 
@@ -16,17 +15,29 @@ public class AddIntOp : BlueprintOperation
         if (dataID != "")
             OutputPorts.Add(dataID);
         else
-            OutputPorts.Add(context.ConsumeMemoryID().ToString());
+        {
+            string memoryID = context.ConsumeMemoryID().ToString();
+            OutputPorts.Add(memoryID);
+            Debug.Log($"Int space allocated for memory with ID {memoryID}");
+        }
     }
 
     public override bool Execute()
     {
-        int intA = (int)_context.GrabFromMemory(InputPorts[0]);
-        int intB = (int)_context.GrabFromMemory(InputPorts[1]);
+        if (!_context.TryGet(InputPorts[0], out int intA))
+        {
+            LogInputError(0);
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[1], out int intB))
+        {
+            LogInputError(1);
+            return false;
+        }
 
         int sum = intA + intB;
         
-        _context.AllocateOrModifyMem(OutputPorts[0], sum);
+        _context.Set(OutputPorts[0], sum);
 
         return true;
     }

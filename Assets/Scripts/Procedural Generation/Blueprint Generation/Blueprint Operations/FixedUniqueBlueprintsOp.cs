@@ -15,8 +15,6 @@ namespace RyansLibrary.Labyrinth
             : base(context, bpg)
         {
             OperationID = $"PlaceFixedUniqueBlueprint:{context.ConsumeOperationID()}";
-            _bpg = bpg;
-            _context = context;
 
             // Input Ports
             InputPorts.Add(pathInput);
@@ -26,13 +24,25 @@ namespace RyansLibrary.Labyrinth
 
         public override bool Execute()
         {
-            Path path = _context.GrabFromMemory(InputPorts[0]) as Path;
-            RoomEntry entry = _context.GrabFromMemory(InputPorts[1]) as RoomEntry;
-            BoundsInt bounds = (BoundsInt)_context.GrabFromMemory(InputPorts[2]);
+            if (!_context.TryGet(InputPorts[0], out Path path))
+            {
+                LogInputError(0);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[1], out RoomEntry entry))
+            {
+                LogInputError(1);
+                return false;
+            }
+            if (!_context.TryGet(InputPorts[2], out BoundsInt bounds))
+            {
+                LogInputError(2);
+                return false;
+            }
 
             if (path == null || entry == null)
             {
-                Debug.LogError($"The path or entry input was null.");
+                LogNullError();
                 return false;
             }
 

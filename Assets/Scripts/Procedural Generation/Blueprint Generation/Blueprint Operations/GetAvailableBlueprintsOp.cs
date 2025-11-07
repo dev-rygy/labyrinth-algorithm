@@ -20,12 +20,27 @@ public class GetAvailableBlueprintsOp : BlueprintOperation
 
     public override bool Execute()
     {
-        Path path = _context.GrabFromMemory(InputPorts[0]) as Path;
-        bool availbility = (bool)_context.GrabFromMemory(InputPorts[1]);
+        if (!_context.TryGet(InputPorts[0], out Path path))
+        {
+            LogInputError(0);
+            return false;
+        }
+        if (!_context.TryGet(InputPorts[1], out bool availbility))
+        {
+            LogInputError(1);
+            return false;
+        }
+
+        if (path is null)
+        {
+            LogNullError();
+            return false;
+        }
 
         List<Blueprint> availableBlueprintList = GetAvailableBlueprints(path.BlueprintList, availbility);
 
-        _context.AllocateOrModifyMem(OutputPorts[0], availableBlueprintList);
+        _context.Set(OutputPorts[0], availableBlueprintList);
+
         return true;
     }
 
