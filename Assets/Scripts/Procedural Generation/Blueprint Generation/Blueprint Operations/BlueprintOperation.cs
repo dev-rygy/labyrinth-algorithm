@@ -9,27 +9,6 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    /*
-    public interface IBlueprintOperationPort
-    {
-        string ID { get; set; }
-        object Data { get; set; }
-    }
-
-    [Serializable]
-    public struct BlueprintOperationPort<T> : IBlueprintOperationPort
-    {
-        public string ID { get; set; }
-        public T Data { get; set; }
-
-        object IBlueprintOperationPort.Data
-        {
-            get => Data;
-            set => Data = (T)value;
-        }
-    }
-    */
-
     public abstract class BlueprintOperation
     {
         public string OperationID { get; protected set; }
@@ -39,8 +18,6 @@ namespace RyansLibrary.Labyrinth
 
         protected BlueprintGenerator _bpg;
         protected MapGenerationContext _context;
-
-        protected bool _debugLogs;
 
         public BlueprintOperation(MapGenerationContext context, BlueprintGenerator bpg)
         {

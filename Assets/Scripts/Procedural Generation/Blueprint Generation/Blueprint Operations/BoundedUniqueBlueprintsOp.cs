@@ -61,11 +61,8 @@ namespace RyansLibrary.Labyrinth
 
                 if (!result)
                 {
-                    if (_debugLogs)
-                    {
-                        Debug.LogWarning($"Map Generator Warning: Constrained Room {entry.Prefab.name} " +
-                            $"collided with another room and could not be placed. Retrying...");
-                    }
+                    Debug.LogWarning($"Map Generator Warning: Constrained Room {entry.Prefab.name} " +
+                        $"collided with another room and could not be placed. Retrying...");
                     return false;
                 }
 
