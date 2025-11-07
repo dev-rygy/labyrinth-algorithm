@@ -174,9 +174,10 @@ namespace RyansLibrary.Labyrinth
 
         private IEnumerator ExecuteOperations()
         {
+            // Generate Blueprints
             while (_context.OperationQueue.Count > 0)
             {
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.1f);
 
                 BlueprintOperation op = _context.OperationQueueDequeue();
                 Debug.Log($"Running Operation {op.OperationID}");
@@ -188,6 +189,13 @@ namespace RyansLibrary.Labyrinth
                 else
                     Debug.Log("Execution Failure. Retrying...");
                 
+            }
+
+            yield return new WaitForSeconds(0.1f);
+
+            if (!GenerateZoneRooms(_zones[0]))
+            {
+                Debug.LogError("Rooms failed to generate.");
             }
 
             Debug.Log("End of execution.");
@@ -556,6 +564,168 @@ namespace RyansLibrary.Labyrinth
             NoOp targetIDNoOp = new NoOp(_context, _bpg);                       // Load this operation after loop; jump target for bge
             targetOpIDBlueprintData.ModifyData(targetIDNoOp.OperationID);
             _context.OperationQueueEnqueue(targetIDNoOp);
+        }
+        #endregion
+
+        #region RoomGenerationProcedure
+        /// <summary>
+        /// Second procedure of the Labyrinth Algorithm. Will parse through all of the 
+        /// paths and generate rooms based on conditions. These conditions are based on 
+        /// room shape chance, room prefab chance, if the room shape will align adiquately to the path, and what path
+        /// the room is a part of. It will also activate the entranceways of rooms based on the path's sequence.
+        /// </summary>
+        public bool GenerateZoneRooms(Zone zone)
+        {
+            // Must have an zone to generate anything
+            if (zone == null)
+            {
+                Debug.LogError($"Map Generator Error: Zone Entry Missing for room generation procedure.");
+                return false;
+            }
+
+            // Generate Unique Rooms
+            bool result;
+            result = GenerateUniqueRooms(zone);
+            if (!result)
+            {
+                Debug.LogError($"Map Generator Error: Unique Room Generation for zone {zone} failed.");
+                return false;
+            }
+
+            // Turn off blueprint availability for unique rooms; we do not want to parse and spawn new rooms in these spots
+            foreach (RoomEntry entry in zone.UniqueRooms)
+            {
+                _bpg.ToggleAvailableCellsInUniqueRoom(zone.MainPath, entry.AvailableCells, entry.SpawnPosition, false);
+            }
+
+            // Generate Rooms along main path
+            result = _roomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
+            if (!result)
+            {
+                Debug.LogError($"Map Generator Error: Path Room Generation for path {zone.MainPath} in zone {zone} failed.");
+                return false;
+            }
+
+            /*
+            // Generator Rooms along alt. paths
+            foreach (Path path in zone.Paths)
+            {
+                result = _roomGenerator.ParsePathAndGenerateRooms(path);
+                if (!result)
+                {
+                    Debug.LogError($"Map Generator Error: Path Room Generation for path {path} in zone {zone} failed.");
+                    return false;
+                }
+            }
+            */
+            return true;
+        }
+
+        public bool GenerateUniqueRooms(Zone zone)
+        {
+            foreach (RoomEntry entry in zone.UniqueRooms)
+            {
+                // Adjust parameters to fit the zone's actual position
+                Vector3Int zoneOffset = zone.Bounds.position;
+                Vector3Int adjustedSpawnPos = entry.SpawnPosition + zoneOffset;
+
+                if (MasterPath == null || MasterDictionary == null)
+                {
+                    Debug.Log("Map Generator Error: Masters are null.");
+                    return false;
+                }
+
+                Room generatedRoom = _roomGenerator.GenerateRoom(entry.Prefab, adjustedSpawnPos, zone.MainPath);
+
+                // TODO: Make this into a new function in the room generator. Make the function check for all rooms inside
+                // the unique room.
+                // Unique rooms with available cells
+                if (entry.AvailableCells != null)
+                {
+                    for (int i = 0; i < entry.AvailableCells.Count; i++)
+                    {
+                        if (MasterDictionary.TryGetValue(adjustedSpawnPos + entry.AvailableCells[i], out Blueprint blueprint))
+                        {
+                            generatedRoom.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
+                        }
+                        else
+                        {
+                            Debug.LogError($"Map Generator Error: Could not copy entranceway flags into unique room {entry}.");
+                            return false;
+                        }
+                    }
+                }
+
+                generatedRoom.Initialize();
+            }
+
+            return true;
+        }
+
+        public bool GenerateZoneConnectionRooms(ZoneConnectionEntry entry)
+        {
+            // ******* Generate Room A ******
+            // Adjust parameters to fit the zone's actual position
+            Vector3Int zoneAOffset = entry.ZoneA.Bounds.position;
+            Vector3Int adjustedSpawnPosA = entry.RoomA.SpawnPosition + zoneAOffset;
+
+            Room generatedRoomA = _roomGenerator.GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosA, entry.ZoneA.MainPath);
+
+            // Unique rooms with available cells
+            if (entry.RoomA.AvailableCells != null)
+            {
+                for (int i = 0; i < entry.RoomA.AvailableCells.Count; i++)
+                {
+                    if (MasterDictionary.TryGetValue(adjustedSpawnPosA + entry.RoomA.AvailableCells[i], out Blueprint blueprint))
+                    {
+                        generatedRoomA.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
+                    }
+                    else
+                    {
+                        Debug.LogError($"Map Generator Error: Could not copy entranceway flags into unique room");
+                        return false;
+                    }
+                }
+            }
+
+            generatedRoomA.Initialize();
+
+            // ******* Generate Room B ******
+            // Adjust parameters to fit the zone's actual position
+            Vector3Int zoneBOffset = entry.ZoneA.Bounds.position;
+            Vector3Int adjustedSpawnPosB = entry.RoomA.SpawnPosition + zoneBOffset;
+
+            Room generatedRoomB = _roomGenerator.GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosB, entry.ZoneA.MainPath);
+
+            // Unique rooms with available cells
+            if (entry.RoomA.AvailableCells != null)
+            {
+                for (int i = 0; i < entry.RoomA.AvailableCells.Count; i++)
+                {
+                    if (MasterDictionary.TryGetValue(adjustedSpawnPosB + entry.RoomA.AvailableCells[i], out Blueprint blueprint))
+                    {
+                        generatedRoomB.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
+                    }
+                    else
+                    {
+                        Debug.LogError($"Map Generator Error: Could not copy entranceway flags into unique room");
+                        return false;
+                    }
+                }
+            }
+
+            generatedRoomB.Initialize();
+
+            // ******* Spawn Rooms On Connection Path ******
+            bool result;
+            result = _roomGenerator.ParsePathAndGenerateRooms(entry.ConnectionPath);
+            if (!result)
+            {
+                Debug.LogError($"Map Generator Error: Path Room Generation for zone connection path {entry.ConnectionPath}.");
+                return false;
+            }
+
+            return true;
         }
         #endregion
 

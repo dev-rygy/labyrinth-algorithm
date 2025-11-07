@@ -344,6 +344,27 @@ namespace RyansLibrary.Labyrinth
         {
             return _masterDictionaryReference.ContainsKey(position);
         }
+
+        public List<Blueprint> ToggleAvailableCellsInUniqueRoom(Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)
+        {
+            List<Blueprint> availibleBlueprints = new List<Blueprint>();
+
+            // Set cells that are supposed to be available to available
+            foreach (Vector3Int cell in availableCells)
+            {
+                Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
+
+                if (_masterDictionaryReference.TryGetValue(cellPosition, out Blueprint blueprint))
+                {
+                    availibleBlueprints.Add(blueprint);
+                    blueprint.Available = available;
+                }
+                else
+                    availibleBlueprints.Add(GenerateBlueprintRoom(path, cellPosition, available));
+            }
+
+            return availibleBlueprints;
+        }
         #endregion
 
         #region Debug
