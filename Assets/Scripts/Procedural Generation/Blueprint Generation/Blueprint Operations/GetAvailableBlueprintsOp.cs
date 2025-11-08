@@ -20,16 +20,10 @@ public class GetAvailableBlueprintsOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out Path path))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out Path path))
             return false;
-        }
-        if (!_context.TryGet(InputPorts[1], out bool availbility))
-        {
-            LogInputError(1);
+        if (!TryGetInput(1, out bool availbility))
             return false;
-        }
 
         if (path is null)
         {

@@ -27,16 +27,10 @@ namespace RyansLibrary.Labyrinth
 
         public override bool Execute()
         {
-            if (!_context.TryGet(InputPorts[0], out BoundsInt boundsA))
-            {
-                LogInputError(0);
+            if (!TryGetInput(0, out BoundsInt boundsA))
                 return false;
-            }
-            if (!_context.TryGet(InputPorts[1], out BoundsInt boundsB))
-            {
-                LogInputError(1);
+            if (!TryGetInput(1, out BoundsInt boundsB))
                 return false;
-            }
 
             BoundsInt intersectingBounds = CreateIntersectingBounds(boundsA, boundsB);
 

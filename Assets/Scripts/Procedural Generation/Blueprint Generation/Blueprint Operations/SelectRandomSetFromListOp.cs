@@ -1,7 +1,9 @@
 using RyansLibrary.Graphs;
 using RyansLibrary.Labyrinth;
 using RyansLibrary.Utils;
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class SelectRandomSetFromListOp : BlueprintOperation
@@ -24,45 +26,35 @@ public class SelectRandomSetFromListOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[1], out int elementCount))
-        {
-            LogInputError(1);
+        if (!TryGetInput(1, out int elementCount))
             return false;
-        }
-        if (!_context.TryGet(InputPorts[2], out string listType))
-        {
-            LogInputError(2);
+        if (!TryGetInput(2, out string listType))
             return false;
-        }
 
         switch (listType)
         {
             case "Edge":
-                if (!_context.TryGet(InputPorts[0], out List<Edge> edgeList))
-                {
-                    LogInputError(0);
+                if (!TryGetInput(0, out List<Edge> edgeList))
                     return false;
-                }
                 if (edgeList is null)
                 {
                     LogNullError();
                     return false;
                 }
+
                 List<Edge> resultListEdge = SelectRandomSetFromList(edgeList, elementCount);
                 _context.Set(OutputPorts[0], resultListEdge);
                 _context.AddToRandomCyclesList(resultListEdge);
                 return true;
             case "Blueprint":
-                if (!_context.TryGet(InputPorts[1], out List<Blueprint> blueprintList))
-                {
-                    LogInputError(0);
+                if (!TryGetInput(1, out List<Blueprint> blueprintList))
                     return false;
-                }
                 if (blueprintList is null)
                 {
                     LogNullError();
                     return false;
                 }
+
                 List<Blueprint> resultListBlueprint = SelectRandomSetFromList(blueprintList, elementCount);
                 _context.Set(OutputPorts[0], resultListBlueprint);
                 return true;

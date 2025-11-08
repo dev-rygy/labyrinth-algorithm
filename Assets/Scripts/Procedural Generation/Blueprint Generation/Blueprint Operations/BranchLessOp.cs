@@ -15,21 +15,12 @@ public class BranchLessOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out string targetOpID))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out string targetOpID))
             return false;
-        }
-        if (!_context.TryGet(InputPorts[1], out int itemA))
-        {
-            LogInputError(1);
+        if (!TryGetInput(1, out int itemA))
             return false;
-        }
-        if (!_context.TryGet(InputPorts[2], out int itemB))
-        {
-            LogInputError(2);
+        if (!TryGetInput(2, out int itemB))
             return false;
-        }
 
         if (itemA < itemB)
         {

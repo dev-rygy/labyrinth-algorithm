@@ -13,11 +13,8 @@ public class ConsolePrintOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out string msg))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out string msg))
             return false;
-        }
 
         Debug.Log($"Map Generator Print: {msg}");
 

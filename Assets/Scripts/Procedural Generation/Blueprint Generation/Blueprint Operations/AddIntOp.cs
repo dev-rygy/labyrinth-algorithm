@@ -24,16 +24,11 @@ public class AddIntOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out int intA))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out int intA))
             return false;
-        }
-        if (!_context.TryGet(InputPorts[1], out int intB))
-        {
-            LogInputError(1);
+
+        if (!TryGetInput(1, out int intB))
             return false;
-        }
 
         int sum = intA + intB;
         

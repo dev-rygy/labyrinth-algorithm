@@ -22,49 +22,39 @@ public class AccessListElementOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out int index))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out int index))
             return false;
-        }
-        if (!_context.TryGet(InputPorts[2], out string listType))
-        {
-            LogInputError(2);
+        if (!TryGetInput(2, out string listType))
             return false;
-        }
 
         switch (listType)
         {
             case "Edge":
-                if (!_context.TryGet(InputPorts[1], out List<Edge> edgeList))
-                {
-                    LogInputError(1);
+                if (!TryGetInput(1, out List<Edge> edgeList))
                     return false;
-                }
                 if (edgeList is null)
                 {
                     LogNullError();
                     return false;
                 }
+
                 Edge edgeElement = edgeList[index];
                 _context.Set(OutputPorts[0], edgeElement);
                 return true;
             case "Blueprint":
-                if (!_context.TryGet(InputPorts[1], out List<Blueprint> blueprintList))
-                {
-                    LogInputError(1);
+                if (!TryGetInput(1, out List<Blueprint> blueprintList))
                     return false;
-                }
                 if (blueprintList is null)
                 {
                     LogNullError();
                     return false;
                 }
+
                 Blueprint blueprintElement = blueprintList[index];
                 _context.Set(OutputPorts[0], blueprintElement);
                 return true;
             default:
-                Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
+                Debug.LogError($"Map Generator Error: Invalid input type 'T' for {OperationID}.");
                 return false;
         }
     }

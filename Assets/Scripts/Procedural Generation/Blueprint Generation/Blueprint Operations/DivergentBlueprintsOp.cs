@@ -26,31 +26,16 @@ namespace RyansLibrary.Labyrinth
 
         public override bool Execute()
         {
-            if (!_context.TryGet(InputPorts[0], out Path path))
-            {
-                LogInputError(0);
+            if (!TryGetInput(0, out Path path))
                 return false;
-            }
-            if (!_context.TryGet(InputPorts[1], out BoundsInt bounds))
-            {
-                LogInputError(1);
+            if (!TryGetInput(1, out BoundsInt bounds))
                 return false;
-            }
-            if (!_context.TryGet(InputPorts[2], out Vector3Int dimensions))
-            {
-                LogInputError(2);
+            if (!TryGetInput(2, out Vector3Int dimensions))
                 return false;
-            }
-            if (!_context.TryGet(InputPorts[3], out int cellCount))
-            {
-                LogInputError(3);
+            if (!TryGetInput(3, out int cellCount))
                 return false;
-            }
-            if (!_context.TryGet(InputPorts[4], out int maxPlacementAttempts))
-            {
-                LogInputError(4);
+            if (!TryGetInput(4, out int maxPlacementAttempts))
                 return false;
-            }
 
             if (path is null)
             {

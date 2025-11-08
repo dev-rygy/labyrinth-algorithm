@@ -31,11 +31,8 @@ public class ExtractVerticesFromEdgeOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out Edge edge))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out Edge edge))
             return false;
-        }
 
         if (edge is null)
         {

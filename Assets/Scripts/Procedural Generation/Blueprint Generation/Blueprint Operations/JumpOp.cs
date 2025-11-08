@@ -14,11 +14,8 @@ public class JumpOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out string targetOpID))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out string targetOpID))
             return false;
-        }
 
         // Branch to specified id
         _context.Jump(targetOpID);

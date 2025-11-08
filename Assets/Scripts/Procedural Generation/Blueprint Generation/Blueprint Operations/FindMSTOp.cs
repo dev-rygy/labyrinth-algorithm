@@ -21,11 +21,8 @@ public class FindMSTOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out List<Edge> edgeList))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out List<Edge> edgeList))
             return false;
-        }
 
         if (edgeList is null)
         {

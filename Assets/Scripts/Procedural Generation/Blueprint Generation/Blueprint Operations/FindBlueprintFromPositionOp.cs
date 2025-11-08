@@ -25,18 +25,13 @@ public class FindBlueprintFromPositionOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out Vector3Int position))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out Vector3Int position))
             return false;
-        }
 
         bool result = _bpg.GetMasterDictionary().TryGetValue(position, out Blueprint blueprint);
 
         if (!result)
-        {
             Debug.LogWarning($"Map Generator Warning: {OperationID} Blueprint could not be found from position.");
-        }
 
         _context.Set(OutputPorts[0], blueprint);
         _context.Set(OutputPorts[1], result);

@@ -22,11 +22,8 @@ public class TriangulateBlueprintsOp : BlueprintOperation
 
     public override bool Execute()
     {
-        if (!_context.TryGet(InputPorts[0], out List<Blueprint> blueprintList))
-        {
-            LogInputError(0);
+        if (!TryGetInput(0, out List<Blueprint> blueprintList))
             return false;
-        }
 
         if (blueprintList is null)
         {
