@@ -25,7 +25,7 @@ public class BranchGreaterOrEqualOp : BlueprintOperation
         if (itemA >= itemB)
         {
             // Branch to specified id
-            _context.Jump(targetOpID);
+            return _context.Jump(targetOpID);
         }
 
         return true;

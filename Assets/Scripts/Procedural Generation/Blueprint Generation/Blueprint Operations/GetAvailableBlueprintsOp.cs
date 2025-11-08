@@ -1,4 +1,5 @@
 using RyansLibrary.Labyrinth;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +16,9 @@ public class GetAvailableBlueprintsOp : BlueprintOperation
         InputPorts.Add(availableToggleInput);
 
         // Output Ports
-        OutputPorts.Add(context.ConsumeMemoryID().ToString());
+        string memoryID = context.ConsumeMemoryID().ToString();
+        OutputPorts.Add(memoryID);
+        if(_debugLogs) Debug.Log($"BoundsInt space allocated for memory with ID {memoryID}");
     }
 
     public override bool Execute()

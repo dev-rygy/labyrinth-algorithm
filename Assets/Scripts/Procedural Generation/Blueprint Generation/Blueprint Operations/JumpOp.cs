@@ -18,9 +18,7 @@ public class JumpOp : BlueprintOperation
             return false;
 
         // Branch to specified id
-        _context.Jump(targetOpID);
-
-        return true;
+        return _context.Jump(targetOpID);
     }
 
     public override bool Undo()

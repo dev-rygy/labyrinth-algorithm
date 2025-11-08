@@ -18,7 +18,7 @@ public class AddIntOp : BlueprintOperation
         {
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);
-            Debug.Log($"Int space allocated for memory with ID {memoryID}");
+            if (_debugLogs) Debug.Log($"Int space allocated for memory with ID {memoryID}");
         }
     }
 

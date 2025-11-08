@@ -17,7 +17,7 @@ public class AccessListElementOp : BlueprintOperation
         // Output Ports
         string memoryID = context.ConsumeMemoryID().ToString();
         OutputPorts.Add(memoryID);      // Element
-        Debug.Log($"Object space allocated for memory with ID {memoryID}");
+        if (_debugLogs) Debug.Log($"Object space allocated for memory with ID {memoryID}");
     }
 
     public override bool Execute()

@@ -13,6 +13,13 @@ namespace RyansLibrary.Labyrinth
 {
     public abstract class BlueprintOperation
     {
+        protected static bool _debugLogs { get; private set; }
+
+        public static void ToggleDebugLogs(bool toggle)
+        {
+            _debugLogs = toggle;
+        }
+
         public string OperationID { get; protected set; }
 
         public List<string> InputPorts { get; protected set; }

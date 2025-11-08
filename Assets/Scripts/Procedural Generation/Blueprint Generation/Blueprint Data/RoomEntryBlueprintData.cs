@@ -28,8 +28,8 @@ namespace RyansLibrary.Labyrinth
         {
             _context.Set(OutputPorts[0], _roomEntry);
             _context.Set(OutputPorts[1], _roomEntry.Bounds);
-            Debug.Log($"RoomEntry Data Loaded Into Memory with ID {OutputPorts[0]}");
-            Debug.Log($"Bounds Data Loaded Into Memory with ID {OutputPorts[1]}");
+            if (_debugLogs) Debug.Log($"RoomEntry Data Loaded Into Memory with ID {OutputPorts[0]}");
+            if (_debugLogs) Debug.Log($"Bounds Data Loaded Into Memory with ID {OutputPorts[1]}");
         }
     }
 }

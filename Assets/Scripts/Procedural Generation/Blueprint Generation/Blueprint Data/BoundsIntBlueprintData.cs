@@ -25,7 +25,7 @@ namespace RyansLibrary.Labyrinth
         public override void LoadIntoMemory()
         {
             _context.Set(OutputPorts[0], _bounds);
-            Debug.Log($"BoundsInt Data Loaded Into Memory with ID {OutputPorts[0]}");
+            if (_debugLogs) Debug.Log($"BoundsInt Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }
 }

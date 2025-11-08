@@ -23,10 +23,10 @@ public class ExtractVerticesFromEdgeOp : BlueprintOperation
         OutputPorts.Add(memoryID3);  // Vertex U Position
         OutputPorts.Add(memoryID4);  // Vertex V Position
 
-        Debug.Log($"Vertex space allocated for memory with ID {memoryID1}");
-        Debug.Log($"Vertex space allocated for memory with ID {memoryID2}");
-        Debug.Log($"Vector3Int space allocated for memory with ID {memoryID3}");
-        Debug.Log($"Vector3Int space allocated for memory with ID {memoryID4}");
+        if (_debugLogs) Debug.Log($"Vertex space allocated for memory with ID {memoryID1}");
+        if (_debugLogs) Debug.Log($"Vertex space allocated for memory with ID {memoryID2}");
+        if (_debugLogs) Debug.Log($"Vector3Int space allocated for memory with ID {memoryID3}");
+        if (_debugLogs) Debug.Log($"Vector3Int space allocated for memory with ID {memoryID4}");
     }
 
     public override bool Execute()

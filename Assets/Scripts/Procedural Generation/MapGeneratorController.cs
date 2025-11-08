@@ -73,8 +73,8 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _currentEdgeColor;
 
         // ***** Private Variables *****
-        // private int _seed;      // TODO: For networking make the host generate this
 
+        private Coroutine mapGeneratorCoroutine;
         private BlueprintGenerator _bpg;
         private RoomGenerator _roomGenerator;
 
@@ -94,112 +94,6 @@ namespace RyansLibrary.Labyrinth
 
         private MapGenerationContext _context;
         #endregion
-
-        private void LoadOperations()
-        {
-            // Do not Generate a labyrinth if one is already generating
-            if (IsGenerating)
-                return;
-
-            IsGenerating = true;
-
-            // Event to signal when map generation has begun
-            OnGenerationStarted?.Invoke();
-
-            // Initialize Data Structures and Seed
-            InitializeLabyrinth();
-
-            // ******* Generate Blueprints *******
-            // Generate Zone Connection Paths
-            /*
-            foreach (ZoneConnectionEntry entry in _zoneConnections)
-            {
-                // TODO: Option 1: Handle this after both zone A's and B's blueprints have been generated.
-                // This is only needed here because of triangulation but can be handled with
-                // an extra step of finding the shortest path to a room
-                // TODO: Option 2: Connect blueprint with a unique room entry assiciated with the zone so
-                // that the room can still be a part of triangulation and the pathfinding occurs after 
-                // the zone's generation
-                if (!GenerateZoneConnectionBlueprints(entry))
-                {
-                    GenerationFailed();
-                    return;     // Blueprint failed for zone connection; stop algorithm
-                }
-            }
-            */
-            // Generate Blueprint Map For Each Zone
-            //foreach (Zone zone in _zones)
-            //{
-            LoadZoneBlueprints(_zones[0]);
-            //}
-
-            /*
-            // ******* Parse and Generate Rooms *******
-            // TODO: Possibly do this dynamically as players move around the map
-            // Generate Zone Connection Rooms
-            foreach (ZoneConnectionEntry entry in _zoneConnections)
-            {
-                // Generate actual rooms for the zone connection
-                if (!GenerateZoneConnectionRooms(entry))
-                {
-                    GenerationFailed();
-                    return;     // Room Generation failed for zone connection; stop algorithm
-                }
-            }
-            */
-
-            /*
-            // Spawn rooms based on the blueprint map for each zone
-            foreach (Zone zone in _zones)
-            {
-                // Check room conditions and generate rooms using the blueprint map of the zone
-                if (!GenerateZoneRooms(zone))
-                {
-                    GenerationFailed();
-                    return;     // Room Generation failed for zone; stop algorithm
-                }
-
-                // TODO: Implement perlin noise height Map
-            }
-            */
-            IsGenerating = false;
-
-            // Labyrinth Generation Success
-            // Event to signal when map generation is complete
-            OnGenerationDone?.Invoke();
-        }
-
-        private IEnumerator ExecuteOperations()
-        {
-            // Generate Blueprints
-            while (_context.OperationQueue.Count > 0)
-            {
-                yield return new WaitForSeconds(0.1f);
-
-                BlueprintOperation operation = _context.OperationQueueDequeue();
-                if (operation is null)
-                    throw new ArgumentNullException(nameof(operation));
-
-                if (_debugBlueprintLogs) Debug.Log($"Running Operation {operation.OperationID}");
-                _context.OperationHistory.Push(operation);
-                bool result = operation.Execute();
-
-                if (result)
-                    if (_debugBlueprintLogs) Debug.Log("Execution Successs!");
-                else
-                    if (_debugBlueprintLogs) Debug.Log("Execution Failure. Retrying...");
-                
-            }
-
-            yield return new WaitForSeconds(0.1f);
-
-            if (!GenerateZoneRooms(_zones[0]))
-            {
-                Debug.LogError("Rooms failed to generate.");
-            }
-
-            if (_debugBlueprintLogs) Debug.Log("End of execution.");
-        }
 
         #region Mono
         private void Awake()
@@ -245,9 +139,7 @@ namespace RyansLibrary.Labyrinth
 
             try
             {
-                // Generate Labyrinth Blueprint and Rooms
-                LoadOperations();
-                StartCoroutine(ExecuteOperations());
+                mapGeneratorCoroutine = StartCoroutine(GenerateLabyrinth());
             }
             catch (Exception e)
             {
@@ -301,6 +193,129 @@ namespace RyansLibrary.Labyrinth
             zone.MainPath.Initialize();     // Must be done before zone connection blueprints
         }
         #endregion
+
+        private IEnumerator GenerateLabyrinth()
+        {
+            // Do not Generate a labyrinth if one is already generating
+            if (IsGenerating)
+                yield break;
+
+            IsGenerating = true;
+
+            // Event to signal when map generation has begun
+            OnGenerationStarted?.Invoke();
+
+            // Initialize Data Structures and Seed
+            InitializeLabyrinth();
+
+            LoadOperations();
+            yield return StartCoroutine(ExecuteOperations());
+            GenerateRooms();
+
+            IsGenerating = false;
+
+            // Labyrinth Generation Success
+            // Event to signal when map generation is complete
+            OnGenerationDone?.Invoke();
+        }
+
+        private void LoadOperations()
+        {
+            // ******* Generate Blueprints *******
+            // Generate Zone Connection Paths
+            /*
+            foreach (ZoneConnectionEntry entry in _zoneConnections)
+            {
+                // TODO: Option 1: Handle this after both zone A's and B's blueprints have been generated.
+                // This is only needed here because of triangulation but can be handled with
+                // an extra step of finding the shortest path to a room
+                // TODO: Option 2: Connect blueprint with a unique room entry assiciated with the zone so
+                // that the room can still be a part of triangulation and the pathfinding occurs after 
+                // the zone's generation
+                if (!GenerateZoneConnectionBlueprints(entry))
+                {
+                    GenerationFailed();
+                    return;     // Blueprint failed for zone connection; stop algorithm
+                }
+            }
+            */
+            // Generate Blueprint Map For Each Zone
+            //foreach (Zone zone in _zones)
+            //{
+            LoadZoneBlueprints(_zones[0]);
+            //}
+
+            /*
+            // ******* Parse and Generate Rooms *******
+            // TODO: Possibly do this dynamically as players move around the map
+            // Generate Zone Connection Rooms
+            foreach (ZoneConnectionEntry entry in _zoneConnections)
+            {
+                // Generate actual rooms for the zone connection
+                if (!GenerateZoneConnectionRooms(entry))
+                {
+                    GenerationFailed();
+                    return;     // Room Generation failed for zone connection; stop algorithm
+                }
+            }
+            */
+
+            /*
+            // Spawn rooms based on the blueprint map for each zone
+            foreach (Zone zone in _zones)
+            {
+                // Check room conditions and generate rooms using the blueprint map of the zone
+                if (!GenerateZoneRooms(zone))
+                {
+                    GenerationFailed();
+                    return;     // Room Generation failed for zone; stop algorithm
+                }
+
+                // TODO: Implement perlin noise height Map
+            }
+            */
+        }
+
+        private IEnumerator ExecuteOperations()
+        {
+            // Generate Blueprints
+            while (_context.OperationQueue.Count > 0)
+            {
+                yield return new WaitForSeconds(0f);
+
+                BlueprintOperation operation = _context.OperationQueueDequeue();
+                if (operation is null)
+                    throw new ArgumentNullException(nameof(operation));
+
+                if (_debugBlueprintLogs) Debug.Log($"Running Operation {operation.OperationID}");
+                _context.OperationHistory.Push(operation);
+                bool result = operation.Execute();
+
+                if (result)
+                {
+                    if (_debugBlueprintLogs) 
+                        Debug.Log("Execution Successs!");
+                }
+                else
+                {
+                    if (_debugBlueprintLogs) 
+                        Debug.Log("Execution Failure. Retrying...");
+                }
+
+            }
+
+            if (_debugBlueprintLogs) Debug.Log("End of operation execution.");
+        }
+
+        private void GenerateRooms()
+        {
+            if (!GenerateZoneRooms(_zones[0]))
+            {
+                Debug.LogError("Rooms failed to generate.");
+            }
+
+            if (_debugBlueprintLogs) Debug.Log("End of execution.");
+        }
 
         // Only to be used in the inspector
         public void ResetLabyrinth()

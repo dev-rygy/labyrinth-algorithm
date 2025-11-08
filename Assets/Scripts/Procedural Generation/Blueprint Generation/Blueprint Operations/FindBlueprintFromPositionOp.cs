@@ -19,8 +19,8 @@ public class FindBlueprintFromPositionOp : BlueprintOperation
         OutputPorts.Add(memoryID1);      // Blueprint
         OutputPorts.Add(memoryID2);      // bool found
 
-        Debug.Log($"Blueprint space allocated for memory with ID {memoryID1}");
-        Debug.Log($"Bool space allocated for memory with ID {memoryID2}");
+        if (_debugLogs) Debug.Log($"Blueprint space allocated for memory with ID {memoryID1}");
+        if (_debugLogs) Debug.Log($"Bool space allocated for memory with ID {memoryID2}");
     }
 
     public override bool Execute()
@@ -31,7 +31,10 @@ public class FindBlueprintFromPositionOp : BlueprintOperation
         bool result = _bpg.GetMasterDictionary().TryGetValue(position, out Blueprint blueprint);
 
         if (!result)
+        {
             Debug.LogWarning($"Map Generator Warning: {OperationID} Blueprint could not be found from position.");
+            return false;
+        }
 
         _context.Set(OutputPorts[0], blueprint);
         _context.Set(OutputPorts[1], result);

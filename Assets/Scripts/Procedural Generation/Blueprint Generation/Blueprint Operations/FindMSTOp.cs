@@ -16,7 +16,7 @@ public class FindMSTOp : BlueprintOperation
         // Output Ports
         string memoryID = context.ConsumeMemoryID().ToString();
         OutputPorts.Add(memoryID);
-        Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
+        if (_debugLogs) Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
     }
 
     public override bool Execute()

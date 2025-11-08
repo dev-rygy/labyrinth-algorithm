@@ -22,8 +22,8 @@ public class ListUnionOp : BlueprintOperation
         string memoryID2 = context.ConsumeMemoryID().ToString();
         OutputPorts.Add(memoryID1);      // List
         OutputPorts.Add(memoryID2);      // List count
-        Debug.Log($"List<T> space allocated for memory with ID {memoryID1}");
-        Debug.Log($"Int space allocated for memory with ID {memoryID2}");
+        if (_debugLogs) Debug.Log($"List<T> space allocated for memory with ID {memoryID1}");
+        if (_debugLogs) Debug.Log($"Int space allocated for memory with ID {memoryID2}");
     }
 
 

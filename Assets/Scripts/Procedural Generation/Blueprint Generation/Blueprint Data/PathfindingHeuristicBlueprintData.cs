@@ -20,6 +20,6 @@ public class PathfindingHeuristicBlueprintData : BlueprintData
     public override void LoadIntoMemory()
     {
         _context.Set(OutputPorts[0], heuristic);
-        Debug.Log($"Heuristic Data Loaded Into Memory with ID {OutputPorts[0]}");
+        if (_debugLogs) Debug.Log($"Heuristic Data Loaded Into Memory with ID {OutputPorts[0]}");
     }
 }

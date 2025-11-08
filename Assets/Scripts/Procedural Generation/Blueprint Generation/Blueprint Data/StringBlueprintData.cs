@@ -18,6 +18,6 @@ public class StringBlueprintData : BlueprintData
     public override void LoadIntoMemory()
     {
         _context.Set(OutputPorts[0], stringData);
-        Debug.Log($"String Data Loaded Into Memory with ID {OutputPorts[0]}");
+        if (_debugLogs) Debug.Log($"String Data Loaded Into Memory with ID {OutputPorts[0]}");
     }
 }
