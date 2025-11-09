@@ -1,28 +1,35 @@
-using RyansLibrary.Labyrinth;
-using UnityEngine;
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    10/27/2025
+ * Last Modified:   10/28/2025 (Ryan)
+ * Notes:           
+*/
 
-public class JumpOp : BlueprintOperation
+namespace RyansLibrary.Labyrinth
 {
-    public JumpOp(MapGenerationContext context, BlueprintGenerator bpg, string targetOpIDInput)
-            : base(context, bpg)
+    public class JumpOp : BlueprintOperation
     {
-        OperationID = $"JumpOp:{context.ConsumeOperationID()}";
+        public JumpOp(MapGenerationContext context, BlueprintGenerator bpg, string targetOpIDInput)
+                : base(context, bpg)
+        {
+            OperationID = $"JumpOp:{context.ConsumeOperationID()}";
 
-        // Input Ports
-        InputPorts.Add(targetOpIDInput);
-    }
+            // Input Ports
+            InputPorts.Add(targetOpIDInput);
+        }
 
-    public override bool Execute()
-    {
-        if (!TryGetInput(0, out string targetOpID))
+        public override bool Execute()
+        {
+            if (!TryGetInput(0, out string targetOpID))
+                return false;
+
+            // Branch to specified id
+            return _context.Jump(targetOpID);
+        }
+
+        public override bool Undo()
+        {
             return false;
-
-        // Branch to specified id
-        return _context.Jump(targetOpID);
-    }
-
-    public override bool Undo()
-    {
-        return false;
+        }
     }
 }

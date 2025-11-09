@@ -1,44 +1,52 @@
-using RyansLibrary.Labyrinth;
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    10/26/2025
+ * Last Modified:   11/08/2025 (Ryan)
+ * Notes:           
+*/
 using UnityEngine;
 
-public class AddIntOp : BlueprintOperation
+namespace RyansLibrary.Labyrinth
 {
-    public AddIntOp(MapGenerationContext context, BlueprintGenerator bpg, string intAInput, string intBInput, string dataID = "") : base(context, bpg)
+    public class AddIntOp : BlueprintOperation
     {
-        OperationID = $"AddIntOp:{context.ConsumeOperationID()}";
-
-        // Input Ports
-        InputPorts.Add(intAInput);
-        InputPorts.Add(intBInput);
-        InputPorts.Add(dataID);
-
-        if (dataID != "")
-            OutputPorts.Add(dataID);
-        else
+        public AddIntOp(MapGenerationContext context, BlueprintGenerator bpg, string intAInput, string intBInput, string dataID = "") : base(context, bpg)
         {
-            string memoryID = context.ConsumeMemoryID().ToString();
-            OutputPorts.Add(memoryID);
-            if (_debugLogs) Debug.Log($"Int space allocated for memory with ID {memoryID}");
+            OperationID = $"AddIntOp:{context.ConsumeOperationID()}";
+
+            // Input Ports
+            InputPorts.Add(intAInput);
+            InputPorts.Add(intBInput);
+            InputPorts.Add(dataID);
+
+            if (dataID != "")
+                OutputPorts.Add(dataID);
+            else
+            {
+                string memoryID = context.ConsumeMemoryID().ToString();
+                OutputPorts.Add(memoryID);
+                if (_debugLogs) Debug.Log($"Int space allocated for memory with ID {memoryID}");
+            }
         }
-    }
 
-    public override bool Execute()
-    {
-        if (!TryGetInput(0, out int intA))
+        public override bool Execute()
+        {
+            if (!TryGetInput(0, out int intA))
+                return false;
+
+            if (!TryGetInput(1, out int intB))
+                return false;
+
+            int sum = intA + intB;
+
+            _context.Set(OutputPorts[0], sum);
+
+            return true;
+        }
+
+        public override bool Undo()
+        {
             return false;
-
-        if (!TryGetInput(1, out int intB))
-            return false;
-
-        int sum = intA + intB;
-        
-        _context.Set(OutputPorts[0], sum);
-
-        return true;
-    }
-
-    public override bool Undo()
-    {
-        return false;
+        }
     }
 }

@@ -1,23 +1,31 @@
-using RyansLibrary.Labyrinth;
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    10/27/2025
+ * Last Modified:   10/28/2025 (Ryan)
+ * Notes:           
+*/
 using UnityEngine;
 
-public class StringBlueprintData : BlueprintData
+namespace RyansLibrary.Labyrinth
 {
-    string stringData;
-
-    public StringBlueprintData(MapGenerationContext context, string stringData) : base(context)
+    public class StringBlueprintData : BlueprintData
     {
-        string memoryID = context.ConsumeMemoryID().ToString();
-        DataID = $"StringData:{memoryID}";
-        this.stringData = stringData;
+        string stringData;
 
-        // Output Ports
-        OutputPorts.Add(memoryID);
-    }
+        public StringBlueprintData(MapGenerationContext context, string stringData) : base(context)
+        {
+            string memoryID = context.ConsumeMemoryID().ToString();
+            DataID = $"StringData:{memoryID}";
+            this.stringData = stringData;
 
-    public override void LoadIntoMemory()
-    {
-        _context.Set(OutputPorts[0], stringData);
-        if (_debugLogs) Debug.Log($"String Data Loaded Into Memory with ID {OutputPorts[0]}");
+            // Output Ports
+            OutputPorts.Add(memoryID);
+        }
+
+        public override void LoadIntoMemory()
+        {
+            _context.Set(OutputPorts[0], stringData);
+            if (_debugLogs) Debug.Log($"String Data Loaded Into Memory with ID {OutputPorts[0]}");
+        }
     }
 }

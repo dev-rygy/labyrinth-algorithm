@@ -1,23 +1,31 @@
-using RyansLibrary.Labyrinth;
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    10/27/2025
+ * Last Modified:   10/28/2025 (Ryan)
+ * Notes:           
+*/
 using UnityEngine;
 
-public class BoolBlueprintData : BlueprintData
+namespace RyansLibrary.Labyrinth
 {
-    bool boolean;
-
-    public BoolBlueprintData(MapGenerationContext context, bool boolean) : base(context)
+    public class BoolBlueprintData : BlueprintData
     {
-        string memoryID = context.ConsumeMemoryID().ToString();
-        DataID = $"BoolData:{memoryID}";
-        this.boolean = boolean;
+        bool boolean;
 
-        // Output Ports
-        OutputPorts.Add(memoryID);      // RoomEntry
-    }
+        public BoolBlueprintData(MapGenerationContext context, bool boolean) : base(context)
+        {
+            string memoryID = context.ConsumeMemoryID().ToString();
+            DataID = $"BoolData:{memoryID}";
+            this.boolean = boolean;
 
-    public override void LoadIntoMemory()
-    {
-        _context.Set(OutputPorts[0], boolean);
-        if (_debugLogs) Debug.Log($"Bool Data Loaded Into Memory with ID {OutputPorts[0]}");
+            // Output Ports
+            OutputPorts.Add(memoryID);      // RoomEntry
+        }
+
+        public override void LoadIntoMemory()
+        {
+            _context.Set(OutputPorts[0], boolean);
+            if (_debugLogs) Debug.Log($"Bool Data Loaded Into Memory with ID {OutputPorts[0]}");
+        }
     }
 }

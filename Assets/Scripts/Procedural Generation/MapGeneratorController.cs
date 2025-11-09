@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   11/08/2025 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Graphs;
@@ -231,10 +231,10 @@ namespace RyansLibrary.Labyrinth
             }
             */
             // Generate Blueprint Map For Each Zone
-            //foreach (Zone zone in _zones)
-            //{
-            LoadZoneBlueprints(_zones[0]);
-            //}
+            foreach (Zone zone in _zones)
+            {
+                LoadZoneBlueprints(zone);
+            }
 
             /*
             // ******* Parse and Generate Rooms *******
@@ -315,15 +315,17 @@ namespace RyansLibrary.Labyrinth
 
         private void GenerateRooms()
         {
-            if (!GenerateZoneRooms(_zones[0]))
+            foreach (Zone zone in _zones)
             {
-                Debug.LogError("Rooms failed to generate.");
+                if (!GenerateZoneRooms(zone))
+                {
+                    Debug.LogError("Rooms failed to generate.");
+                }
             }
 
             if (_debugBlueprintLogs) Debug.Log("End of execution.");
         }
 
-        // Only to be used in the inspector
         public void ResetLabyrinth()
         {
             if (!Application.isPlaying)     // Only run code when game is executing
@@ -546,7 +548,7 @@ namespace RyansLibrary.Labyrinth
             intOneBlueprintData.LoadIntoMemory();
             StringBlueprintData targetOpIDBlueprintData = new StringBlueprintData(_context, "");    // NOP operation ID; filled in later
             targetOpIDBlueprintData.LoadIntoMemory();
-            PathfindingHeuristicBlueprintData pathfindingHeuristicData = new PathfindingHeuristicBlueprintData(_context, zone.DefaultPathfindingHeuristic);
+            HeuristicBlueprintData pathfindingHeuristicData = new HeuristicBlueprintData(_context, zone.DefaultPathfindingHeuristic);
             pathfindingHeuristicData.LoadIntoMemory();
             BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
             zoneBoundsBlueprintData.LoadIntoMemory();

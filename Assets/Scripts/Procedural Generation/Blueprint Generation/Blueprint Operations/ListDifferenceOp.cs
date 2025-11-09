@@ -1,77 +1,84 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    10/27/2025
+ * Last Modified:   10/28/2025 (Ryan)
+ * Notes:           
+*/
 using RyansLibrary.Graphs;
-using RyansLibrary.Labyrinth;
 using RyansLibrary.Utils;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ListDifferenceOp : BlueprintOperation
+namespace RyansLibrary.Labyrinth
 {
-    public ListDifferenceOp(MapGenerationContext context, BlueprintGenerator bpg, string listAInput, string listBInput, string listType)
-            : base(context, bpg)
+    public class ListDifferenceOp : BlueprintOperation
     {
-        OperationID = $"ListDifferenceOp:{context.ConsumeOperationID()}";
-
-        // Input Ports
-        InputPorts.Add(listAInput);
-        InputPorts.Add(listBInput);
-        InputPorts.Add(listType);
-
-        // Output Ports
-        string memoryID = context.ConsumeMemoryID().ToString();
-        OutputPorts.Add(memoryID);
-        if (_debugLogs) Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
-    }
-
-
-    public override bool Execute()
-    {
-        if (!TryGetInput(2, out string listType))
-            return false;
-
-        switch (listType)
+        public ListDifferenceOp(MapGenerationContext context, BlueprintGenerator bpg, string listAInput, string listBInput, string listType)
+                : base(context, bpg)
         {
-            case "Edge":
-                if (!TryGetInput(0, out List<Edge> edgeListA))
-                    return false;
-                if (!TryGetInput(1, out List<Edge> edgeListB))
-                    return false;
-                if (edgeListA is null || edgeListB is null)
-                {
-                    LogNullError();
-                    return false;
-                }
+            OperationID = $"ListDifferenceOp:{context.ConsumeOperationID()}";
 
-                List<Edge> resultEdgeList = TakeListDifference(edgeListA, edgeListB);
-                _context.Set(OutputPorts[0], resultEdgeList);
-                return true;
-            case "Blueprint":
-                if (!TryGetInput(0, out List<Blueprint> blueprintListA))
-                    return false;
-                if (!TryGetInput(1, out List<Blueprint> blueprintListB))
-                    return false;
-                if (blueprintListA is null || blueprintListB is null)
-                {
-                    LogNullError();
-                    return false;
-                }
+            // Input Ports
+            InputPorts.Add(listAInput);
+            InputPorts.Add(listBInput);
+            InputPorts.Add(listType);
 
-                List<Blueprint> resultBlueprintList = TakeListDifference(blueprintListA, blueprintListB);
-                _context.Set(OutputPorts[0], resultBlueprintList);
-                return true;
-            default:
-                Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
-                return false;
+            // Output Ports
+            string memoryID = context.ConsumeMemoryID().ToString();
+            OutputPorts.Add(memoryID);
+            if (_debugLogs) Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
         }
-    }
 
-    public override bool Undo()
-    {
-        return false;
-    }
 
-    private List<T> TakeListDifference<T>(List<T> listA, List<T> listB)
-    {
-        return ListUtils.Difference(listA, listB);
+        public override bool Execute()
+        {
+            if (!TryGetInput(2, out string listType))
+                return false;
+
+            switch (listType)
+            {
+                case "Edge":
+                    if (!TryGetInput(0, out List<Edge> edgeListA))
+                        return false;
+                    if (!TryGetInput(1, out List<Edge> edgeListB))
+                        return false;
+                    if (edgeListA is null || edgeListB is null)
+                    {
+                        LogNullError();
+                        return false;
+                    }
+
+                    List<Edge> resultEdgeList = TakeListDifference(edgeListA, edgeListB);
+                    _context.Set(OutputPorts[0], resultEdgeList);
+                    return true;
+                case "Blueprint":
+                    if (!TryGetInput(0, out List<Blueprint> blueprintListA))
+                        return false;
+                    if (!TryGetInput(1, out List<Blueprint> blueprintListB))
+                        return false;
+                    if (blueprintListA is null || blueprintListB is null)
+                    {
+                        LogNullError();
+                        return false;
+                    }
+
+                    List<Blueprint> resultBlueprintList = TakeListDifference(blueprintListA, blueprintListB);
+                    _context.Set(OutputPorts[0], resultBlueprintList);
+                    return true;
+                default:
+                    Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
+                    return false;
+            }
+        }
+
+        public override bool Undo()
+        {
+            return false;
+        }
+
+        private List<T> TakeListDifference<T>(List<T> listA, List<T> listB)
+        {
+            return ListUtils.Difference(listA, listB);
+        }
     }
 }
