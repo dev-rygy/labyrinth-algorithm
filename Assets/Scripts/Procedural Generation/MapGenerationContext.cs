@@ -133,7 +133,22 @@ namespace RyansLibrary.Labyrinth
                 _memory.Remove(memoryID);
         }
 
-        internal void Clear() => _memory.Clear();
+        internal void ClearMemory() => _memory.Clear();
+
+        public void ClearAll()
+        {
+            // Holds arguements and return values from operations
+            _memory.Clear();
+
+            // Initialize Debugging Lists
+            Triangulations.Clear();
+            MinimumSpanningTrees.Clear();
+            RandomCycles.Clear();
+
+            // Initialize operations
+            OperationQueue.Clear();
+            OperationHistory.Clear();
+        }
 
         public int ConsumeOperationID()
         {

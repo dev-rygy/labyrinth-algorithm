@@ -36,7 +36,13 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            return PlaceBoundedUniqueRoomBlueprints(path, entry, bounds);
+            bool result = false;
+            while (!result)
+            {
+                result = PlaceBoundedUniqueRoomBlueprints(path, entry, bounds);
+            }
+
+            return true;
         }
 
         public override bool Undo()

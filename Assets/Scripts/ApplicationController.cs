@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    09/19/2025
- * Last Modified:   09/19/2025 (Ryan)
+ * Last Modified:   11/08/2025 (Ryan)
  * Notes:           Controls the execution order of application
 */
 using System.Collections;
@@ -48,10 +48,13 @@ public class ApplicationController : MonoBehaviour
 
     public IEnumerator LoadNewGame()
     {
+        // Load Scene
         yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(MAIN_SCENE_NAME));
 
-        OldMapGeneratorController.Instance.StartGeneration();
+        // Start Map Generation
+        yield return MapGeneratorController.Instance.StartGeneration();
 
+        // Spawn player
         Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
     }
 

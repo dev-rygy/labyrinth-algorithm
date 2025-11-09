@@ -75,6 +75,8 @@ namespace RyansLibrary.Labyrinth
         // ***** Private Variables *****
 
         private Coroutine mapGeneratorCoroutine;
+        private bool _advanceRequested;
+
         private BlueprintGenerator _bpg;
         private RoomGenerator _roomGenerator;
 
@@ -91,6 +93,9 @@ namespace RyansLibrary.Labyrinth
         private bool _debugBlueprintGizmos = false;
         private bool _debugTriangulationGizmos = false;
         private bool _debugBoundsGizmos = false;
+
+        // Stepwise procedure
+        private bool _debugSequential;
 
         private MapGenerationContext _context;
         #endregion
@@ -116,35 +121,23 @@ namespace RyansLibrary.Labyrinth
         {
             _context = new();
             _bpg = new(MasterPath, MasterDictionary);
-
-            StartGeneration();
         }
 
-
-        public void StartGeneration()
+        public IEnumerator StartGeneration()
         {
             // Return if the Map Generator is not enabled
             if (!_enabled)
-                return;
+                yield break;
 
-            // TODO: Enable debug in editor script when stepwise is being worked on
-            // If debug is active; step through procedures
             if (_debug)
             {
                 Debug.Log("Map Generator: Debug On");
-                return;
             }
             else
                 Debug.Log("Map Generator: Debug Off");
 
-            try
-            {
-                mapGeneratorCoroutine = StartCoroutine(GenerateLabyrinth());
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Map Generator Error: Failed to generate labyrinth: {e.Message}");
-            }
+            mapGeneratorCoroutine = StartCoroutine(GenerateLabyrinth());
+            yield return mapGeneratorCoroutine;
         }
         #endregion
 
@@ -207,15 +200,13 @@ namespace RyansLibrary.Labyrinth
 
             // Initialize Data Structures and Seed
             InitializeLabyrinth();
-
             LoadOperations();
             yield return StartCoroutine(ExecuteOperations());
             GenerateRooms();
 
-            IsGenerating = false;
-
             // Labyrinth Generation Success
             // Event to signal when map generation is complete
+            IsGenerating = false;
             OnGenerationDone?.Invoke();
         }
 
@@ -276,32 +267,47 @@ namespace RyansLibrary.Labyrinth
             */
         }
 
+        public void Advance()
+        {
+            _advanceRequested = true;
+        }
+
         private IEnumerator ExecuteOperations()
         {
             // Generate Blueprints
             while (_context.OperationQueue.Count > 0)
             {
-                yield return new WaitForSeconds(0f);
+                if (_debugSequential)
+                {
+                    yield return new WaitUntil(() => _advanceRequested);
+                    _advanceRequested = false;
+                }
 
+                // Dequeue the current opration
                 BlueprintOperation operation = _context.OperationQueueDequeue();
                 if (operation is null)
                     throw new ArgumentNullException(nameof(operation));
 
-                if (_debugBlueprintLogs) Debug.Log($"Running Operation {operation.OperationID}");
+                // Push the operation into history
                 _context.OperationHistory.Push(operation);
-                bool result = operation.Execute();
 
+                // Execute Operation
+                bool result = operation.Execute();
+                if (_debugBlueprintLogs) Debug.Log($"Running Operation {operation.OperationID}");
                 if (result)
                 {
-                    if (_debugBlueprintLogs) 
+                    if (_debugBlueprintLogs)
                         Debug.Log("Execution Successs!");
                 }
                 else
                 {
-                    if (_debugBlueprintLogs) 
+                    if (_debugBlueprintLogs)
                         Debug.Log("Execution Failure. Retrying...");
                 }
 
+                // Operation failed to execute; stop running generation
+                if (!result)
+                    GenerationFailed();
             }
 
             if (_debugBlueprintLogs) Debug.Log("End of operation execution.");
@@ -323,6 +329,10 @@ namespace RyansLibrary.Labyrinth
             if (!Application.isPlaying)     // Only run code when game is executing
                 return;
 
+            mapGeneratorCoroutine = null;
+            _advanceRequested = false;
+            _context.ClearAll();
+
             DestroyAllRooms();      // Destroy all rooms from last generation
             ScenesManager.Instance.ReloadScene();       // Reload to reset data
             StartGeneration();
@@ -334,6 +344,11 @@ namespace RyansLibrary.Labyrinth
         private void GenerationFailed()
         {
             IsGenerating = false;
+
+            StopCoroutine(mapGeneratorCoroutine);
+            _context.ClearAll();
+            mapGeneratorCoroutine = null;
+            _advanceRequested = false;
 
             Debug.LogWarning("Map Generator Warning: Map generation failed");
             OnGenerationFailed?.Invoke();
