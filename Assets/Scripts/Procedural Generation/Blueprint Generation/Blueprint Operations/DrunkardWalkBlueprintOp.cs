@@ -47,20 +47,46 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
     /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
     public bool BlueprintDrunkardWalk(Path path, Path branchedPath, BoundsInt bounds, int startIndex, int endIndex)
     {
-        if (!path.IsInitialized)
+        if (!path.IsInitialized || !branchedPath.IsInitialized)
         {
-            Debug.LogWarning($"Map Generator Error: Path {path.Name} must be initialized for Drunkard Walk.");
+            Debug.LogError($"Map Generator Error: Path {path.Name} or branched path {branchedPath.Name} must be initialized for Drunkard Walk.");
             return false;
         }
 
         // Make sure the path has atleast one room cell that can spawn
-        if (path.PathLength <= 0)
+        if (path.DesiredPathLength <= 0)
         {
-            Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
+            Debug.LogError($"Map Generator Error: Path {path.Name} has a desired length of 0 or is negative.");
             return false;
         }
 
+        if (endIndex >= branchedPath.BlueprintCount() || startIndex < 0)
+        {
+            Debug.LogError($"Map Generator Error: Ending index ({endIndex}) was greater than the path's length ({branchedPath.BlueprintCount()}) " +
+                $"OR starting index ({startIndex}) was less than 0.");
+            return false;
+        }
+
+        if (startIndex > endIndex)
+        {
+            Debug.LogError($"Map Generator Error: Starting index ({startIndex}) was greater than ending index ({endIndex}).");
+            return false;
+        }
+
+        // Start index is the same as end index; therefore, only one index to check.
+        if (startIndex == endIndex)
+        {
+            // Choose new start room and clear rooms from last iteration if failed
+            Blueprint startBlueprint = branchedPath.BlueprintList[startIndex];
+            path.ClearBlueprintRooms();
+
+            return BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint);
+        }
+
         int randomStartingIndex = Random.Range(startIndex, endIndex);   // Choose a random room respecting the constraints
+
+        // For safety the random start must be one index above the start or higher.
+        randomStartingIndex = (randomStartingIndex == startIndex) ? startIndex + 1 : randomStartingIndex;
 
         // Attempt to place path in range
         bool pathPlaced = false;
@@ -86,7 +112,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
 
     private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, Blueprint previousBlueprint)
     {
-        if (path.BlueprintCount() >= path.PathLength)
+        if (path.BlueprintCount() >= path.DesiredPathLength)
             return true;
 
         // Attempt to place a new room

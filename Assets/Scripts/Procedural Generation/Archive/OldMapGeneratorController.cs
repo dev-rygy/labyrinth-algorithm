@@ -909,11 +909,11 @@ namespace RyansLibrary.Labyrinth
             totalCellOccupancy += zone.DivergentRoomsCellOccupancy;
 
             // Add Main Path volume
-            totalCellOccupancy += zone.MainPath.PathLength;
+            totalCellOccupancy += zone.MainPath.DesiredPathLength;
 
             // Add Alt. Paths volume
             foreach (Path path in zone.Paths)
-                totalCellOccupancy += path.PathLength;
+                totalCellOccupancy += path.DesiredPathLength;
 
             // Calculate the bounded volume and check if amount of room cells taken up exceeds that amount
             float xSize = zone.Bounds.size.x;

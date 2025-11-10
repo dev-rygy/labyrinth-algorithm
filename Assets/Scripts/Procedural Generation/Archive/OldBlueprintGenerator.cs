@@ -334,7 +334,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Make sure the path has atleast one room cell that can spawn
-            if (path.PathLength <= 0)
+            if (path.DesiredPathLength <= 0)
             {
                 Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
                 return false;
@@ -366,7 +366,7 @@ namespace RyansLibrary.Labyrinth
 
         private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, Blueprint previousBlueprint)
         {
-            if (path.BlueprintCount() >= path.PathLength)
+            if (path.BlueprintCount() >= path.DesiredPathLength)
                 return true;
 
             // Attempt to place a new room

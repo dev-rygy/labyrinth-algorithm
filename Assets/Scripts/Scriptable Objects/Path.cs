@@ -30,7 +30,7 @@ namespace RyansLibrary.Labyrinth
         // Editor Fields
         [field: SerializeField] public string Name { get; set; }
         [field: SerializeField] public PathType Type { get; private set; }
-        [field: SerializeField] public int PathLength { get; private set; }
+        [field: SerializeField] public int DesiredPathLength { get; private set; }
         [field: SerializeField] public List<PathEntry> startingRooms { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms1x1x1 { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms2x1x1 { get; private set; }
