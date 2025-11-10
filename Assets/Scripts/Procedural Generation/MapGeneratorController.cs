@@ -169,7 +169,9 @@ namespace RyansLibrary.Labyrinth
 
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
+            {
                 InitializeZone(zone);
+            }
         }
 
         public void InitializeMasters()     // NOTE: This must be done before generating anything!
@@ -250,21 +252,6 @@ namespace RyansLibrary.Labyrinth
                 }
             }
             */
-
-            /*
-            // Spawn rooms based on the blueprint map for each zone
-            foreach (Zone zone in _zones)
-            {
-                // Check room conditions and generate rooms using the blueprint map of the zone
-                if (!GenerateZoneRooms(zone))
-                {
-                    GenerationFailed();
-                    return;     // Room Generation failed for zone; stop algorithm
-                }
-
-                // TODO: Implement perlin noise height Map
-            }
-            */
         }
 
         public void Advance()
@@ -292,8 +279,8 @@ namespace RyansLibrary.Labyrinth
                 _context.OperationHistory.Push(operation);
 
                 // Execute Operation
-                bool result = operation.Execute();
                 if (_debugBlueprintLogs) Debug.Log($"Running Operation {operation.OperationID}");
+                bool result = operation.Execute();
                 if (result)
                 {
                     if (_debugBlueprintLogs)
@@ -302,7 +289,7 @@ namespace RyansLibrary.Labyrinth
                 else
                 {
                     if (_debugBlueprintLogs)
-                        Debug.Log("Execution Failure. Retrying...");
+                        Debug.Log("Execution Failure.");
                 }
 
                 // Operation failed to execute; stop running generation
@@ -317,10 +304,7 @@ namespace RyansLibrary.Labyrinth
         {
             foreach (Zone zone in _zones)
             {
-                if (!GenerateZoneRooms(zone))
-                {
-                    Debug.LogError("Rooms failed to generate.");
-                }
+                if (!GenerateZoneRooms(zone)) Debug.LogError("Rooms failed to generate.");
             }
 
             if (_debugBlueprintLogs) Debug.Log("End of execution.");
@@ -392,14 +376,9 @@ namespace RyansLibrary.Labyrinth
             // Generate Main Path to boss
             LoadMainPathOperations(zone);
 
-            /*
+
             // Generate Alternative paths (prize, trial, etc.)
-            if (!LoadAltPathOperations(zone))
-            {
-                Debug.LogWarning($"Map Generator Warning: Alt. Path Generation for {zone.Name} zone failed.");
-                return false;
-            }
-            */
+            LoadAltPathOperations(zone);
         }
 
         /// <summary>
@@ -424,7 +403,7 @@ namespace RyansLibrary.Labyrinth
             LoadDivergentRoomOperations(zone);
 
             // Generate Delauney Triangulation
-            ConnectMainPathOperations(zone);
+            LoadMainPathConnectionsOperations(zone);
 
             if (_debugLogs) Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
         }
@@ -507,7 +486,7 @@ namespace RyansLibrary.Labyrinth
             _context.OperationQueueEnqueue(divergentRoomsOp);
         }
 
-        private void ConnectMainPathOperations(Zone zone)
+        private void LoadMainPathConnectionsOperations(Zone zone)
         {
             // ***** Triangulation
             PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
@@ -596,6 +575,43 @@ namespace RyansLibrary.Labyrinth
             targetOpIDBlueprintData.ModifyData(targetIDNoOp.OperationID);
             _context.OperationQueueEnqueue(targetIDNoOp);
         }
+
+        private void LoadAltPathOperations(Zone zone)
+        {
+            PathBlueprintData branchedPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
+            branchedPathBlueprintData.LoadIntoMemory();
+            BoundsIntBlueprintData boundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
+            boundsBlueprintData.LoadIntoMemory();
+            IntBlueprintData startIndexBlueprintData = new IntBlueprintData(_context, 1);
+            startIndexBlueprintData.LoadIntoMemory();
+            IntBlueprintData negativeOneBlueprintData = new IntBlueprintData(_context, -1);
+            negativeOneBlueprintData.LoadIntoMemory();
+
+            foreach (Path path in zone.Paths)
+            {
+                if (path is null)
+                {
+                    Debug.LogError($"Map Generator Error: A path {path.Name} for zone {zone.name} is not assigned.");
+                    return;
+                }
+
+                // Initialize path
+                path.Initialize();
+
+                PathBlueprintData pathBlueprintData = new PathBlueprintData(_context, path);
+                pathBlueprintData.LoadIntoMemory();
+
+                GetPathLengthOp branchedpathLengthOp = new GetPathLengthOp(_context, _bpg, branchedPathBlueprintData.OutputPorts[0]);
+                _context.OperationQueueEnqueue(branchedpathLengthOp);
+
+                AddIntOp lengthMinusOneOp = new AddIntOp(_context, _bpg, branchedpathLengthOp.OutputPorts[0], negativeOneBlueprintData.OutputPorts[0]);
+                _context.OperationQueueEnqueue(lengthMinusOneOp);
+
+                DrunkardWalkBlueprintOp drunkardWalkOperation = new DrunkardWalkBlueprintOp(_context, _bpg, pathBlueprintData.OutputPorts[0], branchedPathBlueprintData.OutputPorts[0],
+                    boundsBlueprintData.OutputPorts[0], startIndexBlueprintData.OutputPorts[0], lengthMinusOneOp.OutputPorts[0]);
+                _context.OperationQueueEnqueue(drunkardWalkOperation);
+            }
+        }
         #endregion
 
         #region RoomGenerationProcedure
@@ -637,8 +653,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            /*
-            // Generator Rooms along alt. paths
+            // Generate Rooms along alt. paths
             foreach (Path path in zone.Paths)
             {
                 result = _roomGenerator.ParsePathAndGenerateRooms(path);
@@ -648,7 +663,6 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
             }
-            */
             return true;
         }
 

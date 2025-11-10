@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   11/09/2025 (Ryan)
  * Notes:           
 */
 using UnityEngine;
@@ -14,17 +14,22 @@ namespace RyansLibrary.Labyrinth
 
         public PathBlueprintData(MapGenerationContext context, Path path) : base(context)
         {
-            string memoryID = context.ConsumeMemoryID().ToString();
-            DataID = $"PathData:{memoryID}";
+            string pathMemoryID = context.ConsumeMemoryID().ToString();
+            DataID = $"PathData:{pathMemoryID}";
             _path = path;
 
+            string lengthMemoryID = context.ConsumeMemoryID().ToString();
+            DataID = $"PathData:{lengthMemoryID}";
+
             // Output Ports
-            OutputPorts.Add(memoryID);
+            OutputPorts.Add(pathMemoryID);
+            OutputPorts.Add(lengthMemoryID);
         }
 
         public override void LoadIntoMemory()
         {
             _context.Set(OutputPorts[0], _path);
+            _context.Set(OutputPorts[1], _path.BlueprintCount());
             if (_debugLogs) Debug.Log($"Path Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }

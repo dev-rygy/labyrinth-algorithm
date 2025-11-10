@@ -137,6 +137,11 @@ namespace RyansLibrary.Labyrinth
             DontDestroyOnLoad(gameObject);  // Have this gameObject persist
         }
 
+        private void Start()
+        {
+            StartGeneration();
+        }
+
         public void StartGeneration()
         {
             // Return if the Map Generator is not enabled

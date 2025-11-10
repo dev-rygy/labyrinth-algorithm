@@ -4,6 +4,7 @@
  * Last Modified:   10/28/2025 (Ryan)
  * Notes:           
 */
+using RyansLibrary.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,6 +14,9 @@ namespace RyansLibrary.Labyrinth
 {
     public class BlueprintGenerator
     {
+        // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
+        const int STANDARD_FACE_COUNT = 6;
+
         // ***** Master References *****
         // The Master Path holds a reference to all bluprint rooms generated
         private readonly Path _masterPathReference;
@@ -95,6 +99,63 @@ namespace RyansLibrary.Labyrinth
                 roomBlueprints.Add(GenerateBlueprintRoom(path, spawnPosition, available));      // Call to method above
 
             return roomBlueprints;
+        }
+
+        public Blueprint PlaceBlueprintInRandomDirection(Path path, BoundsInt bounds, Blueprint previousBlueprint)
+        {
+            // Chose a position in a random cardinal direction and check for collisions
+            bool[] attempts = new bool[STANDARD_FACE_COUNT];
+            int failedAttempts = 0;
+
+            while (failedAttempts < STANDARD_FACE_COUNT)
+            {
+                // Choose a random direction to be the potential position for the next room.
+                int directionalIndex = Random.Range(0, STANDARD_FACE_COUNT);
+                directionalIndex = ArrayUtils.FindIndexCircular<bool>(attempts, directionalIndex, x => x == false);
+
+                if (directionalIndex < 0)
+                    return null;
+
+                Vector3Int tempPos = previousBlueprint.Position + GetDirectionFromIndex(directionalIndex);
+
+                // Check position in hash map; if failed then flag face attempt and try choosing a new position 
+                if (!CheckOutOfBounds(tempPos, bounds) && !CheckCollision(tempPos))     // If position is not out of bounds and not colliding with another room
+                {
+                    // Return new blueprint room
+                    Blueprint newBlueprint = GenerateBlueprintRoom(path, tempPos);
+                    FlagEntryPoints(newBlueprint, previousBlueprint, directionalIndex);                    // Flag the face that touches the opposite room
+
+                    return newBlueprint;
+                }
+
+                attempts[directionalIndex] = true;
+                failedAttempts++;
+            }
+
+            return null;
+        }
+
+        private Vector3Int GetDirectionFromIndex(int index)
+        {
+            switch (index)
+            {
+                // E0 - E5 is the face count for a unit room, this will be used later for entranceways
+                case 0:
+                    return Vector3Int.right;    // F0 : (1, 0, 0); Wall Right
+                case 1:
+                    return Vector3Int.left;     // F1 : (-1, 0, 0); Wall Left
+                case 2:
+                    return Vector3Int.forward;  // F2 : (0, 0, 1); Wall Forward
+                case 3:
+                    return Vector3Int.back;     // F3 : (0, 0, -1); Wall Back
+                case 4:
+                    return Vector3Int.up;       // F4 : (0, 1, 0); Wall Top
+                case 5:
+                    return Vector3Int.down;     // F5 : (0, 1, 0); Wall Bot
+                default:
+                    Debug.LogError("Map Generator Error: Direction choosen does not exist.");
+                    return Vector3Int.zero;
+            }
         }
 
         public void FlagEntryPoints(Blueprint blueprintA, Blueprint blueprintB, Vector3Int difference)
