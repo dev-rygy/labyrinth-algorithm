@@ -20,6 +20,11 @@ namespace RyansLibrary.Labyrinth
             InputPorts.Add(pathInput);
             InputPorts.Add(roomEntryInput);
             InputPorts.Add(boundsInput);
+
+            // Output Ports
+            string memoryID = context.ConsumeMemoryID().ToString();
+            OutputPorts.Add(memoryID);      // Blueprint List
+            if (_debugLogs) Debug.Log($"List<Blueprint> space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
@@ -86,6 +91,7 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
+                _context.Set(OutputPorts[0], blueprintList);
                 return true;
             }
             Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");

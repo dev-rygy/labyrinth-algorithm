@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class IntersectingBoundsOp : BlueprintOperation
+    public class IntersectBoundsOp : BlueprintOperation
     {
-        public IntersectingBoundsOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
+        public IntersectBoundsOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
             : base(context, bpg)
         {
-            OperationID = $"CreateIntersectingBounds:{context.ConsumeOperationID()}";
+            OperationID = $"IntersectBoundsOp:{context.ConsumeOperationID()}";
 
             // Input Ports
             InputPorts.Add(boundsAInput);

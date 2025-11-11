@@ -15,7 +15,7 @@ namespace RyansLibrary.Labyrinth
     {
         public SelectRandomSetFromListOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string elementCountInput, string listType) : base(context, bpg)
         {
-            OperationID = $"SelectRandomFromListOp:{context.ConsumeOperationID()}";
+            OperationID = $"SelectRandomSetFromListOp:{context.ConsumeOperationID()}";
 
             // Input Ports
             InputPorts.Add(listInput);

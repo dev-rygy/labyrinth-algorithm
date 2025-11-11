@@ -12,13 +12,13 @@ namespace RyansLibrary.Labyrinth
 {
     public class GetAvailableBlueprintsOp : BlueprintOperation
     {
-        public GetAvailableBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string availableToggleInput)
+        public GetAvailableBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string blueprintListInput, string availableToggleInput)
                 : base(context, bpg)
         {
             OperationID = $"GetAvailableBlueprintsOp:{context.ConsumeOperationID()}";
 
             // Input Ports
-            InputPorts.Add(pathInput);
+            InputPorts.Add(blueprintListInput);
             InputPorts.Add(availableToggleInput);
 
             // Output Ports
@@ -29,18 +29,18 @@ namespace RyansLibrary.Labyrinth
 
         public override bool Execute()
         {
-            if (!TryGetInput(0, out Path path))
+            if (!TryGetInput(0, out List<Blueprint> list))
                 return false;
             if (!TryGetInput(1, out bool availbility))
                 return false;
 
-            if (path is null)
+            if (list is null)
             {
                 LogNullError();
                 return false;
             }
 
-            List<Blueprint> availableBlueprintList = GetAvailableBlueprints(path.BlueprintList, availbility);
+            List<Blueprint> availableBlueprintList = GetAvailableBlueprints(list, availbility);
 
             _context.Set(OutputPorts[0], availableBlueprintList);
 
