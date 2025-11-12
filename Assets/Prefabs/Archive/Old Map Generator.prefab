@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &576449848066658410
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 688038257182604410}
+  m_Layer: 0
+  m_Name: Rooms
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &688038257182604410
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 576449848066658410}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7872630750884575665}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5863528550629813726
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7872630750884575665}
+  - component: {fileID: 7906538436134924266}
+  m_Layer: 0
+  m_Name: Old Map Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7872630750884575665
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5863528550629813726}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 688038257182604410}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7906538436134924266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5863528550629813726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3088af2a0b2985546b31a56d394f7fbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RyansLibrary.Labyrinth.OldMapGeneratorController
+  _enabled: 1
+  customSeed: 0
+  generateRandomSeed: 1
+  _seed: 0
+  _gridUnitSize: 13
+  _roomContainer: {fileID: 688038257182604410}
+  _retryGenerationOnFail: 0
+  _maxPlacementAttempts: 50
+  _zones:
+  - {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c, type: 2}
+  - {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691, type: 2}
+  _zoneConnections:
+  - <ZoneA>k__BackingField: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
+      type: 2}
+    <ZoneB>k__BackingField: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
+      type: 2}
+    <RoomA>k__BackingField:
+      <Prefab>k__BackingField: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
+        type: 3}
+      <PlacementType>k__BackingField: 0
+      <SpawnPosition>k__BackingField: {x: 10, y: 0, z: 10}
+      <AvailableCells>k__BackingField:
+      - {x: 0, y: 0, z: 0}
+      <Bounds>k__BackingField:
+        m_Position: {x: 0, y: 0, z: 0}
+        m_Size: {x: 0, y: 0, z: 0}
+    <RoomB>k__BackingField:
+      <Prefab>k__BackingField: {fileID: 5738533610704310278, guid: c39852ea6c8d06847a4b22df5f7a4645,
+        type: 3}
+      <PlacementType>k__BackingField: 0
+      <SpawnPosition>k__BackingField: {x: 10, y: 4, z: 10}
+      <AvailableCells>k__BackingField:
+      - {x: 0, y: 0, z: 0}
+      <Bounds>k__BackingField:
+        m_Position: {x: 0, y: 0, z: 0}
+        m_Size: {x: 0, y: 0, z: 0}
+    <ConnectionPath>k__BackingField: {fileID: 11400000, guid: 790b058cc6213dc489c512e552fa7852,
+      type: 2}
+  _boundingBoxColor: {r: 0, g: 0, b: 0, a: 0}
+  _triangulationColor: {r: 0, g: 0, b: 0, a: 0}
+  _contiguousGraphColor: {r: 0, g: 0, b: 0, a: 0}
+  _randomCyclesColor: {r: 0, g: 0, b: 0, a: 0}
+  _currentEdgeColor: {r: 0, g: 0, b: 0, a: 0}

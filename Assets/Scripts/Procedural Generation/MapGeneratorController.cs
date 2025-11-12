@@ -1,42 +1,20 @@
 /*
  * Created By:      Ryan Carpenter
- * Date Created:    10/13/2024
- * Last Modified:   10/23/2025 (Ryan)
- * Notes:           Map Generator
+ * Date Created:    10/28/2025
+ * Last Modified:   11/10/2025 (Ryan)
+ * Notes:           
 */
 using RyansLibrary.AI;
 using RyansLibrary.Graphs;
 using RyansLibrary.UnityEditor;
-using RyansLibrary.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
 {
-    #region Helper Objects
-    // Entry for connection zones together
-    [System.Serializable]
-    public class ZoneConnectionEntry
-    {
-        [field: Header("Zones")]
-        [field: SerializeField] public Zone ZoneA { get; set; }
-        [field: SerializeField] public Zone ZoneB { get; set; }
-
-        [field: Header("Connection Rooms")]
-        // Connection rooms (if null then it will choose randomly from the given path below
-        [field: SerializeField] public RoomEntry RoomA { get; set; }
-        [field: SerializeField] public RoomEntry RoomB { get; set; }
-
-        [field: Header("Connection Path")]
-        [field: SerializeField] public Path ConnectionPath { get; set; }
-    }
-    #endregion
-
-    /// <summary>
-    /// Composition master class that wraps the Blueprint and Room Generator classes to build a contigious map.
-    /// </summary>
     public class MapGeneratorController : MonoBehaviour
     {
         #region Variables
@@ -58,7 +36,7 @@ namespace RyansLibrary.Labyrinth
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
         public Dictionary<Vector3Int, Blueprint> MasterDictionary { get; private set; }
-        
+
         public bool IsGenerating { get; private set; }
 
         // ***** Inspector Values *****
@@ -86,7 +64,7 @@ namespace RyansLibrary.Labyrinth
         [Header("Zone Connection")]
         [SerializeField] private List<ZoneConnectionEntry> _zoneConnections;
 
-        [Header("Debuging")]
+        [Header("Debugging")]
         [Space]
         [SerializeField] private Color _boundingBoxColor;
         [SerializeField] private Color _triangulationColor;
@@ -96,17 +74,15 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _currentEdgeColor;
 
         // ***** Private Variables *****
-        // private int _seed;      // TODO: For networking make the host generate this
 
-        private BlueprintGenerator _blueprintGenerator;
+        private Coroutine mapGeneratorCoroutine;
+        private bool _advanceRequested;
+
+        private BlueprintGenerator _bpg;
         private RoomGenerator _roomGenerator;
 
         // Debugging
         private bool _debug = false;
-        private List<List<Edge>> _triangulations;
-        private List<List<Edge>> _minimumSpanningTrees;
-        private List<List<Edge>> _randomCycles;
-        private Edge _currentEdge;
 
         // Logs
         private bool _debugLogs = false;
@@ -118,6 +94,11 @@ namespace RyansLibrary.Labyrinth
         private bool _debugBlueprintGizmos = false;
         private bool _debugTriangulationGizmos = false;
         private bool _debugBoundsGizmos = false;
+
+        // Stepwise procedure
+        private bool _debugSequential;
+
+        private MapGenerationContext _context;
         #endregion
 
         #region Mono
@@ -130,39 +111,34 @@ namespace RyansLibrary.Labyrinth
                 Destroy(gameObject);
                 return;
             }
-            
+
             Instance = this;
 
             gameObject.transform.parent = null;     // Parent must be cleared to be DNDOL
             DontDestroyOnLoad(gameObject);  // Have this gameObject persist
         }
 
-        public void StartGeneration()
+        private void Start()
+        {
+            _context = new();
+            _bpg = new(MasterPath, MasterDictionary);
+        }
+
+        public IEnumerator StartGeneration()
         {
             // Return if the Map Generator is not enabled
             if (!_enabled)
-                return;
+                yield break;
 
-            // TODO: Enable debug in editor script when stepwise is being worked on
-            // If debug is active; step through procedures
             if (_debug)
             {
                 Debug.Log("Map Generator: Debug On");
-                return;
             }
             else
                 Debug.Log("Map Generator: Debug Off");
 
-            try
-            {
-                // Generate Labyrinth Blueprint and Rooms
-                GenerateLabyrinth();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Map Generator Error: Failed to generate labyrinth: {e.Message}");
-            }
-
+            mapGeneratorCoroutine = StartCoroutine(GenerateLabyrinth());
+            yield return mapGeneratorCoroutine;
         }
         #endregion
 
@@ -185,21 +161,18 @@ namespace RyansLibrary.Labyrinth
             InitializeMasters();
 
             // Initialize Blueprint Generator
-            _blueprintGenerator = new BlueprintGenerator(MasterPath, MasterDictionary);
-            _blueprintGenerator.ToggleDebugLogs(_debugBlueprintLogs);
+            _bpg = new BlueprintGenerator(MasterPath, MasterDictionary);
+            _bpg.ToggleDebugLogs(_debugBlueprintLogs);
 
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
             _roomGenerator.ToggleDebugLogs(_debugRoomGeneratorLogs);
 
-            // Initialize Debugging Lists
-            _triangulations = new();
-            _minimumSpanningTrees = new();
-            _randomCycles = new();
-
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
+            {
                 InitializeZone(zone);
+            }
         }
 
         public void InitializeMasters()     // NOTE: This must be done before generating anything!
@@ -217,19 +190,11 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
-        /// <summary>
-        /// Labyrinth Algorithm, an algorithm that creates a unique blueprint of the map before parsing and generating rooms.
-        /// - A blueprint of the map is created by first placing unique rooms that are required for the map (boss room, miniboss, shop, etc.)
-        /// - Then, a pathfinding algorithm connects these unique rooms together using boyer-watson alorogithm in conjunction with A*
-        /// - Finally, the blueprint is parsed and rooms of different shapes and sizes are choosen based on the space available
-        /// 
-        /// The map generator is the top level of the system, this script is in charge of generating zones and zone connections.
-        /// </summary>
-        private void GenerateLabyrinth()
+        private IEnumerator GenerateLabyrinth()
         {
             // Do not Generate a labyrinth if one is already generating
             if (IsGenerating)
-                return;
+                yield break;
 
             IsGenerating = true;
 
@@ -238,9 +203,19 @@ namespace RyansLibrary.Labyrinth
 
             // Initialize Data Structures and Seed
             InitializeLabyrinth();
+            LoadOperations();
+            yield return StartCoroutine(ExecuteOperations());
+            GenerateRooms();
 
-            // ******* Generate Blueprints *******
-            // Generate Zone Connection Paths
+            // Labyrinth Generation Success
+            // Event to signal when map generation is complete
+            IsGenerating = false;
+            OnGenerationDone?.Invoke();
+        }
+
+        private void LoadOperations()
+        {
+            // ******* Generate Zone Connection Blueprints *******
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
                 // TODO: Option 1: Handle this after both zone A's and B's blueprints have been generated.
@@ -249,25 +224,88 @@ namespace RyansLibrary.Labyrinth
                 // TODO: Option 2: Connect blueprint with a unique room entry assiciated with the zone so
                 // that the room can still be a part of triangulation and the pathfinding occurs after 
                 // the zone's generation
-                if (!GenerateZoneConnectionBlueprints(entry))
-                {
-                    GenerationFailed();
-                    return;     // Blueprint failed for zone connection; stop algorithm
-                }
+                LoadZoneConnectionOperations(entry);
             }
 
-            // Generate Blueprint Map For Each Zone
+            // ******* Generate Blueprint Map For Each Zone *******
+            // Will generate an entire blueprint for a zone. Generates all paths
+            // in zone and makes sure they are contiguous.
             foreach (Zone zone in _zones)
             {
-                if (!GenerateZoneBlueprints(zone))
+                // Must have a zone to generate anything
+                if (zone == null)
                 {
-                    GenerationFailed();
-                    return;     // Blueprint failed for zone; stop algorithm
+                    Debug.LogError("Map Generator Error: Zone Entry Missing for blueprint procedure.");
+                    return;
                 }
+
+                // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
+                if (!CheckZoneBoundedVolume(zone))
+                {
+                    Debug.LogError($"Map Generator Error: The amount of blueprint rooms desired for zone {zone.Name} exceeds " +
+                        $"the bounding box's volume or the bounding box is inverted.");
+                    return;
+                }
+
+
+                // ******* Generate Zone Blueprints *******
+                // Generate Main Path to boss
+                LoadMainPathOperations(zone);
+
+
+                // Generate Alternative paths (prize, trial, etc.)
+                LoadAltPathOperations(zone);
+            }
+        }
+
+        public void Advance()
+        {
+            _advanceRequested = true;
+        }
+
+        private IEnumerator ExecuteOperations()
+        {
+            // Generate Blueprints
+            while (_context.OperationQueue.Count > 0)
+            {
+                if (_debugSequential)
+                {
+                    yield return new WaitUntil(() => _advanceRequested);
+                    _advanceRequested = false;
+                }
+
+                // Dequeue the current opration
+                BlueprintOperation operation = _context.OperationQueueDequeue();
+                if (operation is null)
+                    throw new ArgumentNullException(nameof(operation));
+
+                // Push the operation into history
+                _context.OperationHistory.Push(operation);
+
+                // Execute Operation
+                if (_debugBlueprintLogs) Debug.Log($"Running Operation {operation.OperationID}");
+                bool result = operation.Execute();
+                if (result)
+                {
+                    if (_debugBlueprintLogs)
+                        Debug.Log("Execution Successs!");
+                }
+                else
+                {
+                    if (_debugBlueprintLogs)
+                        Debug.Log("Execution Failure.");
+                }
+
+                // Operation failed to execute; stop running generation
+                if (!result)
+                    GenerationFailed();
             }
 
-            // ******* Parse and Generate Rooms *******
-            // TODO: Possibly do this dynamically as players move around the map
+            if (_debugBlueprintLogs) Debug.Log("End of operation execution.");
+        }
+
+        private void GenerateRooms()
+        {
             // Generate Zone Connection Rooms
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
@@ -279,31 +317,27 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            // Spawn rooms based on the blueprint map for each zone
             foreach (Zone zone in _zones)
             {
-                // Check room conditions and generate rooms using the blueprint map of the zone
                 if (!GenerateZoneRooms(zone))
                 {
+                    Debug.LogError("Rooms failed to generate.");
                     GenerationFailed();
-                    return;     // Room Generation failed for zone; stop algorithm
+                    return;
                 }
-
-                // TODO: Implement perlin noise height Map
             }
 
-            IsGenerating = false;
-
-            // Labyrinth Generation Success
-            // Event to signal when map generation is complete
-            OnGenerationDone?.Invoke();
+            if (_debugBlueprintLogs) Debug.Log("End of execution.");
         }
 
-        // Only to be used in the inspector
         public void ResetLabyrinth()
         {
             if (!Application.isPlaying)     // Only run code when game is executing
                 return;
+
+            mapGeneratorCoroutine = null;
+            _advanceRequested = false;
+            _context.ClearAll();
 
             DestroyAllRooms();      // Destroy all rooms from last generation
             ScenesManager.Instance.ReloadScene();       // Reload to reset data
@@ -316,6 +350,11 @@ namespace RyansLibrary.Labyrinth
         private void GenerationFailed()
         {
             IsGenerating = false;
+
+            StopCoroutine(mapGeneratorCoroutine);
+            _context.ClearAll();
+            mapGeneratorCoroutine = null;
+            _advanceRequested = false;
 
             Debug.LogWarning("Map Generator Warning: Map generation failed");
             OnGenerationFailed?.Invoke();
@@ -332,93 +371,30 @@ namespace RyansLibrary.Labyrinth
 
         #region Blueprint Procedure
         /// <summary>
-        /// Will generate an entire blueprint for a zone. Generates all paths
-        /// in zone and makes sure they are contiguous.
-        /// </summary>
-        /// <returns>Generation Success or Failure</returns>
-        public bool GenerateZoneBlueprints(Zone zone)
-        {
-            // Must have a zone to generate anything
-            if (zone == null)
-            {
-                Debug.LogError("Map Generator Error: Zone Entry Missing for blueprint procedure.");
-                return false;
-            }
-
-            // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
-            if (!CheckZoneBoundedVolume(zone))
-            {
-                Debug.LogError($"Map Generator Error: The amount of blueprint rooms desired for zone {zone.Name} exceeds " +
-                    $"the bounding box's volume or the bounding box is inverted.");
-                return false;
-            }
-
-            // ******* Generate Zone Blueprints *******
-            // Generate Main Path to boss
-            if (!GenerateMainPathBlueprint(zone))
-            {
-                Debug.LogError($"Map Generator Error: Main Path Generation for {zone.Name} zone failed.");
-                return false;
-            }
-
-            // Generate Alternative paths (prize, trial, etc.)
-            if (!GenerateAltPathBlueprints(zone))
-            {
-                Debug.LogWarning($"Map Generator Warning: Alt. Path Generation for {zone.Name} zone failed.");
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Wrapper function for generating the Main Path. 
         /// A path that leads to the zone boss, alternative paths, and 
         /// entrances to other zones.
         /// </summary>
         /// <param name="zone">Zone who's Main Path to generate.</param>
         /// <returns>Generation success or failure</returns>
-        public bool GenerateMainPathBlueprint(Zone zone)
+        public void LoadMainPathOperations(Zone zone)
         {
             if (zone.MainPath == null)      // Throw error if MainPath for zone does not exist
             {
                 Debug.LogError($"Map Generator Error: The Main Path for zone {zone.Name} is not assigned.");
-                return false;
+                return;
             }
 
             // Unique Room Placement
-            if (!PlaceUniqueRooms(zone))
-            {
-                Debug.LogError($"Map Generator Error: Placing Unique Rooms failed in {zone.Name} zone.");
-                return false;
-            }
+            LoadUniqueRoomOperations(zone);
 
             // Divergent Room Placement
-            if (!PlaceDivergentRooms(zone))
-            {
-                Debug.LogError($"Map Generator Error: Placing Divergent Rooms failed in {zone.Name} zone.");
-                return false;
-            }
+            LoadDivergentRoomOperations(zone);
 
             // Generate Delauney Triangulation
-            List<Edge> zoneGraph = GenerateContigiousTriangulation(zone);
-            if (zoneGraph == null)
-            {
-                Debug.LogError($"Map Generator Error: MST failed to be found in {zone.Name} zone.");
-                return false;
-            }
+            LoadMainPathConnectionsOperations(zone);
 
-            // Pathfind and Connect Main Path
-            if (!ConnectMainPath(zone, zoneGraph))
-            {
-                Debug.LogError($"Map Generator Error: Main Path could not be connected in {zone.Name} zone.");
-                return false;
-            }
-
-            if (_debugLogs) 
-                Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
-
-            return true;
+            if (_debugLogs) Debug.Log($"Map Generator: {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
         }
 
         /// <summary>
@@ -426,217 +402,212 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="zone">Zone to place unique rooms in</param>
         /// <returns>Placement success or failure</returns>
-        public bool PlaceUniqueRooms(Zone zone)
+        public void LoadUniqueRoomOperations(Zone zone)
         {
+            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
+            mainPathBlueprintData.LoadIntoMemory();
+            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
+            zoneBoundsBlueprintData.LoadIntoMemory();
+
             // 1.) Spawn Fixed Rooms (Rooms that have a set spawn destination)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
-                    // Attempt to place fixed room (room with specified spawn position) in zone
-                    bool hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(zone.MainPath, entry, zone.Bounds);
+                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
+                    roomEntryBlueprintData.LoadIntoMemory();
 
-                    if (!hasPlaced)     // Only one attempt needed for a fixed room, otherwise generation has failed entirely
-                    {
-                        // Fixed room failed to generate, stop all operations
-                        Debug.LogError($"Map Generator Error: Fixed Room bluprints \"{entry}\" was outside of bounds and could not be placed.");
-                        return false;
-                    }
+                    FixedUniqueBlueprintsOp placeFixedBlueprintOp = new FixedUniqueBlueprintsOp(_context, _bpg,
+                        mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
+                    _context.OperationQueueEnqueue(placeFixedBlueprintOp);
                 }
             }
 
-            // 2.) Spawn Constrained Rooms (Rooms that have a unique spawn area)
+            // 2.) Spawn Bounded Rooms (Rooms that have a unique spawn area)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                bool hasPlaced = false;
-
                 if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
-                    int placementAttempts = 0;
-                    // Attempt to place the constrained room in it's own bounded zone
-                    while (!hasPlaced)
-                    {
-                        BoundsInt adjustedBounds = _blueprintGenerator.CreateIntersectingBounds(zone.Bounds, entry.Bounds);
-                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(zone.MainPath, entry, adjustedBounds);
-                        placementAttempts++;
+                    // Attempt to place the bounded room in it's own bounded zone
+                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
+                    roomEntryBlueprintData.LoadIntoMemory();
 
-                        // If constrained room failed to generate a certain number of times then return false
-                        if (placementAttempts > _maxPlacementAttempts)
-                        {
-                            Debug.LogError($"Map Generator Error: Constrained Room blueprints \"{entry}\" exhaused " +
-                                $"all of it's attempts to be placed.");
-                            return false;
-                        }
-                    }
+                    IntersectBoundsOp adjBoundsBlueprintOp = new IntersectBoundsOp(_context, _bpg,
+                        zoneBoundsBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[1]);
+                    _context.OperationQueueEnqueue(adjBoundsBlueprintOp);
+
+                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(_context, _bpg,
+                        mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], adjBoundsBlueprintOp.OutputPorts[0]);
+                    _context.OperationQueueEnqueue(placeBoundedBlueprintsOp);
                 }
             }
 
             // 3.) Spawn Free Rooms (Rooms that can spawn in any point inside the zone bounds)
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                bool hasPlaced = false;
-
                 if (entry.PlacementType == RoomPlacementType.Free)
                 {
-                    int placementAttempts = 0;
-                    // Attempt to place the free room in the zone's bounded zone
-                    while (!hasPlaced)
-                    {
-                        hasPlaced = _blueprintGenerator.PlaceBoundedUniqueRoomBlueprints(zone.MainPath, entry, zone.Bounds);
-                        placementAttempts++;
+                    RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
+                    roomEntryBlueprintData.LoadIntoMemory();
 
-                        // If free room failed to generate a certain number of times then return false
-                        if (placementAttempts > _maxPlacementAttempts)
-                        {
-                            Debug.LogError($"Map Generator Error: Free Room blueprints \"{entry}\" exhaused all of it's attempts to be placed.");
-                            return false;
-                        }
-                    }
+                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(_context, _bpg,
+                        mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
+                    _context.OperationQueueEnqueue(placeBoundedBlueprintsOp);
                 }
             }
-
-            return true;
         }
 
-        /// <summary>
-        /// Place 1x1x1 blueprints randomly in the zone to create more 
-        /// variable and random pathways.
-        /// </summary>
-        /// <param name="zone">The zone to place divergent rooms in</param>
-        /// <returns>Placement success or failure</returns>
-        public bool PlaceDivergentRooms(Zone zone)
-        {            
-            // Attempt to spawn blueprints
-            return _blueprintGenerator.PlaceDivergentBlueprints(zone.MainPath, zone.Bounds, Vector3Int.one, zone.DivergentRoomsCellOccupancy, _maxPlacementAttempts);
-        }
-
-        /// <summary>
-        /// Takes all generated blueprints in a zone, triangulates using bowyer-watson,
-        /// and returns a contiguous and properly connected graph between all of them.
-        /// NOTE: Only runs on available blueprint rooms.
-        /// </summary>
-        /// <param name="zone">The zone to triangulate</param>
-        /// <returns>MST graph of zone blueprints; null if not found.</returns>
-        private List<Edge> GenerateContigiousTriangulation(Zone zone)
+        private void LoadDivergentRoomOperations(Zone zone)
         {
-            if (zone == null || zone.MainPath == null)
-            {
-                Debug.LogError($"Map Generator Error: Error Zone {zone.Name} in invalid for triangulation." +
-                    $"Zone is null or MainPath has not been initialized");
-                return null;
-            }
+            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
+            mainPathBlueprintData.LoadIntoMemory();
+            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
+            zoneBoundsBlueprintData.LoadIntoMemory();
+            Vector3IntBlueprintData dimensionsData = new Vector3IntBlueprintData(_context, Vector3Int.one);
+            dimensionsData.LoadIntoMemory();
+            IntBlueprintData cellCountData = new IntBlueprintData(_context, zone.DivergentRoomsCellOccupancy);
+            cellCountData.LoadIntoMemory();
+            IntBlueprintData maxPlacementAttemptsData = new IntBlueprintData(_context, _maxPlacementAttempts);
+            maxPlacementAttemptsData.LoadIntoMemory();
 
-            // **** Triangulation
-            List<Edge> triangulatedGraph = _blueprintGenerator.GenerateTriangulationFromPath(zone.MainPath);
-            if (triangulatedGraph == null)      // Triangulation failed
-                return null;
-            // Store Triangulation for debug gizmo
-            _triangulations.Add(triangulatedGraph);
-
-            // **** MST
-            List<Edge> MST = _blueprintGenerator.FindMinimumSpanningTree(triangulatedGraph);
-            if (MST == null)      // MST/Prim's failed
-                return null;
-            // Store MST for debug gizmo
-            _minimumSpanningTrees.Add(MST);
-
-            // ***** Random Edge Selection
-            List<Edge> availableEdges = ListUtils.Difference(triangulatedGraph, MST);           // Remove all MST edges from list; difference
-            List<Edge> randomEdges = ListUtils.SelectRandomSet(availableEdges, zone.RandomCyclesInGraph);
-            _randomCycles.Add(randomEdges);
-
-            return ListUtils.Union(MST, randomEdges);    // Full Zone Connectons = MST + Random Edges
+            DivergentBlueprintsOp divergentRoomsOp = new DivergentBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0],
+                dimensionsData.OutputPorts[0], cellCountData.OutputPorts[0], maxPlacementAttemptsData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(divergentRoomsOp);
         }
 
-        /// <summary>
-        /// Pathfind to every blueprint from using a graph and generate more
-        /// blueprints along the way.
-        /// </summary>
-        /// <param name="zone">Zone to connect with A*.</param>
-        /// <param name="edges">Edges to connect with pathfinding algorithm</param>
-        /// <returns>Pathfinding/Connection success or failure</returns>
-        private bool ConnectMainPath(Zone zone, List<Edge> edges)
+        private void LoadMainPathConnectionsOperations(Zone zone)
         {
-            Path mainPath = zone.MainPath;
+            // ***** Triangulation
+            PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
+            mainPathBlueprintData.LoadIntoMemory();
+            BoolBlueprintData availableBlueprintData = new BoolBlueprintData(_context, true);
+            availableBlueprintData.LoadIntoMemory();
+            BoolBlueprintData unavailableBlueprintData = new BoolBlueprintData(_context, false);
+            unavailableBlueprintData.LoadIntoMemory();
+            StringBlueprintData edgeTypeBlueprintData = new StringBlueprintData(_context, "Edge");
+            edgeTypeBlueprintData.LoadIntoMemory();
+            IntBlueprintData elementCountBlueprintData = new IntBlueprintData(_context, zone.RandomCyclesInGraph);
+            elementCountBlueprintData.LoadIntoMemory();
 
-            if (zone == null || mainPath == null)
-            {
-                Debug.LogError($"Map Generator Error: Error Zone {zone.Name} in invalid for pathfinding." +
-                    $"Zone is null or MainPath has not been initialized");
-                return false;
-            }
+            GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[2], 
+                availableBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(availibleBlueprintsOp);
 
-            // Pathfind each edge
-            foreach (Edge e in edges)
-            {
-                _currentEdge = e;
+            TriangulateBlueprintsOp triangulationOp = new TriangulateBlueprintsOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
+            _context.OperationQueueEnqueue(triangulationOp);
 
-                Vector3Int startPos = new Vector3Int((int)e.U.Position.x, (int)e.U.Position.y, (int)e.U.Position.z);        // Starting Vertex
-                Vector3Int endPos = new Vector3Int((int)e.V.Position.x, (int)e.V.Position.y, (int)e.V.Position.z);          // Ending Vertex
+            FindMSTOp mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
+            _context.OperationQueueEnqueue(mstOp);
 
-                // Create obstructions; Only make non-available blueprint rooms obstructions
-                List<Blueprint> obstructions = _blueprintGenerator.FindBlueprintsWithAvailibility(mainPath.BlueprintList, false);
+            ListDifferenceOp listDiffOp = new ListDifferenceOp(_context, _bpg, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(listDiffOp);
 
-                bool result = _blueprintGenerator.PathfindBlueprintFromPath(mainPath, zone.Bounds, MasterDictionary[startPos],
-                                                                            MasterDictionary[endPos], obstructions, zone.DefaultPathfindingHeuristic);
-                if (!result)        // Pathfinding failed for edge
-                {
-                    Debug.LogError($"Map Generator Error: A* failed to pathfind for edge {e}");
-                    return false;
-                }
-            }
+            SelectRandomSetFromListOp randomCyclesListOp = new SelectRandomSetFromListOp(_context, _bpg, listDiffOp.OutputPorts[0], 
+                elementCountBlueprintData.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(randomCyclesListOp);
 
-            // Set base for paths
-            return true;
+            ListUnionOp zoneGraphUnionOp = new ListUnionOp(_context, _bpg, mstOp.OutputPorts[0], randomCyclesListOp.OutputPorts[0], edgeTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(zoneGraphUnionOp);
+
+            // **** Pathfinding
+            IntBlueprintData currentIndexBlueprintData = new IntBlueprintData(_context, 0);     // i = 0
+            currentIndexBlueprintData.LoadIntoMemory();
+            IntBlueprintData intOneBlueprintData = new IntBlueprintData(_context, 1);           // Increment amount
+            intOneBlueprintData.LoadIntoMemory();
+            StringBlueprintData targetOpIDBlueprintData = new StringBlueprintData(_context, "");    // NOP operation ID; filled in later
+            targetOpIDBlueprintData.LoadIntoMemory();
+            HeuristicBlueprintData pathfindingHeuristicData = new HeuristicBlueprintData(_context, zone.DefaultPathfindingHeuristic);
+            pathfindingHeuristicData.LoadIntoMemory();
+            BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
+            zoneBoundsBlueprintData.LoadIntoMemory();
+
+            // Loop
+            BranchGreaterOrEqualOp bgeOp = new BranchGreaterOrEqualOp(_context, _bpg, targetOpIDBlueprintData.OutputPorts[0], currentIndexBlueprintData.OutputPorts[0],
+                zoneGraphUnionOp.OutputPorts[1]);
+            _context.OperationQueueEnqueue(bgeOp);
+
+            StringBlueprintData branchIDBlueprintData = new StringBlueprintData(_context, bgeOp.OperationID);
+            branchIDBlueprintData.LoadIntoMemory();
+
+            // Pathfinding logic
+            AccessListElementOp currentEdgeOp = new AccessListElementOp(_context, _bpg, currentIndexBlueprintData.OutputPorts[0], zoneGraphUnionOp.OutputPorts[0],
+                edgeTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(currentEdgeOp);
+
+            ExtractVerticesFromEdgeOp verticiesFromEdgeOp = new ExtractVerticesFromEdgeOp(_context, _bpg, currentEdgeOp.OutputPorts[0]);
+            _context.OperationQueueEnqueue(verticiesFromEdgeOp);
+
+            FindBlueprintFromPositionOp blueprintStart = new FindBlueprintFromPositionOp(_context, _bpg, verticiesFromEdgeOp.OutputPorts[2]);
+            _context.OperationQueueEnqueue(blueprintStart);
+
+            FindBlueprintFromPositionOp blueprintEnd = new FindBlueprintFromPositionOp(_context, _bpg, verticiesFromEdgeOp.OutputPorts[3]);
+            _context.OperationQueueEnqueue(blueprintEnd);
+
+            GetAvailableBlueprintsOp findObstructionsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[2], 
+                unavailableBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(findObstructionsOp);
+
+            PathfindingBlueprintOp pathFindingOp = new PathfindingBlueprintOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], blueprintStart.OutputPorts[0], 
+                blueprintEnd.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0], findObstructionsOp.OutputPorts[0], pathfindingHeuristicData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(pathFindingOp);
+            // End of Pathfinding logic
+
+            AddIntOp incrementOp = new AddIntOp(_context, _bpg, currentIndexBlueprintData.OutputPorts[0], intOneBlueprintData.OutputPorts[0], 
+                currentIndexBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(incrementOp);
+
+            JumpOp jumpOp = new JumpOp(_context, _bpg, branchIDBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(jumpOp);
+            // End loop
+
+            NoOp targetIDNoOp = new NoOp(_context, _bpg);                       // Load this operation after loop; jump target for bge
+            targetOpIDBlueprintData.ModifyData(targetIDNoOp.OperationID);
+            _context.OperationQueueEnqueue(targetIDNoOp);
         }
 
-        /// <summary>
-        /// Wrapper function for generating alternative paths in zones.
-        /// Uses Drunkerd Walk Alg.
-        /// <param name="zone">Zone for path to connect to.</param>
-        /// </summary>
-        public bool GenerateAltPathBlueprints(Zone zone)
+        private void LoadAltPathOperations(Zone zone)
         {
-            if (zone.MainPath is null)      // Throw error if MainPath for zone does not exist
-            {
-                Debug.LogError($"Map Generator Error: The Main Path for zone {zone.name} is not assigned.");
-                return false;
-            }
+            PathBlueprintData branchedPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
+            branchedPathBlueprintData.LoadIntoMemory();
+            BoundsIntBlueprintData boundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
+            boundsBlueprintData.LoadIntoMemory();
+            IntBlueprintData startIndexBlueprintData = new IntBlueprintData(_context, 1);
+            startIndexBlueprintData.LoadIntoMemory();
+            IntBlueprintData negativeOneBlueprintData = new IntBlueprintData(_context, -1);
+            negativeOneBlueprintData.LoadIntoMemory();
 
-            foreach (Path path in zone.Paths)       // O(n * m) where n is the path and m is the room range
+            foreach (Path path in zone.Paths)
             {
                 if (path is null)
                 {
                     Debug.LogError($"Map Generator Error: A path {path.Name} for zone {zone.name} is not assigned.");
-                    return false;
+                    return;
                 }
 
                 // Initialize path
                 path.Initialize();
 
-                // Create new path and walk
-                // TODO: Later use Dijkstra maps to find a more controllable starting and ending index
-                int startIndex = 1;
-                int endIndex = zone.MainPath.BlueprintCount() - 1;      // Start at index 1 as to not choose the starting room of the game
+                PathBlueprintData pathBlueprintData = new PathBlueprintData(_context, path);
+                pathBlueprintData.LoadIntoMemory();
 
-                bool pathPlaced = _blueprintGenerator.BlueprintDrunkardWalk(path, zone.MainPath, zone.Bounds, startIndex, endIndex);
+                GetPathLengthOp branchedpathLengthOp = new GetPathLengthOp(_context, _bpg, branchedPathBlueprintData.OutputPorts[0]);
+                _context.OperationQueueEnqueue(branchedpathLengthOp);
 
-                if (!pathPlaced)
-                {
-                    Debug.LogError("Map Generator Error: Path could not be generated off of given rooms. Path obstructed.");
-                    return false;
-                }
+                AddIntOp lengthMinusOneOp = new AddIntOp(_context, _bpg, branchedpathLengthOp.OutputPorts[0], negativeOneBlueprintData.OutputPorts[0]);
+                _context.OperationQueueEnqueue(lengthMinusOneOp);
+
+                DrunkardWalkBlueprintOp drunkardWalkOperation = new DrunkardWalkBlueprintOp(_context, _bpg, pathBlueprintData.OutputPorts[0], branchedPathBlueprintData.OutputPorts[0],
+                    boundsBlueprintData.OutputPorts[0], startIndexBlueprintData.OutputPorts[0], lengthMinusOneOp.OutputPorts[0]);
+                _context.OperationQueueEnqueue(drunkardWalkOperation);
             }
-
-            return true;
         }
 
         // Generate Zone Connection Paths
         // TODO: Make connection entrys into a type of zone of it's own that intersects two zones together
         // TODO: Possibly handle this generation after both zone blueprints have been already been generated
-        public bool GenerateZoneConnectionBlueprints(ZoneConnectionEntry entry)
+        public bool LoadZoneConnectionOperations(ZoneConnectionEntry entry)
         {
-            if (entry.ConnectionPath == null)
+            if (entry.ConnectionPath is null)
             {
                 Debug.LogError("Map Generator Error: Connection path was null.");
                 return false;
@@ -656,19 +627,17 @@ namespace RyansLibrary.Labyrinth
                 Debug.LogError("Map Generator Error: Room A of zone connection was null.");
                 return false;
             }
-            // Handle Room A Placement
-            bool hasPlaced = false;
-            if (entry.RoomA.PlacementType == RoomPlacementType.Fixed)
-                hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry.ZoneA.MainPath, entry.RoomA, entry.ZoneA.Bounds);
-            //else if (entry.RoomA.PlacementType == RoomPlacementType.Constrained)
-            //    hasPlaced = PlaceConstrainedRoomBlueprints(entry.RoomA, entry.zoneA);
-            //else if (entry.RoomA.PlacementType == RoomPlacementType.Free)
-            //    hasPlaced = PlaceFreeRoomBlueprints(entry.RoomA, entry.zoneA);
-            if (!hasPlaced)     // Error placing RoomA
-            {
-                Debug.LogError("Map Generator Error: Error placing RoomA");
-                return false;
-            }
+
+            PathBlueprintData zoneAMainPathBlueprintData = new PathBlueprintData(_context, entry.ZoneA.MainPath);
+            zoneAMainPathBlueprintData.LoadIntoMemory();
+            RoomEntryBlueprintData roomABlueprintData = new RoomEntryBlueprintData(_context, entry.RoomA);
+            roomABlueprintData.LoadIntoMemory();
+            BoundsIntBlueprintData zoneABoundsBlueprintData = new BoundsIntBlueprintData(_context, entry.ZoneA.Bounds);
+            zoneABoundsBlueprintData.LoadIntoMemory();
+
+            FixedUniqueBlueprintsOp placeRoomAOp = new FixedUniqueBlueprintsOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[0], roomABlueprintData.OutputPorts[0],
+                zoneABoundsBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(placeRoomAOp);
 
             // ***** Place Room B; Room B becomes a part of the second zone
             if (entry.ZoneB == null)
@@ -681,39 +650,43 @@ namespace RyansLibrary.Labyrinth
                 Debug.LogError("Map Generator Error: Room B of zone connection was null.");
                 return false;
             }
-            hasPlaced = false;
-            if (entry.RoomB.PlacementType == RoomPlacementType.Fixed)
-                hasPlaced = _blueprintGenerator.PlaceFixedUniqueRoomBlueprints(entry.ZoneB.MainPath, entry.RoomB, entry.ZoneB.Bounds);
-            //else if (entry.RoomA.PlacementType == RoomPlacementType.Constrained)
-            //    hasPlaced = PlaceConstrainedRoomBlueprints(entry.RoomA, entry.zoneA);
-            //else if (entry.RoomA.PlacementType == RoomPlacementType.Free)
-            //    hasPlaced = PlaceFreeRoomBlueprints(entry.RoomA, entry.zoneA);
-            if (!hasPlaced)     // Error placing RoomB
-            {
-                Debug.LogError("Map Generator Error: Error placing RoomA");
-                return false;
-            }
+            PathBlueprintData zoneBMainPathBlueprintData = new PathBlueprintData(_context, entry.ZoneB.MainPath);
+            zoneBMainPathBlueprintData.LoadIntoMemory();
+            RoomEntryBlueprintData roomBBlueprintData = new RoomEntryBlueprintData(_context, entry.RoomB);
+            roomBBlueprintData.LoadIntoMemory();
+            BoundsIntBlueprintData zoneBBoundsBlueprintData = new BoundsIntBlueprintData(_context, entry.ZoneB.Bounds);
+            zoneBBoundsBlueprintData.LoadIntoMemory();
+
+            FixedUniqueBlueprintsOp placeRoomBOp = new FixedUniqueBlueprintsOp(_context, _bpg, zoneBMainPathBlueprintData.OutputPorts[0], roomBBlueprintData.OutputPorts[0],
+                zoneBBoundsBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(placeRoomBOp);
 
             // ***** Combine Bounds and Pathfind
-            BoundsInt ZoneABounds = entry.ZoneA.Bounds;
-            BoundsInt ZoneBBounds = entry.ZoneB.Bounds;
-            BoundsInt combinedBounds = _blueprintGenerator.CombineBounds(ZoneABounds, ZoneBBounds);
+            BoolBlueprintData availableBlueprintData = new BoolBlueprintData(_context, true);
+            availableBlueprintData.LoadIntoMemory();
+            StringBlueprintData blueprintTypeBlueprintData = new StringBlueprintData(_context, "Blueprint");
+            blueprintTypeBlueprintData.LoadIntoMemory();
+            PathBlueprintData connectionPathBlueprintData = new PathBlueprintData(_context, entry.ConnectionPath);
+            connectionPathBlueprintData.LoadIntoMemory();
 
-            // Adjust parameters to fit the room's actual positions
-            Vector3Int zoneAOffset = ZoneABounds.position;
-            Vector3Int zoneBOffset = ZoneBBounds.position;
+            CombineBoundsOp combinedBounds = new CombineBoundsOp(_context, _bpg, zoneABoundsBlueprintData.OutputPorts[0], zoneBBoundsBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(combinedBounds);
 
-            Vector3Int startPos = entry.RoomA.SpawnPosition + zoneAOffset;
-            Vector3Int endPos = entry.RoomB.SpawnPosition + zoneBOffset;
+            GetAvailableBlueprintsOp roomAAvailableBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, placeRoomAOp.OutputPorts[0], availableBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(roomAAvailableBlueprintsOp);
+            GetAvailableBlueprintsOp roomBAvailableBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, placeRoomBOp.OutputPorts[0], availableBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(roomBAvailableBlueprintsOp);
 
-            // Pathfind connection blueprint with no obstructions
-            bool result = _blueprintGenerator.PathfindBlueprintFromPath(entry.ConnectionPath, combinedBounds, MasterDictionary[startPos], 
-                                                            MasterDictionary[endPos], null, Heuristic.Manhattan);
-            if (!result)
-            {
-                Debug.LogError($"Map Generator Error: Pathfinding failed for Zone connection.");
-                return false;
-            }
+            SelectRandomElementFromListOp randomBlueprintFromRoomAOp = new SelectRandomElementFromListOp(_context, _bpg, roomAAvailableBlueprintsOp.OutputPorts[0], 
+                blueprintTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(randomBlueprintFromRoomAOp);
+            SelectRandomElementFromListOp randomBlueprintFromRoomBOp = new SelectRandomElementFromListOp(_context, _bpg, roomBAvailableBlueprintsOp.OutputPorts[0],
+                blueprintTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(randomBlueprintFromRoomBOp);
+
+            PathfindingBlueprintOp pathfindOp = new PathfindingBlueprintOp(_context, _bpg, connectionPathBlueprintData.OutputPorts[0], randomBlueprintFromRoomAOp.OutputPorts[0], 
+                randomBlueprintFromRoomBOp.OutputPorts[0], combinedBounds.OutputPorts[0]);
+            _context.OperationQueueEnqueue(pathfindOp);
 
             return true;
         }
@@ -747,7 +720,7 @@ namespace RyansLibrary.Labyrinth
             // Turn off blueprint availability for unique rooms; we do not want to parse and spawn new rooms in these spots
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                _blueprintGenerator.ToggleAvailableCellsInUniqueRoom(zone.MainPath, entry.AvailableCells, entry.SpawnPosition, false);
+                _bpg.ToggleAvailableCellsInUniqueRoom(zone.MainPath, entry.AvailableCells, entry.SpawnPosition, false);
             }
 
             // Generate Rooms along main path
@@ -758,7 +731,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            // Generator Rooms along alt. paths
+            // Generate Rooms along alt. paths
             foreach (Path path in zone.Paths)
             {
                 result = _roomGenerator.ParsePathAndGenerateRooms(path);
@@ -768,7 +741,6 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -904,11 +876,11 @@ namespace RyansLibrary.Labyrinth
             totalCellOccupancy += zone.DivergentRoomsCellOccupancy;
 
             // Add Main Path volume
-            totalCellOccupancy += zone.MainPath.PathLength;
+            totalCellOccupancy += zone.MainPath.DesiredPathLength;
 
             // Add Alt. Paths volume
             foreach (Path path in zone.Paths)
-                totalCellOccupancy += path.PathLength;
+                totalCellOccupancy += path.DesiredPathLength;
 
             // Calculate the bounded volume and check if amount of room cells taken up exceeds that amount
             float xSize = zone.Bounds.size.x;
@@ -924,7 +896,7 @@ namespace RyansLibrary.Labyrinth
 
         public void DestroyAllRooms()
         {
-            foreach (Transform child in _roomContainer.transform) 
+            foreach (Transform child in _roomContainer.transform)
                 Destroy(child.gameObject);
         }
         #endregion
@@ -978,7 +950,11 @@ namespace RyansLibrary.Labyrinth
                     DrawBluePrintGizmos(zone);
 
                 if (_debugTriangulationGizmos)
+                {
                     DrawTriangulation();
+                    DrawMSTs();
+                    DrawRandomCycles();
+                }
 
                 if (_debugBoundsGizmos)
                     DrawBoundingBox(zone.Bounds);
@@ -1002,17 +978,11 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation()
         {
-            foreach (List<Edge> edgeList in _triangulations)
-            {
-                /*      DEPRICATED (NEED DELAUNYTRIANGULATION OBJECT FOR THIS DATA)
-                // Draw circumcircles in remaining tetrahedron from triangulation
-                foreach (Tetrahedron t in triangulation.Tetrahedra)
-                {
-                    Gizmos.color = _circumcircleColor;
-                    Gizmos.DrawSphere(t.Circumcenter * _gridUnitSize, Mathf.Sqrt(t.CircumradiusSquared) * _gridUnitSize);
-                }
-                */
+            if (_context.Triangulations is null)
+                return;
 
+            foreach (List<Edge> edgeList in _context.Triangulations)
+            {
                 // Draw remaining edges from triangulation
                 foreach (Edge e in edgeList)
                 {
@@ -1020,9 +990,18 @@ namespace RyansLibrary.Labyrinth
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
                 }
             }
+        }
 
-            foreach (List<Edge> edgeList in _minimumSpanningTrees)
+        private void DrawMSTs()
+        {
+            if (_context.MinimumSpanningTrees is null)
+                return;
+
+            foreach (List<Edge> edgeList in _context.MinimumSpanningTrees)
             {
+                if (edgeList is null)
+                    continue;
+
                 // Draw the minimum spanning tree of the zone
                 foreach (Edge e in edgeList)
                 {
@@ -1030,20 +1009,23 @@ namespace RyansLibrary.Labyrinth
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
                 }
             }
+        }
 
-            foreach (List<Edge> edgeList in _randomCycles)
+        private void DrawRandomCycles()
+        {
+            if (_context.RandomCycles is null) 
+                return;
+
+            foreach (List<Edge> edgeList in _context.RandomCycles)
             {
+                if (edgeList is null)
+                    continue;
+
                 foreach (Edge e in edgeList)
                 {
                     Gizmos.color = _randomCyclesColor;
                     Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
                 }
-            }
-
-            if (_currentEdge is not null)
-            {
-                Gizmos.color = _currentEdgeColor;
-                Gizmos.DrawLine(_currentEdge.V.Position * _gridUnitSize, _currentEdge.U.Position * _gridUnitSize);
             }
         }
 

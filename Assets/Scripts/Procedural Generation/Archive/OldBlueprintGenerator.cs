@@ -26,8 +26,8 @@ namespace RyansLibrary.Labyrinth
     /// </summary>
     public class Blueprint
     {
-        public string CellID { get; private set; }
-        public Vector3Int Position { get; private set; }        // Position of blueprint room in room coords
+        public readonly string CellID;
+        public readonly Vector3Int Position;      // Position of blueprint room in room coords
         public bool Available { get; set; }
         public bool[] EntryPointFlags { get; set; }
 
@@ -41,7 +41,7 @@ namespace RyansLibrary.Labyrinth
         }
     }
 
-    public class BlueprintGenerator
+    public class OldBlueprintGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
         const int STANDARD_FACE_COUNT = 6;
@@ -56,7 +56,7 @@ namespace RyansLibrary.Labyrinth
 
         private bool _debugLogs = false;
 
-        public BlueprintGenerator(Path masterPath, Dictionary<Vector3Int, Blueprint> masterDictionary)
+        public OldBlueprintGenerator(Path masterPath, Dictionary<Vector3Int, Blueprint> masterDictionary)
         {
             _masterPathReference = masterPath;
             _masterDictionaryReference = masterDictionary;
@@ -334,7 +334,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Make sure the path has atleast one room cell that can spawn
-            if (path.PathLength <= 0)
+            if (path.DesiredPathLength <= 0)
             {
                 Debug.LogWarning($"Map Generator Error: Path {path.Name} has a length of 0 or is negative.");
                 return false;
@@ -366,7 +366,7 @@ namespace RyansLibrary.Labyrinth
 
         private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, Blueprint previousBlueprint)
         {
-            if (path.BlueprintCount() >= path.PathLength)
+            if (path.BlueprintCount() >= path.DesiredPathLength)
                 return true;
 
             // Attempt to place a new room
