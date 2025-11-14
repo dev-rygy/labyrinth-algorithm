@@ -4,7 +4,7 @@
  * Last Modified:   11/10/2025 (Ryan)
  * Notes:           
 */
-using RyansLibrary.AI;
+using RyansLibrary.Console;
 using RyansLibrary.Graphs;
 using RyansLibrary.UnityEditor;
 using System;
@@ -52,7 +52,6 @@ namespace RyansLibrary.Labyrinth
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
         [SerializeField] private int _gridUnitSize = 13;                        // The unit size of the room grid's cell
         [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
-        [SerializeField] private bool _retryGenerationOnFail;
 
         [Header("Blueprint Settings")]
         [SerializeField] private int _maxPlacementAttempts = 50;
@@ -258,9 +257,26 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        public void Advance()
+        public void AdvanceExecution(int stepLength)
         {
+            if (!IsGenerating)
+                return;
+
+            if (_advanceRequested is true)
+            {
+                Debug.LogWarning("Map Generator Warning: Advance requested but current operation is not yet finished running.");
+                return;
+            }
+
             _advanceRequested = true;
+        }
+
+        public void AdvanceAll()
+        {
+            if (!IsGenerating)
+                return;
+
+            // TODO: Advance through all operations but leave the sequential debugger on
         }
 
         private IEnumerator ExecuteOperations()
@@ -335,13 +351,18 @@ namespace RyansLibrary.Labyrinth
             if (!Application.isPlaying)     // Only run code when game is executing
                 return;
 
+            IsGenerating = false;
+
             mapGeneratorCoroutine = null;
             _advanceRequested = false;
             _context.ClearAll();
 
+            if (_debugLogs) Debug.Log("Map Generator: Map generation restarting.");
+
             DestroyAllRooms();      // Destroy all rooms from last generation
-            ScenesManager.Instance.ReloadScene();       // Reload to reset data
-            StartGeneration();
+
+            // TODO: Delete after demo
+            ApplicationController.Instance.StartNewGame();
         }
 
         /// <summary>
@@ -352,20 +373,12 @@ namespace RyansLibrary.Labyrinth
             IsGenerating = false;
 
             StopCoroutine(mapGeneratorCoroutine);
-            _context.ClearAll();
             mapGeneratorCoroutine = null;
             _advanceRequested = false;
+            _context.ClearAll();
 
-            Debug.LogWarning("Map Generator Warning: Map generation failed");
+            Debug.LogError("Map Generator Error: Map generation failed.");
             OnGenerationFailed?.Invoke();
-
-            if (!_retryGenerationOnFail)
-                return;
-
-            Instance.DestroyAllRooms();
-
-            // TODO: Delete after demo
-            ApplicationController.Instance.StartNewGame();
         }
         #endregion
 
@@ -911,6 +924,8 @@ namespace RyansLibrary.Labyrinth
         public void ToggleBlueprintLogs(bool toggle)
         {
             _debugBlueprintLogs = toggle;
+            BlueprintOperation.ToggleDebugLogs(toggle);
+            BlueprintData.ToggleDebugLogs(toggle);
         }
 
         public void ToggleRoomGeneratorLogs(bool toggle)
@@ -937,6 +952,12 @@ namespace RyansLibrary.Labyrinth
         public void ToggleBoundsGizmos(bool toggle)
         {
             _debugBoundsGizmos = toggle;
+        }
+
+        // Stepwise Function Toggles
+        public void ToggleStepwiseDebugging(bool toggle)
+        {
+            _debugSequential = toggle;
         }
 
         private void OnDrawGizmos()
@@ -1070,6 +1091,55 @@ namespace RyansLibrary.Labyrinth
                 Gizmos.color = path.PathGizmoColor;
                 Gizmos.DrawCube(blueprint.Position * _gridUnitSize, unitSize);
             }
+        }
+
+        private void RegisterConsoleCommands()
+        {
+            // Map generator step command - Step the map generator by a desired amount of operations.
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.step",
+                "When debugging will advance the map generator operation queue by a desired amount of operations.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        AdvanceExecution(1);
+                        Debug.Log($"Console: Map generator stepped 1 operation(s).");
+                        return;
+                    }
+
+                    if (int.TryParse(args[0], out int stepLength))
+                    {
+                        AdvanceExecution(stepLength);
+                        Debug.Log($"Console: Map generator stepped {stepLength} operation(s).");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Console Warning: Invalid Arguement {args[0]}. Please input the amount of steps to advance.");
+                    }
+                    Debug.Log($"Console: Map Generator Step Command");
+                }));
+
+            // Map generator step all command - Execute all of the remaining map generator operations.
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.stepall",
+                "When debugging, will execute all the remaining operations in the operation queue.",
+                args =>
+                {
+                    AdvanceAll();
+                    Debug.Log($"Console: Map Generator Step All Command");
+                }));
+
+            // Map generator restart command - Resets and restarts the map generator state.
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.restart",
+                "When debugging, will reset the map generator and start a new generation.",
+                args =>
+                {
+                    // TODO: Reset Labyrinth
+                    Debug.Log($"Console: Map Generator Restart Command");
+                }));
+
         }
         #endregion
     }

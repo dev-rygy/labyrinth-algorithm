@@ -7,6 +7,7 @@
 using UnityEditor;
 using UnityEngine;
 using System;
+using Unity.Properties;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -17,8 +18,6 @@ namespace RyansLibrary.Labyrinth
     [CustomEditor(typeof(MapGeneratorController))]
     public class MapGeneratorEditor : Editor
     {
-        public event Action OnGenerationRestart;
-
         private bool isDebugging = true;
 
         // Logs
@@ -32,19 +31,16 @@ namespace RyansLibrary.Labyrinth
         private bool showTriangulationGizmos = false;
         private bool showBoundGizmos = false;
 
+        // Stepwise variables
+        private bool showStepwiseFunctions = false;
+        private bool toggleStepwiseDebugging = false;
+
         private MapGeneratorController generator;
 
         private void OnEnable()
         {
             // Get the target script
             generator = (MapGeneratorController)target;
-
-            OnGenerationRestart += generator.ResetLabyrinth;
-        }
-
-        private void OnDisable()
-        {
-            OnGenerationRestart -= generator.ResetLabyrinth;
         }
 
         public override void OnInspectorGUI()
@@ -105,19 +101,35 @@ namespace RyansLibrary.Labyrinth
             generator.ToggleTriangulationGizmos(showTriangulationGizmos);
             generator.ToggleBoundsGizmos(showBoundGizmos);
 
-            if (GUILayout.Button("Begin/Restart Generation"))
+            if (GUILayout.Button("Toggle Stepwise Generation"))
             {
-                // Reset Map Generation
-                OnGenerationRestart?.Invoke();
+                showStepwiseFunctions = !showStepwiseFunctions;
+                toggleStepwiseDebugging = !toggleStepwiseDebugging;
             }
 
-            if (generator.IsGenerating)
+            if (showStepwiseFunctions)
             {
-                if (GUILayout.Button("Step Generation"))
+                if (generator.IsGenerating)
                 {
-                    // TODO: Step Through Map Generation
+                    if (GUILayout.Button("Step Generation", GUILayout.ExpandWidth(false)))
+                    {
+                        // TODO: Step through map generation
+                        generator.AdvanceExecution(1);
+                    }
+
+                    if (GUILayout.Button("Step All", GUILayout.ExpandWidth(false)))
+                    {
+                        generator.AdvanceAll();
+                    }
                 }
             }
+
+            if (GUILayout.Button("Restart Generation"))
+            {
+                generator.ResetLabyrinth();
+            }
+
+            generator.ToggleStepwiseDebugging(toggleStepwiseDebugging);
 
             EditorGUILayout.EndToggleGroup();
         }

@@ -68,6 +68,17 @@ public class ScenesManager : MonoBehaviour
         }
     }
 
+    public IEnumerator ReloadSceneAsync()
+    {
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        var asyncLoad = SceneManager.LoadSceneAsync(sceneIndex);
+
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
+
     public void LoadNextScene()
     {
         int sceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
