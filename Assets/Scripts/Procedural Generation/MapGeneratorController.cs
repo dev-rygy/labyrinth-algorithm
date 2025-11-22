@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   11/10/2025 (Ryan)
+ * Last Modified:   11/22/2025 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Console;
@@ -96,6 +96,8 @@ namespace RyansLibrary.Labyrinth
 
         // Stepwise procedure
         private bool _debugSequential;
+        private int _stepBudget = 0;
+        private bool _runToEnd = false;
 
         private MapGenerationContext _context;
         #endregion
@@ -161,11 +163,13 @@ namespace RyansLibrary.Labyrinth
 
             // Initialize Blueprint Generator
             _bpg = new BlueprintGenerator(MasterPath, MasterDictionary);
-            _bpg.ToggleDebugLogs(_debugBlueprintLogs);
 
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(MasterPath, MasterDictionary, _gridUnitSize, _roomContainer);
-            _roomGenerator.ToggleDebugLogs(_debugRoomGeneratorLogs);
+
+            // Toggle Logs
+            ToggleBlueprintLogs(_debugBlueprintLogs);
+            ToggleRoomGeneratorLogs(_debugRoomGeneratorLogs);
 
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
@@ -257,18 +261,29 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        public void AdvanceExecution(int stepLength)
+        private void ConsumeStep()
         {
             if (!IsGenerating)
                 return;
 
-            if (_advanceRequested is true)
-            {
-                Debug.LogWarning("Map Generator Warning: Advance requested but current operation is not yet finished running.");
+            if (_runToEnd)
                 return;
-            }
 
-            _advanceRequested = true;
+            if (_stepBudget > 0)
+                _stepBudget--;
+        }
+
+
+        public void Advance(int stepLength)
+        {
+            if (!IsGenerating)
+                return;
+
+            if (stepLength <= 0)
+                return;
+
+            _stepBudget += stepLength;
+            _runToEnd = false;
         }
 
         public void AdvanceAll()
@@ -276,7 +291,7 @@ namespace RyansLibrary.Labyrinth
             if (!IsGenerating)
                 return;
 
-            // TODO: Advance through all operations but leave the sequential debugger on
+            _runToEnd = true;
         }
 
         private IEnumerator ExecuteOperations()
@@ -286,8 +301,10 @@ namespace RyansLibrary.Labyrinth
             {
                 if (_debugSequential)
                 {
-                    yield return new WaitUntil(() => _advanceRequested);
-                    _advanceRequested = false;
+                    while (!_runToEnd && _stepBudget <= 0)
+                        yield return null;
+
+                    ConsumeStep();
                 }
 
                 // Dequeue the current opration
@@ -300,21 +317,20 @@ namespace RyansLibrary.Labyrinth
 
                 // Execute Operation
                 if (_debugBlueprintLogs) Debug.Log($"Running Operation {operation.OperationID}");
+
                 bool result = operation.Execute();
-                if (result)
-                {
-                    if (_debugBlueprintLogs)
-                        Debug.Log("Execution Successs!");
-                }
-                else
-                {
-                    if (_debugBlueprintLogs)
-                        Debug.Log("Execution Failure.");
-                }
+
+
+                if (_debugBlueprintLogs)
+                    Debug.Log(result ? "Execution Successs!" : "Execution Failure");
+
 
                 // Operation failed to execute; stop running generation
                 if (!result)
+                {
                     GenerationFailed();
+                    yield break;
+                }
             }
 
             if (_debugBlueprintLogs) Debug.Log("End of operation execution.");
@@ -921,16 +937,25 @@ namespace RyansLibrary.Labyrinth
             _debugLogs = toggle;
         }
 
+        // Toggle blueprint logs; this includes blueprint operations and blueprint spawning
         public void ToggleBlueprintLogs(bool toggle)
         {
             _debugBlueprintLogs = toggle;
             BlueprintOperation.ToggleDebugLogs(toggle);
             BlueprintData.ToggleDebugLogs(toggle);
+
+            if (_bpg is null)
+                return;
+
+            _bpg.ToggleDebugLogs(_debugBlueprintLogs);
         }
 
         public void ToggleRoomGeneratorLogs(bool toggle)
         {
-            _debugRoomGeneratorLogs = toggle;
+            if (_roomGenerator is null)
+                return;
+
+            _roomGenerator.ToggleDebugLogs(toggle);
         }
 
         // Gizmo Toggles
@@ -999,7 +1024,7 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation()
         {
-            if (_context.Triangulations is null)
+            if (_context is null || _context.Triangulations is null)
                 return;
 
             foreach (List<Edge> edgeList in _context.Triangulations)
@@ -1015,7 +1040,7 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawMSTs()
         {
-            if (_context.MinimumSpanningTrees is null)
+            if (_context is null || _context.MinimumSpanningTrees is null)
                 return;
 
             foreach (List<Edge> edgeList in _context.MinimumSpanningTrees)
@@ -1034,7 +1059,7 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawRandomCycles()
         {
-            if (_context.RandomCycles is null) 
+            if (_context is null || _context.RandomCycles is null) 
                 return;
 
             foreach (List<Edge> edgeList in _context.RandomCycles)
@@ -1103,14 +1128,14 @@ namespace RyansLibrary.Labyrinth
                 {
                     if (args.Length < 1)
                     {
-                        AdvanceExecution(1);
+                        Advance(1);
                         Debug.Log($"Console: Map generator stepped 1 operation(s).");
                         return;
                     }
 
                     if (int.TryParse(args[0], out int stepLength))
                     {
-                        AdvanceExecution(stepLength);
+                        Advance(stepLength);
                         Debug.Log($"Console: Map generator stepped {stepLength} operation(s).");
                     }
                     else

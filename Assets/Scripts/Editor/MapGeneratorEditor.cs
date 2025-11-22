@@ -109,16 +109,20 @@ namespace RyansLibrary.Labyrinth
 
             if (showStepwiseFunctions)
             {
-                if (generator.IsGenerating)
+                if (GUILayout.Button("Step Generation", GUILayout.ExpandWidth(false)))
                 {
-                    if (GUILayout.Button("Step Generation", GUILayout.ExpandWidth(false)))
+                    if (generator.IsGenerating)
                     {
-                        // TODO: Step through map generation
-                        generator.AdvanceExecution(1);
+                        // Step through map generation
+                        generator.Advance(1);
                     }
+                }
 
-                    if (GUILayout.Button("Step All", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("Step All", GUILayout.ExpandWidth(false)))
+                {
+                    if (generator.IsGenerating)
                     {
+                        // Execute all operations at once
                         generator.AdvanceAll();
                     }
                 }

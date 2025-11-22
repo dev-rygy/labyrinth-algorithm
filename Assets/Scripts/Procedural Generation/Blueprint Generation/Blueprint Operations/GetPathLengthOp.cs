@@ -1,3 +1,9 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    10/28/2025
+ * Last Modified:   11/01/2025 (Ryan)
+ * Notes:           
+*/
 using RyansLibrary.Labyrinth;
 using UnityEngine;
 
