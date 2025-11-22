@@ -123,6 +123,8 @@ namespace RyansLibrary.Labyrinth
         {
             _context = new();
             _bpg = new(MasterPath, MasterDictionary);
+
+            RegisterConsoleCommands();
         }
 
         public IEnumerator StartGeneration()
