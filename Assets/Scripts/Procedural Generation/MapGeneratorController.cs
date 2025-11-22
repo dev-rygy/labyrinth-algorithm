@@ -1122,6 +1122,33 @@ namespace RyansLibrary.Labyrinth
 
         private void RegisterConsoleCommands()
         {
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.togglestepwisedebug",
+                "Toggles sequential debugging for map generator; step though generation.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("No arguement given, please enter true or false");
+                        return;
+                    }
+
+                    if (args[0] == "true")
+                    {
+                        ToggleStepwiseDebugging(true);
+                    }
+                    else if (args[0] == "false")
+                    {
+                        ToggleStepwiseDebugging(false);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Console Warning: Invalid Arguement {args[0]}. Please input either true or false.");
+                    }
+                    Debug.Log($"Console: Map Generator Toggle Stepwise Debug Command");
+                }
+                ));
+
             // Map generator step command - Step the map generator by a desired amount of operations.
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.step",

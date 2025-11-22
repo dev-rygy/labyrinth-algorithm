@@ -105,6 +105,8 @@ namespace RyansLibrary.Labyrinth
             {
                 showStepwiseFunctions = !showStepwiseFunctions;
                 toggleStepwiseDebugging = !toggleStepwiseDebugging;
+
+                generator.ToggleStepwiseDebugging(toggleStepwiseDebugging);
             }
 
             if (showStepwiseFunctions)
@@ -132,8 +134,6 @@ namespace RyansLibrary.Labyrinth
             {
                 generator.ResetLabyrinth();
             }
-
-            generator.ToggleStepwiseDebugging(toggleStepwiseDebugging);
 
             EditorGUILayout.EndToggleGroup();
         }
