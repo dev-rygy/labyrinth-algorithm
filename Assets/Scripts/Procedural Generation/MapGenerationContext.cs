@@ -1,11 +1,11 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2025
- * Last Modified:   11/08/2025 (Ryan)
+ * Last Modified:   02/06/2026 (Ryan)
  * Notes:           
 */
-using System.Collections.Generic;
 using RyansLibrary.Graphs;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
@@ -96,15 +96,15 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Attempts to move the operation queue to the target operation, skipping intermediate operations as needed.
+        /// Attempts to reposition the operation queue and history to the specified operation, moving forward or
+        /// backward as needed.
         /// </summary>
-        /// <remarks>This method allows direct navigation to a specific operation within the queue, either
-        /// forward or backward. If the operation queue is empty or the operation history is exhausted during a reverse
-        /// jump, the method returns false and logs an error. The jump is performed by dequeuing or re-adding operations
-        /// as necessary until the target operation is reached.</remarks>
+        /// <remarks>The method moves operations between the queue and history to reach the specified
+        /// target. If the target operation is not found, or if the operation ID format is invalid, the method returns
+        /// false. The jump is limited to prevent infinite loops and will abort if the max limit is reached.</remarks>
         /// <param name="targetOperationID">The unique identifier of the target operation to jump to. Must be in the format "prefix:number" and
         /// correspond to an operation present in the queue or history.</param>
-        /// <returns>true if the jump to the specified operation was successful; otherwise, false.</returns>
+        /// <returns>true if the jump successfully reaches the target operation; otherwise, false.</returns>
         public bool Jump(string targetOperationID)
         {
             // Check to see if queue has operations
@@ -149,7 +149,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     // Move forward: queue -> history
                     BlueprintOperation op = OperationQueueDequeue();
-                    if (op == null)
+                    if (op is null)
                         return false;
 
                     OperationHistory.Push(op);
@@ -157,7 +157,7 @@ namespace RyansLibrary.Labyrinth
                     // If the queue became empty, we can't reach anything further
                     if (OperationQueue.Count == 0)
                     {
-                        Debug.LogError($"Map Generator Error: Target operation not found in queue ({targetOperationID}).");
+                        Debug.LogError($"Map Generator / Context Error: Target operation not found in queue ({targetOperationID}).");
                         return false;
                     }
                 }
@@ -166,7 +166,7 @@ namespace RyansLibrary.Labyrinth
                     // Move backward: history -> queue front
                     if (OperationHistory.Count == 0)
                     {
-                        Debug.LogError($"Map Generator Error: Operation history exhausted while attempting reverse jump to ({targetOperationID}).");
+                        Debug.LogError($"Map Generator / Context Error: Operation history exhausted while attempting reverse jump to ({targetOperationID}).");
                         return false;
                     }
 
@@ -175,123 +175,210 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            /* OLD CODE (DELETE LATER)
-            // Loop until target operation is found
-            while (OperationQueuePeek().OperationID != targetOperationID)
-            {
-                // Get the current operation's ID number
-                int currOperationNum = int.Parse(OperationQueuePeek().OperationID.Split(':')[1]);
-
-                // Step forward in queue; Forward Jump
-                if (targetOperationNum > currOperationNum)
-                {
-                    BlueprintOperation op = OperationQueueDequeue();
-                    if (op is null)
-                        return false;
-
-                    OperationHistory.Push(op);
-                }
-                // Step backward in queue; Reverse Jump
-                else
-                {
-                    if (OperationHistory.Count <= 0)
-                    {
-                        Debug.LogError("Map Generator / Context Error: Operation history exhausted while attempting reverse jump.");
-                        return false;
-                    }
-
-                    BlueprintOperation op = OperationHistory.Pop();
-                    OperationQueueAddFront(op);
-                }
-            }
-            return true;
-            */
-
-            Debug.LogError($"Map Generator Error: Jump aborted (guard limit hit). Target not found: {targetOperationID}.");
+            Debug.LogError($"Map Generator / Context Error: Jump aborted (guard limit hit). Target not found: {targetOperationID}.");
             return false;
+
+            static bool TryParseOpNum(string operationId, out int num)
+            {
+                num = default;
+                if (string.IsNullOrWhiteSpace(operationId))
+                    return false;
+
+                int colon = operationId.LastIndexOf(':');
+                if (colon < 0 || colon == operationId.Length - 1)
+                    return false;
+
+                return int.TryParse(operationId[(colon + 1)..], out num);
+            }
         }
-
-        // Local helpers
-        private bool TryParseOpNum(string operationId, out int num)
-        {
-            num = default;
-            if (string.IsNullOrWhiteSpace(operationId)) 
-                return false;
-
-            int colon = operationId.LastIndexOf(':');
-            if (colon < 0 || colon == operationId.Length - 1) 
-                return false;
-
-            return int.TryParse(operationId[(colon + 1)..], out num);
-        }
-
-
+        
+        /// <summary>
+        /// Attempts to retrieve a value associated with the specified memory ID and type from the internal memory store.
+        /// </summary>
+        /// <remarks>If the memory entry is not found or is not of the specified type, a warning is logged
+        /// and the output value is set to its default.</remarks>
+        /// <typeparam name="T">The type of the value to retrieve.</typeparam>
+        /// <param name="memoryID">The unique identifier for the memory entry to retrieve. Cannot be null.</param>
+        /// <param name="value">When this method returns, contains the value associated with the specified memory ID if found and of type
+        /// <typeparamref name="T">; otherwise, the default value for <typeparamref name="T">.</param>
+        /// <returns>true if a value of type <typeparamref name="T"> was found for the specified memory ID; otherwise, false.</returns>
         public bool TryGet<T>(string memoryID, out T value)
         {
+            if (_memory is null)
+            {
+                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                value = default;
+                return false;
+            }
+
+            // Check to see if memory contains the requested ID and if the value is of the expected type
             if (_memory.TryGetValue(memoryID, out object obj) && obj is T castValue)
             {
                 value = castValue;
                 return true;
             }
 
-            Debug.LogWarning($"Map Generator Warning: Data with memory ID ({memoryID}) could not be found.");
-            value = default; 
+            Debug.LogWarning($"Map Generator / Context Warning: Data with memory ID ({memoryID}) could not be found.");
+            value = default;
             return false;
         }
 
+        /// <summary>
+        /// Manupulate or allocate the stored value in a specified memory slot.
+        /// </summary>
+        /// <param name="memoryID">The unique identifier for the memory entry to set. Cannot be null.</param>
+        /// <param name="value">The value to associate with the specified memory identifier. Can be any object.</param>
         public void Set(string memoryID, object value)
         {
+            if (_memory is null)
+            {
+                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                return;
+            }
+
             _memory[memoryID] = value;
         }
 
-        public bool Contains(string memoryID) => _memory.ContainsKey(memoryID);
+        /// <summary>
+        /// Determines whether the memory contains an entry with the specified identifier.
+        /// </summary>
+        /// <param name="memoryID">The unique identifier of the memory entry to locate. Cannot be null.</param>
+        /// <returns>true if an entry with the specified identifier exists in the memory; otherwise, false.</returns>
+        public bool Contains(string memoryID)
+        {
+            if (_memory is null)
+            {
+                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                return false;
+            }
 
+            return _memory.ContainsKey(memoryID);
+        }
+
+        /// <summary>
+        /// Removes the entry with the specified memory identifier from the memory collection, if it exists.
+        /// </summary>
+        /// <param name="memoryID">The unique identifier of the memory entry to remove. Cannot be null.</param>
         public void Remove(string memoryID)
         {
+            if (_memory is null)
+            {
+                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                return;
+            }
+
             if (_memory.ContainsKey(memoryID))
                 _memory.Remove(memoryID);
         }
 
-        internal void ClearMemory() => _memory.Clear();
-
-        public void ClearAll()
+        /// <summary>
+        /// Clears all data stored in the memory object associated with the current context.
+        /// </summary>
+        /// <remarks>This method should be called only when it is safe to discard all memory data.</remarks>
+        internal void ClearMemory()
         {
-            // Holds arguements and return values from operations
+            if (_memory is null)
+            {
+                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                return;
+            }
+
             _memory.Clear();
-
-            // Initialize Debugging Lists
-            Triangulations.Clear();
-            MinimumSpanningTrees.Clear();
-            RandomCycles.Clear();
-
-            // Initialize operations
-            OperationQueue.Clear();
-            OperationHistory.Clear();
         }
 
+        /// <summary>
+        /// Clears all stored data, including memory, debugging lists, and operation history.
+        /// </summary>
+        /// <remarks>Call this method to reset the internal state of the object, removing all accumulated
+        /// results and pending operations. After calling this method, the object will be in a clean state, as if newly
+        /// initialized.</remarks>
+        public void ClearAll()
+        {
+            // Clear memory
+            if (_memory == null)
+            {
+                Debug.LogWarning("[MapGenerator][Context] _memory is null; skipping memory clear.");
+            }
+            else
+            {
+                _memory.Clear();
+            }
+
+            // Clear debugging lists (clear what exists)
+            if (Triangulations == null)
+                Debug.LogWarning("[MapGenerator][Context] Triangulations is null; skipping.");
+            else
+                Triangulations.Clear();
+
+            if (MinimumSpanningTrees == null)
+                Debug.LogWarning("[MapGenerator][Context] MinimumSpanningTrees is null; skipping.");
+            else
+                MinimumSpanningTrees.Clear();
+
+            if (RandomCycles == null)
+                Debug.LogWarning("[MapGenerator][Context] RandomCycles is null; skipping.");
+            else
+                RandomCycles.Clear();
+
+            // Clear operation collections
+            if (OperationQueue == null)
+                Debug.LogWarning("[MapGenerator][Context] OperationQueue is null; skipping.");
+            else
+                OperationQueue.Clear();
+
+            if (OperationHistory == null)
+                Debug.LogWarning("[MapGenerator][Context] OperationHistory is null; skipping.");
+            else
+                OperationHistory.Clear();
+        }
+
+        /// <summary>
+        /// Retrieves the next available operation identifier and advances the internal counter.
+        /// </summary>
+        /// <remarks>This method is not thread-safe. If called concurrently from multiple threads,
+        /// operation identifiers may not be unique.</remarks>
+        /// <returns>The current operation identifier before incrementing. Each call returns a unique integer value.</returns>
         public int ConsumeOperationID()
         {
             return OperationIDCounter++;
         }
 
+        /// <summary>
+        /// Generates and returns the next available memory identifier.
+        /// </summary>
+        /// <remarks>This method is not thread-safe. If called concurrently from multiple threads,
+        /// operation identifiers may not be unique.</remarks>
+        /// <returns>The next integer value representing a unique memory identifier.</returns>
         public int ConsumeMemoryID()
         {
             return MemoryIDCounter++;
         }
 
+        /// <summary>
+        /// Adds a triangulation, represented as a list of edges, to the collection of triangulations to be used for debugging purposes.
+        /// </summary>
+        /// <param name="triangulation">The list of edges that defines the triangulation to add. Cannot be null.</param>
         public void AddToTriangulationsList(List<Edge> triangulation)
         {
-            Triangulations.Add(triangulation);
+            Triangulations?.Add(triangulation);
         }
 
+        /// <summary>
+        /// Adds a MST, represented as a list of edges, to the collection of MSTs to be used for debugging purposes.
+        /// </summary>
+        /// <param name="mst">The list of edges that defines the minimum spanning tree to add. Cannot be null.</param>
         public void AddToMSTList(List<Edge> mst)
         {
-            MinimumSpanningTrees.Add(mst);
+            MinimumSpanningTrees?.Add(mst);
         }
 
+        /// <summary>
+        /// Adds a random cycle, represented as a list of edges, to the collection of random cycles to be used for debugging purposes.
+        /// </summary>
+        /// <param name="rcList">The list of edges that defines the random cycle to add. Cannot be null.</param>
         public void AddToRandomCyclesList(List<Edge> rcList)
         {
-            RandomCycles.Add(rcList);
+            RandomCycles?.Add(rcList);
         }
     }
 }
