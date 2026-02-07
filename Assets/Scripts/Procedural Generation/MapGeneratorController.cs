@@ -73,9 +73,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _currentEdgeColor;
 
         // ***** Private Variables *****
-
         private Coroutine mapGeneratorCoroutine;
-        private bool _advanceRequested;
 
         private BlueprintGenerator _bpg;
         private RoomGenerator _roomGenerator;
@@ -322,10 +320,7 @@ namespace RyansLibrary.Labyrinth
 
                 bool result = operation.Execute();
 
-
-                if (_debugBlueprintLogs)
-                    Debug.Log(result ? "Execution Successs!" : "Execution Failure");
-
+                if (_debugBlueprintLogs) Debug.Log(result ? "Execution Successs!" : "Execution Failure");
 
                 // Operation failed to execute; stop running generation
                 if (!result)
@@ -372,7 +367,6 @@ namespace RyansLibrary.Labyrinth
             IsGenerating = false;
 
             mapGeneratorCoroutine = null;
-            _advanceRequested = false;
             _context.ClearAll();
 
             if (_debugLogs) Debug.Log("Map Generator: Map generation restarting.");
@@ -392,7 +386,6 @@ namespace RyansLibrary.Labyrinth
 
             StopCoroutine(mapGeneratorCoroutine);
             mapGeneratorCoroutine = null;
-            _advanceRequested = false;
             _context.ClearAll();
 
             Debug.LogError("Map Generator Error: Map generation failed.");
