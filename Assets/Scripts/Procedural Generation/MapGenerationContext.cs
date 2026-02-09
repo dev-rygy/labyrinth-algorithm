@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2025
- * Last Modified:   02/06/2026 (Ryan)
+ * Last Modified:   02/08/2026 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Graphs;
@@ -110,14 +110,14 @@ namespace RyansLibrary.Labyrinth
             // Check to see if queue has operations
             if (OperationQueue.Count <= 0)
             {
-                Debug.LogError("Map Generator / Context Error: Attempted to perform jump operation while the operation queue was empty.");
+                Debug.LogError("[MapGenerator][Context] Attempted to perform jump operation while the operation queue was empty.");
                 return false;
             }
 
             // Validate target operation ID format
             if (!TryParseOpNum(targetOperationID, out int targetOperationNum))
             {
-                Debug.LogError($"Map Generator / Context Error: Invalid target operation ID format ({targetOperationID}). Expected \"prefix:number\".");
+                Debug.LogError($"[MapGenerator][Context] Invalid target operation ID format ({targetOperationID}). Expected \"prefix:number\".");
                 return false;
             }
 
@@ -130,7 +130,7 @@ namespace RyansLibrary.Labyrinth
                 BlueprintOperation current = OperationQueuePeek();
                 if (current == null)
                 {
-                    Debug.LogError($"Map Generator / Context Error: Operation queue exhausted before reaching target ({targetOperationID}).");
+                    Debug.LogError($"[MapGenerator][Context] Operation queue exhausted before reaching target ({targetOperationID}).");
                     return false;
                 }
 
@@ -140,7 +140,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (!TryParseOpNum(current.OperationID, out int currNum))
                 {
-                    Debug.LogError($"Map Generator / Context Error: Invalid operation ID format in queue ({current.OperationID}).");
+                    Debug.LogError($"[MapGenerator][Context] Invalid operation ID format in queue ({current.OperationID}).");
                     return false;
                 }
 
@@ -157,7 +157,7 @@ namespace RyansLibrary.Labyrinth
                     // If the queue became empty, we can't reach anything further
                     if (OperationQueue.Count == 0)
                     {
-                        Debug.LogError($"Map Generator / Context Error: Target operation not found in queue ({targetOperationID}).");
+                        Debug.LogError($"[MapGenerator][Context] Target operation not found in queue ({targetOperationID}).");
                         return false;
                     }
                 }
@@ -166,7 +166,7 @@ namespace RyansLibrary.Labyrinth
                     // Move backward: history -> queue front
                     if (OperationHistory.Count == 0)
                     {
-                        Debug.LogError($"Map Generator / Context Error: Operation history exhausted while attempting reverse jump to ({targetOperationID}).");
+                        Debug.LogError($"[MapGenerator][Context] Operation history exhausted while attempting reverse jump to ({targetOperationID}).");
                         return false;
                     }
 
@@ -175,7 +175,7 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            Debug.LogError($"Map Generator / Context Error: Jump aborted (guard limit hit). Target not found: {targetOperationID}.");
+            Debug.LogError($"[MapGenerator][Context] Jump aborted (guard limit hit). Target not found: {targetOperationID}.");
             return false;
 
             static bool TryParseOpNum(string operationId, out int num)
@@ -206,7 +206,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_memory is null)
             {
-                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 value = default;
                 return false;
             }
@@ -218,7 +218,7 @@ namespace RyansLibrary.Labyrinth
                 return true;
             }
 
-            Debug.LogWarning($"Map Generator / Context Warning: Data with memory ID ({memoryID}) could not be found.");
+            Debug.LogWarning($"[MapGenerator][Context] Data with memory ID ({memoryID}) could not be found.");
             value = default;
             return false;
         }
@@ -232,7 +232,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_memory is null)
             {
-                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return;
             }
 
@@ -248,7 +248,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_memory is null)
             {
-                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return false;
             }
 
@@ -263,7 +263,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_memory is null)
             {
-                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return;
             }
 
@@ -279,7 +279,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_memory is null)
             {
-                Debug.LogError($"Map Generator / Context Error: Memory object not set.");
+                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return;
             }
 

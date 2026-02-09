@@ -45,7 +45,7 @@ namespace RyansLibrary.Console
         {
             if (_commands.ContainsKey(command.CommandId.ToLower()))     // Prevent double command registry
             {
-                Debug.LogWarning($"Console Registry Warning: Command '{command.CommandId}' is already registered.");
+                Debug.LogWarning($"[Console][ConsoleRegistry] Command '{command.CommandId}' is already registered.");
                 return;
             }
 
@@ -80,12 +80,12 @@ namespace RyansLibrary.Console
                 }
                 catch (Exception e)     // Error executing command
                 {
-                    Debug.LogError($"Console Registry Error: Error executing command '{commandName}': {e.Message}");
+                    Debug.LogError($"[Console][ConsoleRegistry] Error executing command '{commandName}': {e.Message}");
                 }
             }
             else    // Command keyword not recognized
             {
-                Debug.LogWarning($"Console Registry Warning: Unknown command - {commandName}");
+                Debug.LogWarning($"[Console][ConsoleRegistry] Unknown command - {commandName}");
             }
 
             return false;
