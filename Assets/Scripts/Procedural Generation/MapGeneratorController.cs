@@ -1111,7 +1111,9 @@ namespace RyansLibrary.Labyrinth
                 Gizmos.DrawCube(blueprint.Position * _gridUnitSize, unitSize);
             }
         }
+        #endregion
 
+        #region Console Commands
         private void RegisterConsoleCommands()
         {
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
@@ -1147,15 +1149,21 @@ namespace RyansLibrary.Labyrinth
                 "When debugging will advance the map generator operation queue by a desired amount of operations.",
                 args =>
                 {
-                    if (args.Length < 1)
+                    if (args.Length < 1)        // No step amount given; default to stepping 1 operation
                     {
                         Advance(1);
                         Debug.Log($"[Console] Map generator stepped 1 operation(s).");
                         return;
                     }
 
-                    if (int.TryParse(args[0], out int stepLength))
+                    if (int.TryParse(args[0], out int stepLength))      // Step amount given and is valid
                     {
+                        if (stepLength < 1)
+                        {
+                            Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input a positive integer for the amount of steps to advance.");
+                            return;
+                        }
+
                         Advance(stepLength);
                         Debug.Log($"[Console] Map generator stepped {stepLength} operation(s).");
                     }
@@ -1182,7 +1190,7 @@ namespace RyansLibrary.Labyrinth
                 "When debugging, will reset the map generator and start a new generation.",
                 args =>
                 {
-                    // TODO: Reset Labyrinth
+                    ResetLabyrinth();
                     Debug.Log($"[Console] Map Generator Restart Command");
                 }));
 
