@@ -44,7 +44,7 @@ public class SelectRandomElementFromListOp : BlueprintOperation
                 }
 
                 Edge randomEdge = SelectRandomSetFromList(edgeList);
-                _context.Set(OutputPorts[0], randomEdge);
+                _context.Malloc(OutputPorts[0], randomEdge);
                 return true;
             case "Blueprint":
                 if (!TryGetInput(0, out List<Blueprint> blueprintList))
@@ -56,7 +56,7 @@ public class SelectRandomElementFromListOp : BlueprintOperation
                 }
 
                 Blueprint randomBlueprint = SelectRandomSetFromList(blueprintList);
-                _context.Set(OutputPorts[0], randomBlueprint);
+                _context.Malloc(OutputPorts[0], randomBlueprint);
                 return true;
             default:
                 Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");

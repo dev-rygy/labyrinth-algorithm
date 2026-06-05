@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2025
- * Last Modified:   02/08/2026 (Ryan)
+ * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Graphs;
@@ -33,12 +33,12 @@ namespace RyansLibrary.Labyrinth
         public List<List<Edge>> RandomCycles { get; private set; }
 
         // Private Variables
-        private Dictionary<string, object> _memory;
+        private Dictionary<string, object> _blueprintMemory;
 
         public MapGenerationContext()
         {
             // Holds arguements and return values from operations
-            _memory = new Dictionary<string, object>();
+            _blueprintMemory = new Dictionary<string, object>();
 
             // Initialize Debugging Lists
             Triangulations = new();
@@ -204,7 +204,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>true if a value of type <typeparamref name="T"> was found for the specified memory ID; otherwise, false.</returns>
         public bool TryGet<T>(string memoryID, out T value)
         {
-            if (_memory is null)
+            if (_blueprintMemory is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 value = default;
@@ -212,7 +212,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Check to see if memory contains the requested ID and if the value is of the expected type
-            if (_memory.TryGetValue(memoryID, out object obj) && obj is T castValue)
+            if (_blueprintMemory.TryGetValue(memoryID, out object obj) && obj is T castValue)
             {
                 value = castValue;
                 return true;
@@ -228,15 +228,15 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="memoryID">The unique identifier for the memory entry to set. Cannot be null.</param>
         /// <param name="value">The value to associate with the specified memory identifier. Can be any object.</param>
-        public void Set(string memoryID, object value)
+        public void Malloc(string memoryID, object value)
         {
-            if (_memory is null)
+            if (_blueprintMemory is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return;
             }
 
-            _memory[memoryID] = value;
+            _blueprintMemory[memoryID] = value;
         }
 
         /// <summary>
@@ -246,13 +246,13 @@ namespace RyansLibrary.Labyrinth
         /// <returns>true if an entry with the specified identifier exists in the memory; otherwise, false.</returns>
         public bool Contains(string memoryID)
         {
-            if (_memory is null)
+            if (_blueprintMemory is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return false;
             }
 
-            return _memory.ContainsKey(memoryID);
+            return _blueprintMemory.ContainsKey(memoryID);
         }
 
         /// <summary>
@@ -261,14 +261,14 @@ namespace RyansLibrary.Labyrinth
         /// <param name="memoryID">The unique identifier of the memory entry to remove. Cannot be null.</param>
         public void Remove(string memoryID)
         {
-            if (_memory is null)
+            if (_blueprintMemory is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return;
             }
 
-            if (_memory.ContainsKey(memoryID))
-                _memory.Remove(memoryID);
+            if (_blueprintMemory.ContainsKey(memoryID))
+                _blueprintMemory.Remove(memoryID);
         }
 
         /// <summary>
@@ -277,13 +277,13 @@ namespace RyansLibrary.Labyrinth
         /// <remarks>This method should be called only when it is safe to discard all memory data.</remarks>
         internal void ClearMemory()
         {
-            if (_memory is null)
+            if (_blueprintMemory is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return;
             }
 
-            _memory.Clear();
+            _blueprintMemory.Clear();
         }
 
         /// <summary>
@@ -295,13 +295,13 @@ namespace RyansLibrary.Labyrinth
         public void ClearAll()
         {
             // Clear memory
-            if (_memory == null)
+            if (_blueprintMemory == null)
             {
                 Debug.LogWarning("[MapGenerator][Context] _memory is null; skipping memory clear.");
             }
             else
             {
-                _memory.Clear();
+                _blueprintMemory.Clear();
             }
 
             // Clear debugging lists (clear what exists)

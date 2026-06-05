@@ -936,7 +936,9 @@ namespace RyansLibrary.Labyrinth
         {
             _debugBlueprintLogs = toggle;
             BlueprintOperation.ToggleDebugLogs(toggle);
-            BlueprintData.ToggleDebugLogs(toggle);
+
+            // This no longer works as BlueprintData is no longer static
+            // BlueprintData.ToggleDebugLogs(toggle);
 
             if (_bpg is null)
                 return;

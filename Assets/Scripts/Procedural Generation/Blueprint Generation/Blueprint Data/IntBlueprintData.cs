@@ -1,31 +1,33 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class IntBlueprintData : BlueprintData
+    /// <summary>
+    /// Holds data for an integer in the map generator's memory.
+    /// </summary>
+    public class IntBlueprintData : BlueprintData<int>
     {
-        int integer;
 
-        public IntBlueprintData(MapGenerationContext context, int integer) : base(context)
+        public IntBlueprintData(MapGenerationContext context, int value) : base(context, value)
         {
             string memoryID = context.ConsumeMemoryID().ToString();
             DataID = $"IntData:{memoryID}";
-            this.integer = integer;
 
             // Output Ports
-            OutputPorts.Add(memoryID);      // RoomEntry
+            OutputPorts.Add(memoryID);      // RoomEntry object
         }
 
         public override void LoadIntoMemory()
         {
-            _context.Set(OutputPorts[0], integer);
-            if (_debugLogs) Debug.Log($"Int Data Loaded Into Memory with ID {OutputPorts[0]}");
+            base.LoadIntoMemory();
+
+            if (_debugLogs) Debug.Log($"String Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }
 }

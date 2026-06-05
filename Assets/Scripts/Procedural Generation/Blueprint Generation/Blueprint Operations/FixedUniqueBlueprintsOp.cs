@@ -91,7 +91,7 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                _context.Set(OutputPorts[0], blueprintList);
+                _context.Malloc(OutputPorts[0], blueprintList);
                 return true;
             }
             Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");

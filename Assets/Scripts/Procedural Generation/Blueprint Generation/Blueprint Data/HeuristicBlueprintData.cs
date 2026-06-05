@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/27/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
 using RyansLibrary.AI;
@@ -9,24 +9,25 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class HeuristicBlueprintData : BlueprintData
+    /// <summary>
+    /// Holds data for enum Heuristic in the map generator's memory.
+    /// </summary>
+    public class HeuristicBlueprintData : BlueprintData<Heuristic>
     {
-        Heuristic heuristic;
-
-        public HeuristicBlueprintData(MapGenerationContext context, Heuristic heuristic) : base(context)
+        public HeuristicBlueprintData(MapGenerationContext context, Heuristic value) : base(context, value)
         {
             string memoryID = context.ConsumeMemoryID().ToString();
             DataID = $"HeuristicData:{memoryID}";
-            this.heuristic = heuristic;
 
             // Output Ports
-            OutputPorts.Add(memoryID);      // Heuristic
+            OutputPorts.Add(memoryID);      // Heuristic object
         }
 
         public override void LoadIntoMemory()
         {
-            _context.Set(OutputPorts[0], heuristic);
-            if (_debugLogs) Debug.Log($"Heuristic Data Loaded Into Memory with ID {OutputPorts[0]}");
+            base.LoadIntoMemory();
+
+            if (_debugLogs) Debug.Log($"Vector3Int Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }
 }

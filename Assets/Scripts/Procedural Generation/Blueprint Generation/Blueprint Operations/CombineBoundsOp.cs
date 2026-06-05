@@ -34,7 +34,7 @@ namespace RyansLibrary.Labyrinth
 
             BoundsInt combinedBounds = CombineBounds(boundsA, boundsB);
 
-            _context.Set(OutputPorts[0], combinedBounds);
+            _context.Malloc(OutputPorts[0], combinedBounds);
 
             return true;
         }

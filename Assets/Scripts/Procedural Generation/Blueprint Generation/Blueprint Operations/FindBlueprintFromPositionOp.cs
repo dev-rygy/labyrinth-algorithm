@@ -42,8 +42,8 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            _context.Set(OutputPorts[0], blueprint);
-            _context.Set(OutputPorts[1], result);
+            _context.Malloc(OutputPorts[0], blueprint);
+            _context.Malloc(OutputPorts[1], result);
 
             return true;
         }

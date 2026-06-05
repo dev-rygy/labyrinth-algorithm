@@ -1,30 +1,31 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class Vector3IntBlueprintData : BlueprintData
+    /// <summary>
+    /// Holds data for a Vector3Int in the map generator's memory.
+    /// </summary>
+    public class Vector3IntBlueprintData : BlueprintData<Vector3Int>
     {
-        Vector3Int vector3Int;
-
-        public Vector3IntBlueprintData(MapGenerationContext context, Vector3Int vector3Int) : base(context)
+        public Vector3IntBlueprintData(MapGenerationContext context, Vector3Int value) : base(context, value)
         {
             string memoryID = context.ConsumeMemoryID().ToString();
             DataID = $"Vector3IntData:{memoryID}";
-            this.vector3Int = vector3Int;
 
             // Output Ports
-            OutputPorts.Add(memoryID);      // RoomEntry
+            OutputPorts.Add(memoryID);      // Vector3Int object
         }
 
         public override void LoadIntoMemory()
         {
-            _context.Set(OutputPorts[0], vector3Int);
+            base.LoadIntoMemory();
+
             if (_debugLogs) Debug.Log($"Vector3Int Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }

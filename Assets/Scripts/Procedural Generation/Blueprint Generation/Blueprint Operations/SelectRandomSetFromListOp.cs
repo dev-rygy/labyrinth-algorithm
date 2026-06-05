@@ -48,7 +48,7 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     List<Edge> resultListEdge = SelectRandomSetFromList(edgeList, elementCount);
-                    _context.Set(OutputPorts[0], resultListEdge);
+                    _context.Malloc(OutputPorts[0], resultListEdge);
                     _context.AddToRandomCyclesList(resultListEdge);
                     return true;
                 case "Blueprint":
@@ -61,7 +61,7 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     List<Blueprint> resultListBlueprint = SelectRandomSetFromList(blueprintList, elementCount);
-                    _context.Set(OutputPorts[0], resultListBlueprint);
+                    _context.Malloc(OutputPorts[0], resultListBlueprint);
                     return true;
                 default:
                     Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");

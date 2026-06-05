@@ -52,8 +52,8 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     List<Edge> resultEdgeList = TakeListUnion(edgeListA, edgeListB);
-                    _context.Set(OutputPorts[0], resultEdgeList);
-                    _context.Set(OutputPorts[1], resultEdgeList.Count);
+                    _context.Malloc(OutputPorts[0], resultEdgeList);
+                    _context.Malloc(OutputPorts[1], resultEdgeList.Count);
                     return true;
                 case "Blueprint":
                     if (!TryGetInput(0, out List<Blueprint> blueprintListA))
@@ -67,8 +67,8 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     List<Blueprint> resultBlueprintList = TakeListUnion(blueprintListA, blueprintListB);
-                    _context.Set(OutputPorts[0], resultBlueprintList);
-                    _context.Set(OutputPorts[1], resultBlueprintList.Count);
+                    _context.Malloc(OutputPorts[0], resultBlueprintList);
+                    _context.Malloc(OutputPorts[1], resultBlueprintList.Count);
                     return true;
                 default:
                     Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");

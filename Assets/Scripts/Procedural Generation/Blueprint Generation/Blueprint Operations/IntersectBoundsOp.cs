@@ -34,7 +34,7 @@ namespace RyansLibrary.Labyrinth
 
             BoundsInt intersectingBounds = CreateIntersectingBounds(boundsA, boundsB);
 
-            _context.Set(OutputPorts[0], intersectingBounds);
+            _context.Malloc(OutputPorts[0], intersectingBounds);
             
             return true;
         }
