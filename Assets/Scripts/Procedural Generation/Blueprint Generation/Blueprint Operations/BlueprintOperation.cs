@@ -9,20 +9,32 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Represents an abstract base class for operations that can be performed as part of a blueprint-based map
+    /// generation process.
+    /// </summary>
+    /// <remarks>
+    /// BlueprintOperation defines the contract for executable and undoable operations within the map
+    /// generation context. Derived classes implement specific operations and manage their input and output ports. Each
+    /// operation is associated with a unique identifier and can interact with the map generation context and blueprint
+    /// generator. 
+    /// 
+    /// ** Thread safety is not guaranteed at the moment; instances are intended for use within a single map generation workflow. **
+    /// </remarks>
     public abstract class BlueprintOperation
     {
+        // Global toggle for debug logs in all blueprint operation classes
         protected static bool _debugLogs { get; private set; }
 
-        public static void ToggleDebugLogs(bool toggle)
-        {
-            _debugLogs = toggle;
-        }
-
+        // DataID for is used strictly for debugging purposes.
         public string OperationID { get; protected set; }
 
+        // Ports are the auguments and return values of operations. Later on, these will be
+        // used to create the connections between operations in a Unity graph.
         public List<string> InputPorts { get; protected set; }
         public List<string> OutputPorts { get; protected set; }
 
+        // References to required map generation systems
         protected BlueprintGenerator _bpg;
         protected MapGenerationContext _context;
 
@@ -35,9 +47,16 @@ namespace RyansLibrary.Labyrinth
             _bpg = bpg;
         }
 
+        public static void ToggleDebugLogs(bool toggle)
+        {
+            _debugLogs = toggle;
+        }
+
+        // Every operation must be able to execute when it is loaded into the operation queue.
         public abstract bool Execute();
 
-        public abstract bool Undo();
+        // UNDO NOT IMPLEMENTED
+        // public abstract bool Undo();
 
         protected bool TryGetInput<T>(int inputPortIndex, out T value, bool required = true)
         {

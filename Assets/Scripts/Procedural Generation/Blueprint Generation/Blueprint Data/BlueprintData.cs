@@ -20,19 +20,20 @@ namespace RyansLibrary.Labyrinth
     /// </remarks>
     public abstract class BlueprintData<T>
     {
-        // Global toggle for debug logs in all blueprint data classes
+        // Global toggle for debug logs in all blueprint data classes; does not currently work atm.
         protected static bool _debugLogs { get; private set; }
 
 
         // DataID for is used strictly for debugging purposes.
         public string DataID { get; protected set; }
-        // Blueprint data can have multiple output ports, which are identifiers for where the data will be stored in memory.
+        
         public List<string> OutputPorts { get; protected set; }
 
-        // Stores a reference to the map generation context, memory manager.
-        protected MapGenerationContext _context;
         // Temp data storage for the boolean value before it's loaded into memory.
         protected T _cache;
+
+        // References to required map generation systems
+        protected MapGenerationContext _context;
 
         public BlueprintData(MapGenerationContext context, T value)
         {
