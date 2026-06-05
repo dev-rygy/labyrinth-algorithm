@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class FixedUniqueBlueprintsOp : BlueprintOperation
+    public class PlaceFixedBlueprintsOp : BlueprintOperation
     {
-        public FixedUniqueBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput)
+        public PlaceFixedBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput)
             : base(context, bpg)
         {
             OperationID = $"PlaceFixedUniqueBlueprint:{context.ConsumeOperationID()}";

@@ -440,7 +440,7 @@ namespace RyansLibrary.Labyrinth
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    FixedUniqueBlueprintsOp placeFixedBlueprintOp = new FixedUniqueBlueprintsOp(_context, _bpg,
+                    PlaceFixedBlueprintsOp placeFixedBlueprintOp = new PlaceFixedBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     _context.OperationQueueEnqueue(placeFixedBlueprintOp);
                 }
@@ -459,7 +459,7 @@ namespace RyansLibrary.Labyrinth
                         zoneBoundsBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[1]);
                     _context.OperationQueueEnqueue(adjBoundsBlueprintOp);
 
-                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(_context, _bpg,
+                    PlaceBoundedBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], adjBoundsBlueprintOp.OutputPorts[0]);
                     _context.OperationQueueEnqueue(placeBoundedBlueprintsOp);
                 }
@@ -473,7 +473,7 @@ namespace RyansLibrary.Labyrinth
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    BoundedUniqueBlueprintsOp placeBoundedBlueprintsOp = new BoundedUniqueBlueprintsOp(_context, _bpg,
+                    PlaceBoundedBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedBlueprintsOp(_context, _bpg,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     _context.OperationQueueEnqueue(placeBoundedBlueprintsOp);
                 }
@@ -651,14 +651,19 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
+            // Zone A Path BlueprintData
             PathBlueprintData zoneAMainPathBlueprintData = new PathBlueprintData(_context, entry.ZoneA.MainPath);
             zoneAMainPathBlueprintData.LoadIntoMemory();
+            // Room A BlueprintData
             RoomEntryBlueprintData roomABlueprintData = new RoomEntryBlueprintData(_context, entry.RoomA);
             roomABlueprintData.LoadIntoMemory();
+            // Zone A Bounds BlueprintData
             BoundsIntBlueprintData zoneABoundsBlueprintData = new BoundsIntBlueprintData(_context, entry.ZoneA.Bounds);
             zoneABoundsBlueprintData.LoadIntoMemory();
 
-            FixedUniqueBlueprintsOp placeRoomAOp = new FixedUniqueBlueprintsOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[0], roomABlueprintData.OutputPorts[0],
+            // Place Room A in Zone A's Bounds
+            // TODO: Change this to Bounded placement.
+            PlaceFixedBlueprintsOp placeRoomAOp = new PlaceFixedBlueprintsOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[0], roomABlueprintData.OutputPorts[0],
                 zoneABoundsBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(placeRoomAOp);
 
@@ -673,14 +678,20 @@ namespace RyansLibrary.Labyrinth
                 Debug.LogError("[MapGenerator] Room B of zone connection was null.");
                 return false;
             }
+
+            // Zone B BlueprintData
             PathBlueprintData zoneBMainPathBlueprintData = new PathBlueprintData(_context, entry.ZoneB.MainPath);
             zoneBMainPathBlueprintData.LoadIntoMemory();
+            // Room B BlueprintData
             RoomEntryBlueprintData roomBBlueprintData = new RoomEntryBlueprintData(_context, entry.RoomB);
             roomBBlueprintData.LoadIntoMemory();
+            // Zone B Bounds BlueprintData
             BoundsIntBlueprintData zoneBBoundsBlueprintData = new BoundsIntBlueprintData(_context, entry.ZoneB.Bounds);
             zoneBBoundsBlueprintData.LoadIntoMemory();
 
-            FixedUniqueBlueprintsOp placeRoomBOp = new FixedUniqueBlueprintsOp(_context, _bpg, zoneBMainPathBlueprintData.OutputPorts[0], roomBBlueprintData.OutputPorts[0],
+            // Place Room B in Zone B's Bounds
+            // TODO: Change this to Bounded placement.
+            PlaceFixedBlueprintsOp placeRoomBOp = new PlaceFixedBlueprintsOp(_context, _bpg, zoneBMainPathBlueprintData.OutputPorts[0], roomBBlueprintData.OutputPorts[0],
                 zoneBBoundsBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(placeRoomBOp);
 
