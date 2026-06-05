@@ -45,11 +45,6 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private bool PlaceBoundedUniqueRoomBlueprints(Path path, RoomEntry entry, BoundsInt bounds)
         {
             if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component

@@ -45,11 +45,6 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
         public List<Edge> GenerateTriangulation(List<Blueprint> blueprintList)
         {
             List<Vertex> waypoints = new List<Vertex>();

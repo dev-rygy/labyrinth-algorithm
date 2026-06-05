@@ -38,12 +38,6 @@ namespace RyansLibrary.Labyrinth
 
             return true;
         }
-
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
         {
             // Create shared bounds between two zones

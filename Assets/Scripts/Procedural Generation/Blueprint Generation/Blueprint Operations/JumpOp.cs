@@ -26,10 +26,5 @@ namespace RyansLibrary.Labyrinth
             // Branch to specified id
             return _context.Jump(targetOpID);
         }
-
-        public override bool Undo()
-        {
-            return false;
-        }
     }
 }

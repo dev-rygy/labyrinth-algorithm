@@ -30,9 +30,4 @@ public class GetPathLengthOp : BlueprintOperation
         _context.Malloc(OutputPorts[0], path.BlueprintCount());
         return true;
     }
-
-    public override bool Undo()
-    {
-        return false;
-    }
 }

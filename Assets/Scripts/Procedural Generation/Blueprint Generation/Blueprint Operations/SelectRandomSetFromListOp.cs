@@ -68,12 +68,6 @@ namespace RyansLibrary.Labyrinth
                     return false;
             }
         }
-
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private List<T> SelectRandomSetFromList<T>(List<T> list, int elementCount)
         {
             return ListUtils.SelectRandomSet(list, elementCount);

@@ -40,11 +40,6 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
         return BlueprintDrunkardWalk(path, branchedPath, bounds, startIndex, endIndex);
     }
 
-    public override bool Undo()
-    {
-        return false;
-    }
-
     /// <summary>
     /// Drunkard Walk Algorithm, will walk a specified length and store it into a newly created path. The algorithm
     /// has been modified to handle collisions and create pseudo paths where rooms can potentially spawn later.

@@ -44,12 +44,6 @@ namespace RyansLibrary.Labyrinth
 
             return true;
         }
-
-        public override bool Undo()
-        {
-            return false;
-        }
-
         public List<Edge> FindMinimumSpanningTree(List<Edge> edges)
         {
             Vertex startingVertex = edges[0].U;

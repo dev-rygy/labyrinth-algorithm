@@ -64,11 +64,6 @@ public class SelectRandomElementFromListOp : BlueprintOperation
         }
     }
 
-    public override bool Undo()
-    {
-        return false;
-    }
-
     private T SelectRandomSetFromList<T>(List<T> list)
     {
         return ListUtils.SelectRandomElement(list);

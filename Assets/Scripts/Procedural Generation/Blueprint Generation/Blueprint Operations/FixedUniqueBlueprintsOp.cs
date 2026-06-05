@@ -45,11 +45,6 @@ namespace RyansLibrary.Labyrinth
             return PlaceFixedUniqueRoomBlueprints(path, entry, bounds);
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
         /// <summary>
         /// Places fixed room within the bounds of an zone; returns false if the
         /// room could not be placed correctly.

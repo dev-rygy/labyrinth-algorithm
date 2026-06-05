@@ -59,10 +59,5 @@ namespace RyansLibrary.Labyrinth
 
             return true;
         }
-
-        public override bool Undo()
-        {
-            return false;
-        }
     }
 }

@@ -68,11 +68,6 @@ namespace RyansLibrary.Labyrinth
             return result;
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private bool PathfindBlueprintFromPath(Path path, BoundsInt bounds, Blueprint startBlueprint, Blueprint endBlueprint, List<Blueprint> obstructions,
                 Heuristic heuristic = Heuristic.Euclidean)
         {

@@ -75,12 +75,6 @@ namespace RyansLibrary.Labyrinth
                     return false;
             }
         }
-
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private List<T> TakeListUnion<T>(List<T> listA, List<T> listB)
         {
             return ListUtils.Union(listA, listB);

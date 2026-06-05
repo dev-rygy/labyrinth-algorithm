@@ -71,11 +71,6 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private List<T> TakeListDifference<T>(List<T> listA, List<T> listB)
         {
             return ListUtils.Difference(listA, listB);

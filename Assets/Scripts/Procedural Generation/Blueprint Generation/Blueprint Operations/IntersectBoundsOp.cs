@@ -39,11 +39,6 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, BoundsInt intersectingBounds)
         {
             return CreateIntersectingBounds(intersectedBounds, intersectingBounds.size, intersectingBounds.position);

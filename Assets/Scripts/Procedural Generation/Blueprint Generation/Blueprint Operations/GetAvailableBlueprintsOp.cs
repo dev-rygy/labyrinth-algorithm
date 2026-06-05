@@ -47,11 +47,6 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private List<Blueprint> GetAvailableBlueprints(List<Blueprint> list, bool availbility)
         {
             return list.Where(bp => (bp.Available == availbility)).ToList();
