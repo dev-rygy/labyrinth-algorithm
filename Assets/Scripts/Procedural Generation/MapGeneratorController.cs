@@ -1164,8 +1164,8 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawBoundingBox(BoundsInt bounds)
         {
-            Vector3 boundsSize = _gridUnitSize * (bounds.size + Vector3Int.one);
-            Vector3 boundsCenter = bounds.center * _gridUnitSize;
+            Vector3 boundsSize = _gridUnitSize * bounds.size;
+            Vector3 boundsCenter = (bounds.center + new Vector3(-0.5f, -0.5f, -0.5f)) * _gridUnitSize;
 
             Gizmos.color = _boundingBoxColor;
             Gizmos.DrawWireCube(boundsCenter, boundsSize);
