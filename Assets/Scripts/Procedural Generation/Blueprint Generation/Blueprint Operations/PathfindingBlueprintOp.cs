@@ -93,6 +93,9 @@ namespace RyansLibrary.Labyrinth
             SimpleAStar3D aStar = new SimpleAStar3D(bounds);
             List<Vector3Int> sequence = aStar.FindPath(startBlueprint.Position, endBlueprint.Position, obstructionPositions, heuristic);
 
+            foreach (Vector3Int pos in sequence)
+                Debug.Log($"Spawn Pos: {pos}");
+
             if (sequence == null)
             {
                 Debug.LogError($"Blueprint Generator Error: Pathfinding failed for edge.");

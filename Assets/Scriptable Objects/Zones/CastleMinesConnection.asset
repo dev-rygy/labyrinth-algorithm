@@ -15,24 +15,26 @@ MonoBehaviour:
   <Name>k__BackingField: Castle Mines Connection
   <DefaultPathfindingHeuristic>k__BackingField: 0
   <Bounds>k__BackingField:
-    m_Position: {x: 6, y: -3, z: 1}
-    m_Size: {x: 5, y: 3, z: 2}
+    m_Position: {x: 6, y: -4, z: 1}
+    m_Size: {x: 1, y: 5, z: 1}
   <MainPath>k__BackingField: {fileID: 11400000, guid: 790b058cc6213dc489c512e552fa7852,
     type: 2}
   <UniqueRooms>k__BackingField:
   - <Prefab>k__BackingField: {fileID: 4893969360162040778, guid: effa6573bf25f7946a1e39fbed09f755,
       type: 3}
     <PlacementType>k__BackingField: 1
-    <SpawnPosition>k__BackingField: {x: 7, y: 0, z: 2}
-    <AvailableCells>k__BackingField: []
+    <SpawnPosition>k__BackingField: {x: 8, y: 0, z: 2}
+    <AvailableCells>k__BackingField:
+    - {x: 0, y: 0, z: 0}
     <Bounds>k__BackingField:
       m_Position: {x: 6, y: -3, z: 1}
       m_Size: {x: 5, y: 3, z: 2}
   - <Prefab>k__BackingField: {fileID: 5738533610704310278, guid: c39852ea6c8d06847a4b22df5f7a4645,
       type: 3}
     <PlacementType>k__BackingField: 1
-    <SpawnPosition>k__BackingField: {x: 10, y: -3, z: 1}
-    <AvailableCells>k__BackingField: []
+    <SpawnPosition>k__BackingField: {x: 10, y: -4, z: 2}
+    <AvailableCells>k__BackingField:
+    - {x: 0, y: 0, z: 0}
     <Bounds>k__BackingField:
       m_Position: {x: 6, y: -3, z: 1}
       m_Size: {x: 5, y: 3, z: 2}

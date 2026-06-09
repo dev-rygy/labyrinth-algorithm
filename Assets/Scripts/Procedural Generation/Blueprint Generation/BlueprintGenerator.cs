@@ -51,7 +51,7 @@ namespace RyansLibrary.Labyrinth
             Blueprint newBlueprint = new Blueprint(origin, blueprintName);
             newBlueprint.Available = available;
 
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintGenerator] Generated blueprint room {blueprintName}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintGenerator] Generated blueprint room {blueprintName} at {origin}");
 
             // Update paths and masters with new blueprint room
             path?.Add(newBlueprint);

@@ -343,8 +343,6 @@ namespace RyansLibrary.Labyrinth
 
         private void GenerateRooms()
         {
-
-            
             // Generate Zone Connection Rooms
             if (!GenerateZoneRooms(_connectionZones[0]))
             {
@@ -352,18 +350,6 @@ namespace RyansLibrary.Labyrinth
                 return;     // Room Generation failed for zone connection; stop algorithm
             }
             
-
-            /*
-            foreach (ZoneConnectionEntry entry in _zoneConnections)
-            {
-                // Generate actual rooms for the zone connection
-                if (!GenerateZoneConnectionRooms(entry))
-                {
-                    GenerationFailed();
-                    return;     // Room Generation failed for zone connection; stop algorithm
-                }
-            }
-            */
 
             foreach (Zone zone in _zones)
             {
@@ -761,6 +747,7 @@ namespace RyansLibrary.Labyrinth
 
         public void LoadConnectionZoneOperations(Zone connectionZone, Zone zoneA, Zone zoneB)
         {
+            // *** Error Handleing ***
             if (connectionZone == null)
             {
                 Debug.LogError("[MapGenerator] Connection Zone of zone connection was null.");
@@ -776,14 +763,11 @@ namespace RyansLibrary.Labyrinth
                 Debug.LogError("[MapGenerator] zone B of zone connection was null.");
                 return;
             }
-
-
             if (connectionZone.MainPath == null)
             {
                 Debug.LogError($"[MapGenerator] The Main Path for connection zone {connectionZone.Name} is not assigned.");
                 return;
             }
-
             if (connectionZone.UniqueRooms.Count < 2)
             {
                 Debug.LogError($"[MapGenerator] Connection zone {connectionZone.Name} must have at least two unique rooms assigned for zone connection.");
@@ -791,15 +775,15 @@ namespace RyansLibrary.Labyrinth
             }
 
             // *** Connection Zone Data ***
-            // Zone A Path BlueprintData
+            // Connection Zone Path BlueprintData
             PathBlueprintData zoneConnectionMainPathBlueprintData = new PathBlueprintData(_context, connectionZone.MainPath);
             zoneConnectionMainPathBlueprintData.LoadIntoMemory();
-            // Zone A Bounds BlueprintData
+            // Connection Zone Bounds BlueprintData
             BoundsIntBlueprintData zoneConnectionBoundsBlueprintData = new BoundsIntBlueprintData(_context, connectionZone.Bounds);
             zoneConnectionBoundsBlueprintData.LoadIntoMemory();
 
             // *** Zone A Data ***
-            // Zone A Path BlueprintData
+            // Zone A BlueprintData
             PathBlueprintData zoneAMainPathBlueprintData = new PathBlueprintData(_context, zoneA.MainPath);
             zoneAMainPathBlueprintData.LoadIntoMemory();
             // Room A BlueprintData
@@ -820,7 +804,7 @@ namespace RyansLibrary.Labyrinth
             BoundsIntBlueprintData zoneBBoundsBlueprintData = new BoundsIntBlueprintData(_context, zoneB.Bounds);
             zoneBBoundsBlueprintData.LoadIntoMemory();
 
-            // **** Room A Placement ***
+            // **** Room A Placement Operations ***
             // Find the bounds area intersection of the two zones to find where the connection can be placed; this will be used for placing the room and path of the zone connection
             BoundsIntersectOp zoneConnectzoneAIntersectOp = new BoundsIntersectOp(_context, _bpg, zoneABoundsBlueprintData.OutputPorts[0], 
                 zoneConnectionBoundsBlueprintData.OutputPorts[0]);
@@ -830,7 +814,7 @@ namespace RyansLibrary.Labyrinth
                 zoneConnectzoneAIntersectOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(placeRoomAOp);
 
-            // **** Room B Placement ***
+            // **** Room B Placement Operations ***
             // Find the bounds area intersection of the two zones to find where the connection can be placed; this will be used for placing the room and path of the zone connection
             BoundsIntersectOp zoneConnectzoneBIntersectOp = new BoundsIntersectOp(_context, _bpg, zoneConnectionBoundsBlueprintData.OutputPorts[0],
                 zoneBBoundsBlueprintData.OutputPorts[0]);
@@ -840,8 +824,40 @@ namespace RyansLibrary.Labyrinth
                 zoneConnectzoneBIntersectOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(placeRoomBOp);
 
-            // *** PathFind ***
+            // *** PathFind Operations ***
+            // Initialize pathfinding data
+            BoolBlueprintData availableBlueprintData = new BoolBlueprintData(_context, true);
+            availableBlueprintData.LoadIntoMemory();
+            StringBlueprintData blueprintTypeBlueprintData = new StringBlueprintData(_context, "Blueprint");
+            blueprintTypeBlueprintData.LoadIntoMemory();
 
+            // Select random available blueprints from each room to be the start and end points for pathfinding
+            GetAvailableBlueprintsOp roomAAvailableBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, placeRoomAOp.OutputPorts[0], availableBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(roomAAvailableBlueprintsOp);
+            GetAvailableBlueprintsOp roomBAvailableBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, placeRoomBOp.OutputPorts[0], availableBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(roomBAvailableBlueprintsOp);
+            ListSelectRandomElementOp randomBlueprintFromRoomAOp = new ListSelectRandomElementOp(_context, _bpg, roomAAvailableBlueprintsOp.OutputPorts[0],
+                blueprintTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(randomBlueprintFromRoomAOp);
+            ListSelectRandomElementOp randomBlueprintFromRoomBOp = new ListSelectRandomElementOp(_context, _bpg, roomBAvailableBlueprintsOp.OutputPorts[0],
+                blueprintTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(randomBlueprintFromRoomBOp);
+
+            // Fill obstructions list with all blueprints from the main paths of both zones except the ones that are part of the roomA and roomB
+            ListDifferenceOp zoneAMainPathBlueprintsNoRoom = new ListDifferenceOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[2], placeRoomAOp.OutputPorts[0],
+                blueprintTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(zoneAMainPathBlueprintsNoRoom);
+            ListDifferenceOp zoneBMainPathBlueprintsNoRoom = new ListDifferenceOp(_context, _bpg, zoneBMainPathBlueprintData.OutputPorts[2], placeRoomBOp.OutputPorts[0],
+               blueprintTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(zoneBMainPathBlueprintsNoRoom);
+            ListUnionOp obstructionsListOp = new ListUnionOp(_context, _bpg, zoneAMainPathBlueprintsNoRoom.OutputPorts[0], zoneBMainPathBlueprintsNoRoom.OutputPorts[0],
+                blueprintTypeBlueprintData.OutputPorts[0]);
+            _context.OperationQueueEnqueue(obstructionsListOp);
+
+            // Pathfind a connection between the two rooms along the bounds intersection area while avoiding main path blueprints
+            PathfindingBlueprintOp pathfindOp = new PathfindingBlueprintOp(_context, _bpg, zoneConnectionMainPathBlueprintData.OutputPorts[0], randomBlueprintFromRoomAOp.OutputPorts[0],
+                randomBlueprintFromRoomBOp.OutputPorts[0], zoneConnectionBoundsBlueprintData.OutputPorts[0], obstructionsListOp.OutputPorts[0]);
+            _context.OperationQueueEnqueue(pathfindOp);
         }
         #endregion
 
