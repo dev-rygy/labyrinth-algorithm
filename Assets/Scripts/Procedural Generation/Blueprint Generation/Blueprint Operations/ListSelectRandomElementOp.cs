@@ -10,9 +10,9 @@ using RyansLibrary.Graphs;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectRandomElementFromListOp : BlueprintOperation
+public class ListSelectRandomElementOp : BlueprintOperation
 {
-    public SelectRandomElementFromListOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string listType) : base(context, bpg)
+    public ListSelectRandomElementOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string listType) : base(context, bpg)
     {
         OperationID = $"SelectRandomElementFromListOp:{context.ConsumeOperationID()}";
 

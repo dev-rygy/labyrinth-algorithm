@@ -22,9 +22,9 @@ namespace RyansLibrary.Labyrinth
             DataID = $"PathData:{blueprintListID}";
 
             // Output Ports
-            OutputPorts.Add(pathMemoryID);
-            OutputPorts.Add(lengthMemoryID);
-            OutputPorts.Add(blueprintListID);
+            OutputPorts.Add(pathMemoryID);          // Path
+            OutputPorts.Add(lengthMemoryID);        // Path Length
+            OutputPorts.Add(blueprintListID);       // Blueprint List
         }
 
         public override void LoadIntoMemory()

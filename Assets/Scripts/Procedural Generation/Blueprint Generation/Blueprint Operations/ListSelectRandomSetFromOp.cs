@@ -11,9 +11,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class SelectRandomSetFromListOp : BlueprintOperation
+    public class ListSelectRandomSetFromOp : BlueprintOperation
     {
-        public SelectRandomSetFromListOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string elementCountInput, string listType) : base(context, bpg)
+        public ListSelectRandomSetFromOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string elementCountInput, string listType) : base(context, bpg)
         {
             OperationID = $"SelectRandomSetFromListOp:{context.ConsumeOperationID()}";
 
