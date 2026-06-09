@@ -729,19 +729,21 @@ namespace RyansLibrary.Labyrinth
             _context.OperationQueueEnqueue(randomBlueprintFromRoomBOp);
 
             // Fill obstructions list with all blueprints from the main paths of both zones except the ones that are part of the roomA and roomB
+            /*
             ListDifferenceOp zoneAMainPathBlueprintsNoRoom = new ListDifferenceOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[2], placeRoomAOp.OutputPorts[0],
                 blueprintTypeBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(zoneAMainPathBlueprintsNoRoom);
             ListDifferenceOp zoneBMainPathBlueprintsNoRoom = new ListDifferenceOp(_context, _bpg, zoneBMainPathBlueprintData.OutputPorts[2], placeRoomBOp.OutputPorts[0],
                blueprintTypeBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(zoneBMainPathBlueprintsNoRoom);
-            ListUnionOp obstructionsListOp = new ListUnionOp(_context, _bpg, zoneAMainPathBlueprintsNoRoom.OutputPorts[0], zoneBMainPathBlueprintsNoRoom.OutputPorts[0],
+            */
+            ListUnionOp obstructionsListOp = new ListUnionOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[2], zoneBMainPathBlueprintData.OutputPorts[2],
                 blueprintTypeBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(obstructionsListOp);
 
             // Pathfind a connection between the two rooms along the bounds intersection area while avoiding main path blueprints
             PathfindingBlueprintOp pathfindOp = new PathfindingBlueprintOp(_context, _bpg, zoneConnectionMainPathBlueprintData.OutputPorts[0], randomBlueprintFromRoomAOp.OutputPorts[0],
-                randomBlueprintFromRoomBOp.OutputPorts[0], zoneConnectionBoundsBlueprintData.OutputPorts[0], obstructionsListOp.OutputPorts[0]);
+                randomBlueprintFromRoomBOp.OutputPorts[0], zoneConnectionBoundsBlueprintData.OutputPorts[0]);//  obstructionsListOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(pathfindOp);
         }
         #endregion
@@ -775,6 +777,7 @@ namespace RyansLibrary.Labyrinth
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 _bpg.ToggleAvailableCellsInUniqueRoom(zone.MainPath, entry.AvailableCells, entry.SpawnPosition, false);
+                Debug.Log("Blueprint Room: " + entry.SpawnPosition + "has available cells disabled.");
             }
 
             // Generate Rooms along main path
