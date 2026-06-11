@@ -11,7 +11,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
@@ -777,7 +776,7 @@ namespace RyansLibrary.Labyrinth
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 _bpg.ToggleAvailableCellsInUniqueRoom(zone.MainPath, entry.AvailableCells, entry.SpawnPosition, false);
-                Debug.Log("Blueprint Room: " + entry.SpawnPosition + "has available cells disabled.");
+                if (_debugRoomGeneratorLogs) Debug.Log("Blueprint Room: " + entry.SpawnPosition + "has available cells disabled.");
             }
 
             // Generate Rooms along main path
