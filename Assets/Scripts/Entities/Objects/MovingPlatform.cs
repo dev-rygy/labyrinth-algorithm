@@ -4,15 +4,12 @@
  * Last Modified:   06/10/2026 (Ryan)
  * Notes:           
 */
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
 {
-    public static event Action OnTriggerActivated;
-
     [Header("General Settings")]
     [SerializeField] protected float _speed = 2f;
     [SerializeField] protected float _waypointPrecision = 0.1f;
@@ -22,7 +19,10 @@ public class MovingPlatform : MonoBehaviour
     [Header("Trigger Settings")]
     [SerializeField] protected bool _needsTrigger = false;
     [SerializeField] protected Trigger MainTriggerObject;
-    
+
+    [Header("Debugger")]
+    [SerializeField] private bool _debugLogs = false;
+
     protected bool _isMoving = false;
 
     private void OnEnable()
@@ -35,8 +35,13 @@ public class MovingPlatform : MonoBehaviour
     {
         if (_needsTrigger && MainTriggerObject == null)
         {
-            Debug.LogError("Elevator is set to need a trigger, but no trigger object is assigned.");
+            Debug.LogError("Platform is set to need a trigger, but no trigger object is assigned.");
             return;
+        }
+        if (MainTriggerObject != null)
+        {
+            MainTriggerObject.OnTriggerActivated += MoveToNextWaypoint;
+            if (_debugLogs) Debug.Log("Subscribed to trigger events for platform.");
         }
     }
 
@@ -50,15 +55,16 @@ public class MovingPlatform : MonoBehaviour
 
     protected virtual void MoveToNextWaypoint()
     {
+        if (_debugLogs) Debug.Log("Attempting to move platform.");
         if (_waypoints.Count == 0)
         {
-            Debug.LogWarning("No waypoints set for the elevator.");
+            Debug.LogWarning("No waypoints set for the platform.");
             return;
         }
 
         if (_isMoving)
         {
-            Debug.LogWarning("Elevator is already moving.");
+            Debug.LogWarning("Platform is already moving.");
             return;
         }
 
@@ -68,6 +74,7 @@ public class MovingPlatform : MonoBehaviour
 
     protected virtual IEnumerator MovePlatform()
     {
+        if (_debugLogs) Debug.Log("Platform moving.");
         _isMoving = true;
         Vector3 currentWaypoint = _waypoints.Dequeue();
 
@@ -84,6 +91,7 @@ public class MovingPlatform : MonoBehaviour
 
         // Re-enqueue the waypoint for continuous movement
         _waypoints.Enqueue(currentWaypoint);
+        if (_debugLogs) Debug.Log("Platform stopped moving.");
     }
 
 

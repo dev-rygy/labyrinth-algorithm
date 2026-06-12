@@ -4,10 +4,7 @@
  * Last Modified:   06/10/2026 (Ryan)
  * Notes:           
 */
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Elevator : MovingPlatform
@@ -18,6 +15,7 @@ public class Elevator : MovingPlatform
     [SerializeField] private bool _useOrigin = false;
     [SerializeField] private GameObject _chainObject;
     [SerializeField] private GameObject _chainParent;
+    [SerializeField] private GameObject _colliders;
     [SerializeField] private float _spawnChainAtDistInterval = 5f;
     [SerializeField] private float _chainLinkLength = 10f;
     [SerializeField] private Vector3 _chainSpawnStartPoint;
@@ -62,6 +60,11 @@ public class Elevator : MovingPlatform
 
         SpawnChain();
         DespawnChain();
+
+        if (_isMoving)
+            ToggleColliders(true);
+        else
+            ToggleColliders(false);
     }
 
     private void OnDrawGizmos()
@@ -86,9 +89,9 @@ public class Elevator : MovingPlatform
             _prevElevatorPositionY = Mathf.Ceil(transform.position.y);
             _chainLinkObjects.Push(chainLink);
 
-            Debug.Log("Chain link spawned when elevator is at: " + transform.localPosition);
-            Debug.Log("New Chain Spawn " + (_prevElevatorPositionY - _spawnChainAtDistInterval));
-            Debug.Log("Chains in Queue: " + _chainLinkObjects.Count);
+            //Debug.Log("Chain link spawned when elevator is at: " + transform.localPosition);
+            //Debug.Log("New Chain Spawn " + (_prevElevatorPositionY - _spawnChainAtDistInterval));
+            //Debug.Log("Chains in Queue: " + _chainLinkObjects.Count);
         }
     }
 
@@ -107,9 +110,18 @@ public class Elevator : MovingPlatform
             GameObject chainLink = _chainLinkObjects.Pop();
             Destroy(chainLink);
 
-            Debug.Log("Chain link despawned when elevator is at: " + transform.localPosition);
-            Debug.Log("New Chain Despawn " + (_prevElevatorPositionY + _spawnChainAtDistInterval));
-            Debug.Log("Chains in Queue: " + _chainLinkObjects.Count);
+            //Debug.Log("Chain link despawned when elevator is at: " + transform.localPosition);
+            //Debug.Log("New Chain Despawn " + (_prevElevatorPositionY + _spawnChainAtDistInterval));
+            //Debug.Log("Chains in Queue: " + _chainLinkObjects.Count);
         }
+    }
+
+    private void ToggleColliders(bool toggle)
+    {
+        if (toggle)
+            _colliders.SetActive(true);
+
+        else
+            _colliders.SetActive(false);
     }
 }

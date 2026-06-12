@@ -1620,8 +1620,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
+      propertyPath: customSeed
+      value: 742222083
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
       propertyPath: _zones.Array.size
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: generateRandomSeed
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
