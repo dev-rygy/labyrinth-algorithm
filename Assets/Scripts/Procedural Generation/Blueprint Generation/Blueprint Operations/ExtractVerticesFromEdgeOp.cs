@@ -52,17 +52,12 @@ namespace RyansLibrary.Labyrinth
             Vector3Int uPos = new Vector3Int((int)u.Position.x, (int)u.Position.y, (int)u.Position.z);
             Vector3Int vPos = new Vector3Int((int)v.Position.x, (int)v.Position.y, (int)v.Position.z);
 
-            _context.Set(OutputPorts[0], u);
-            _context.Set(OutputPorts[1], v);
-            _context.Set(OutputPorts[2], uPos);
-            _context.Set(OutputPorts[3], vPos);
+            _context.Malloc(OutputPorts[0], u);
+            _context.Malloc(OutputPorts[1], v);
+            _context.Malloc(OutputPorts[2], uPos);
+            _context.Malloc(OutputPorts[3], vPos);
 
             return true;
-        }
-
-        public override bool Undo()
-        {
-            return false;
         }
     }
 }

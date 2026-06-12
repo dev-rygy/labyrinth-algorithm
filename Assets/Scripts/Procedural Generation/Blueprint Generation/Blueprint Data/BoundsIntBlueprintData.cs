@@ -1,22 +1,23 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class BoundsIntBlueprintData : BlueprintData
+    /// <summary>
+    /// Holds data for a BoundsInt in the map generator's memory.
+    /// </summary>
+    public class BoundsIntBlueprintData : BlueprintData<BoundsInt>
     {
-        BoundsInt _bounds;
 
-        public BoundsIntBlueprintData(MapGenerationContext context, BoundsInt bounds) : base(context)
+        public BoundsIntBlueprintData(MapGenerationContext context, BoundsInt value) : base(context, value)
         {
             string memoryID = context.ConsumeMemoryID().ToString();
             DataID = $"BoundsIntData:{memoryID}";
-            _bounds = bounds;
 
             // Output Ports
             OutputPorts.Add(memoryID);
@@ -24,8 +25,9 @@ namespace RyansLibrary.Labyrinth
 
         public override void LoadIntoMemory()
         {
-            _context.Set(OutputPorts[0], _bounds);
-            if (_debugLogs) Debug.Log($"BoundsInt Data Loaded Into Memory with ID {OutputPorts[0]}");
+            base.LoadIntoMemory();
+
+            if (_debugLogs) Debug.Log($"String Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }
 }

@@ -11,9 +11,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class SelectRandomSetFromListOp : BlueprintOperation
+    public class ListSelectRandomSetFromOp : BlueprintOperation
     {
-        public SelectRandomSetFromListOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string elementCountInput, string listType) : base(context, bpg)
+        public ListSelectRandomSetFromOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string elementCountInput, string listType) : base(context, bpg)
         {
             OperationID = $"SelectRandomSetFromListOp:{context.ConsumeOperationID()}";
 
@@ -48,7 +48,7 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     List<Edge> resultListEdge = SelectRandomSetFromList(edgeList, elementCount);
-                    _context.Set(OutputPorts[0], resultListEdge);
+                    _context.Malloc(OutputPorts[0], resultListEdge);
                     _context.AddToRandomCyclesList(resultListEdge);
                     return true;
                 case "Blueprint":
@@ -61,19 +61,13 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     List<Blueprint> resultListBlueprint = SelectRandomSetFromList(blueprintList, elementCount);
-                    _context.Set(OutputPorts[0], resultListBlueprint);
+                    _context.Malloc(OutputPorts[0], resultListBlueprint);
                     return true;
                 default:
                     Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
                     return false;
             }
         }
-
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private List<T> SelectRandomSetFromList<T>(List<T> list, int elementCount)
         {
             return ListUtils.SelectRandomSet(list, elementCount);

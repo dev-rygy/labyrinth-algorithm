@@ -92,12 +92,12 @@ namespace RyansLibrary.AI
             closedSet.Clear();
             path.Clear();
 
-            if (!grid.InBounds(start))      // Make sure the starting position is inside the given bounds
+            if (!grid.InBoundsExclusive(start))      // Make sure the starting position is inside the given bounds
             {
                 Debug.LogError($"A* Error: starting position lies outside the given bounds: {start}");
                 return null;
             }
-            if (!grid.InBounds(end))        // Make sure the ending position is inside the given bounds
+            if (!grid.InBoundsExclusive(end))        // Make sure the ending position is inside the given bounds
             {
                 Debug.LogError($"A* Error: ending position lies outside the given bounds: {end}");
                 return null;
@@ -127,7 +127,7 @@ namespace RyansLibrary.AI
                 // Look at all neighbor nodes and evaluate
                 foreach (var neighborPos in neighbors)
                 {
-                    if (!grid.InBounds(current.Position + neighborPos + offset))      // Keep in bounds
+                    if (!grid.InBoundsExclusive(current.Position + neighborPos + offset))      // Keep in bounds
                     {
                         continue;
                     }

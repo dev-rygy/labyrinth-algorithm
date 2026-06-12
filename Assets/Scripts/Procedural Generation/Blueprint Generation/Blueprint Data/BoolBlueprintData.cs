@@ -1,30 +1,31 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/27/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class BoolBlueprintData : BlueprintData
+    /// <summary>
+    /// Holds data for a bool in the map generator's memory.
+    /// </summary>
+    public class BoolBlueprintData : BlueprintData<bool>
     {
-        bool boolean;
-
-        public BoolBlueprintData(MapGenerationContext context, bool boolean) : base(context)
+        public BoolBlueprintData(MapGenerationContext context, bool value) : base(context, value)
         {
             string memoryID = context.ConsumeMemoryID().ToString();
             DataID = $"BoolData:{memoryID}";
-            this.boolean = boolean;
 
             // Output Ports
-            OutputPorts.Add(memoryID);      // RoomEntry
+            OutputPorts.Add(memoryID);      // bool value
         }
 
         public override void LoadIntoMemory()
         {
-            _context.Set(OutputPorts[0], boolean);
+            base.LoadIntoMemory();
+
             if (_debugLogs) Debug.Log($"Bool Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }

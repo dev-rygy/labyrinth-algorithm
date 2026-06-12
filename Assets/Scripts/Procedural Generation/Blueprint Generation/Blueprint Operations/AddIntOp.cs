@@ -39,14 +39,9 @@ namespace RyansLibrary.Labyrinth
 
             int sum = intA + intB;
 
-            _context.Set(OutputPorts[0], sum);
+            _context.Malloc(OutputPorts[0], sum);
 
             return true;
-        }
-
-        public override bool Undo()
-        {
-            return false;
         }
     }
 }

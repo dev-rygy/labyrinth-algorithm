@@ -1,33 +1,35 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class RoomEntryBlueprintData : BlueprintData
+    /// <summary>
+    /// Holds data for a RoomEntry in the map generator's memory.
+    /// </summary>
+    public class RoomEntryBlueprintData : BlueprintData<RoomEntry>
     {
-        RoomEntry _roomEntry;
 
-        public RoomEntryBlueprintData(MapGenerationContext context, RoomEntry roomEntry) : base(context)
+        public RoomEntryBlueprintData(MapGenerationContext context, RoomEntry value) : base(context, value)
         {
             string memoryID1 = context.ConsumeMemoryID().ToString();
             string memoryID2 = context.ConsumeMemoryID().ToString();
             DataID = $"RoomEntryData:{memoryID1}, {memoryID2}";
-            _roomEntry = roomEntry;
 
             // Output Ports
-            OutputPorts.Add(memoryID1);      // RoomEntry
-            OutputPorts.Add(memoryID2);      // RoomEntry Bounds
+            OutputPorts.Add(memoryID1);      // RoomEntry object
+            OutputPorts.Add(memoryID2);      // RoomEntry Bounds object
         }
 
-        public override void LoadIntoMemory()
+        public override void LoadIntoMemory()       // Completely overridden to load 2 values, the RoomEntry and its bounds into memory.
         {
-            _context.Set(OutputPorts[0], _roomEntry);
-            _context.Set(OutputPorts[1], _roomEntry.Bounds);
+            _context.Malloc(OutputPorts[0], _cache);
+            _context.Malloc(OutputPorts[1], _cache.Bounds);
+
             if (_debugLogs) Debug.Log($"RoomEntry Data Loaded Into Memory with ID {OutputPorts[0]}");
             if (_debugLogs) Debug.Log($"Bounds Data Loaded Into Memory with ID {OutputPorts[1]}");
         }

@@ -1,22 +1,19 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   11/09/2025 (Ryan)
+ * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class PathBlueprintData : BlueprintData
+    public class PathBlueprintData : BlueprintData<Path>
     {
-        Path _path;
-
-        public PathBlueprintData(MapGenerationContext context, Path path) : base(context)
+        public PathBlueprintData(MapGenerationContext context, Path value) : base(context, value)
         {
             string pathMemoryID = context.ConsumeMemoryID().ToString();
             DataID = $"PathData:{pathMemoryID}";
-            _path = path;
 
             string lengthMemoryID = context.ConsumeMemoryID().ToString();
             DataID = $"PathData:{lengthMemoryID}";
@@ -25,16 +22,17 @@ namespace RyansLibrary.Labyrinth
             DataID = $"PathData:{blueprintListID}";
 
             // Output Ports
-            OutputPorts.Add(pathMemoryID);
-            OutputPorts.Add(lengthMemoryID);
-            OutputPorts.Add(blueprintListID);
+            OutputPorts.Add(pathMemoryID);          // Path
+            OutputPorts.Add(lengthMemoryID);        // Path Length
+            OutputPorts.Add(blueprintListID);       // Blueprint List
         }
 
         public override void LoadIntoMemory()
         {
-            _context.Set(OutputPorts[0], _path);
-            _context.Set(OutputPorts[1], _path.BlueprintCount());
-            _context.Set(OutputPorts[2], _path.BlueprintList);
+            _context.Malloc(OutputPorts[0], _cache);
+            _context.Malloc(OutputPorts[1], _cache.BlueprintCount());
+            _context.Malloc(OutputPorts[2], _cache.BlueprintList);
+
             if (_debugLogs) Debug.Log($"Path Data Loaded Into Memory with ID {OutputPorts[0]}");
         }
     }

@@ -49,7 +49,7 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     List<Edge> resultEdgeList = TakeListDifference(edgeListA, edgeListB);
-                    _context.Set(OutputPorts[0], resultEdgeList);
+                    _context.Malloc(OutputPorts[0], resultEdgeList);
                     return true;
                 case "Blueprint":
                     if (!TryGetInput(0, out List<Blueprint> blueprintListA))
@@ -63,17 +63,12 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     List<Blueprint> resultBlueprintList = TakeListDifference(blueprintListA, blueprintListB);
-                    _context.Set(OutputPorts[0], resultBlueprintList);
+                    _context.Malloc(OutputPorts[0], resultBlueprintList);
                     return true;
                 default:
                     Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
                     return false;
             }
-        }
-
-        public override bool Undo()
-        {
-            return false;
         }
 
         private List<T> TakeListDifference<T>(List<T> listA, List<T> listB)

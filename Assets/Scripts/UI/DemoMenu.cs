@@ -31,10 +31,15 @@ public class DemoMenu : MonoBehaviour
         ApplicationController.Instance.StartNewGame();
     }
 
+    public void StartDebugging()
+    {
+        MapGeneratorController.Instance.ToggleStepwiseDebugging(true);
+        ApplicationController.Instance.StartNewGame();
+    }
+
     public void Regenerate()
     {
-        MapGeneratorController.Instance.DestroyAllRooms();
-        ApplicationController.Instance.StartNewGame();
+        MapGeneratorController.Instance.ResetLabyrinth();
     }
 
     public void ExitToMenu()

@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class CombineBoundsOp : BlueprintOperation
+    public class BoundsUnionOp : BlueprintOperation
     {
-        public CombineBoundsOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
+        public BoundsUnionOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
             : base(context, bpg)
         {
-            OperationID = $"CombineBoundsOp:{context.ConsumeOperationID()}";
+            OperationID = $"BoundsUnionOp:{context.ConsumeOperationID()}";
 
             // Input Ports
             InputPorts.Add(boundsAInput);
@@ -34,16 +34,12 @@ namespace RyansLibrary.Labyrinth
 
             BoundsInt combinedBounds = CombineBounds(boundsA, boundsB);
 
-            _context.Set(OutputPorts[0], combinedBounds);
+            _context.Malloc(OutputPorts[0], combinedBounds);
 
             return true;
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
+        // Helper
         private BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
         {
             // Create shared bounds between two zones

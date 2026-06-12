@@ -45,12 +45,6 @@ namespace RyansLibrary.Labyrinth
 
             return PlaceDivergentBlueprints(path, bounds, dimensions, cellCount, maxPlacementAttempts);
         }
-
-        public override bool Undo()
-        {
-            return true;
-        }
-
         private bool PlaceDivergentBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, int cellCount, int maxPlacementAttempts)
         {
             int indexOffset = dimensions.x * dimensions.y;      // Increment by the cells taken up from the room dimensions

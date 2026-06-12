@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class FixedUniqueBlueprintsOp : BlueprintOperation
+    public class PlaceFixedBlueprintsOp : BlueprintOperation
     {
-        public FixedUniqueBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput)
+        public PlaceFixedBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput)
             : base(context, bpg)
         {
             OperationID = $"PlaceFixedUniqueBlueprint:{context.ConsumeOperationID()}";
@@ -43,11 +43,6 @@ namespace RyansLibrary.Labyrinth
             }
 
             return PlaceFixedUniqueRoomBlueprints(path, entry, bounds);
-        }
-
-        public override bool Undo()
-        {
-            return false;
         }
 
         /// <summary>
@@ -91,7 +86,7 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                _context.Set(OutputPorts[0], blueprintList);
+                _context.Malloc(OutputPorts[0], blueprintList);
                 return true;
             }
             Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");

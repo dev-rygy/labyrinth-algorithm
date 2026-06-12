@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class BoundedUniqueBlueprintsOp : BlueprintOperation
+    public class PlaceBoundedBlueprintsOp : BlueprintOperation
     {
-        public BoundedUniqueBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput) : base(context, bpg)
+        public PlaceBoundedBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput) : base(context, bpg)
         {
             OperationID = $"PlaceBoundedUniqueBlueprint:{context.ConsumeOperationID()}";
 
@@ -19,6 +19,11 @@ namespace RyansLibrary.Labyrinth
             InputPorts.Add(pathInput);
             InputPorts.Add(roomEntryInput);
             InputPorts.Add(boundsInput);
+
+            // Output Ports
+            string memoryID = context.ConsumeMemoryID().ToString();
+            OutputPorts.Add(memoryID);      // Blueprint List
+            if (_debugLogs) Debug.Log($"List<Blueprint> space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
@@ -45,11 +50,6 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        public override bool Undo()
-        {
-            return false;
-        }
-
         private bool PlaceBoundedUniqueRoomBlueprints(Path path, RoomEntry entry, BoundsInt bounds)
         {
             if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component
@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (!result)
                 {
-                    Debug.LogWarning($"Map Generator Warning: Constrained Room {entry.Prefab.name} " +
+                    if (_debugLogs) Debug.LogWarning($"[MapGenerator][BlueprintOperation] Constrained Room {entry.Prefab.name} " +
                         $"collided with another room and could not be placed. Retrying...");
                     return false;
                 }
@@ -68,13 +68,14 @@ namespace RyansLibrary.Labyrinth
                 List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, entry.AvailableCells, spawnPosition);
                 if (availableBlueprints is null)
                 {
-                    Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" has no available blueprint cells.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] Unique Room \"{room.name}\" has no available blueprint cells.");
                     return false;
                 }
 
+                _context.Malloc(OutputPorts[0], availableBlueprints);
                 return true;
             }
-            Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
+            Debug.LogError($"[MapGenerator][BlueprintOperation] {entry.Prefab.name} does not have a Room script!");
             return false;
         }
 

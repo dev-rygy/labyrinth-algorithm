@@ -8,9 +8,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class ConsolePrintOp : BlueprintOperation
+    public class PrintMessageOp : BlueprintOperation
     {
-        public ConsolePrintOp(MapGenerationContext context, BlueprintGenerator bpg, string messageInput) : base(context, bpg)
+        public PrintMessageOp(MapGenerationContext context, BlueprintGenerator bpg, string messageInput) : base(context, bpg)
         {
             OperationID = $"PrintOp:{context.ConsumeOperationID()}";
 
@@ -26,11 +26,6 @@ namespace RyansLibrary.Labyrinth
             Debug.Log($"Map Generator Print: {msg}");
 
             return true;
-        }
-
-        public override bool Undo()
-        {
-            return false;
         }
     }
 }

@@ -46,7 +46,7 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     Edge edgeElement = edgeList[index];
-                    _context.Set(OutputPorts[0], edgeElement);
+                    _context.Malloc(OutputPorts[0], edgeElement);
                     return true;
                 case "Blueprint":
                     if (!TryGetInput(1, out List<Blueprint> blueprintList))
@@ -58,17 +58,12 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     Blueprint blueprintElement = blueprintList[index];
-                    _context.Set(OutputPorts[0], blueprintElement);
+                    _context.Malloc(OutputPorts[0], blueprintElement);
                     return true;
                 default:
                     Debug.LogError($"Map Generator Error: Invalid input type 'T' for {OperationID}.");
                     return false;
             }
-        }
-
-        public override bool Undo()
-        {
-            return false;
         }
     }
 }

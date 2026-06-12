@@ -21,7 +21,7 @@ public class ScenesManager : MonoBehaviour
         // Handle singleton
         if (Instance != null)
         {
-            Debug.LogWarning("Scenes Manager Warning: Another instance of ScenesManager already exists. Deleting Object...");
+            Debug.LogWarning("[ScenesManager] Another instance of ScenesManager already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }
@@ -61,6 +61,17 @@ public class ScenesManager : MonoBehaviour
     public IEnumerator LoadSceneAsync(string name)
     {
         var asyncLoad = SceneManager.LoadSceneAsync(name);
+
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
+
+    public IEnumerator ReloadSceneAsync()
+    {
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        var asyncLoad = SceneManager.LoadSceneAsync(sceneIndex);
 
         while (!asyncLoad.isDone)
         {

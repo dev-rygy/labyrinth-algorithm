@@ -39,17 +39,11 @@ namespace RyansLibrary.Labyrinth
 
             List<Edge> mst = FindMinimumSpanningTree(edgeList);
 
-            _context.Set(OutputPorts[0], mst);
+            _context.Malloc(OutputPorts[0], mst);
             _context.AddToMSTList(mst);
 
             return true;
         }
-
-        public override bool Undo()
-        {
-            return false;
-        }
-
         public List<Edge> FindMinimumSpanningTree(List<Edge> edges)
         {
             Vertex startingVertex = edges[0].U;

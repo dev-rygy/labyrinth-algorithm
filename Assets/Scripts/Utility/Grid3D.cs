@@ -31,9 +31,16 @@ namespace RyansLibrary
             return pos.x + (Size.x * pos.y) + (Size.x * Size.y * pos.z);
         }
 
-        public bool InBounds(Vector3Int pos)
+        public bool InBoundsExclusive(Vector3Int pos)
         {
             return Bounds.Contains(pos);
+        }
+
+        public bool InBoundsInclusive(Vector3Int pos)
+        {
+            return pos.x >= Bounds.xMin && pos.x <= Bounds.xMax &&
+                   pos.y >= Bounds.yMin && pos.y <= Bounds.yMax &&
+                   pos.z >= Bounds.zMin && pos.z <= Bounds.zMax;
         }
 
         public T this[int x, int y, int z]

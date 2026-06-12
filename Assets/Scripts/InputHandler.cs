@@ -114,8 +114,8 @@ namespace RyansLibrary.Input
             _playerControls.Player.Move.canceled += context => OnMovementInput(context);
 
             // Look Input Events (DEPRICATED)
-            //_playerControls.Player.Look.performed += context => OnLookInput(context);
-            //_playerControls.Player.Look.canceled += context => OnLookInput(context);
+            // _playerControls.Player.Look.performed += context => OnLookInput(context);
+            // _playerControls.Player.Look.canceled += context => OnLookInput(context);
             // _playerControls.Player.LookRight.started += context => OnLookRightInput(context);
             // _playerControls.Player.LookLeft.started += context => OnLookLeftInput(context);
 

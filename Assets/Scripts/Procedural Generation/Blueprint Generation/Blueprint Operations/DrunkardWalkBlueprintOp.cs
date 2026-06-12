@@ -1,3 +1,9 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    11/01/2025
+ * Last Modified:   11/01/2025 (Ryan)
+ * Notes:           
+*/
 using RyansLibrary.Labyrinth;
 using System;
 using UnityEngine;
@@ -32,11 +38,6 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
             return false;
 
         return BlueprintDrunkardWalk(path, branchedPath, bounds, startIndex, endIndex);
-    }
-
-    public override bool Undo()
-    {
-        return false;
     }
 
     /// <summary>

@@ -8,9 +8,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class IntersectBoundsOp : BlueprintOperation
+    public class CheckOutOfBoundsOp : BlueprintOperation
     {
-        public IntersectBoundsOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
+        public CheckOutOfBoundsOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
             : base(context, bpg)
         {
             OperationID = $"IntersectBoundsOp:{context.ConsumeOperationID()}";
@@ -34,14 +34,9 @@ namespace RyansLibrary.Labyrinth
 
             BoundsInt intersectingBounds = CreateIntersectingBounds(boundsA, boundsB);
 
-            _context.Set(OutputPorts[0], intersectingBounds);
+            _context.Malloc(OutputPorts[0], intersectingBounds);
             
             return true;
-        }
-
-        public override bool Undo()
-        {
-            return false;
         }
 
         private BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, BoundsInt intersectingBounds)
