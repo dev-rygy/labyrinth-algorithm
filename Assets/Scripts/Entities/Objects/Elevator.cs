@@ -4,20 +4,33 @@
  * Last Modified:   06/10/2026 (Ryan)
  * Notes:           
 */
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Elevator : MovingPlatform
 {
     [Header("Elevator Settings")]
-    [SerializeField] private bool useRaycast = false;
+    [SerializeField] private bool _useRaycast = false;
     [SerializeField] private Vector3 _raycastOffset;
-    [SerializeField] private bool useOrigin = false;
+    [SerializeField] private bool _useOrigin = false;
+    [SerializeField] private GameObject _chainObject;
+    [SerializeField] private GameObject _chainParent;
+    [SerializeField] private float _spawnChainAtDistInterval = 5f;
+    [SerializeField] private float _chainLinkLength = 10f;
+    [SerializeField] private Vector3 _chainSpawnStartPoint;
+
+    private float _prevElevatorPositionY;
+    private Stack<GameObject> _chainLinkObjects;
+    private Vector3 _currentSpawnChainPoint;
 
     protected override void Start()
     {
         base.Start();
 
-        if (useRaycast)
+        if (_useRaycast)
         {
             RaycastHit hit;
             if (Physics.Raycast(transform.position + _raycastOffset, Vector3.down, out hit))
@@ -26,18 +39,77 @@ public class Elevator : MovingPlatform
                 _waypoints.Enqueue(adjHit);
             }
         }
-        if (useOrigin)
+        if (_useOrigin)
         {
             _waypoints.Enqueue(transform.position);
         }
+
+        _chainLinkObjects = new Stack<GameObject>();
+        _currentSpawnChainPoint = _chainSpawnStartPoint;
+        _prevElevatorPositionY = transform.position.y;
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        // Chain spawning/despawning logic
+        if (_chainObject == null || _chainParent == null)
+        {
+            Debug.LogWarning("No chain object/parent assigned for the elevator.");
+            return;
+        }
+
+        SpawnChain();
+        DespawnChain();
     }
 
     private void OnDrawGizmos()
     {
-        if (useRaycast)
+        if (_useRaycast)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position + _raycastOffset, transform.position + _raycastOffset + Vector3.down * 100f);
+        }
+    }
+
+    private void SpawnChain()
+    {
+        // If the elevator has moved down enough to require a new chain link, spawn one
+        // Position >= Previous Position of Chain Spawn - Distance to Spawn New Chain Link
+        if (transform.position.y <= (_prevElevatorPositionY - _spawnChainAtDistInterval))
+        {
+            GameObject chainLink = Instantiate(_chainObject, _chainParent.transform);
+            chainLink.transform.localPosition = _currentSpawnChainPoint;
+            _currentSpawnChainPoint += _chainLinkLength * Vector3.up; // Move the spawn point down for the next link
+            
+            _prevElevatorPositionY = Mathf.Ceil(transform.position.y);
+            _chainLinkObjects.Push(chainLink);
+
+            Debug.Log("Chain link spawned when elevator is at: " + transform.localPosition);
+            Debug.Log("New Chain Spawn " + (_prevElevatorPositionY - _spawnChainAtDistInterval));
+            Debug.Log("Chains in Queue: " + _chainLinkObjects.Count);
+        }
+    }
+
+    private void DespawnChain()
+    {
+        if (_chainLinkObjects.Count > 0 && (transform.localPosition.y > -0.5f))
+        {
+            GameObject chainLink = _chainLinkObjects.Pop();
+            Destroy(chainLink);
+        }
+        else if (transform.position.y >= (_prevElevatorPositionY + _spawnChainAtDistInterval))
+        {
+            _prevElevatorPositionY = Mathf.Floor(transform.position.y);
+            _currentSpawnChainPoint = _chainSpawnStartPoint;
+
+            GameObject chainLink = _chainLinkObjects.Pop();
+            Destroy(chainLink);
+
+            Debug.Log("Chain link despawned when elevator is at: " + transform.localPosition);
+            Debug.Log("New Chain Despawn " + (_prevElevatorPositionY + _spawnChainAtDistInterval));
+            Debug.Log("Chains in Queue: " + _chainLinkObjects.Count);
         }
     }
 }
