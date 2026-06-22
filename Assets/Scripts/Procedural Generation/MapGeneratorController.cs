@@ -917,7 +917,7 @@ namespace RyansLibrary.Labyrinth
             // Add Unique Room volume
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                if (entry.Prefab.TryGetComponent<Room>(out Room room))
+                if (entry.Prefab.TryGetComponent(out Room room))
                 {
                     totalCellOccupancy += room.GetRoomOccupancy();
                 }
@@ -945,6 +945,18 @@ namespace RyansLibrary.Labyrinth
                 return false;
 
             return true;        // The zone's cell requirements are met with the bounded volume
+        }
+
+        private bool CanContainBounds(BoundsInt containedBounds, BoundsInt containerBounds)
+        {
+            float xDifference = containedBounds.size.x - containerBounds.size.x;
+            float yDifference = containedBounds.size.y - containerBounds.size.y;
+            float zDifference = containedBounds.size.z - containerBounds.size.z;
+
+            if (xDifference < 0 || yDifference < 0 && zDifference < 0)
+                return false;
+            else
+                return true;
         }
 
         public void DestroyAllRooms()

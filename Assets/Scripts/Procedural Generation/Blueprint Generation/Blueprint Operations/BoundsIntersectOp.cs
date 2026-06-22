@@ -32,26 +32,11 @@ namespace RyansLibrary.Labyrinth
             if (!TryGetInput(1, out BoundsInt boundsB))
                 return false;
 
-            BoundsInt intersectedBounds = IntersectBounds(boundsA, boundsB);
+            BoundsInt intersectedBounds = BoundsIntUtils.IntersectBounds(boundsA, boundsB);
 
             _context.Malloc(OutputPorts[0], intersectedBounds);
 
             return true;
-        }
-
-        // Helper
-        private BoundsInt IntersectBounds(BoundsInt boundsA, BoundsInt boundsB)
-        {
-            // Create shared bounds between two zones
-            BoundsInt intersectedBounds = new BoundsInt();
-
-            // Find what bounds has the absolute minimum and maximum values on each axis and use those to create the intersecting bounds
-            Vector3Int min = new Vector3Int(Mathf.Max(boundsA.xMin, boundsB.xMin), Mathf.Max(boundsA.yMin, boundsB.yMin), Mathf.Max(boundsA.zMin, boundsB.zMin));
-            Vector3Int max = new Vector3Int(Mathf.Min(boundsA.xMax, boundsB.xMax), Mathf.Min(boundsA.yMax, boundsB.yMax), Mathf.Min(boundsA.zMax, boundsB.zMax));
-
-            intersectedBounds = new BoundsInt(min, max - min);
-
-            return intersectedBounds;
         }
     }
 }

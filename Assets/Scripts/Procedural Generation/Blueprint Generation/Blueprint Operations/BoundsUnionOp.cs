@@ -32,27 +32,11 @@ namespace RyansLibrary.Labyrinth
             if (!TryGetInput(1, out BoundsInt boundsB))
                 return false;
 
-            BoundsInt combinedBounds = CombineBounds(boundsA, boundsB);
+            BoundsInt combinedBounds = BoundsIntUtils.CombineBounds(boundsA, boundsB);
 
             _context.Malloc(OutputPorts[0], combinedBounds);
 
             return true;
-        }
-
-        // Helper
-        private BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
-        {
-            // Create shared bounds between two zones
-            BoundsInt combinedBounds = new BoundsInt();
-            Vector3Int position = new Vector3Int(
-                                (int)(boundsA.position.x + boundsB.position.x) / 2,
-                                (int)(boundsA.position.y + boundsB.position.y) / 2,
-                                (int)(boundsA.position.z + boundsB.position.z) / 2);
-            Vector3Int size = boundsA.size + boundsB.size;
-            combinedBounds.position = position;
-            combinedBounds.size = size;
-
-            return combinedBounds;
         }
     }
 }
