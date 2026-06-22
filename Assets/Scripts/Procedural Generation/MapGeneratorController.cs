@@ -15,6 +15,18 @@ using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.
 
 namespace RyansLibrary.Labyrinth
 {
+    #region Helper Objects
+    // Entry for connection zones together
+    [System.Serializable]
+    public class ZoneConnectionEntry
+    {
+        [field: Header("Zones")]
+        [field: SerializeField] public Zone ZoneA { get; set; }
+        [field: SerializeField] public Zone ZoneB { get; set; }
+        [field: SerializeField] public Zone ConnectionZone { get; set; }
+    }
+    #endregion
+
     public class MapGeneratorController : MonoBehaviour
     {
         #region Variables
@@ -58,7 +70,6 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Zones")]
         [SerializeField] private List<Zone> _zones;
-        [SerializeField] private List<Zone> _connectionZones;
 
         // Entrys to connect zones together
         [Header("Zone Connection")]
@@ -176,9 +187,9 @@ namespace RyansLibrary.Labyrinth
             {
                 InitializeZone(zone);
             }
-            foreach (Zone entry in _connectionZones)
+            foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
-                InitializeZone(entry);
+                InitializeZone(entry.ConnectionZone);
             }
         }
 
@@ -223,13 +234,13 @@ namespace RyansLibrary.Labyrinth
         private void LoadOperations()
         {
             // ******* Generate Zone Connection Blueprints *******
-            foreach (Zone zone in _connectionZones)
+            foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
                 // TODO: Make a zone connection entry that takes a connection zone and the two zones it connects and
                 // generates the connection path and room between them; this will make sure the connection generation
                 // has access to all needed data and is generated in the correct order in relation to zone blueprint generation
 
-                LoadConnectionZoneOperations(_connectionZones[0], _zones[0], _zones[1]);
+                LoadConnectionZoneOperations(entry.ConnectionZone, entry.ZoneA, entry.ZoneB);
             }
 
             // ******* Generate Blueprint Map For Each Zone *******
@@ -339,9 +350,9 @@ namespace RyansLibrary.Labyrinth
         {
             // Generate Zone Connection Rooms
             // Since the connection zones are just a zone generate rooms normally
-            foreach (Zone zone in _connectionZones)
+            foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
-                if (!GenerateZoneRooms(zone))
+                if (!GenerateZoneRooms(entry.ConnectionZone))
                 {
                     GenerationFailed();
                     return;     // Room Generation failed for zone connection; stop algorithm
@@ -838,7 +849,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         // TODO: Update this function to match rework.
-        public bool GenerateZoneConnectionRooms(ZoneConnectionEntry entry)
+        public bool GenerateZoneConnectionRooms(OldZoneConnectionEntry entry)
         {
             // ******* Generate Room A ******
             // Adjust parameters to fit the zone's actual position
@@ -1044,13 +1055,13 @@ namespace RyansLibrary.Labyrinth
                     DrawBoundingBox(zone.Bounds);
             }
 
-            foreach (Zone zone in _connectionZones)
+            foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
                 if (_debugBlueprintGizmos)
-                    DrawBluePrintGizmos(zone);
+                    DrawBluePrintGizmos(entry.ConnectionZone);
 
                 if (_debugBoundsGizmos)
-                    DrawBoundingBox(zone.Bounds);
+                    DrawBoundingBox(entry.ConnectionZone.Bounds);
             }
         }
 

@@ -18,7 +18,7 @@ namespace RyansLibrary.Labyrinth
     #region Helper Objects
     // Entry for connection zones together
     [System.Serializable]
-    public class ZoneConnectionEntry
+    public class OldZoneConnectionEntry
     {
         [field: Header("Zones")]
         [field: SerializeField] public Zone ZoneA { get; set; }
@@ -84,7 +84,7 @@ namespace RyansLibrary.Labyrinth
 
         // Entrys to connect zones together
         [Header("Zone Connection")]
-        [SerializeField] private List<ZoneConnectionEntry> _zoneConnections;
+        [SerializeField] private List<OldZoneConnectionEntry> _zoneConnections;
 
         [Header("Debuging")]
         [Space]
@@ -246,7 +246,7 @@ namespace RyansLibrary.Labyrinth
 
             // ******* Generate Blueprints *******
             // Generate Zone Connection Paths
-            foreach (ZoneConnectionEntry entry in _zoneConnections)
+            foreach (OldZoneConnectionEntry entry in _zoneConnections)
             {
                 // TODO: Option 1: Handle this after both zone A's and B's blueprints have been generated.
                 // This is only needed here because of triangulation but can be handled with
@@ -274,7 +274,7 @@ namespace RyansLibrary.Labyrinth
             // ******* Parse and Generate Rooms *******
             // TODO: Possibly do this dynamically as players move around the map
             // Generate Zone Connection Rooms
-            foreach (ZoneConnectionEntry entry in _zoneConnections)
+            foreach (OldZoneConnectionEntry entry in _zoneConnections)
             {
                 // Generate actual rooms for the zone connection
                 if (!GenerateZoneConnectionRooms(entry))
@@ -639,7 +639,7 @@ namespace RyansLibrary.Labyrinth
         // Generate Zone Connection Paths
         // TODO: Make connection entrys into a type of zone of it's own that intersects two zones together
         // TODO: Possibly handle this generation after both zone blueprints have been already been generated
-        public bool GenerateZoneConnectionBlueprints(ZoneConnectionEntry entry)
+        public bool GenerateZoneConnectionBlueprints(OldZoneConnectionEntry entry)
         {
             if (entry.ConnectionPath == null)
             {
@@ -818,7 +818,7 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        public bool GenerateZoneConnectionRooms(ZoneConnectionEntry entry)
+        public bool GenerateZoneConnectionRooms(OldZoneConnectionEntry entry)
         {
             // ******* Generate Room A ******
             // Adjust parameters to fit the zone's actual position
@@ -989,7 +989,7 @@ namespace RyansLibrary.Labyrinth
                     DrawBoundingBox(zone.Bounds);
             }
 
-            foreach (ZoneConnectionEntry entry in _zoneConnections)
+            foreach (OldZoneConnectionEntry entry in _zoneConnections)
             {
                 if (_debugBlueprintGizmos)
                     DrawBluePrintGizmos(entry.ConnectionPath);
