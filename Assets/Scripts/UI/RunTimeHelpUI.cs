@@ -1,44 +1,57 @@
 using RyansLibrary.Labyrinth;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RunTimeHelpUI : MonoBehaviour
 {
-    [SerializeField] private GameObject textObject;
-
-    private void Awake()
-    {
-        HideText();
-
-        MapGeneratorController.OnGenerationDone += ShowText;
-    }
+    [SerializeField] private GameObject _contentObject;
+    [SerializeField] private TMP_Text _helpText;
+    [SerializeField] [TextArea(6, 10)] private string _runtimeTextDescription; 
+    [SerializeField] [TextArea(6, 10)] private string _debuggingTextDescription; 
 
     private void OnEnable()
     {
-        ConsoleUI.OnConsoleOpened += HideText;
-        ConsoleUI.OnConsoleClosed += ShowText;
+        MapGeneratorController.OnGenerationStarted += SetTextContent;
+        MapGeneratorController.OnGenerationDone += SetTextContent;
+
+        // Subscribe to Console Open and Close events
+        ConsoleUI.OnConsoleOpened += HideContent;
+        ConsoleUI.OnConsoleClosed += ShowContent;
     }
 
     private void OnDisable()
     {
-        ConsoleUI.OnConsoleOpened -= HideText;
-        ConsoleUI.OnConsoleClosed -= ShowText;
+        MapGeneratorController.OnGenerationStarted -= SetTextContent;
+        MapGeneratorController.OnGenerationDone -= SetTextContent;
+
+        // Unsubscribe to Console Open and Close events
+        ConsoleUI.OnConsoleOpened -= HideContent;
+        ConsoleUI.OnConsoleClosed -= ShowContent;
     }
 
-    private void ShowText()
+    private void ShowContent()
     {
-        ToggleText(true);
+        _contentObject.SetActive(true);
     }
 
-    private void HideText()
+    private void HideContent()
     {
-        ToggleText(false);
+        _contentObject.SetActive(false);
     }
 
-    private void ToggleText(bool toggle)
+    private void SetTextContent()
     {
         if (MapGeneratorController.Instance.IsGenerating)
-            return;
-
-        textObject.SetActive(toggle);
+        {
+            if (MapGeneratorController.Instance.DebugSequential)
+                _helpText.text = _debuggingTextDescription;
+            else
+                _helpText.text = string.Empty;
+        }
+        else
+        {
+            _helpText.text = _runtimeTextDescription;
+        }
     }
 }
