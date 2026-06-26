@@ -22,8 +22,6 @@ public class DemoMenu : MonoBehaviour
         }
 
         Instance = this;
-
-        DontDestroyOnLoad(gameObject);
     }
 
     public void StartNewGame()

@@ -380,5 +380,27 @@ namespace RyansLibrary.Labyrinth
         {
             RandomCycles?.Add(rcList);
         }
+
+        public int GetOperationQueueCount()
+        {
+            if (OperationQueue is null)
+            {
+                Debug.LogError("[MapGeneratorController] Error: Operation Queue is not yet assigned.");
+                return 0;
+            }
+
+            return OperationQueue.Count;
+        }
+
+        public int GetOperationHistoryCount() 
+        {
+            if (OperationHistory is null)
+            {
+                Debug.LogError("[MapGeneratorController] Error: Operation History is not yet assigned.");
+                return 0;
+            }
+
+            return OperationHistory.Count; 
+        }
     }
 }

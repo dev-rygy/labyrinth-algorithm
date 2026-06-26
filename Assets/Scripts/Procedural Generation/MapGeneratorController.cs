@@ -41,6 +41,15 @@ namespace RyansLibrary.Labyrinth
         public static event Action OnGenerationDone;
         public static event Action OnGenerationFailed;
 
+        public static event Action OnOperationsStarted;
+        public static event Action<int> OnOperationsGetTotal;
+        public static event Action<int> OnOperationsUpdate;
+        public static event Action OnOperationExecuted;
+        public static event Action OnOperationsEnded;
+
+        public static event Action OnRoomParseStarted;
+        public static event Action OnRoomParseDone;
+
         // ***** Path Containers *****
         // The Master Path holds a reference to all bluprint rooms in an zone
         public Path MasterPath { get; private set; }
@@ -309,6 +318,9 @@ namespace RyansLibrary.Labyrinth
 
         private IEnumerator ExecuteOperations()
         {
+            OnOperationsStarted?.Invoke();
+            OnOperationsGetTotal?.Invoke(GetOperationCount());
+
             // Generate Blueprints
             while (_context.OperationQueue.Count > 0)
             {
@@ -332,6 +344,8 @@ namespace RyansLibrary.Labyrinth
                 if (_debugBlueprintLogs) Debug.Log($"[MapGenerator] Running Operation {operation.OperationID}...");
 
                 bool result = operation.Execute();
+                OnOperationExecuted?.Invoke();
+                OnOperationsUpdate?.Invoke(GetOperationCount());
 
                 if (_debugBlueprintLogs) Debug.Log(result ? "[MapGenerator] Execution Successs!" : "[MapGenerator] Execution Failure");
 
@@ -343,11 +357,15 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
+            OnOperationsEnded?.Invoke();
+
             if (_debugBlueprintLogs) Debug.Log("[MapGenerator] End of operation execution.");
         }
 
         private void GenerateRooms()
         {
+            OnRoomParseStarted?.Invoke();
+
             // Generate Zone Connection Rooms
             // Since the connection zones are just a zone generate rooms normally
             foreach (ZoneConnectionEntry entry in _zoneConnections)
@@ -369,6 +387,8 @@ namespace RyansLibrary.Labyrinth
                     return;
                 }
             }
+
+            OnRoomParseDone?.Invoke();
 
             if (_debugBlueprintLogs) Debug.Log("[MapGenerator] End of room generation.");
         }
@@ -974,6 +994,18 @@ namespace RyansLibrary.Labyrinth
         {
             foreach (Transform child in _roomContainer.transform)
                 Destroy(child.gameObject);
+        }
+
+        public int GetOperationCount()
+        {
+            if (_context is null)
+            {
+                Debug.LogError("[MapGeneratorController] Error: Context is not assigned.");
+                return 0;
+            }
+
+            return _context.GetOperationQueueCount();
+
         }
         #endregion
 
