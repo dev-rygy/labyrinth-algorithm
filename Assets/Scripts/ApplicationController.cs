@@ -19,8 +19,11 @@ public class ApplicationController : MonoBehaviour
     public static ApplicationController Instance { get; private set; }
 
     [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private Camera MainCamera;
     [SerializeField] private Vector3 playerSpawnPoint = new Vector3(65, 0, 0);
     [SerializeField] private bool _clearConsoleOnGameStart = false;
+
+    private Camera _playerCamera;
 
     private void Awake()
     {
@@ -48,6 +51,9 @@ public class ApplicationController : MonoBehaviour
 
     public IEnumerator LoadNewGame()
     {
+        MainCamera?.gameObject.SetActive(true);
+        _playerCamera?.gameObject.SetActive(false);
+
         // Load Scene
         yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(MAIN_SCENE_NAME));
 
@@ -55,7 +61,12 @@ public class ApplicationController : MonoBehaviour
         yield return MapGeneratorController.Instance.StartGeneration();
 
         // Spawn player
-        Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
+        GameObject player = Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
+
+        _playerCamera = player.GetComponentInChildren<Camera>();
+
+        MainCamera?.gameObject.SetActive(false);
+        _playerCamera?.gameObject.SetActive(true);
     }
 
     public void EndGame()

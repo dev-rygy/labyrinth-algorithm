@@ -34,11 +34,18 @@ public class LoadingScreenUI : MonoBehaviour
             Debug.LogError("Error: Loading text is not assigned");
             return;
         }
+
+        _loadingSlider.gameObject.SetActive(false);
+        _loadingText.gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
-        MapGeneratorController.OnOperationsGetTotal += SetTotalOperationCount;
+        // Subscribe to Main Toggle Events
+        MapGeneratorController.OnOperationsGetTotal += InitLoadingSequence;
+        MapGeneratorController.OnGenerationDone += EndLoadingSequence;
+
+        // Subscribing to Loading Bar Events
         MapGeneratorController.OnOperationsUpdate += UpdateLoadingSlider;
 
         // Subscribing Text Update Events
@@ -58,7 +65,21 @@ public class LoadingScreenUI : MonoBehaviour
 
     private void OnDisable()
     {
-        // Unsubscribing Text Update Events
+        // Unsubscribe to Main Toggle Events
+        MapGeneratorController.OnOperationsGetTotal -= InitLoadingSequence;
+        MapGeneratorController.OnGenerationDone -= EndLoadingSequence;
+
+        // Unsubscribe to Loading Bar Events
+        MapGeneratorController.OnOperationsUpdate -= UpdateLoadingSlider;
+
+        // Unsubscribe Text Update Events
+        MapGeneratorController.OnGenerationStarted -= UpdateLoadingText;
+        MapGeneratorController.OnOperationsStarted -= UpdateLoadingText;
+        MapGeneratorController.OnOperationExecuted -= UpdateLoadingText;
+        MapGeneratorController.OnOperationsEnded -= UpdateLoadingText;
+        MapGeneratorController.OnRoomParseStarted -= UpdateLoadingText;
+        MapGeneratorController.OnRoomParseDone -= UpdateLoadingText;
+
         MapGeneratorController.OnGenerationStarted -= UpdateTextStatus;
         MapGeneratorController.OnOperationsStarted -= UpdateTextStatus;
         MapGeneratorController.OnOperationsEnded -= UpdateTextStatus;
@@ -71,9 +92,14 @@ public class LoadingScreenUI : MonoBehaviour
         _loadingSlider.value = 0;
     }
 
-    private void SetTotalOperationCount(int totalOperationCount)
+    private void InitLoadingSequence(int totalOperationCount)
     {
+        _loadingStatus = 0;
+
         _totalOperationCount = totalOperationCount;
+
+        _loadingSlider.gameObject.SetActive(true);
+        _loadingText.gameObject.SetActive(true);
     }
 
     private void UpdateLoadingSlider(int currentOperationCount)
@@ -87,7 +113,6 @@ public class LoadingScreenUI : MonoBehaviour
         }
 
         float value = 1 - ((float)_currentOperationCount / (float)_totalOperationCount);
-        Debug.Log($"Value: {value}");
         _loadingSlider.value = value;
     }
 
@@ -119,5 +144,13 @@ public class LoadingScreenUI : MonoBehaviour
     private void UpdateTextStatus()
     {
         _loadingStatus++;
+    }
+
+    private void EndLoadingSequence()
+    {
+        _totalOperationCount = 0;
+
+        _loadingSlider.gameObject.SetActive(false);
+        _loadingText.gameObject.SetActive(false);
     }
 }
