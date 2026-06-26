@@ -52,7 +52,7 @@ namespace Utilities.BetterHierarchy
             if (!IsEnabled)
                 return;
 
-            GameObject obj = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+            GameObject obj = EditorUtility.EntityIdToObject(instanceID) as GameObject;
 
             if (!obj)
                 return;
@@ -109,7 +109,7 @@ namespace Utilities.BetterHierarchy
                 expandChildrenIconRect.x -= HIERARCHY_EXPAND_ICON_X_OFFSET;
                 expandChildrenIconRect.width = HIERARCHY_EXPAND_ICON_WIDTH;
 
-                objectStatus.IsSelected = Selection.instanceIDs.Contains(instanceID);
+                objectStatus.IsSelected = Selection.entityIds.Contains(instanceID);
                 objectStatus.IsHovered = entireRowRect.Contains(Event.current.mousePosition);
                 objectStatus.IsDropDownHovered = expandChildrenIconRect.Contains(Event.current.mousePosition);
 
@@ -120,7 +120,7 @@ namespace Utilities.BetterHierarchy
             {
                 if (objectStatus.IsSelected || (objectStatus.IsDropDownHovered && MouseStatus.IsMouseDown))
                 {
-                    if (Selection.instanceIDs.Length > 1)
+                    if (Selection.entityIds.Length > 1)
                         additionalSelectedInstanceIDs.Clear();
                     
                     additionalSelectedInstanceIDs.Add(instanceID);
@@ -227,7 +227,7 @@ namespace Utilities.BetterHierarchy
 
         private static void ClearOriginalIcon(HierarchyObjectStatus hierarchyObjectStatus, Rect selectionRect)
         {
-            int selectedAmount = Selection.instanceIDs.Length > 1 ? Selection.instanceIDs.Length : additionalSelectedInstanceIDs.Count;
+            int selectedAmount = Selection.entityIds.Length > 1 ? Selection.entityIds.Length : additionalSelectedInstanceIDs.Count;
             Color color = UnityEditorBackgroundColor.Get(hierarchyObjectStatus, hierarchyHasFocus, selectedAmount);
             Rect backgroundRect = selectionRect;
             backgroundRect.width = HIERARCHY_ICON_WIDTH;

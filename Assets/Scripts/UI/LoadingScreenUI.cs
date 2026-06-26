@@ -14,8 +14,10 @@ public class LoadingScreenUI : MonoBehaviour
         Done
     }
 
+    [SerializeField] private GameObject _contentObject;
     [SerializeField] private Slider _loadingSlider;
     [SerializeField] private TMP_Text _loadingText;
+    [SerializeField] private TMP_Text _consoleText;
 
     private int _totalOperationCount;
     private int _currentOperationCount;
@@ -35,14 +37,14 @@ public class LoadingScreenUI : MonoBehaviour
             return;
         }
 
-        _loadingSlider.gameObject.SetActive(false);
-        _loadingText.gameObject.SetActive(false);
+        _contentObject.gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
         // Subscribe to Main Toggle Events
-        MapGeneratorController.OnOperationsGetTotal += InitLoadingSequence;
+        MapGeneratorController.OnOperationsGetTotal += GetOperationCount;
+        MapGeneratorController.OnGenerationStarted += InitLoadingSequence;
         MapGeneratorController.OnGenerationDone += EndLoadingSequence;
 
         // Subscribing to Loading Bar Events
@@ -61,12 +63,17 @@ public class LoadingScreenUI : MonoBehaviour
         MapGeneratorController.OnOperationsEnded += UpdateTextStatus;
         MapGeneratorController.OnRoomParseStarted += UpdateTextStatus;
         MapGeneratorController.OnRoomParseDone += UpdateTextStatus;
+
+        // Console toggles
+        ConsoleUI.OnConsoleOpened += HideConsoleText;
+        ConsoleUI.OnConsoleClosed += ShowConsoleText;
     }
 
     private void OnDisable()
     {
         // Unsubscribe to Main Toggle Events
-        MapGeneratorController.OnOperationsGetTotal -= InitLoadingSequence;
+        MapGeneratorController.OnOperationsGetTotal -= GetOperationCount;
+        MapGeneratorController.OnGenerationStarted += InitLoadingSequence;
         MapGeneratorController.OnGenerationDone -= EndLoadingSequence;
 
         // Unsubscribe to Loading Bar Events
@@ -85,21 +92,31 @@ public class LoadingScreenUI : MonoBehaviour
         MapGeneratorController.OnOperationsEnded -= UpdateTextStatus;
         MapGeneratorController.OnRoomParseStarted -= UpdateTextStatus;
         MapGeneratorController.OnRoomParseDone -= UpdateTextStatus;
+
+        // Console toggles
+        ConsoleUI.OnConsoleOpened -= HideConsoleText;
+        ConsoleUI.OnConsoleClosed -= ShowConsoleText;
     }
 
     private void Start()
     {
         _loadingSlider.value = 0;
+        _loadingStatus = 0;
     }
 
-    private void InitLoadingSequence(int totalOperationCount)
+    private void GetOperationCount(int totalOperationCount)
     {
+        _totalOperationCount = totalOperationCount;
+    }
+
+    private void InitLoadingSequence()
+    {
+        _loadingSlider.value = 0;
         _loadingStatus = 0;
 
-        _totalOperationCount = totalOperationCount;
+        _contentObject.gameObject.SetActive(true);
 
-        _loadingSlider.gameObject.SetActive(true);
-        _loadingText.gameObject.SetActive(true);
+        ShowConsoleText();
     }
 
     private void UpdateLoadingSlider(int currentOperationCount)
@@ -127,16 +144,17 @@ public class LoadingScreenUI : MonoBehaviour
                 _loadingText.text = "Initializing";
                 break;
             case LoadingStatus.Operations:
-                _loadingText.text = $"Executing Operations";
+                _loadingText.text = $"Executing Operations ({_totalOperationCount - _currentOperationCount}" +
+                    $"/{_totalOperationCount})";
                 break;
             case LoadingStatus.Rooms:
-                _loadingText.text = $"Generating Rooms";
+                _loadingText.text = "Generating Rooms";
                 break;
             case LoadingStatus.Done:
-                _loadingText.text = $"Finalizing";
+                _loadingText.text = "Loading Scene";
                 break;
             default:
-                _loadingText.text = $"Loading...";
+                _loadingText.text = "Loading...";
                 break;
         }
     }
@@ -150,7 +168,24 @@ public class LoadingScreenUI : MonoBehaviour
     {
         _totalOperationCount = 0;
 
-        _loadingSlider.gameObject.SetActive(false);
-        _loadingText.gameObject.SetActive(false);
+        _contentObject.gameObject.SetActive(false);
+    }
+
+    private void ShowConsoleText()
+    {
+        ToggleText(true);
+    }
+
+    private void HideConsoleText()
+    {
+        ToggleText(false);
+    }
+
+    private void ToggleText(bool toggle)
+    {
+        if (!MapGeneratorController.Instance.DebugSequential)
+            return;
+
+        _consoleText.gameObject.SetActive(toggle);
     }
 }

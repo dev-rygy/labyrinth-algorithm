@@ -19,6 +19,8 @@ public class ConsoleUI : UIBehaviour
 {
     public static ConsoleCommandRegistry CommandRegistry { get; private set; }        // Console Command Registry
 
+    public static Action OnConsoleOpened;
+    public static Action OnConsoleClosed;
     public static Action<string> OnNewConsoleOutput;        // Output to UI
     public static Action OnClearConsole;                    // Clear UI
 
@@ -73,11 +75,15 @@ public class ConsoleUI : UIBehaviour
 
         // Focus cursor on the input field
         _inputField.Select();
+
+        OnConsoleOpened.Invoke();
     }
 
     private void CloseConsole()
     {
         Hide();
+
+        OnConsoleClosed.Invoke();
     }
 
     private void SubmitTicket()

@@ -114,7 +114,7 @@ namespace RyansLibrary.Labyrinth
         private bool _debugBoundsGizmos = false;
 
         // Stepwise procedure
-        private bool _debugSequential;
+        [field: SerializeField] public bool DebugSequential { get; private set; }
         private int _stepBudget = 0;
         private bool _runToEnd = false;
 
@@ -324,7 +324,7 @@ namespace RyansLibrary.Labyrinth
             // Generate Blueprints
             while (_context.OperationQueue.Count > 0)
             {
-                if (_debugSequential)
+                if (DebugSequential)
                 {
                     while (!_runToEnd && _stepBudget <= 0)
                         yield return null;
@@ -1063,7 +1063,7 @@ namespace RyansLibrary.Labyrinth
         // Stepwise Function Toggles
         public void ToggleStepwiseDebugging(bool toggle)
         {
-            _debugSequential = toggle;
+            DebugSequential = toggle;
         }
 
         private void OnDrawGizmos()
