@@ -536,8 +536,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 720197579}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.27563736, y: 0, z: 0, w: 0.9612617}
+  m_LocalPosition: {x: 75, y: 78, z: -120}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -718,8 +718,39 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6343358480617124855, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1310064287}
   m_SourcePrefab: {fileID: 100100000, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
+--- !u!1 &1310064284 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6343358480617124855, guid: fef5e2b2458183a43a04374132d05a5c,
+    type: 3}
+  m_PrefabInstance: {fileID: 951079852}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1310064287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1310064284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 795faac2f32c2ab40835a19fdc6306a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapGeneratorDebugger
+  _boundingBoxColor: {r: 1, g: 0.3137255, b: 0, a: 0.8}
+  _triangulationColor: {r: 1, g: 0.10980392, b: 0.32156864, a: 0.8}
+  _contiguousGraphColor: {r: 0, g: 0.9411765, b: 1, a: 0.8}
+  _randomCyclesColor: {r: 0.70980394, g: 0.28627452, b: 1, a: 0.8}
+  _currentEdgeColor: {r: 1, g: 0.9529412, b: 0, a: 0.8}
+  _debugGizmos: 0
+  _debugBlueprintGizmos: 0
+  _debugTriangulationGizmos: 0
+  _debugBoundsGizmos: 0
 --- !u!1001 &1604340971
 PrefabInstance:
   m_ObjectHideFlags: 0

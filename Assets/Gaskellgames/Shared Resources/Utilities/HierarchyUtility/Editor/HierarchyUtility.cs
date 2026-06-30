@@ -20,7 +20,7 @@ namespace Gaskellgames
             // draw icon
             if (icon != null)
             {
-                GameObject gameObject = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+                GameObject gameObject = EditorUtility.EntityIdToObject(instanceID) as GameObject;
                 if (gameObject != null)
                 {
                     if (gameObject.GetComponent<T>() != null)
@@ -38,7 +38,7 @@ namespace Gaskellgames
 
         public static int CheckForHierarchyIconOffset<T>(int instanceID)
         {
-            GameObject gameObject = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+            GameObject gameObject = EditorUtility.EntityIdToObject(instanceID) as GameObject;
             if (gameObject != null)
             {
                 int hierarchyPixelHeight = 16;

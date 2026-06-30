@@ -119,6 +119,12 @@ namespace RyansLibrary.Labyrinth
         private bool _runToEnd = false;
 
         private MapGenerationContext _context;
+
+
+        public MapGenerationContext Context => _context;
+        public List<Zone> Zones => _zones;
+        public List<ZoneConnectionEntry> ZoneConnections => _zoneConnections;
+        public int GridUnitSize => _gridUnitSize;
         #endregion
 
         #region Mono
@@ -1064,127 +1070,6 @@ namespace RyansLibrary.Labyrinth
         public void ToggleStepwiseDebugging(bool toggle)
         {
             DebugSequential = toggle;
-        }
-
-        private void OnDrawGizmos()
-        {
-            if (!_debugGizmos)
-                return;
-
-            foreach (Zone zone in _zones)
-            {
-                if (_debugBlueprintGizmos)
-                    DrawBluePrintGizmos(zone);
-
-                if (_debugTriangulationGizmos)
-                {
-                    DrawTriangulation();
-                    DrawMSTs();
-                    DrawRandomCycles();
-                }
-
-                if (_debugBoundsGizmos)
-                    DrawBoundingBox(zone.Bounds);
-            }
-
-            foreach (ZoneConnectionEntry entry in _zoneConnections)
-            {
-                if (_debugBlueprintGizmos)
-                    DrawBluePrintGizmos(entry.ConnectionZone);
-
-                if (_debugBoundsGizmos)
-                    DrawBoundingBox(entry.ConnectionZone.Bounds);
-            }
-        }
-
-        private void DrawBoundingBox(BoundsInt bounds)
-        {
-            Vector3 boundsSize = _gridUnitSize * bounds.size;
-            Vector3 boundsCenter = (bounds.center + new Vector3(-0.5f, -0.5f, -0.5f)) * _gridUnitSize;
-
-            Gizmos.color = _boundingBoxColor;
-            Gizmos.DrawWireCube(boundsCenter, boundsSize);
-        }
-
-        private void DrawTriangulation()
-        {
-            if (_context is null || _context.Triangulations is null)
-                return;
-
-            foreach (List<Edge> edgeList in _context.Triangulations)
-            {
-                // Draw remaining edges from triangulation
-                foreach (Edge e in edgeList)
-                {
-                    Gizmos.color = _triangulationColor;
-                    Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
-                }
-            }
-        }
-
-        private void DrawMSTs()
-        {
-            if (_context is null || _context.MinimumSpanningTrees is null)
-                return;
-
-            foreach (List<Edge> edgeList in _context.MinimumSpanningTrees)
-            {
-                if (edgeList is null)
-                    continue;
-
-                // Draw the minimum spanning tree of the zone
-                foreach (Edge e in edgeList)
-                {
-                    Gizmos.color = _contiguousGraphColor;
-                    Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
-                }
-            }
-        }
-
-        private void DrawRandomCycles()
-        {
-            if (_context is null || _context.RandomCycles is null) 
-                return;
-
-            foreach (List<Edge> edgeList in _context.RandomCycles)
-            {
-                if (edgeList is null)
-                    continue;
-
-                foreach (Edge e in edgeList)
-                {
-                    Gizmos.color = _randomCyclesColor;
-                    Gizmos.DrawLine(e.V.Position * _gridUnitSize, e.U.Position * _gridUnitSize);
-                }
-            }
-        }
-
-        private void DrawBluePrintGizmos(Zone zone)
-        {
-            if (zone.MainPath.BlueprintList == null)
-                return;
-
-            Vector3 unitSize = Vector3.one * _gridUnitSize;
-
-            // Draw Gizmos for main path
-            foreach (Blueprint blueprint in zone.MainPath.BlueprintList)
-            {
-                Gizmos.color = zone.MainPath.PathGizmoColor;
-                Gizmos.DrawCube(blueprint.Position * _gridUnitSize, unitSize);
-            }
-
-            foreach (Path path in zone.Paths)
-            {
-                if (path.BlueprintList == null)
-                    return;
-
-                // Draw Gizmos for alt paths
-                foreach (Blueprint blueprint in path.BlueprintList)
-                {
-                    Gizmos.color = path.PathGizmoColor;
-                    Gizmos.DrawCube(blueprint.Position * _gridUnitSize, unitSize);
-                }
-            }
         }
         #endregion
 

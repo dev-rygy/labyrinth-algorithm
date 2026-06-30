@@ -65,7 +65,7 @@ namespace Gaskellgames.FolderSystem
             // check for valid draw
             if (Event.current.type != EventType.Repaint) { return; }
             
-            GameObject gameObject = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+            GameObject gameObject = EditorUtility.EntityIdToObject(instanceID) as GameObject;
             if (gameObject != null)
             {
                 HierarchyFolders component = gameObject.GetComponent<HierarchyFolders>();
@@ -73,7 +73,7 @@ namespace Gaskellgames.FolderSystem
                 {
                     // cache values
                     int hierarchyPixelHeight = 16;
-                    bool isSelected = Selection.instanceIDs.Contains(instanceID);
+                    bool isSelected = Selection.entityIds.Contains(instanceID);
                     bool isActive = component.isActiveAndEnabled;
                     bool isEmpty = (0 == component.transform.childCount);
                     Color32 defaultContentColor = GUI.contentColor;

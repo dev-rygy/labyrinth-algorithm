@@ -25,11 +25,11 @@ namespace RyansLibrary.Labyrinth
         private bool showBlueprintLogs = false;
         private bool showRoomGenLogs = false;
 
-        // Gizmos
-        private bool showGizmos = false;
-        private bool showBlueprintGizmos = false;
-        private bool showTriangulationGizmos = false;
-        private bool showBoundGizmos = false;
+        //// Gizmos
+        //private bool showGizmos = false;
+        //private bool showBlueprintGizmos = false;
+        //private bool showTriangulationGizmos = false;
+        //private bool showBoundGizmos = false;
 
         // Stepwise variables
         private bool showStepwiseFunctions = false;
@@ -76,6 +76,7 @@ namespace RyansLibrary.Labyrinth
             generator.ToggleBlueprintLogs(showBlueprintLogs);
             generator.ToggleRoomGeneratorLogs(showRoomGenLogs);
 
+            /* DEPRICATED
             // Gizmos
             if (GUILayout.Button("Toggle Gizmos"))
             {
@@ -95,11 +96,11 @@ namespace RyansLibrary.Labyrinth
                 showTriangulationGizmos = false;
                 showBoundGizmos = false;
             }
-
             // Communicate with Map Generator script
             generator.ToggleBlueprintGizmos(showBlueprintGizmos);
             generator.ToggleTriangulationGizmos(showTriangulationGizmos);
             generator.ToggleBoundsGizmos(showBoundGizmos);
+            */
 
             if (GUILayout.Button("Toggle Stepwise Generation"))
             {
