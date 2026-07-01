@@ -68,7 +68,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private bool _enabled = true;
 
         [Header("Seed")]
-        [SerializeField] private int customSeed = 0;
+        [SerializeField] private int _customSeed = 0;
         [SerializeField] private bool generateRandomSeed = true;
         [SerializeField, ReadOnly] private int _seed = 0;
 
@@ -179,9 +179,12 @@ namespace RyansLibrary.Labyrinth
         {
             // Handle Map Seed Generation
             if (generateRandomSeed)
-                _seed = Random.Range(int.MinValue, int.MaxValue);                  // Generate with random seed
+            {
+                int seed = Random.Range(int.MinValue, int.MaxValue);                  // Generate with random seed
+                SetSeed(seed);
+            }
             else
-                _seed = customSeed;         // Generate with custom seed
+                SetSeed(_customSeed);         // Generate with custom seed
 
             Random.InitState(_seed);
 
@@ -1040,6 +1043,13 @@ namespace RyansLibrary.Labyrinth
             return _context.GetOperationQueueCount();
 
         }
+
+        private int SetSeed(int seed)
+        {
+            _seed = seed;
+            Random.InitState(_seed);
+            return _seed;
+        }
         #endregion
 
         #region Debug
@@ -1184,6 +1194,56 @@ namespace RyansLibrary.Labyrinth
                     Debug.Log($"[Console] Map Generator Restart Command");
                 }));
 
+            // Register custom seed command - Sets the map generator to use a custom seed for generation.
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.setseed",
+                "Sets the map generator to use a custom seed for generation.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("[Console] No arguement given, please enter a valid seed value.");
+                        return;
+                    }
+                    
+                    if (!int.TryParse(args[0], out int seed))
+                    {
+                        Debug.LogWarning("[Console] Invalid arguement given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
+                        return;
+                    }
+
+                    _customSeed = seed;
+                    Debug.Log($"[Console] Map Generator Seed Set to {seed}");
+                }
+                ));
+
+            // Map generator restart command - Resets and restarts the map generator state.
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.togglerandomseed",
+                "Toggles the use of a random seed for map generation.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("[Console] No arguement given, please enter true or false");
+                        return;
+                    }
+
+                    if (args[0] == "true")
+                    {
+                        generateRandomSeed = true;
+                    }
+                    else if (args[0] == "false")
+                    {
+                        generateRandomSeed = false;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
+                    }
+
+                    Debug.Log($"[Console] Map Generator Toggle Random Seed Command");
+                }));
         }
         #endregion
     }
