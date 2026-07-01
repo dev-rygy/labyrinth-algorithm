@@ -5,7 +5,6 @@
  * Notes:           
 */
 using RyansLibrary.Console;
-using RyansLibrary.Graphs;
 using RyansLibrary.UnityEditor;
 using System;
 using System.Collections;
@@ -1076,9 +1075,10 @@ namespace RyansLibrary.Labyrinth
         #region Console Commands
         private void RegisterConsoleCommands()
         {
+            // Toggle Stepwise Debug Command
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglestepwisedebug",
-                "Toggles sequential debugging for map generator; step though generation.",
+                "Toggles sequential debugging for map generator; step though generation. Enter \"true\" for on and \"false\" for off.",
                 args =>
                 {
                     if (args.Length < 1)

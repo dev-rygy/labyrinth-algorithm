@@ -76,14 +76,14 @@ public class ConsoleUI : UIBehaviour
         // Focus cursor on the input field
         _inputField.Select();
 
-        OnConsoleOpened.Invoke();
+        OnConsoleOpened?.Invoke();
     }
 
     private void CloseConsole()
     {
         Hide();
 
-        OnConsoleClosed.Invoke();
+        OnConsoleClosed?.Invoke();
     }
 
     private void SubmitTicket()

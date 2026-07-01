@@ -4,9 +4,10 @@
  * Last Modified:   06/30/2026 (Ryan)
  * Notes:           
 */
+using RyansLibrary.Console;
+using RyansLibrary.Graphs;
 using System.Collections.Generic;
 using UnityEngine;
-using RyansLibrary.Graphs;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -24,9 +25,9 @@ namespace RyansLibrary.Labyrinth
 
         // Editor Gizmos
         [SerializeField] private bool _debugGizmos = false;
-        [SerializeField] private bool _debugBlueprintGizmos = false;
-        [SerializeField] private bool _debugTriangulationGizmos = false;
-        [SerializeField] private bool _debugBoundsGizmos = false;
+        [SerializeField] private bool _debugBlueprintGizmos = true;
+        [SerializeField] private bool _debugTriangulationGizmos = true;
+        [SerializeField] private bool _debugBoundsGizmos = true;
 
         private MapGeneratorController _controller;
 
@@ -36,9 +37,15 @@ namespace RyansLibrary.Labyrinth
         private readonly IGizmoDrawer _editorDrawer = new EditorGizmoDrawer();
         private readonly IGizmoDrawer _runtimeDrawer = new RuntimeGizmoDrawer();
 
+        #region Mono
         private void Awake()
         {
             _controller = GetComponent<MapGeneratorController>();
+        }
+
+        private void Start()
+        {
+            RegisterConsoleCommands();
         }
 
         private void Update()
@@ -59,6 +66,7 @@ namespace RyansLibrary.Labyrinth
 
             DrawAll(_editorDrawer);
         }
+        #endregion
 
         #region Gizmos
         private void DrawAll(IGizmoDrawer drawer)
@@ -182,6 +190,66 @@ namespace RyansLibrary.Labyrinth
                     drawer.Cube(blueprint.Position * gridUnitSize, unitSize);
                 }
             }
+        }
+        #endregion
+
+        #region Console Commands
+        private void RegisterConsoleCommands()
+        {
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.togglegizmos",
+                "Toggles map generator gizmos. Enter \"true\" for on and \"false\" for off.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("[Console] No arguement given, please enter true or false");
+                        return;
+                    }
+
+                    if (args[0] == "true")
+                    {
+                        _debugGizmos = true;
+                    }
+                    else if (args[0] == "false")
+                    {
+                        _debugGizmos = false;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
+                    }
+                    Debug.Log($"[Console] Map Generator Toggle Gizmos Command");
+                }
+                ));
+
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.togglegizmos.blueprintgizmos",
+                "Toggles blueprint gizmos. \"mapgenerator.togglegizmos\" must be enabled first.",
+                args =>
+                {
+                    _debugBlueprintGizmos = !_debugBlueprintGizmos;
+                    Debug.Log($"[Console] Map Generator Step All Command");
+                }));
+
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.togglegizmos.triangulationgizmos",
+                "Toggles triangulation gizmos. \"mapgenerator.togglegizmos\" must be enabled first.",
+                args =>
+                {
+                    _debugTriangulationGizmos = !_debugTriangulationGizmos;
+                    Debug.Log($"[Console] Map Generator Toggle Triangulation Gizmos Command");
+                }));
+
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.togglegizmos.boundsgizmos",
+                "Toggles zone bound gizmos. \"mapgenerator.togglegizmos\" must be enabled first.",
+                args =>
+                {
+                    _debugBoundsGizmos = !_debugBoundsGizmos;
+                    Debug.Log($"[Console]Map Generator Toggle Bounds Gizmos Command");
+                }));
+
         }
         #endregion
     }
