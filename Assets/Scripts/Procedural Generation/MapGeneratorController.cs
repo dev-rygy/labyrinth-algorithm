@@ -49,6 +49,7 @@ namespace RyansLibrary.Labyrinth
         public static event Action<int> OnOperationsUpdate;
         public static event Action OnOperationExecuted;
         public static event Action OnOperationsEnded;
+        public static event Action OnSeedUpdate;
 
         public static event Action OnRoomParseStarted;
         public static event Action OnRoomParseDone;
@@ -123,11 +124,11 @@ namespace RyansLibrary.Labyrinth
 
         private MapGenerationContext _context;
 
-
         public MapGenerationContext Context => _context;
         public List<Zone> Zones => _zones;
         public List<ZoneConnectionEntry> ZoneConnections => _zoneConnections;
         public int GridUnitSize => _gridUnitSize;
+        public int Seed => _seed;
         #endregion
 
         #region Mono
@@ -187,6 +188,8 @@ namespace RyansLibrary.Labyrinth
                 SetSeed(_customSeed);         // Generate with custom seed
 
             Random.InitState(_seed);
+
+            OnSeedUpdate.Invoke();
 
             if (_debugLogs) Debug.Log($"[MapGenerator] Generating map with seed: {_seed}");
 
@@ -1213,6 +1216,8 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     _customSeed = seed;
+
+                    OnSeedUpdate?.Invoke();
                     Debug.Log($"[Console] Map Generator Seed Set to {seed}");
                 }
                 ));
@@ -1242,6 +1247,7 @@ namespace RyansLibrary.Labyrinth
                         Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
                     }
 
+                    OnSeedUpdate?.Invoke();
                     Debug.Log($"[Console] Map Generator Toggle Random Seed Command");
                 }));
         }

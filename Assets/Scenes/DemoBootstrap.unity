@@ -612,79 +612,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Map Generator
       objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: customSeed
-      value: 742222083
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _zones.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: generateRandomSeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _boundingBoxColor.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _boundingBoxColor.g
-      value: 0.3137255
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _boundingBoxColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: '_zones.Array.data[2]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 35e14e6a4236ba14b9a4a20c54539d10,
-        type: 2}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _connectionZones.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: '_connectionZones.Array.data[0]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 35e14e6a4236ba14b9a4a20c54539d10,
-        type: 2}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _zoneConnections.Array.data[0].<ConnectionZone>k__BackingField
-      value: 
-      objectReference: {fileID: 11400000, guid: 35e14e6a4236ba14b9a4a20c54539d10,
-        type: 2}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.x
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.y
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.z
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Position.y
-      value: -4
-      objectReference: {fileID: 0}
     - target: {fileID: 7192508511762545472, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -738,40 +665,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6343358480617124855, guid: fef5e2b2458183a43a04374132d05a5c,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1310064287}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
---- !u!1 &1310064284 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6343358480617124855, guid: fef5e2b2458183a43a04374132d05a5c,
-    type: 3}
-  m_PrefabInstance: {fileID: 951079852}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1310064287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1310064284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 795faac2f32c2ab40835a19fdc6306a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapGeneratorDebugger
-  _zoneBoundsColor: {r: 1, g: 0.3137255, b: 0, a: 0.8}
-  _zoneSpawnBoundsColor: {r: 0.030591488, g: 1, b: 0, a: 0.8}
-  _triangulationColor: {r: 1, g: 0.10980392, b: 0.32156864, a: 0.8}
-  _contiguousGraphColor: {r: 0, g: 0.9411765, b: 1, a: 0.8}
-  _randomCyclesColor: {r: 0.70980394, g: 0.28627452, b: 1, a: 0.8}
-  _currentEdgeColor: {r: 1, g: 0.9529412, b: 0, a: 0.8}
-  _debugGizmos: 1
-  _debugBlueprintGizmos: 1
-  _debugTriangulationGizmos: 1
-  _debugBoundsGizmos: 1
 --- !u!1001 &1604340971
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1132,6 +1027,31 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 475240875136355866, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 475240875136355866, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 475240875136355866, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 475240875136355866, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2268832104538261997, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: _seedText
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2291513999026667805, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
       propertyPath: m_Name
@@ -1235,6 +1155,31 @@ PrefabInstance:
     - target: {fileID: 4974477608977064509, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5672922723151052271, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5672922723151052271, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5672922723151052271, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5672922723151052271, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -95
+      objectReference: {fileID: 0}
+    - target: {fileID: 5803192277230175397, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7220604582963871182, guid: 16039ec99c825dd4081ffaa7b00b9747,

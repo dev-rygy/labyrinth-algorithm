@@ -5,6 +5,7 @@
  * Notes:           Custom Menu used for demo
 */
 using RyansLibrary.Labyrinth;
+using TMPro;
 using UnityEngine;
 
 public class DemoMenu : MonoBehaviour
