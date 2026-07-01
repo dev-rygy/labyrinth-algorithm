@@ -28,6 +28,7 @@ public class RunTimeUI : MonoBehaviour
         MapGeneratorController.OnGenerationStarted -= SetHelpContentText;
         MapGeneratorController.OnGenerationDone -= SetHelpContentText;
         MapGeneratorController.OnSeedUpdate -= UpdateSeedText;
+
         // Unsubscribe to Console Open and Close events
         ConsoleUI.OnConsoleOpened -= HideHelpContent;
         ConsoleUI.OnConsoleClosed -= ShowHelpContent;

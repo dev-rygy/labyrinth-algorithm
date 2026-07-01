@@ -9,9 +9,7 @@ using RyansLibrary.UnityEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static Autodesk.Fbx.FbxNurbsCurve;
 using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
@@ -25,7 +23,6 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public Zone ZoneA { get; set; }
         [field: SerializeField] public Zone ZoneB { get; set; }
         [field: SerializeField] public Zone ConnectionZone { get; set; }
-
         [field: SerializeField] public BoundsInt ZoneSpawnBounds { get; set; }
     }
     #endregion
