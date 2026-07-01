@@ -16,7 +16,8 @@ namespace RyansLibrary.Labyrinth
     {
         [Header("Debugging")]
         [Space]
-        [SerializeField] private Color _boundingBoxColor;
+        [SerializeField] private Color _zoneBoundsColor;
+        [SerializeField] private Color _zoneSpawnBoundsColor;
         [SerializeField] private Color _triangulationColor;
         // [SerializeField] private Color _circumcircleColor;   DEPRICATED
         [SerializeField] private Color _contiguousGraphColor;
@@ -81,13 +82,13 @@ namespace RyansLibrary.Labyrinth
 
                 if (_debugTriangulationGizmos)
                 {
-                    DrawTriangulation(drawer);
-                    DrawMSTs(drawer);
-                    DrawRandomCycles(drawer);
+                    DrawTriangulation(drawer, _triangulationColor);
+                    DrawMSTs(drawer, _contiguousGraphColor);
+                    DrawRandomCycles(drawer, _randomCyclesColor);
                 }
 
                 if (_debugBoundsGizmos)
-                    DrawBoundingBox(zone.Bounds, drawer);
+                    DrawBoundingBox(zone.Bounds, _zoneBoundsColor, drawer);
             }
 
             foreach (ZoneConnectionEntry entry in _controller.ZoneConnections)
@@ -96,21 +97,24 @@ namespace RyansLibrary.Labyrinth
                     DrawBluePrintGizmos(entry.ConnectionZone, drawer);
 
                 if (_debugBoundsGizmos)
-                    DrawBoundingBox(entry.ConnectionZone.Bounds, drawer);
+                {
+                    DrawBoundingBox(entry.ConnectionZone.Bounds, _zoneBoundsColor, drawer);
+                    DrawBoundingBox(entry.ZoneSpawnBounds, _zoneSpawnBoundsColor, drawer);
+                }
             }
         }
 
-        private void DrawBoundingBox(BoundsInt bounds, IGizmoDrawer drawer)
+        private void DrawBoundingBox(BoundsInt bounds, Color color, IGizmoDrawer drawer)
         {
             int gridUnitSize = _controller.GridUnitSize;
             Vector3 boundsSize = gridUnitSize * bounds.size;
             Vector3 boundsCenter = (bounds.center + new Vector3(-0.5f, -0.5f, -0.5f)) * gridUnitSize;
 
-            drawer.SetColor(_boundingBoxColor);
+            drawer.SetColor(color);
             drawer.WireCube(boundsCenter, boundsSize);
         }
 
-        private void DrawTriangulation(IGizmoDrawer drawer)
+        private void DrawTriangulation(IGizmoDrawer drawer, Color color)
         {
             if (_controller.Context is null || _controller.Context.Triangulations is null)
                 return;
@@ -121,13 +125,13 @@ namespace RyansLibrary.Labyrinth
                 // Draw remaining edges from triangulation
                 foreach (Edge e in edgeList)
                 {
-                    drawer.SetColor(_triangulationColor);
+                    drawer.SetColor(color);
                     drawer.Line(e.V.Position * gridUnitSize, e.U.Position * gridUnitSize);
                 }
             }
         }
 
-        private void DrawMSTs(IGizmoDrawer drawer)
+        private void DrawMSTs(IGizmoDrawer drawer, Color color)
         {
             if (_controller.Context is null || _controller.Context.MinimumSpanningTrees is null)
                 return;
@@ -141,13 +145,13 @@ namespace RyansLibrary.Labyrinth
                 // Draw the minimum spanning tree of the zone
                 foreach (Edge e in edgeList)
                 {
-                    drawer.SetColor(_contiguousGraphColor);
+                    drawer.SetColor(color);
                     drawer.Line(e.V.Position * gridUnitSize, e.U.Position * gridUnitSize);
                 }
             }
         }
 
-        private void DrawRandomCycles(IGizmoDrawer drawer)
+        private void DrawRandomCycles(IGizmoDrawer drawer, Color color)
         {
             if (_controller.Context is null || _controller.Context.RandomCycles is null)
                 return;
@@ -160,7 +164,7 @@ namespace RyansLibrary.Labyrinth
 
                 foreach (Edge e in edgeList)
                 {
-                    drawer.SetColor(_randomCyclesColor);
+                    drawer.SetColor(color);
                     drawer.Line(e.V.Position * gridUnitSize, e.U.Position * gridUnitSize);
                 }
             }

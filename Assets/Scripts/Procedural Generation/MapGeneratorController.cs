@@ -9,7 +9,9 @@ using RyansLibrary.UnityEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static Autodesk.Fbx.FbxNurbsCurve;
 using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
@@ -23,6 +25,8 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public Zone ZoneA { get; set; }
         [field: SerializeField] public Zone ZoneB { get; set; }
         [field: SerializeField] public Zone ConnectionZone { get; set; }
+
+        [field: SerializeField] public BoundsInt ZoneSpawnBounds { get; set; }
     }
     #endregion
 
@@ -235,6 +239,7 @@ namespace RyansLibrary.Labyrinth
 
             // Initialize Data Structures and Seed
             InitializeLabyrinth();
+            SpawnZones();
             LoadOperations();
             yield return StartCoroutine(ExecuteOperations());
             GenerateRooms();
@@ -243,6 +248,42 @@ namespace RyansLibrary.Labyrinth
             // Event to signal when map generation is complete
             IsGenerating = false;
             OnGenerationDone?.Invoke();
+        }
+
+        private void SpawnZones()
+        {
+            foreach (ZoneConnectionEntry zoneConnection in _zoneConnections)
+            {
+                BoundsInt connectionZoneBounds = zoneConnection.ConnectionZone.Bounds;
+                BoundsInt connectionZoneSpawnBounds = zoneConnection.ZoneSpawnBounds;
+
+                if (BoundsIntUtils.CanContainBounds(connectionZoneBounds, connectionZoneSpawnBounds))
+                {
+                    // Adjust the upper bounds so that the connection bound's volume will properly fit within the bounded space; in
+                    // other words it will never spawn outside it's bounds
+                    Vector3Int adjUpperBound = new Vector3Int(
+                        connectionZoneSpawnBounds.xMax - connectionZoneBounds.size.x,
+                        connectionZoneSpawnBounds.yMax - connectionZoneBounds.size.y,
+                        connectionZoneSpawnBounds.zMax - connectionZoneBounds.size.z
+                    );
+
+                    // Choose random spawn pos in the room's bounds;
+                    // NOTE: this random position is in room coords
+                    Vector3Int randomSpawnPos = new Vector3Int(
+                        Random.Range(connectionZoneSpawnBounds.xMin, adjUpperBound.x + 1),
+                        Random.Range(connectionZoneSpawnBounds.yMin, adjUpperBound.y + 1),
+                        Random.Range(connectionZoneSpawnBounds.zMin, adjUpperBound.z + 1)
+                    );
+
+                    // Move the connection zone to the random spawn position
+                    zoneConnection.ConnectionZone.Bounds = new BoundsInt(randomSpawnPos, zoneConnection.ConnectionZone.Bounds.size);
+                }
+                else
+                {
+                    Debug.LogError("Error: Zone Connection cannot fit within the spawning bounds.");
+                    return;
+                }
+            }
         }
 
         private void LoadOperations()
@@ -299,7 +340,6 @@ namespace RyansLibrary.Labyrinth
             if (_stepBudget > 0)
                 _stepBudget--;
         }
-
 
         public void Advance(int stepLength)
         {
@@ -981,18 +1021,6 @@ namespace RyansLibrary.Labyrinth
                 return false;
 
             return true;        // The zone's cell requirements are met with the bounded volume
-        }
-
-        private bool CanContainBounds(BoundsInt containedBounds, BoundsInt containerBounds)
-        {
-            float xDifference = containedBounds.size.x - containerBounds.size.x;
-            float yDifference = containedBounds.size.y - containerBounds.size.y;
-            float zDifference = containedBounds.size.z - containerBounds.size.z;
-
-            if (xDifference < 0 || yDifference < 0 && zDifference < 0)
-                return false;
-            else
-                return true;
         }
 
         public void DestroyAllRooms()

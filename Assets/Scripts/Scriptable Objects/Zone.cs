@@ -46,7 +46,7 @@ namespace RyansLibrary.Labyrinth
         // TODO: Convert Bounding Box Parameters to Vector3Int!
         [field: Header("Bounding Box")]
         [Tooltip("No rooms can spawn outside of these bounds.")]
-        [field: SerializeField] public BoundsInt Bounds { get; private set; }
+        [field: SerializeField] public BoundsInt Bounds { get; set; }
 
         [field: Header("Main Path")]
         [field: SerializeField] public Path MainPath { get; set; }

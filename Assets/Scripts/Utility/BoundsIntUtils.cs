@@ -32,5 +32,19 @@ namespace RyansLibrary
 
             return combinedBounds;
         }
+
+        public static bool CanContainBounds(BoundsInt containedBounds, BoundsInt containerBounds)
+        {
+            // Check if the container bounds can contain the contained bounds
+            float xDifference = containerBounds.size.x - containedBounds.size.x;
+            float yDifference = containerBounds.size.y - containedBounds.size.y;
+            float zDifference = containerBounds.size.z - containedBounds.size.z;
+
+            // If any of the differences are negative, then the container bounds cannot contain the contained bounds
+            if (xDifference < 0 || yDifference < 0 || zDifference < 0)
+                return false;
+            else
+                return true;
+        }
     }
 }

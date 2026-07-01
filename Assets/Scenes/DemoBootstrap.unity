@@ -625,7 +625,7 @@ PrefabInstance:
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: generateRandomSeed
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
@@ -665,6 +665,26 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 35e14e6a4236ba14b9a4a20c54539d10,
         type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.z
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Position.y
+      value: -4
+      objectReference: {fileID: 0}
     - target: {fileID: 7192508511762545472, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -742,12 +762,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 795faac2f32c2ab40835a19fdc6306a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneratorDebugger
-  _boundingBoxColor: {r: 1, g: 0.3137255, b: 0, a: 0.8}
+  _zoneBoundsColor: {r: 1, g: 0.3137255, b: 0, a: 0.8}
+  _zoneSpawnBoundsColor: {r: 0.030591488, g: 1, b: 0, a: 0.8}
   _triangulationColor: {r: 1, g: 0.10980392, b: 0.32156864, a: 0.8}
   _contiguousGraphColor: {r: 0, g: 0.9411765, b: 1, a: 0.8}
   _randomCyclesColor: {r: 0.70980394, g: 0.28627452, b: 1, a: 0.8}
   _currentEdgeColor: {r: 1, g: 0.9529412, b: 0, a: 0.8}
-  _debugGizmos: 0
+  _debugGizmos: 1
   _debugBlueprintGizmos: 1
   _debugTriangulationGizmos: 1
   _debugBoundsGizmos: 1
