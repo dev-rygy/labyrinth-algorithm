@@ -105,7 +105,8 @@ public class LoadingScreenUI : MonoBehaviour
         _loadingSlider.value = 0;
         _loadingStatus = 0;
 
-        _contentObject.gameObject.SetActive(true);
+        if (!MapGeneratorController.Instance.DebugSequential)
+            _contentObject.gameObject.SetActive(true);
     }
 
     private void UpdateLoadingSlider(int currentOperationCount)
@@ -133,8 +134,7 @@ public class LoadingScreenUI : MonoBehaviour
                 _loadingText.text = "Initializing";
                 break;
             case LoadingStatus.Operations:
-                _loadingText.text = $"Executing Operations ({_totalOperationCount - _currentOperationCount}" +
-                    $"/{_totalOperationCount})";
+                _loadingText.text = $"Executing Operations";
                 break;
             case LoadingStatus.Rooms:
                 _loadingText.text = "Generating Rooms";

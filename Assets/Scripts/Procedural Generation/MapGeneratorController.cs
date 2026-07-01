@@ -107,10 +107,10 @@ namespace RyansLibrary.Labyrinth
         private bool _debugRoomGeneratorLogs = false;
 
         // Gizmos
-        private bool _debugGizmos = false;
-        private bool _debugBlueprintGizmos = false;
-        private bool _debugTriangulationGizmos = false;
-        private bool _debugBoundsGizmos = false;
+        //private bool _debugGizmos = false;
+        //private bool _debugBlueprintGizmos = false;
+        //private bool _debugTriangulationGizmos = false;
+        //private bool _debugBoundsGizmos = false;
 
         // Stepwise procedure
         [field: SerializeField] public bool DebugSequential { get; private set; }
@@ -1044,6 +1044,7 @@ namespace RyansLibrary.Labyrinth
             _roomGenerator.ToggleDebugLogs(toggle);
         }
 
+        /* DEPRICATED
         // Gizmo Toggles
         public void ToggleGizmos(bool toggle)
         {
@@ -1064,6 +1065,7 @@ namespace RyansLibrary.Labyrinth
         {
             _debugBoundsGizmos = toggle;
         }
+        */
 
         // Stepwise Function Toggles
         public void ToggleStepwiseDebugging(bool toggle)
