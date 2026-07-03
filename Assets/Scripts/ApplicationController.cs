@@ -22,6 +22,7 @@ public class ApplicationController : MonoBehaviour
     [SerializeField] private Camera MainCamera;
     [SerializeField] private Vector3 playerSpawnPoint = new Vector3(65, 0, 0);
     [SerializeField] private bool _clearConsoleOnGameStart = false;
+    [SerializeField] private bool _hideCursorOnGameStart = true;
 
     private Camera _playerCamera;
 
@@ -67,6 +68,12 @@ public class ApplicationController : MonoBehaviour
 
         MainCamera?.gameObject.SetActive(false);
         _playerCamera?.gameObject.SetActive(true);
+        
+        if (_hideCursorOnGameStart)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     public void EndGame()

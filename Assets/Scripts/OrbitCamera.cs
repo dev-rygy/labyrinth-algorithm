@@ -26,6 +26,11 @@ public class OrbitCamera : MonoBehaviour
 
         transform.position = target.position + offset;
         transform.LookAt(target);
+
+        if (_angle >= 360f)
+        {
+            _angle = 0f;
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -51,5 +56,11 @@ public class OrbitCamera : MonoBehaviour
             Gizmos.DrawLine(previous, next);
             previous = next;
         }
+    }
+
+    private void OnGUI()
+    {
+        // Displays custom text inside the box area
+        GUI.Label(new Rect(1830, 1050, 230, 30), $"Angle: {_angle:F2}");
     }
 }

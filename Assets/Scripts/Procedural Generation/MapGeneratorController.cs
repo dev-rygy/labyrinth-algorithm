@@ -186,7 +186,7 @@ namespace RyansLibrary.Labyrinth
 
             Random.InitState(_seed);
 
-            OnSeedUpdate.Invoke();
+            OnSeedUpdate?.Invoke();
 
             if (_debugLogs) Debug.Log($"[MapGenerator] Generating map with seed: {_seed}");
 

@@ -21,6 +21,8 @@ public class FreeCameraController : MonoBehaviour
 
     private bool _cameraToggle = false;
     private float _currentCameraSpeed;
+    private float _yaw;
+    private float _pitch;
 
     // Initial Camera Values
     private Vector3 _initCameraPivotTransformPos;
@@ -132,30 +134,34 @@ public class FreeCameraController : MonoBehaviour
     /// </summary>
     private void Look()
     {
-        Vector2 lookInput = InputHandler.Instance.FreeCamLookInput;
+        Vector2 look = InputHandler.Instance.FreeCamLookInput;
 
-        if (lookInput == Vector2.zero)
-            return;
+        if (_invertYLook)
+            look.y = -look.y;
 
-        // Handle X-Look
-        // Rotate the player body and camera simultaniously
-        Vector3 horizontalLook = new Vector3(0, lookInput.x * _cameraSensitivity * Time.deltaTime, 0);
-        _cameraPivotTransform.Rotate(horizontalLook);
+        _yaw += look.x * _cameraSensitivity * Time.deltaTime;
 
-        // Handle Y-Look
-        Vector3 verticalLook;
-        if (!_invertYLook)                // Handle inverted Y-look if preferred
-            verticalLook = new Vector3(-lookInput.y * _cameraSensitivity * Time.deltaTime, 0, 0);
-        else
-            verticalLook = new Vector3(lookInput.y * _cameraSensitivity * Time.deltaTime, 0, 0);
+        _pitch -= look.y * _cameraSensitivity * Time.deltaTime;
 
-        // Clamp the Y-look
-        if (_cameraOffsetTransform.localRotation.x < topCamAngleClamp && verticalLook.x < 0)          // If top bound is reached
-            verticalLook = Vector3.zero;
-        else if (_cameraOffsetTransform.localRotation.x > botCamAngleClamp && verticalLook.x > 0)     // If bot bound is reached
-            verticalLook = Vector3.zero;
-        else                                        // Rotate the camera vertically explicitly
-            _cameraOffsetTransform.Rotate(verticalLook);
+        _pitch = Mathf.Clamp(_pitch, -80f, 80f);
+
+        Quaternion targetYaw =
+            Quaternion.Euler(0f, _yaw, 0f);
+
+        Quaternion targetPitch =
+            Quaternion.Euler(_pitch, 0f, 0f);
+
+        _cameraPivotTransform.rotation =
+            Quaternion.Slerp(
+                _cameraPivotTransform.rotation,
+                targetYaw,
+                15f * Time.deltaTime);
+
+        _cameraOffsetTransform.localRotation =
+            Quaternion.Slerp(
+                _cameraOffsetTransform.localRotation,
+                targetPitch,
+                15f * Time.deltaTime);
     }
 
     private void ToggleSprint(bool toggle)
