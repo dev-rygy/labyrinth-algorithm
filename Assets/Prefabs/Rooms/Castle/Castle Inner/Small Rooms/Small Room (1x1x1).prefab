@@ -191,8 +191,10 @@ MonoBehaviour:
   RoomSpawners:
   - {fileID: 4060726308336955401}
   roomShape: 0
-  _roomType: 0
   debug: 0
+  <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
+  <RoomType>k__BackingField: 0
+  _blueprintColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &3573013305882329200
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,7 +693,7 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2350438, guid: 38e9f74e7ad2817489313b84c0695d34, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: -1037791113804051292, guid: dbce80ea102c1324399d3ba8e4c4ed75,
         type: 3}
@@ -1316,7 +1318,7 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2350438, guid: 38e9f74e7ad2817489313b84c0695d34, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: -1037791113804051292, guid: dbce80ea102c1324399d3ba8e4c4ed75,
         type: 3}

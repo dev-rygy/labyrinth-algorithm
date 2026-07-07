@@ -63,8 +63,6 @@ public class ApplicationController : MonoBehaviour
 
     public IEnumerator LoadNewGame()
     {
-        //_cameraController.SetCameraMode(CameraMode.Main);
-
         // Load Scene
         yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(MAIN_SCENE_NAME));
 

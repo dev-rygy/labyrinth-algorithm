@@ -42,9 +42,9 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Debug")]
         [SerializeField] private bool debug = false;
-        // TODO: Convert RoomDimensions to Vector3Int!
         [field: SerializeField] public Vector3Int RoomDimensions { get; private set; } = Vector3Int.one;
         [field: SerializeField] public RoomType RoomType { get; private set; }
+        [SerializeField] private Color _roomBoundsColor = Color.red;
 
         private bool[,] openEntracways;
 
@@ -143,6 +143,21 @@ namespace RyansLibrary.Labyrinth
         public float GetRoomOccupancy()
         {
             return Math.RectangularVolume(RoomDimensions);
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!debug) 
+                return;
+
+            // TODO: Replace 
+            int scaleFactor = 13; // This is a temporary scale factor for visualization purposes. Adjust as needed.
+            Vector3 roomOffset = new Vector3(1, 0, 1) * scaleFactor / 2f;
+            Vector3 center = transform.position + -(roomOffset) + (Vector3)(RoomDimensions * scaleFactor) / 2f;
+
+            Gizmos.color = _roomBoundsColor;
+            Gizmos.DrawWireCube(center, RoomDimensions * 13);
+            // Gizmos.DrawSphere(center, 0.5f);
         }
     }
 }
