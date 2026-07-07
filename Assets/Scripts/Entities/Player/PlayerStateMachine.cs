@@ -37,6 +37,7 @@ public class PlayerStateMachine : StateMachine
 {
     #region Variables
     // Events
+    public static event Action<PlayerStateMachine> OnPlayerSpawned;
     public event Action<Ability> OnAbilityChanged;      // Invokes when a new ability is slotted
 
     public static PlayerStateMachine Instance { get; private set; }     // WARNING: This singleton may need to be removed later for networking purposes
@@ -134,6 +135,8 @@ public class PlayerStateMachine : StateMachine
         AnimationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
         ForceReciever = GetComponent<ForceReciever>();              // The player must have a force reciever to interact with gravity
         Health = GetComponent<EntityHealth>();                      // Player's health behavior is shared with all entities
+
+        OnPlayerSpawned?.Invoke(this);
     }
 
     void Start()

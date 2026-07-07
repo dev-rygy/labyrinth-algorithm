@@ -12,7 +12,7 @@ public class MovingPlatform : MonoBehaviour
 {
     [Header("General Settings")]
     [SerializeField] protected float _speed = 2f;
-    [SerializeField] protected float _waypointPrecision = 0.1f;
+    [SerializeField] protected float _waypointPrecision = 0.15f;
     [SerializeField] protected float _waitTimeAtWaypoint = 2f;
     [SerializeField] protected Queue<Vector3> _waypoints;
 

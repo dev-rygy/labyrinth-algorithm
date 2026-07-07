@@ -24,35 +24,18 @@ public class FreeCameraController : MonoBehaviour
     private float _yaw;
     private float _pitch;
 
-    // Initial Camera Values
-    private Vector3 _initCameraPivotTransformPos;
-    private Quaternion _initCameraPivotTransformRot;
-    private Vector3 _initCameraPivotTransformScale;
-    private Vector3 _initCameraOffsetTransformPos;
-    private Quaternion _initCameraOffsetTransformRot;
-    private Vector3 _initCameraOffsetTransformScale;
-
     private void OnEnable()
     {
-        RegisterConsoleCommand();
-
-        // Set Initial Camera Values
-        _initCameraPivotTransformPos = _cameraPivotTransform.localPosition;
-        _initCameraPivotTransformRot = _cameraPivotTransform.localRotation;
-        _initCameraPivotTransformScale = _cameraPivotTransform.localScale;
-
-        _initCameraOffsetTransformPos = _cameraOffsetTransform.localPosition;
-        _initCameraOffsetTransformRot = _cameraOffsetTransform.localRotation;
-        _initCameraOffsetTransformScale = _cameraOffsetTransform.localScale;
-
         _currentCameraSpeed = _cameraSpeed;
 
         InputHandler.OnFreeCamSprint += ToggleSprint;
+        EnableCamera();
     }
 
     private void OnDisable()
     {
         InputHandler.OnFreeCamSprint -= ToggleSprint;
+        DisableCamera();
     }
 
     private void Update()
@@ -64,55 +47,22 @@ public class FreeCameraController : MonoBehaviour
         Look();
     }
 
-    private void RegisterConsoleCommand()
-    {
-        ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
-            "tfc",
-            "Toggles Free Cam.",
-            args =>
-            {
-                ToggleCamera();
-                ConsoleUI.OnNewConsoleOutput("Free Camera Toggled");
-                Debug.Log($"Console: Free Camera Command");
-            }));
-    }
-
-    private void ToggleCamera()
-    {
-        _cameraToggle = !_cameraToggle;
-
-        if (_cameraToggle)
-            EnableCamera();
-        else
-            DisableCamera();
-    }
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void EnableCamera()
     {
-        if (_debug) Debug.Log("Free Camera Enabled.");
+        _cameraToggle = true;
         InputHandler.Instance.AssignPrevActionMap(InputMap.FreeCam);
+
+        if (_debug) Debug.Log("Free Camera Enabled.");
     }
 
     // Update is called once per frame
     private void DisableCamera()
     {
-        if (_debug) Debug.Log("Free Camera Disabled.");
+        _cameraToggle = false;
         InputHandler.Instance.AssignPrevActionMap(InputMap.Player);
 
-        // Reset camera back to it's original position
-        ResetCamera();
-    }
-
-    private void ResetCamera()
-    {
-        _cameraPivotTransform.localPosition = _initCameraPivotTransformPos;
-        _cameraPivotTransform.localRotation = _initCameraPivotTransformRot;
-        _cameraPivotTransform.localScale = _initCameraPivotTransformScale;
-
-        _cameraOffsetTransform.localPosition = _initCameraOffsetTransformPos;
-        _cameraOffsetTransform.localRotation = _initCameraOffsetTransformRot;
-        _cameraOffsetTransform.localScale = _initCameraOffsetTransformScale;
+        if (_debug) Debug.Log("Free Camera Disabled.");
     }
 
     /// <summary>
@@ -143,7 +93,7 @@ public class FreeCameraController : MonoBehaviour
 
         _pitch -= look.y * _cameraSensitivity * Time.deltaTime;
 
-        _pitch = Mathf.Clamp(_pitch, -80f, 80f);
+        _pitch = Mathf.Clamp(_pitch, botCamAngleClamp, topCamAngleClamp);
 
         Quaternion targetYaw =
             Quaternion.Euler(0f, _yaw, 0f);

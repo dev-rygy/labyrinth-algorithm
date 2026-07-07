@@ -74664,7 +74664,6 @@ GameObject:
   - component: {fileID: 7306716799446914742}
   - component: {fileID: 3621612921342865075}
   - component: {fileID: 7359390006632431785}
-  - component: {fileID: 7987101402390871063}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -74790,29 +74789,6 @@ MonoBehaviour:
   _groundDownCheckDistance: 0.5
   _debug: 0
   _log: 0
---- !u!114 &7987101402390871063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6288163642289274413}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b6791d5a87222c419884fda1fc66d8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cameraSpeed: 35
-  _cameraAcceleration: 0.2
-  _cameraSprintSpeed: 95
-  _cameraMaxSpeed: 1000
-  _cameraSensitivity: 100
-  _invertYLook: 0
-  botCamAngleClamp: 0.75
-  topCamAngleClamp: -0.75
-  _cameraPivotTransform: {fileID: 3460464132610447193}
-  _cameraOffsetTransform: {fileID: 117727087681985627}
-  _debug: 0
 --- !u!1001 &308056685214840841
 PrefabInstance:
   m_ObjectHideFlags: 0

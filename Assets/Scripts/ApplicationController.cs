@@ -18,11 +18,17 @@ public class ApplicationController : MonoBehaviour
 
     public static ApplicationController Instance { get; private set; }
 
+    [Header("Player")]
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private Camera MainCamera;
     [SerializeField] private Vector3 playerSpawnPoint = new Vector3(65, 0, 0);
+    [Header("Camera")]
+    [SerializeField] private CameraController _cameraController;
+    [SerializeField] private bool _setCameraToPlayerOnGameStart = true;
+    [Header("Cursor")]
+    [SerializeField] private bool _hideCursorOnGameStart = false;
+    [SerializeField] private CursorLockMode _cursorLockMode = CursorLockMode.None;
+    [Header("Console")]
     [SerializeField] private bool _clearConsoleOnGameStart = false;
-    [SerializeField] private bool _hideCursorOnGameStart = true;
 
     private Camera _playerCamera;
 
@@ -42,6 +48,11 @@ public class ApplicationController : MonoBehaviour
         DontDestroyOnLoad(gameObject);  // Have this gameObject persist
     }
 
+    private void Start()
+    {
+        _cameraController.SetCameraMode(CameraMode.Main);
+    }
+
     public void StartNewGame()
     {
         if (_clearConsoleOnGameStart) 
@@ -52,8 +63,7 @@ public class ApplicationController : MonoBehaviour
 
     public IEnumerator LoadNewGame()
     {
-        MainCamera?.gameObject.SetActive(true);
-        _playerCamera?.gameObject.SetActive(false);
+        //_cameraController.SetCameraMode(CameraMode.Main);
 
         // Load Scene
         yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(MAIN_SCENE_NAME));
@@ -65,15 +75,12 @@ public class ApplicationController : MonoBehaviour
         GameObject player = Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
 
         _playerCamera = player.GetComponentInChildren<Camera>();
-
-        MainCamera?.gameObject.SetActive(false);
-        _playerCamera?.gameObject.SetActive(true);
         
-        if (_hideCursorOnGameStart)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
+        if (_setCameraToPlayerOnGameStart)
+            _cameraController.SetCameraMode(CameraMode.Player);
+
+        Cursor.visible = _hideCursorOnGameStart ? false : true;
+        Cursor.lockState = _cursorLockMode;
     }
 
     public void EndGame()

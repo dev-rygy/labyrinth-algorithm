@@ -16,6 +16,7 @@ public class Elevator : MovingPlatform
     [SerializeField] private GameObject _chainObject;
     [SerializeField] private GameObject _chainParent;
     [SerializeField] private GameObject _colliders;
+    [Header("Chain Settings")]
     [SerializeField] private float _spawnChainAtDistInterval = 5f;
     [SerializeField] private float _chainLinkLength = 10f;
     [SerializeField] private Vector3 _chainSpawnStartPoint;
