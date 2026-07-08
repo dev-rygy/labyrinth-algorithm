@@ -18,6 +18,7 @@ namespace RyansLibrary.Labyrinth
         [Space]
         [SerializeField] private Color _zoneBoundsColor;
         [SerializeField] private Color _zoneSpawnBoundsColor;
+        [SerializeField] private Color _uniqueRoomBoundsColor;
         [SerializeField] private Color _triangulationColor;
         // [SerializeField] private Color _circumcircleColor;   DEPRICATED
         [SerializeField] private Color _contiguousGraphColor;
@@ -89,6 +90,17 @@ namespace RyansLibrary.Labyrinth
 
                 if (_debugBoundsGizmos)
                     DrawBoundingBox(zone.Bounds, _zoneBoundsColor, drawer);
+
+                foreach (RoomEntry room in zone.UniqueRooms)
+                {
+                    if (room == null)
+                        continue;
+
+                    if (room.PlacementType != RoomPlacementType.Constrained)
+                        continue;
+
+                    DrawBoundingBox(room.Bounds, _uniqueRoomBoundsColor, drawer);
+                }
             }
 
             foreach (ZoneConnectionEntry entry in _controller.ZoneConnections)
