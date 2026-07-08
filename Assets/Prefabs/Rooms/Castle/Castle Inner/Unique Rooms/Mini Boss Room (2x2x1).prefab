@@ -11632,6 +11632,7 @@ MonoBehaviour:
   - {fileID: 2365557088439813178}
   - {fileID: 6921781403236624531}
   - {fileID: 2492236617280264105}
+  <AvailableCellData>k__BackingField: []
   RoomSpawners:
   - {fileID: 0}
   roomShape: 0
@@ -11639,6 +11640,7 @@ MonoBehaviour:
   <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
   <RoomType>k__BackingField: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
+  _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &898387620408944054
 GameObject:
   m_ObjectHideFlags: 0
@@ -54416,6 +54418,8 @@ MonoBehaviour:
   - {fileID: 2365557088439813178}
   - {fileID: 6921781403236624531}
   - {fileID: 2492236617280264105}
+  <AvailableCellData>k__BackingField:
+  - {x: 1, y: 0, z: -1}
   RoomSpawners:
   - {fileID: 934395820962531051}
   roomShape: 4
@@ -54423,6 +54427,7 @@ MonoBehaviour:
   <RoomDimensions>k__BackingField: {x: 3, y: 1, z: 2}
   <RoomType>k__BackingField: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
+  _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &4026626390387260874
 GameObject:
   m_ObjectHideFlags: 0

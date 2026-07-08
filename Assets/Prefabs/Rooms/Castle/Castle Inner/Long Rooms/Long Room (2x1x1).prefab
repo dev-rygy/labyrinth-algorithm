@@ -94,13 +94,17 @@ MonoBehaviour:
   - {fileID: 2117204737378767533}
   - {fileID: 8106598454716475484}
   - {fileID: 6324714464439185019}
+  <AvailableCellData>k__BackingField:
+  - {x: 0, y: 0, z: 0}
+  - {x: 1, y: 0, z: 0}
   RoomSpawners:
   - {fileID: 5684848421729336118}
   roomShape: 1
-  debug: 0
+  debug: 1
   <RoomDimensions>k__BackingField: {x: 2, y: 1, z: 1}
   <RoomType>k__BackingField: 0
-  _blueprintColor: {r: 1, g: 0, b: 0, a: 1}
+  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
+  _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &279986192555571845
 GameObject:
   m_ObjectHideFlags: 0

@@ -854,7 +854,11 @@ namespace RyansLibrary.Labyrinth
             // Turn off blueprint availability for unique rooms; we do not want to parse and spawn new rooms in these spots
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                _bpg.ToggleAvailableCellsInUniqueRoom(zone.MainPath, entry.AvailableCells, entry.SpawnPosition, false);
+                if (entry.Prefab.TryGetComponent(out Room room))
+                    _bpg.ToggleAvailableCellsInUniqueRoom(zone.MainPath, room.AvailableCellData, entry.SpawnPosition, false);
+                else
+                    Debug.LogError($"[MapGenerator] Failed to get Room component from prefab {entry.Prefab}.");
+
                 if (_debugRoomGeneratorLogs) Debug.Log("Blueprint Room: " + entry.SpawnPosition + "has available cells disabled.");
             }
 
@@ -894,11 +898,11 @@ namespace RyansLibrary.Labyrinth
                 // TODO: Make this into a new function in the room generator. Make the function check for all rooms inside
                 // the unique room.
                 // Unique rooms with available cells
-                if (entry.AvailableCells != null)
+                if (generatedRoom.AvailableCellData != null)
                 {
-                    for (int i = 0; i < entry.AvailableCells.Count; i++)
+                    for (int i = 0; i < generatedRoom.AvailableCellData.Count; i++)
                     {
-                        if (MasterDictionary.TryGetValue(entry.SpawnPosition + entry.AvailableCells[i], out Blueprint blueprint))
+                        if (MasterDictionary.TryGetValue(entry.SpawnPosition + generatedRoom.AvailableCellData[i], out Blueprint blueprint))
                         {
                             generatedRoom.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
                         }
@@ -927,11 +931,11 @@ namespace RyansLibrary.Labyrinth
             Room generatedRoomA = _roomGenerator.GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosA, entry.ZoneA.MainPath);
 
             // Unique rooms with available cells
-            if (entry.RoomA.AvailableCells != null)
+            if (generatedRoomA.AvailableCellData != null)
             {
-                for (int i = 0; i < entry.RoomA.AvailableCells.Count; i++)
+                for (int i = 0; i < generatedRoomA.AvailableCellData.Count; i++)
                 {
-                    if (MasterDictionary.TryGetValue(adjustedSpawnPosA + entry.RoomA.AvailableCells[i], out Blueprint blueprint))
+                    if (MasterDictionary.TryGetValue(adjustedSpawnPosA + generatedRoomA.AvailableCellData[i], out Blueprint blueprint))
                     {
                         generatedRoomA.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
                     }
@@ -953,11 +957,11 @@ namespace RyansLibrary.Labyrinth
             Room generatedRoomB = _roomGenerator.GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosB, entry.ZoneA.MainPath);
 
             // Unique rooms with available cells
-            if (entry.RoomA.AvailableCells != null)
+            if (generatedRoomB.AvailableCellData != null)
             {
-                for (int i = 0; i < entry.RoomA.AvailableCells.Count; i++)
+                for (int i = 0; i < generatedRoomB.AvailableCellData.Count; i++)
                 {
-                    if (MasterDictionary.TryGetValue(adjustedSpawnPosB + entry.RoomA.AvailableCells[i], out Blueprint blueprint))
+                    if (MasterDictionary.TryGetValue(adjustedSpawnPosB + generatedRoomB.AvailableCellData[i], out Blueprint blueprint))
                     {
                         generatedRoomB.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
                     }

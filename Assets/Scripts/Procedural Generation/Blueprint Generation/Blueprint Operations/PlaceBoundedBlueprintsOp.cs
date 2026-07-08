@@ -65,7 +65,7 @@ namespace RyansLibrary.Labyrinth
 
                 entry.SpawnPosition = spawnPosition;
 
-                List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, entry.AvailableCells, spawnPosition);
+                List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, room.AvailableCellData, spawnPosition);
                 if (availableBlueprints is null)
                 {
                     Debug.LogError($"[MapGenerator][BlueprintOperation] Unique Room \"{room.name}\" has no available blueprint cells.");

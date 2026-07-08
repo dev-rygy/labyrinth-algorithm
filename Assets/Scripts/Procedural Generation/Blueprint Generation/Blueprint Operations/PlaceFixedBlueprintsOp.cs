@@ -79,7 +79,7 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, entry.AvailableCells, roomOrigin);
+                List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, room.AvailableCellData, roomOrigin);
                 if (availableBlueprints is null)
                 {
                     Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" has no available blueprint cells.");

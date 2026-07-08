@@ -1705,11 +1705,18 @@ MonoBehaviour:
   - {fileID: 5274441837642453193}
   - {fileID: 3002778343289000456}
   - {fileID: 889484633805497812}
+  <AvailableCellData>k__BackingField:
+  - {x: 0, y: 0, z: 0}
+  - {x: 1, y: 0, z: 0}
+  - {x: 1, y: 0, z: 1}
+  - {x: 0, y: 0, z: 1}
   RoomSpawners: []
-  roomShape: 1
-  debug: 0
-  <RoomDimensions>k__BackingField: {x: 2, y: 1, z: 1}
+  roomShape: 3
+  debug: 1
+  <RoomDimensions>k__BackingField: {x: 2, y: 1, z: 2}
   <RoomType>k__BackingField: 0
+  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
+  _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6704691472357370452
 GameObject:
   m_ObjectHideFlags: 0

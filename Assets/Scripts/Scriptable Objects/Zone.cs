@@ -30,7 +30,7 @@ namespace RyansLibrary.Labyrinth
 
         [field: Header("Fixed Room Parameters")]
         [field: SerializeField] public Vector3Int SpawnPosition { get; set; }               // For use with fixed rooms; all other rooms will ignore this
-        [field: SerializeField] public List<Vector3Int> AvailableCells { get; set; }        // List of cells the room gen algorithm can pathfind to; null = all rooms
+        // [field: SerializeField] public List<Vector3Int> AvailableCells { get; set; }        // List of cells the room gen algorithm can pathfind to; null = all rooms
 
         [field: Header("Constrained Room Parameters")]
         [field: SerializeField] public BoundsInt Bounds { get; set; }                       // For use with constrained rooms; all other rooms will ignore these bounds

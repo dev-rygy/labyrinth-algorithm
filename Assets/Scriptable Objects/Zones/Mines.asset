@@ -19,7 +19,15 @@ MonoBehaviour:
     m_Size: {x: 12, y: 5, z: 12}
   <MainPath>k__BackingField: {fileID: 11400000, guid: b3f0384528eb58345898e91ccf890656,
     type: 2}
-  <UniqueRooms>k__BackingField: []
+  <UniqueRooms>k__BackingField:
+  - <Prefab>k__BackingField: {fileID: 6639078268214740932, guid: 24e880f3fd50d0749a78ceb92b8118d2,
+      type: 3}
+    <PlacementType>k__BackingField: 2
+    <SpawnPosition>k__BackingField: {x: 0, y: 0, z: 0}
+    <AvailableCells>k__BackingField: []
+    <Bounds>k__BackingField:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 0, y: 0, z: 0}
   <DivergentRoomsCellOccupancy>k__BackingField: 12
   <RandomCyclesInGraph>k__BackingField: 5
   <Paths>k__BackingField: []

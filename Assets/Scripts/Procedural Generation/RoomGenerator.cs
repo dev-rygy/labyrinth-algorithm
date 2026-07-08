@@ -448,8 +448,11 @@ namespace RyansLibrary.Labyrinth
             if (rType == RoomType.start)
             {
                 // Generate Small Room; no direction condition needed
-                generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.startingRooms), ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>(); // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
-                generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);   // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
+                // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
+                generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.startingRooms), 
+                    ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
+                generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);
                 generatedRoom.Initialize(rType);
                 return generatedRoom;
             }
@@ -464,6 +467,8 @@ namespace RyansLibrary.Labyrinth
                     // Generate Big Room based on it's direction
                     if (rDir == RoomDirection.PosX)     // Right, Forward, Left
                     {
+                        // TODO: Change these Blueprint positions to use a for loop 
+                        // TODO: _masterDictionaryReference[originBlueprint.Position + availableCellPosition];
                         Blueprint rightBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.right];         // _>--
                         Blueprint fwdBlueprint = _masterDictionaryReference[rightBlueprint.Position + Vector3Int.forward];          // __-^
                         Blueprint leftBlueprint = _masterDictionaryReference[fwdBlueprint.Position + Vector3Int.left];              // __<-

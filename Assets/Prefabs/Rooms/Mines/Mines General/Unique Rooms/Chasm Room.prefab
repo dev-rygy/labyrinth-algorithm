@@ -3952,9 +3952,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1605168279374377646}
-  - component: {fileID: 8283545861085982214}
   m_Layer: 0
-  m_Name: Top Room 2
+  m_Name: Entrance Room 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3978,31 +3977,6 @@ Transform:
   - {fileID: 1174331428105204099}
   m_Father: {fileID: 2438054092942724108}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8283545861085982214
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1628504720738243473}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 5393410876270576470}
-  - {fileID: 7636211944505406606}
-  - {fileID: 1589251137559548087}
-  - {fileID: 2268987040049303806}
-  - {fileID: 8684283887436025046}
-  - {fileID: 8844659170913323766}
-  RoomSpawners: []
-  roomShape: 0
-  debug: 0
-  <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
-  <RoomType>k__BackingField: 0
-  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1651956413960253551
 GameObject:
   m_ObjectHideFlags: 0
@@ -4683,9 +4657,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3508444834793314797}
-  - component: {fileID: 7545656682896513202}
   m_Layer: 0
-  m_Name: Bot Room 1
+  m_Name: Entrance Room 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4709,31 +4682,6 @@ Transform:
   - {fileID: 1399036516479204672}
   m_Father: {fileID: 2438054092942724108}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7545656682896513202
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1976244806116083770}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 1417591749635766012}
-  - {fileID: 7829168303446691113}
-  - {fileID: 4785666260276957279}
-  - {fileID: 5073631768237050481}
-  - {fileID: 4717645581345226316}
-  - {fileID: 3574550788527685514}
-  RoomSpawners: []
-  roomShape: 0
-  debug: 0
-  <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
-  <RoomType>k__BackingField: 0
-  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &2011861215295531772
 GameObject:
   m_ObjectHideFlags: 0
@@ -9574,9 +9522,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7931467004711024115}
-  - component: {fileID: 6902923701997155399}
   m_Layer: 0
-  m_Name: Top Room 1
+  m_Name: Entrance Room 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9600,31 +9547,6 @@ Transform:
   - {fileID: 2263976798580361435}
   m_Father: {fileID: 2438054092942724108}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6902923701997155399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3987783478220444429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 4431628136822854945}
-  - {fileID: 4917775220289075450}
-  - {fileID: 6421715497285393431}
-  - {fileID: 3459090836251477678}
-  - {fileID: 2156059412372188664}
-  - {fileID: 8202817547348409441}
-  RoomSpawners: []
-  roomShape: 0
-  debug: 0
-  <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
-  <RoomType>k__BackingField: 0
-  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &3998114918381741416
 GameObject:
   m_ObjectHideFlags: 0
@@ -15444,10 +15366,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3508444834793314797}
-  - {fileID: 7931467004711024115}
-  - {fileID: 1605168279374377646}
   - {fileID: 1877217090724359949}
+  - {fileID: 3508444834793314797}
+  - {fileID: 1605168279374377646}
+  - {fileID: 7931467004711024115}
   - {fileID: 6483749852799360836}
   - {fileID: 5755607314550397279}
   - {fileID: 5208588391861505004}
@@ -15466,13 +15388,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roomWalls: []
+  _roomWalls:
+  - {fileID: 4030484152472722876}
+  - {fileID: 3064495234899966045}
+  - {fileID: 403058990097980723}
+  - {fileID: 7901829218826200955}
+  - {fileID: 8222182379004360389}
+  - {fileID: 1138202891441539392}
+  - {fileID: 1417591749635766012}
+  - {fileID: 7829168303446691113}
+  - {fileID: 4785666260276957279}
+  - {fileID: 5073631768237050481}
+  - {fileID: 4717645581345226316}
+  - {fileID: 3574550788527685514}
+  - {fileID: 5393410876270576470}
+  - {fileID: 7636211944505406606}
+  - {fileID: 1589251137559548087}
+  - {fileID: 2268987040049303806}
+  - {fileID: 8684283887436025046}
+  - {fileID: 8844659170913323766}
+  - {fileID: 4431628136822854945}
+  - {fileID: 4917775220289075450}
+  - {fileID: 6421715497285393431}
+  - {fileID: 3459090836251477678}
+  - {fileID: 2156059412372188664}
+  - {fileID: 8202817547348409441}
+  <AvailableCellData>k__BackingField:
+  - {x: 0, y: 1, z: -1}
+  - {x: 1, y: 0, z: -1}
+  - {x: 1, y: 1, z: 3}
+  - {x: 4, y: 1, z: 1}
   RoomSpawners: []
   roomShape: 4
   debug: 1
   <RoomDimensions>k__BackingField: {x: 4, y: 2, z: 3}
   <RoomType>k__BackingField: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
+  _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6675453439286995284
 GameObject:
   m_ObjectHideFlags: 0
@@ -18957,9 +18909,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1877217090724359949}
-  - component: {fileID: 2077879055573637092}
   m_Layer: 0
-  m_Name: Top Room 3
+  m_Name: Entrance Room 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18983,31 +18934,6 @@ Transform:
   - {fileID: 7973847732677701715}
   m_Father: {fileID: 2438054092942724108}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2077879055573637092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8175338482572108270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 4030484152472722876}
-  - {fileID: 3064495234899966045}
-  - {fileID: 403058990097980723}
-  - {fileID: 7901829218826200955}
-  - {fileID: 8222182379004360389}
-  - {fileID: 1138202891441539392}
-  RoomSpawners: []
-  roomShape: 0
-  debug: 0
-  <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
-  <RoomType>k__BackingField: 0
-  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &8182020454529975723
 GameObject:
   m_ObjectHideFlags: 0

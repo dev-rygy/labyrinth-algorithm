@@ -542,12 +542,14 @@ MonoBehaviour:
   - {fileID: 2436940751752249813}
   - {fileID: 7163090236631053877}
   - {fileID: 8928814826504297349}
+  <AvailableCellData>k__BackingField: []
   RoomSpawners: []
   roomShape: 0
   debug: 0
   <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
   <RoomType>k__BackingField: 0
-  _blueprintColor: {r: 1, g: 0, b: 0, a: 1}
+  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
+  _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3708844742084298220
 GameObject:
   m_ObjectHideFlags: 0
@@ -1216,12 +1218,14 @@ MonoBehaviour:
   - {fileID: 4908023771916636461}
   - {fileID: 1755842803856572098}
   - {fileID: 2190803142947894119}
+  <AvailableCellData>k__BackingField: []
   RoomSpawners: []
   roomShape: 0
   debug: 0
   <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
   <RoomType>k__BackingField: 0
-  _blueprintColor: {r: 1, g: 0, b: 0, a: 1}
+  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
+  _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &8937891078503076913
 GameObject:
   m_ObjectHideFlags: 0
@@ -2870,6 +2874,16 @@ PrefabInstance:
         type: 3}
       propertyPath: <RoomDimensions>k__BackingField.x
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8601492310067589478, guid: 9ccdd0e1d2aa7ce41be74fa9522aa117,
+        type: 3}
+      propertyPath: <AvailableCellData>k__BackingField.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8601492310067589478, guid: 9ccdd0e1d2aa7ce41be74fa9522aa117,
+        type: 3}
+      propertyPath: <AvailableCellData>k__BackingField.Array.data[1].x
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

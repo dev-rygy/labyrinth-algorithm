@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   04/11/2024 (Ryan)
+ * Last Modified:   07/07/2026 (Ryan)
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
@@ -35,6 +35,7 @@ namespace RyansLibrary.Labyrinth
     {
         [Header("Room Components")]
         [SerializeField] private List<Transform> _roomWalls;
+        [field: SerializeField] public List<Vector3Int> AvailableCellData { get; private set; }
         [SerializeField] public List<SpawnPad> RoomSpawners;
 
         [Header("Room Properties")]
@@ -45,8 +46,9 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public Vector3Int RoomDimensions { get; private set; } = Vector3Int.one;
         [field: SerializeField] public RoomType RoomType { get; private set; }
         [SerializeField] private Color _roomBoundsColor = Color.red;
+        [SerializeField] private Color _availableCellColor = Color.green;
 
-        private bool[,] openEntracways;
+        private bool[,] openEntranceways;
 
         private void Awake()
         {
@@ -55,7 +57,7 @@ namespace RyansLibrary.Labyrinth
             // Index 2 = Bot-Right Unit
             // Index 3 = Top-Right Unit
             // Index 4 = Top-Left Unit
-            openEntracways = new bool[4, 6];
+            openEntranceways = new bool[4, 6];
 
             RoomType = RoomType.general;
         }
@@ -70,15 +72,15 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Simply copy the bluePrint room's entranceway flags into the room's open entraceways.
         /// </summary>
-        /// <param name="bluePrintArray">The blueprint room's entranceway array (6 possible entrances)</param>
+        /// <param name="blueprintArray">The blueprint room's entranceway array (6 possible entrances)</param>
         /// <param name="unitIndex">A specific unit space of the room in question</param>
-        public void CopyBlueprintEntranceFlags(bool[] bluePrintArray, int unitIndex, Vector3 rotation)
+        public void CopyBlueprintEntranceFlags(bool[] blueprintArray, int unitIndex, Vector3 rotation)
         {
-            bluePrintArray = HandleRotation(bluePrintArray, rotation);
+            blueprintArray = HandleRotation(blueprintArray, rotation);
 
-            for (int i = 0; i < bluePrintArray.Length; i++) // iterate through all six faces of the Blueprint's flag array
+            for (int i = 0; i < blueprintArray.Length; i++) // iterate through all six faces of the Blueprint's flag array
             {
-                openEntracways[unitIndex, i] = bluePrintArray[i]; // Copy into room array respectively
+                openEntranceways[unitIndex, i] = blueprintArray[i]; // Copy into room array respectively
             }
         }
 
@@ -124,7 +126,7 @@ namespace RyansLibrary.Labyrinth
                 for (int j = 0; j < 6; j++)     // iterate through the faces of each unit
                 {
                     enListIdx = (i * 6) + j;
-                    if (openEntracways[i, j] == true)   // Activate entrance if true in activeEntranceway List
+                    if (openEntranceways[i, j] == true)   // Activate entrance if true in activeEntranceway List
                         ActivateEntranceway(enListIdx);
                 }
             }
@@ -150,14 +152,30 @@ namespace RyansLibrary.Labyrinth
             if (!debug) 
                 return;
 
-            // TODO: Replace 
+            DrawDimensions();
+            DrawAvailableCells();
+        }
+
+        private void DrawDimensions()
+        {
+            // TODO: Replace 13 with scale factor from MapGeneratorController
             int scaleFactor = 13; // This is a temporary scale factor for visualization purposes. Adjust as needed.
-            Vector3 roomOffset = new Vector3(1, 0, 1) * scaleFactor / 2f;
+            Vector3 roomOffset = new Vector3(1, 0, 1) * (scaleFactor * 0.5f);
             Vector3 center = transform.position + -(roomOffset) + (Vector3)(RoomDimensions * scaleFactor) / 2f;
 
             Gizmos.color = _roomBoundsColor;
             Gizmos.DrawWireCube(center, RoomDimensions * 13);
             // Gizmos.DrawSphere(center, 0.5f);
+        }
+
+        private void DrawAvailableCells()
+        {
+            foreach (Vector3Int cell in AvailableCellData)
+            {
+                Vector3 cellWorldPos = transform.position + (13f * 0.5f) * Vector3.up + (Vector3)cell * 13; // Assuming each cell is 13 units apart
+                Gizmos.color = _availableCellColor;
+                Gizmos.DrawWireCube(cellWorldPos, Vector3.one * 13);
+            }
         }
     }
 }

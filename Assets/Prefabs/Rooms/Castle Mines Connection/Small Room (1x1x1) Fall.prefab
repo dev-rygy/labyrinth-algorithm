@@ -1129,7 +1129,7 @@ PrefabInstance:
     - target: {fileID: 6698013543921010159, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
         type: 3}
       propertyPath: debug
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6698013543921010159, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
         type: 3}
@@ -1176,6 +1176,11 @@ PrefabInstance:
       propertyPath: '_roomWalls.Array.data[5]'
       value: 
       objectReference: {fileID: 1126049504492510643}
+    - target: {fileID: 6698013543921010159, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
+        type: 3}
+      propertyPath: <AvailableCellData>k__BackingField.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8341422493865436299, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
         type: 3}
       propertyPath: m_IsActive
