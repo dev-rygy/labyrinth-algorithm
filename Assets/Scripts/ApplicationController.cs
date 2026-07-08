@@ -37,7 +37,7 @@ public class ApplicationController : MonoBehaviour
         // Handle Singleton
         if (Instance != null)
         {
-            Debug.LogWarning("Map Generator Warning: Another instance of MapGenerator already exists. Deleting Object...");
+            Debug.LogWarning("[ApplicationController] Another instance of ApplicationController already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }

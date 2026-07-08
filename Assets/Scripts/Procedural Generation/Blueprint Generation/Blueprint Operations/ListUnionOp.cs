@@ -28,8 +28,8 @@ namespace RyansLibrary.Labyrinth
             string memoryID2 = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID1);      // List
             OutputPorts.Add(memoryID2);      // List count
-            if (_debugLogs) Debug.Log($"List<T> space allocated for memory with ID {memoryID1}");
-            if (_debugLogs) Debug.Log($"Int space allocated for memory with ID {memoryID2}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListUnionOp: List<T> space allocated for memory with ID {memoryID1}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListUnionOp: Int space allocated for memory with ID {memoryID2}");
         }
 
 
@@ -71,7 +71,7 @@ namespace RyansLibrary.Labyrinth
                     _context.Malloc(OutputPorts[1], resultBlueprintList.Count);
                     return true;
                 default:
-                    Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] ListUnionOp: Invalid Type for {OperationID}.");
                     return false;
             }
         }

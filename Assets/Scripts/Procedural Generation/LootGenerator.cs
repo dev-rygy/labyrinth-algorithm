@@ -38,17 +38,17 @@ namespace RyansLibrary.Labyrinth
             // Return if the masterpath is not initialized
             if (_masterPathReference == null)
             {
-                Debug.LogError("Loot Generator Error: Master Path was null.");
+                Debug.LogError("[LootGenerator] Master Path was null.");
                 return;
             }
             // Return if the masterpath does not contain any rooms
             if (_masterPathReference.Rooms.Count <= 0)
             {
-                Debug.LogError("Loot Generator Error: Master Path has no rooms.");
+                Debug.LogError("[LootGenerator] Master Path has no rooms.");
                 return;
             }
 
-            if (debug) Debug.Log("Loot Generator: Loot Spawn Procedure has begun.");
+            if (debug) Debug.Log("[LootGenerator] Loot Spawn Procedure has begun.");
 
             foreach (Room room in _masterPathReference.Rooms)
             {
@@ -57,12 +57,12 @@ namespace RyansLibrary.Labyrinth
                     if (room.RoomType == RoomType.prize && spawnPad.type == PadType.chest)
                     {
                         spawnPad.SpawnObject();
-                        if (debug) Debug.Log("Loot Generator: Chest spawned in " + room.name);
+                        if (debug) Debug.Log("[LootGenerator] Chest spawned in " + room.name);
                     }
                 }
             }
 
-            if (debug) Debug.Log("Loot Generator: Loot Spawn Procedure has ended.");
+            if (debug) Debug.Log("[LootGenerator] Loot Spawn Procedure has ended.");
         }
     }
 }

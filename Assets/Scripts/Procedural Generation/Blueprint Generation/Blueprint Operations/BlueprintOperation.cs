@@ -62,7 +62,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (inputPortIndex < 0 && inputPortIndex >= InputPorts.Count)
             {
-                Debug.LogError($"Map Generator Error: {OperationID} Input index {inputPortIndex} was out of range 0 - {InputPorts.Count}.");
+                Debug.LogError($"[MapGenerator][BlueprintOperation] <{OperationID}> Input index {inputPortIndex} was out of range 0 - {InputPorts.Count}.");
                 value = default;
                 return false;
             }
@@ -75,7 +75,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (required)
                 {
-                    Debug.LogError($"Map Generator Error: {OperationID} - Required input was not assiged at index {inputPortIndex}.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] <{OperationID}> Required input was not assiged at index {inputPortIndex}.");
                     return false;
                 }    
                 return true;
@@ -83,7 +83,7 @@ namespace RyansLibrary.Labyrinth
 
             if (!_context.TryGet(memoryId, out T storedValue))
             {
-                Debug.LogError($"Map Generator Error: {OperationID} - Input with memory ID ({memoryId}) is not valid in memory.");
+                Debug.LogError($"[MapGenerator][BlueprintOperation] <{OperationID}> Input with memory ID ({memoryId}) is not valid in memory.");
                 value = default;
                 return true;
             }
@@ -94,7 +94,7 @@ namespace RyansLibrary.Labyrinth
 
         protected void LogNullError()
         {
-            Debug.LogError($"Map Generator Error: {OperationID} - Failed to execute due to a required value being null.");
+            Debug.LogError($"[MapGenerator][BlueprintOperation] <{OperationID}> Failed to execute due to a required value being null.");
         }
     }
 }

@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
 
                     return true;
                 default:
-                    Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] PrintListOp: Invalid Type for {OperationID}.");
                     return false;
             }
         }

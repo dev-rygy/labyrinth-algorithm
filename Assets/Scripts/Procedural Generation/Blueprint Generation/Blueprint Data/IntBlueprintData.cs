@@ -27,7 +27,7 @@ namespace RyansLibrary.Labyrinth
         {
             base.LoadIntoMemory();
 
-            if (_debugLogs) Debug.Log($"String Data Loaded Into Memory with ID {OutputPorts[0]}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintData] Int data loaded into memory with ID {OutputPorts[0]}");
         }
     }
 }

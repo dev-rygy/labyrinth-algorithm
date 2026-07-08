@@ -25,7 +25,7 @@ namespace RyansLibrary.Labyrinth
             {
                 string memoryID = context.ConsumeMemoryID().ToString();
                 OutputPorts.Add(memoryID);
-                if (_debugLogs) Debug.Log($"Int space allocated for memory with ID {memoryID}");
+                if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] AddIntOp: Output space allocated for memory with ID {memoryID}");
             }
         }
 
@@ -40,6 +40,7 @@ namespace RyansLibrary.Labyrinth
             int sum = intA + intB;
 
             _context.Malloc(OutputPorts[0], sum);
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] AddIntOp: Result loaded into memory with ID {OutputPorts[0]}");
 
             return true;
         }

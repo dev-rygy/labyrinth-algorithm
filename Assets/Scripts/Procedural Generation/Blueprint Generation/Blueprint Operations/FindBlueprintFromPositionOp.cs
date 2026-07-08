@@ -25,8 +25,8 @@ namespace RyansLibrary.Labyrinth
             OutputPorts.Add(memoryID1);      // Blueprint
             OutputPorts.Add(memoryID2);      // bool found
 
-            if (_debugLogs) Debug.Log($"Blueprint space allocated for memory with ID {memoryID1}");
-            if (_debugLogs) Debug.Log($"Bool space allocated for memory with ID {memoryID2}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] FindBlueprintFromPositionOp: Blueprint space allocated for memory with ID {memoryID1}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] FindBlueprintFromPositionOp: Bool space allocated for memory with ID {memoryID2}");
         }
 
         public override bool Execute()
@@ -38,7 +38,7 @@ namespace RyansLibrary.Labyrinth
 
             if (!result)
             {
-                Debug.LogWarning($"Map Generator Warning: {OperationID} Blueprint could not be found from position.");
+                Debug.LogWarning($"[MapGenerator][BlueprintOperation] FindBlueprintFromPositionOp: Blueprint could not be found from position {position}.");
                 return false;
             }
 

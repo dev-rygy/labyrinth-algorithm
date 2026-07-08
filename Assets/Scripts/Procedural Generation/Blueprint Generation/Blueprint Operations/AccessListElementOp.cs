@@ -24,7 +24,7 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);      // Element
-            if (_debugLogs) Debug.Log($"Object space allocated for memory with ID {memoryID}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] AccessListElementOp: Output space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
@@ -61,7 +61,7 @@ namespace RyansLibrary.Labyrinth
                     _context.Malloc(OutputPorts[0], blueprintElement);
                     return true;
                 default:
-                    Debug.LogError($"Map Generator Error: Invalid input type 'T' for {OperationID}.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] AccessListElementOp: Invalid input type 'T' for {OperationID}.");
                     return false;
             }
         }

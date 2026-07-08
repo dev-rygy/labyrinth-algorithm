@@ -50,27 +50,27 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
     {
         if (!path.IsInitialized || !branchedPath.IsInitialized)
         {
-            Debug.LogError($"Map Generator Error: Path {path.Name} or branched path {branchedPath.Name} must be initialized for Drunkard Walk.");
+            Debug.LogError($"[MapGenerator][BlueprintOperation] DrunkardWalkBlueprintOp: Path {path.Name} or branched path {branchedPath.Name} must be initialized for Drunkard Walk.");
             return false;
         }
 
         // Make sure the path has atleast one room cell that can spawn
         if (path.DesiredPathLength <= 0)
         {
-            Debug.LogError($"Map Generator Error: Path {path.Name} has a desired length of 0 or is negative.");
+            Debug.LogError($"[MapGenerator][BlueprintOperation] DrunkardWalkBlueprintOp: Path {path.Name} has a desired length of 0 or is negative.");
             return false;
         }
 
         if (endIndex >= branchedPath.BlueprintCount() || startIndex < 0)
         {
-            Debug.LogError($"Map Generator Error: Ending index ({endIndex}) was greater than the path's length ({branchedPath.BlueprintCount()}) " +
+            Debug.LogError($"[MapGenerator][BlueprintOperation] DrunkardWalkBlueprintOp: Ending index ({endIndex}) was greater than the path's length ({branchedPath.BlueprintCount()}) " +
                 $"OR starting index ({startIndex}) was less than 0.");
             return false;
         }
 
         if (startIndex > endIndex)
         {
-            Debug.LogError($"Map Generator Error: Starting index ({startIndex}) was greater than ending index ({endIndex}).");
+            Debug.LogError($"[MapGenerator][BlueprintOperation] DrunkardWalkBlueprintOp: Starting index ({startIndex}) was greater than ending index ({endIndex}).");
             return false;
         }
 

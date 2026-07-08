@@ -51,7 +51,7 @@ namespace RyansLibrary.Labyrinth
 
             if (cellCount % indexOffset != 0)       // Not all cells desired can fit within the dimensions of the divergent rooms
             {
-                Debug.LogError($"Map Generator Error: The path's disired cell spawn exceeds/falls short of the divergent " +
+                Debug.LogError($"[MapGenerator][BlueprintOperation] DivergentBlueprintsOp: the path's disired cell spawn exceeds/falls short of the divergent " +
                     $"rooms with dimensions ({dimensions.x},{dimensions.y},{dimensions.z}).");
                 return false;
             }
@@ -73,7 +73,7 @@ namespace RyansLibrary.Labyrinth
                 // If divergent room failed to generate a certain number of times then return false
                 if (!successfullyPlaced)
                 {
-                    Debug.LogError($"Map Generator Error: A divergent room in path {path.name} has exhaused all of it's placement attempts.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] DivergentBlueprintsOp: A divergent room in path {path.name} has exhaused all of it's placement attempts.");
                     return false;
                 }
             }

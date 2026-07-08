@@ -23,7 +23,7 @@ public class ListSelectRandomElementOp : BlueprintOperation
         // Output Ports
         string memoryID = context.ConsumeMemoryID().ToString();
         OutputPorts.Add(memoryID);
-        if (_debugLogs) Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
+        if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListSelectRandomElementOp: List<Edge> space allocated for memory with ID {memoryID}");
     }
 
 
@@ -59,7 +59,7 @@ public class ListSelectRandomElementOp : BlueprintOperation
                 _context.Malloc(OutputPorts[0], randomBlueprint);
                 return true;
             default:
-                Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
+                Debug.LogError($"[MapGenerator][BlueprintOperation] ListSelectRandomElementOp: Invalid Type for {OperationID}.");
                 return false;
         }
     }

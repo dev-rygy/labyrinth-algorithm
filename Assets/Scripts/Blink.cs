@@ -29,14 +29,14 @@ namespace RyansLibrary
             InputHandler.OnInteract1 += Teleport;
 
             _playerReference = PlayerStateMachine.Instance;
-            if (_debug) Debug.Log("Player reference set to " + _playerReference);
+            if (_debug) Debug.Log("[Blink] Player reference set to " + _playerReference);
 
             _targetPos = transform.position + blinkDistance;
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (_debug) Debug.Log("Object on layer" + other.gameObject.layer + " has entered.");
+            if (_debug) Debug.Log("[Blink] Object on layer" + other.gameObject.layer + " has entered.");
 
             if ((playerLayer.value & (1 << other.gameObject.layer)) == 0)
                 return;
@@ -46,7 +46,7 @@ namespace RyansLibrary
 
         private void OnTriggerExit(Collider other)
         {
-            if (_debug) Debug.Log("Object on layer" + other.gameObject.layer + " has exited.");
+            if (_debug) Debug.Log("[Blink]  Object on layer" + other.gameObject.layer + " has exited.");
 
             if ((playerLayer.value & (1 << other.gameObject.layer)) == 0)
                 return;
@@ -65,7 +65,7 @@ namespace RyansLibrary
             _playerReference.transform.position = _targetPos;
             _playerReference.GetComponent<CharacterController>().enabled = true;
 
-            if (_debug) Debug.Log("Player has blinked to " + _targetPos);
+            if (_debug) Debug.Log("[Blink] Player has blinked to " + _targetPos);
         }
     }
 }

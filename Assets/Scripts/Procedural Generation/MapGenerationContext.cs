@@ -385,7 +385,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (OperationQueue is null)
             {
-                Debug.LogError("[MapGeneratorController] Error: Operation Queue is not yet assigned.");
+                Debug.LogError("[MapGenerator][Context] Operation Queue is not yet assigned.");
                 return 0;
             }
 
@@ -396,7 +396,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (OperationHistory is null)
             {
-                Debug.LogError("[MapGeneratorController] Error: Operation History is not yet assigned.");
+                Debug.LogError("[MapGenerator][Context] Operation History is not yet assigned.");
                 return 0;
             }
 

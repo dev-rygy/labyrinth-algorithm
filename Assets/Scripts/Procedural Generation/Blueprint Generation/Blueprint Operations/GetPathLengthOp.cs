@@ -19,7 +19,7 @@ public class GetPathLengthOp : BlueprintOperation
         // Output Ports
         string memoryID = context.ConsumeMemoryID().ToString();
         OutputPorts.Add(memoryID);      // Path Length
-        if (_debugLogs) Debug.Log($"Path space allocated for memory with ID ({memoryID})");
+        if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] GetPathLengthOp: Path space allocated for memory with ID ({memoryID})");
     }
 
     public override bool Execute()

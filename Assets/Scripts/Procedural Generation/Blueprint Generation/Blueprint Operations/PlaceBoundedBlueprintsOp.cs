@@ -23,7 +23,7 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);      // Blueprint List
-            if (_debugLogs) Debug.Log($"List<Blueprint> space allocated for memory with ID {memoryID}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] PlaceBoundedBlueprintsOp: List<Blueprint> space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (!result)
                 {
-                    if (_debugLogs) Debug.LogWarning($"[MapGenerator][BlueprintOperation] Constrained Room {entry.Prefab.name} " +
+                    if (_debugLogs) Debug.LogWarning($"[MapGenerator][BlueprintOperation] PlaceBoundedBlueprintsOp: Constrained Room {entry.Prefab.name} " +
                         $"collided with another room and could not be placed. Retrying...");
                     return false;
                 }
@@ -68,14 +68,14 @@ namespace RyansLibrary.Labyrinth
                 List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, room.AvailableCellData, spawnPosition);
                 if (availableBlueprints is null)
                 {
-                    Debug.LogError($"[MapGenerator][BlueprintOperation] Unique Room \"{room.name}\" has no available blueprint cells.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceBoundedBlueprintsOp: Unique Room \"{room.name}\" has no available blueprint cells.");
                     return false;
                 }
 
                 _context.Malloc(OutputPorts[0], availableBlueprints);
                 return true;
             }
-            Debug.LogError($"[MapGenerator][BlueprintOperation] {entry.Prefab.name} does not have a Room script!");
+            Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceBoundedBlueprintsOp: {entry.Prefab.name} does not have a Room script!");
             return false;
         }
 

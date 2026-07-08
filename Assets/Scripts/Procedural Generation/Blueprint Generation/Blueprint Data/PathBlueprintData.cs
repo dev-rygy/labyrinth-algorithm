@@ -33,7 +33,7 @@ namespace RyansLibrary.Labyrinth
             _context.Malloc(OutputPorts[1], _cache.BlueprintCount());
             _context.Malloc(OutputPorts[2], _cache.BlueprintList);
 
-            if (_debugLogs) Debug.Log($"Path Data Loaded Into Memory with ID {OutputPorts[0]}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintData] Path data loaded into memory with ID {OutputPorts[0]}");
         }
     }
 }

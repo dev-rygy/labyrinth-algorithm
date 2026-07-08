@@ -24,7 +24,7 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);      // Blueprint List
-            if (_debugLogs) Debug.Log($"List<Blueprint> space allocated for memory with ID {memoryID}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] PlaceFixedBlueprintsOp: List<Blueprint> space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
@@ -65,7 +65,7 @@ namespace RyansLibrary.Labyrinth
                 Vector3 difference = _bpg.CheckOutOfBounds(roomOrigin, room.RoomDimensions, bounds);
                 if (difference != Vector3.zero)     // Room was outside the bounds of the zone
                 {
-                    Debug.LogError($"Blueprint Generator Error: Unique Fixed Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceFixedBlueprintsOp: Unique Fixed Room \"{room.name}\" was outside of bounds and could not be placed.\n" +
                         $"It was {difference} units outside the bounds of the zone.");
                     return false;
                 }
@@ -75,21 +75,21 @@ namespace RyansLibrary.Labyrinth
                 blueprintList = _bpg.GenerateBlueprintsFromDimensions(path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
                 if (blueprintList is null)     // Room was outside the bounds of the zone
                 {
-                    Debug.LogError($"Blueprint Generator Error: Unique Fixed Room \"{room.name}\" was obstructed and could not be placed");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceFixedBlueprintsOp: Unique Fixed Room \"{room.name}\" was obstructed and could not be placed");
                     return false;
                 }
 
                 List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, room.AvailableCellData, roomOrigin);
                 if (availableBlueprints is null)
                 {
-                    Debug.LogError($"Blueprint Generator Error: Unique Room \"{room.name}\" has no available blueprint cells.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceFixedBlueprintsOp: Unique Room \"{room.name}\" has no available blueprint cells.");
                     return false;
                 }
 
                 _context.Malloc(OutputPorts[0], blueprintList);
                 return true;
             }
-            Debug.LogError($"Map Generator Error: {entry.Prefab.name} does not have a Room script!");
+            Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceFixedBlueprintsOp: {entry.Prefab.name} does not have a Room script!");
             return false;
         }
 

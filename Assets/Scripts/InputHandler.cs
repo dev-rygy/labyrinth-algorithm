@@ -262,16 +262,16 @@ namespace RyansLibrary.Input
             switch (map)
             {
                 case InputMap.Player:
-                    if (_debug) Debug.Log("Switched to Player Map");
+                    if (_debug) Debug.Log("[InputHandler] Switched to Player Map");
                     return _playerInputActionMap;
                 case InputMap.Console:
-                    if (_debug) Debug.Log("Switched to Console Map");
+                    if (_debug) Debug.Log("[InputHandler] Switched to Console Map");
                     return _consoleInputActionMap;
                 case InputMap.FreeCam:
-                    if (_debug) Debug.Log("Switched to FreeCamera Map");
+                    if (_debug) Debug.Log("[InputHandler] Switched to FreeCamera Map");
                     return _freeCamInputActionMap;
                 default:
-                    Debug.LogError("Invalid Input Map");
+                    Debug.LogError("[InputHandler] Invalid Input Map");
                     return null;
             }
         }
@@ -321,8 +321,8 @@ namespace RyansLibrary.Input
 
             OnMove?.Invoke();
 
-            if (_debug) Debug.Log("The Movement Input read was = " + MovementInput);
-            if (_debug) Debug.Log("The Normalized Movement Input read was = " + MoveDirectionNormalized);
+            if (_debug) Debug.Log("[InputHandler] The Movement Input read was = " + MovementInput);
+            if (_debug) Debug.Log("[InputHandler] The Normalized Movement Input read was = " + MoveDirectionNormalized);
         }
 
         private void OnFreeCamMovementInput(InputAction.CallbackContext context)
@@ -334,8 +334,8 @@ namespace RyansLibrary.Input
 
             OnFreeCamMove?.Invoke();
 
-            if (_debug) Debug.Log("The Free Cam Movement Input read was = " + FreeCamMoveInput);
-            if (_debug) Debug.Log("The Free Cam Normalized Movement Input read was = " + FreeCamMoveInputNormalized);
+            if (_debug) Debug.Log("[InputHandler] The Free Cam Movement Input read was = " + FreeCamMoveInput);
+            if (_debug) Debug.Log("[InputHandler] The Free Cam Normalized Movement Input read was = " + FreeCamMoveInputNormalized);
         }
 
         private void OnFreeCamLookInput(InputAction.CallbackContext context)
@@ -344,7 +344,7 @@ namespace RyansLibrary.Input
             FreeCamLookInput = context.ReadValue<Vector2>();
             OnFreeCamLook?.Invoke();
 
-            if (_debug) Debug.Log("The Free Cam Look Input read was = " + FreeCamLookInput);
+            if (_debug) Debug.Log("[InputHandler] The Free Cam Look Input read was = " + FreeCamLookInput);
         }
 
         private void OnPrimaryComboInput(InputAction.CallbackContext context)

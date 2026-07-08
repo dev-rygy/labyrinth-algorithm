@@ -26,13 +26,13 @@ public class LoadingScreenUI : MonoBehaviour
     {
         if (_loadingSlider is null)
         {
-            Debug.LogError("Error: Loading slider is not assigned");
+            Debug.LogError("[LoadingScreenUI] Loading slider is not assigned");
             return;
         }
 
         if (_loadingText is null)
         {
-            Debug.LogError("Error: Loading text is not assigned");
+            Debug.LogError("[LoadingScreenUI] Loading text is not assigned");
             return;
         }
 
@@ -115,7 +115,7 @@ public class LoadingScreenUI : MonoBehaviour
 
         if (_totalOperationCount < 0)
         {
-            Debug.LogError("Error: Divide by zero"); 
+            Debug.LogError("[LoadingScreenUI] Total operation count is invalid.");
             return;
         }
 

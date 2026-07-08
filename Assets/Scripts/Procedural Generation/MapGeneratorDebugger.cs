@@ -238,7 +238,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
                     }
-                    Debug.Log($"[Console] Map Generator Toggle Gizmos Command");
+                    Debug.Log($"[MapGenerator][Debugger] Map Generator Gizmos set to {_debugGizmos}");
                 }
                 ));
 
@@ -248,7 +248,7 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     _debugBlueprintGizmos = !_debugBlueprintGizmos;
-                    Debug.Log($"[Console] Map Generator Step All Command");
+                    Debug.Log($"[MapGenerator][Debugger] Blueprint Gizmos set to {_debugBlueprintGizmos}");
                 }));
 
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
@@ -257,7 +257,7 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     _debugTriangulationGizmos = !_debugTriangulationGizmos;
-                    Debug.Log($"[Console] Map Generator Toggle Triangulation Gizmos Command");
+                    Debug.Log($"[MapGenerator][Debugger] Triangulation Gizmos set to {_debugTriangulationGizmos}");
                 }));
 
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
@@ -266,7 +266,7 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     _debugBoundsGizmos = !_debugBoundsGizmos;
-                    Debug.Log($"[Console]Map Generator Toggle Bounds Gizmos Command");
+                    Debug.Log($"[MapGenerator][Debugger] Bounds Gizmos set to {_debugBoundsGizmos}");
                 }));
 
         }

@@ -26,7 +26,7 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);
-            if (_debugLogs) Debug.Log($"List<Edge> space allocated for memory with ID {memoryID}");
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListDifferenceOp: List<Edge> space allocated for memory with ID {memoryID}");
         }
 
 
@@ -66,7 +66,7 @@ namespace RyansLibrary.Labyrinth
                     _context.Malloc(OutputPorts[0], resultBlueprintList);
                     return true;
                 default:
-                    Debug.LogError($"Map Generator Error: Invalid Type for {OperationID}.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] ListDifferenceOp: Invalid Type for {OperationID}.");
                     return false;
             }
         }

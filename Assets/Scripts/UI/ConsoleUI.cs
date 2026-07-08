@@ -178,7 +178,7 @@ public class ConsoleUI : UIBehaviour
                 {
                     OutputToConsole($"{cmd.CommandId}: {cmd.CommandDescription}");
                 }
-                Debug.Log($"Console: Help Command");
+                Debug.Log($"[Console] Commands listed");
             }));
 
         // Clear command - clear text from console interface
@@ -188,7 +188,7 @@ public class ConsoleUI : UIBehaviour
             args =>
             {
                 ClearConsole();
-                Debug.Log("Console: Clear Command");
+                Debug.Log("[Console] Console cleared");
             }));
 
         // Print input memory command - Print memory of console
@@ -198,7 +198,7 @@ public class ConsoleUI : UIBehaviour
             args =>
             {
                 PrintInputMemory();
-                Debug.Log("Console: Input Memory Print Command");
+                Debug.Log("[Console] Input Memory printed to console");
             }));
     }
 }
