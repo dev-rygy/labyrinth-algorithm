@@ -114,21 +114,49 @@ public class CameraController : MonoBehaviour
     private void RegisterConsoleCommand()
     {
         ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
-            "tfc",
-            "Toggles Free Cam.",
+            "togglecameramode",
+            "Toggles A Camera Mode",
             args =>
             {
-                if (isFreeCameraEnabled)
+                if (args.Length != 1)
                 {
-                    SetCameraMode(previousCameraMode);
+                    Debug.LogWarning("[Console] No arguement given, please enter a camera mode.");
+                    return;
+                }
+
+                if (args[0] == "player")
+                {
+                    if (playerCamera == null)
+                    {
+                        Debug.LogWarning("[Console] Player Camera is not yet initialized. Please wait until the player has spawned.");
+                        return;
+                    }
+
+                    SetCameraMode(CameraMode.Player);
+                }
+                else if (args[0] == "free")
+                {
+                    if (isFreeCameraEnabled)
+                    {
+                        SetCameraMode(previousCameraMode);
+                    }
+                    else
+                    {
+                        previousCameraMode = currentCameraMode;
+                        SetCameraMode(CameraMode.Free);
+                    }
+                    ConsoleUI.OnNewConsoleOutput("Free Camera Toggled");
+                }
+                else if (args[0] == "main")
+                {
+                    SetCameraMode(CameraMode.Main);
                 }
                 else
                 {
-                    previousCameraMode = currentCameraMode;
-                    SetCameraMode(CameraMode.Free);
+                    Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. please enter a valid camera mode.");
                 }
-                ConsoleUI.OnNewConsoleOutput("Free Camera Toggled");
-                Debug.Log($"Console: Free Camera Command");
+
+                Debug.Log($"Console: Toggle Camera Mode Command");
             }));
     }
 }
