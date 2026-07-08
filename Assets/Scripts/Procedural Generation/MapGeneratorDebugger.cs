@@ -89,7 +89,7 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 if (_debugBoundsGizmos)
-                    DrawBoundingBox(zone.Bounds, _zoneBoundsColor, drawer);
+                    DrawBoundingBox(zone.Bounds, Vector3.zero, _zoneBoundsColor, drawer);
 
                 foreach (RoomEntry room in zone.UniqueRooms)
                 {
@@ -99,7 +99,7 @@ namespace RyansLibrary.Labyrinth
                     if (room.PlacementType != RoomPlacementType.Constrained)
                         continue;
 
-                    DrawBoundingBox(room.Bounds, _uniqueRoomBoundsColor, drawer);
+                    DrawBoundingBox(room.Bounds, zone.Bounds.position, _uniqueRoomBoundsColor, drawer);
                 }
             }
 
@@ -110,17 +110,17 @@ namespace RyansLibrary.Labyrinth
 
                 if (_debugBoundsGizmos)
                 {
-                    DrawBoundingBox(entry.ConnectionZone.Bounds, _zoneBoundsColor, drawer);
-                    DrawBoundingBox(entry.ZoneSpawnBounds, _zoneSpawnBoundsColor, drawer);
+                    DrawBoundingBox(entry.ConnectionZone.Bounds, Vector3.zero, _zoneBoundsColor, drawer);
+                    DrawBoundingBox(entry.ZoneSpawnBounds, Vector3.zero, _zoneSpawnBoundsColor, drawer);
                 }
             }
         }
 
-        private void DrawBoundingBox(BoundsInt bounds, Color color, IGizmoDrawer drawer)
+        private void DrawBoundingBox(BoundsInt bounds, Vector3 boundsOffset, Color color, IGizmoDrawer drawer)
         {
             int gridUnitSize = _controller.GridUnitSize;
             Vector3 boundsSize = gridUnitSize * bounds.size;
-            Vector3 boundsCenter = (bounds.center + new Vector3(-0.5f, -0.5f, -0.5f)) * gridUnitSize;
+            Vector3 boundsCenter = (bounds.center + new Vector3(-0.5f, -0.5f, -0.5f) + boundsOffset) * gridUnitSize;
 
             drawer.SetColor(color);
             drawer.WireCube(boundsCenter, boundsSize);
