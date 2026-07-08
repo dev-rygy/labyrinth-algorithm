@@ -59,6 +59,7 @@ public class CameraController : MonoBehaviour
     private void SetPlayerCamera(PlayerStateMachine playerStateMachine)
     {
         playerCamera = playerStateMachine.gameObject.GetComponentInChildren<Camera>();
+        playerCamera.gameObject.SetActive(false);
     }
 
     public void SetCameraMode(CameraMode mode)
