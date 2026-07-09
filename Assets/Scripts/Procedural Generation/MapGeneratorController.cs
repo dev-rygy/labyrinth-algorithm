@@ -10,7 +10,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Unity.Burst.Intrinsics.X86.Avx;
 using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
@@ -96,7 +95,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _currentEdgeColor;
 
         // ***** Private Variables *****
-        private Coroutine mapGeneratorCoroutine;
+        private Coroutine _mapGeneratorCoroutine;
 
         private BlueprintGenerator _bpg;
         private RoomGenerator _roomGenerator;
@@ -108,12 +107,6 @@ namespace RyansLibrary.Labyrinth
         private bool _debugLogs = false;
         private bool _debugBlueprintLogs = false;
         private bool _debugRoomGeneratorLogs = false;
-
-        // Gizmos
-        //private bool _debugGizmos = false;
-        //private bool _debugBlueprintGizmos = false;
-        //private bool _debugTriangulationGizmos = false;
-        //private bool _debugBoundsGizmos = false;
 
         // Stepwise procedure
         [field: SerializeField] public bool DebugSequential { get; private set; }
@@ -167,8 +160,8 @@ namespace RyansLibrary.Labyrinth
             else
                 Debug.Log("[MapGenerator][Controller] Debug Off");
 
-            mapGeneratorCoroutine = StartCoroutine(GenerateLabyrinth());
-            yield return mapGeneratorCoroutine;
+            _mapGeneratorCoroutine = StartCoroutine(GenerateLabyrinth());
+            yield return _mapGeneratorCoroutine;
         }
         #endregion
 
@@ -403,6 +396,7 @@ namespace RyansLibrary.Labyrinth
                 if (!result)
                 {
                     GenerationFailed();
+                    Debug.LogError("[MapGenerator][Controller] Operation failed to execute. Stopping coroutine.");
                     yield break;
                 }
             }
@@ -450,15 +444,15 @@ namespace RyansLibrary.Labyrinth
 
             IsGenerating = false;
 
-            mapGeneratorCoroutine = null;
+            _mapGeneratorCoroutine = null;
             _context.ClearAll();
+
+            _stepBudget = 0;
+            _runToEnd = false;
 
             if (_debugLogs) Debug.Log("[MapGenerator][Controller] Map generation restarting.");
 
             DestroyAllRooms();      // Destroy all rooms from last generation
-
-            // TODO: Delete after demo
-            ApplicationController.Instance.StartNewGame();
         }
 
         /// <summary>
@@ -468,8 +462,8 @@ namespace RyansLibrary.Labyrinth
         {
             IsGenerating = false;
 
-            StopCoroutine(mapGeneratorCoroutine);
-            mapGeneratorCoroutine = null;
+            StopCoroutine(_mapGeneratorCoroutine);
+            _mapGeneratorCoroutine = null;
             _context.ClearAll();
 
             Debug.LogError("[MapGenerator][Controller] Map generation failed.");
@@ -1088,29 +1082,6 @@ namespace RyansLibrary.Labyrinth
             _roomGenerator.ToggleDebugLogs(toggle);
         }
 
-        /* DEPRICATED PLEASE DELETE LATER
-        // Gizmo Toggles
-        public void ToggleGizmos(bool toggle)
-        {
-            _debugGizmos = toggle;
-        }
-
-        public void ToggleBlueprintGizmos(bool toggle)
-        {
-            _debugBlueprintGizmos = toggle;
-        }
-
-        public void ToggleTriangulationGizmos(bool toggle)
-        {
-            _debugTriangulationGizmos = toggle;
-        }
-
-        public void ToggleBoundsGizmos(bool toggle)
-        {
-            _debugBoundsGizmos = toggle;
-        }
-        */
-
         // Stepwise Function Toggles
         public void ToggleStepwiseDebugging(bool toggle)
         {
@@ -1121,37 +1092,6 @@ namespace RyansLibrary.Labyrinth
         #region Console Commands
         private void RegisterConsoleCommands()
         {
-            // Toggle Stepwise Debug Command
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.togglestepwisedebug",
-                "Toggles sequential debugging for map generator; step though generation. Enter \"true\" for on and \"false\" for off.",
-                args =>
-                {
-                    if (args.Length < 1)
-                    {
-                        Debug.LogWarning("[Console] No arguement given, please enter true or false");
-                        ConsoleUI.OnNewConsoleOutput("[Console] No arguement given, please enter true or false");
-                        return;
-                    }
-
-                    if (args[0] == "true")
-                    {
-                        ToggleStepwiseDebugging(true);
-                    }
-                    else if (args[0] == "false")
-                    {
-                        ToggleStepwiseDebugging(false);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
-                        ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
-                    }
-                    Debug.Log($"[MapGenerator][Controller] Stepwise Debugging toggled for Map Generator");
-                    ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Controller] Stepwise Debugging toggled for Map Generator");
-                }
-                ));
-
             // Map generator step command - Step the map generator by a desired amount of operations.
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.step",
@@ -1196,13 +1136,14 @@ namespace RyansLibrary.Labyrinth
                     ConsoleUI.OnNewConsoleOutput("[MapGenerator][Controller] Map Generator executed all remaining operations.");
                 }));
 
-            // Map generator restart command - Resets and restarts the map generator state.
+            // Map generator reset command - Resets and restarts the map generator state.
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.restart",
+                "mapgenerator.reset",
                 "When debugging, will reset the map generator and start a new generation.",
                 args =>
                 {
                     ResetLabyrinth();
+                    ApplicationController.Instance.StartNewGame();      // DELETE AFTER DEMO
                     Debug.Log("[MapGenerator][Controller] All data deleted. Map Generator restarted.");
                     ConsoleUI.OnNewConsoleOutput("[MapGenerator][Controller] All data deleted. Map Generator restarted.");
                 }));
@@ -1267,6 +1208,39 @@ namespace RyansLibrary.Labyrinth
                     ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Controller] Map Generator toggle random seed set to {generateRandomSeed}");
                 }));
         }
+
+        /* UNIMPLEMENTED
+            // Toggle Stepwise Debug Command
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.togglestepwisedebug",
+                "Toggles sequential debugging for map generator; step though generation. Enter \"true\" for on and \"false\" for off.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("[Console] No arguement given, please enter true or false");
+                        ConsoleUI.OnNewConsoleOutput("[Console] No arguement given, please enter true or false");
+                        return;
+                    }
+
+                    if (args[0] == "true")
+                    {
+                        ToggleStepwiseDebugging(true);
+                    }
+                    else if (args[0] == "false")
+                    {
+                        ToggleStepwiseDebugging(false);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
+                        ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
+                    }
+                    Debug.Log($"[MapGenerator][Controller] Stepwise Debugging toggled for Map Generator");
+                    ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Controller] Stepwise Debugging toggled for Map Generator");
+                }
+                ));
+            */
         #endregion
     }
 }

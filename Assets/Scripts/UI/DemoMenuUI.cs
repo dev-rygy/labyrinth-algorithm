@@ -1,23 +1,22 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    09/19/2025
- * Last Modified:   11/08/2025 (Ryan)
+ * Last Modified:   07/09/2025 (Ryan)
  * Notes:           Custom Menu used for demo
 */
 using RyansLibrary.Labyrinth;
-using TMPro;
 using UnityEngine;
 
-public class DemoMenu : MonoBehaviour
+public class DemoMenuUI : MonoBehaviour
 {
-    private static DemoMenu Instance;       // Should not be accessed by another class
+    private static DemoMenuUI Instance;       // Should not be accessed by another class
 
     private void Awake()
     {
         // Handle singleton
         if (Instance != null)
         {
-            Debug.LogWarning("[DemoMenu] Another instance of DemoMenu already exists. Deleting Object...");
+            Debug.LogWarning("[DemoMenuUI] Another instance of DemoMenuUI already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }
@@ -39,11 +38,11 @@ public class DemoMenu : MonoBehaviour
     public void Regenerate()
     {
         MapGeneratorController.Instance.ResetLabyrinth();
+        ApplicationController.Instance.StartNewGame();      // DELETE AFTER DEMO
     }
 
     public void ExitToMenu()
     {
-        MapGeneratorController.Instance.DestroyAllRooms();
         ApplicationController.Instance.EndGame();
     }
 }

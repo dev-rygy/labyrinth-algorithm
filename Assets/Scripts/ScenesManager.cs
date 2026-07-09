@@ -32,6 +32,16 @@ public class ScenesManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    public int GetCurrentSceneIndex()
+    {
+        return SceneManager.GetActiveScene().buildIndex;
+    }
+
+    public string GetCurrentSceneName()
+    {
+        return SceneManager.GetActiveScene().name;
+    }
+
     public void ReloadScene()
     {
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;

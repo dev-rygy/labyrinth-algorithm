@@ -30,7 +30,7 @@ public class ApplicationController : MonoBehaviour
     [Header("Console")]
     [SerializeField] private bool _clearConsoleOnGameStart = false;
 
-    private Camera _playerCamera;
+    private GameObject _player;
 
     private void Awake()
     {
@@ -58,22 +58,31 @@ public class ApplicationController : MonoBehaviour
         if (_clearConsoleOnGameStart) 
             Debug.ClearDeveloperConsole();
 
+        if (_player != null)
+        {
+            Destroy(_player);
+            _player = null;
+        }
+
         StartCoroutine(LoadNewGame());
     }
 
     public IEnumerator LoadNewGame()
     {
-        // Load Scene
-        yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(MAIN_SCENE_NAME));
+        if (ScenesManager.Instance.GetCurrentSceneName() != MAIN_SCENE_NAME)
+        {
+            // Load Scene
+            yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(MAIN_SCENE_NAME));
+        }
+
+        _cameraController.SetCameraMode(CameraMode.Main);
 
         // Start Map Generation
         yield return MapGeneratorController.Instance.StartGeneration();
 
         // Spawn player
-        GameObject player = Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
+        _player = Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
 
-        _playerCamera = player.GetComponentInChildren<Camera>();
-        
         if (_setCameraToPlayerOnGameStart)
             _cameraController.SetCameraMode(CameraMode.Player);
 
@@ -84,5 +93,7 @@ public class ApplicationController : MonoBehaviour
     public void EndGame()
     {
         ScenesManager.Instance.LoadScene("DemoBootstrap");
+        MapGeneratorController.Instance.ResetLabyrinth();
+        _cameraController.SetCameraMode(CameraMode.Main);
     }
 }

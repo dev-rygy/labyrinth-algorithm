@@ -4,16 +4,12 @@
  * Last Modified:   06/13/2025 (Ryan)
  * Notes:           Controls the user interface of the debug console
 */
-using JetBrains.Annotations;
-using NUnit.Framework;
 using RyansLibrary.Console;
 using RyansLibrary.Input;
 using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Windows;
 
 public class ConsoleUI : UIBehaviour
 {
