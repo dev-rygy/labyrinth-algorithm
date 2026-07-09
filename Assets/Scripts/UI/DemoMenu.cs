@@ -17,7 +17,7 @@ public class DemoMenu : MonoBehaviour
         // Handle singleton
         if (Instance != null)
         {
-            Debug.LogWarning("Demo Menu Warning: Another instance of DemoMenu already exists. Deleting Object...");
+            Debug.LogWarning("[DemoMenu] Another instance of DemoMenu already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }

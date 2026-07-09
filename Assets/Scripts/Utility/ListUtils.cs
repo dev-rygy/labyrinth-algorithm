@@ -42,7 +42,7 @@ namespace RyansLibrary.Utils
 
             if (elementCount > availableElements.Count)
             {
-                Debug.LogError("List Utils Error: Amount of random element selections desired exceeds the amount of elements available.");
+                Debug.LogError("[ListUtils] Amount of random element selections desired exceeds the amount of elements available.");
                 return null;
             }
 

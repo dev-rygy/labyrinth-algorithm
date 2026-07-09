@@ -81,11 +81,13 @@ namespace RyansLibrary.Console
                 catch (Exception e)     // Error executing command
                 {
                     Debug.LogError($"[Console][ConsoleRegistry] Error executing command '{commandName}': {e.Message}");
+                    ConsoleUI.OnNewConsoleOutput($"[Console][ConsoleRegistry] Error executing command '{commandName}': {e.Message}");
                 }
             }
             else    // Command keyword not recognized
             {
                 Debug.LogWarning($"[Console][ConsoleRegistry] Unknown command - {commandName}");
+                ConsoleUI.OnNewConsoleOutput($"[Console][ConsoleRegistry] Unknown command - {commandName}");
             }
 
             return false;
@@ -93,5 +95,10 @@ namespace RyansLibrary.Console
 
         // Parse all commands
         public IEnumerable<ConsoleCommand> GetAllCommands() => _commands.Values;
+
+        public int GetCommandCount()
+        {
+            return _commands.Count;
+        }
     }
 }

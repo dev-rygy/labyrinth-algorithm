@@ -60,7 +60,7 @@ public class AbilityUI : MonoBehaviour
     {
         if (PlayerStateMachine.Instance == null)
         {
-            Debug.LogError("Ability UI Error: PlayerStateMachine instance is null. Unable to subscribe to OnAbilityChanged.");
+            Debug.LogError("[AbilityUI] PlayerStateMachine instance is null. Unable to subscribe to OnAbilityChanged.");
             this.enabled = false;
             return;
         }
@@ -109,7 +109,7 @@ public class AbilityUI : MonoBehaviour
                 ability.OnAbilityCooldown += DashCooldownUI;
                 return;
             default:
-                Debug.LogError("Ability UI Error: Ability type undefined.");
+                Debug.LogError("[AbilityUI] Ability type undefined.");
                 return;
         }
     }
@@ -155,7 +155,7 @@ public class AbilityUI : MonoBehaviour
                 ability.OnAbilityCooldown -= DashCooldownUI;
                 return;
             default:
-                Debug.LogError("Ability UI Error: Ability type undefined.");
+                Debug.LogError("[AbilityUI] Ability type undefined.");
                 return;
         }
     }

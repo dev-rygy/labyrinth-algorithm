@@ -174,11 +174,13 @@ public class ConsoleUI : UIBehaviour
             "Lists all available commands.",
             args =>
             {
+                OutputToConsole($"Console Commands ({CommandRegistry.GetCommandCount()})");
+
                 foreach (var cmd in CommandRegistry.GetAllCommands())
                 {
                     OutputToConsole($"{cmd.CommandId}: {cmd.CommandDescription}");
                 }
-                Debug.Log($"[Console] Commands listed");
+                Debug.Log("[Console] Console commands listed");
             }));
 
         // Clear command - clear text from console interface

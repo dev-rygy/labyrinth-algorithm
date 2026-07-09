@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.Burst.Intrinsics.X86.Avx;
 using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
@@ -1129,6 +1130,7 @@ namespace RyansLibrary.Labyrinth
                     if (args.Length < 1)
                     {
                         Debug.LogWarning("[Console] No arguement given, please enter true or false");
+                        ConsoleUI.OnNewConsoleOutput("[Console] No arguement given, please enter true or false");
                         return;
                     }
 
@@ -1143,8 +1145,10 @@ namespace RyansLibrary.Labyrinth
                     else
                     {
                         Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
+                        ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
                     }
                     Debug.Log($"[MapGenerator][Controller] Stepwise Debugging toggled for Map Generator");
+                    ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Controller] Stepwise Debugging toggled for Map Generator");
                 }
                 ));
 
@@ -1166,6 +1170,7 @@ namespace RyansLibrary.Labyrinth
                         if (stepLength < 1)
                         {
                             Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please enter a positive amount of steps to advance.");
+                            ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Please enter a positive amount of steps to advance.");
                             return;
                         }
 
@@ -1174,8 +1179,10 @@ namespace RyansLibrary.Labyrinth
                     else
                     {
                         Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please enter a positive amount of steps to advance.");
+                        ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Please enter a positive amount of steps to advance.");
                     }
                     Debug.Log($"[MapGenerator][Controller] Map generator stepped {stepLength} operation(s).");
+                    ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Controller] Map generator stepped {stepLength} operation(s).");
                 }));
 
             // Map generator step all command - Execute all of the remaining map generator operations.
@@ -1185,7 +1192,8 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     AdvanceAll();
-                    Debug.Log($"[MapGenerator][Controller] Map Generator executed all remaining operations.");
+                    Debug.Log("[MapGenerator][Controller] Map Generator executed all remaining operations.");
+                    ConsoleUI.OnNewConsoleOutput("[MapGenerator][Controller] Map Generator executed all remaining operations.");
                 }));
 
             // Map generator restart command - Resets and restarts the map generator state.
@@ -1195,7 +1203,8 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     ResetLabyrinth();
-                    Debug.Log($"[MapGenerator][Controller] All data deleted. Map Generator restarted.");
+                    Debug.Log("[MapGenerator][Controller] All data deleted. Map Generator restarted.");
+                    ConsoleUI.OnNewConsoleOutput("[MapGenerator][Controller] All data deleted. Map Generator restarted.");
                 }));
 
             // Register custom seed command - Sets the map generator to use a custom seed for generation.
@@ -1209,11 +1218,13 @@ namespace RyansLibrary.Labyrinth
                     if (args.Length < 1)
                     {
                         Debug.LogWarning("[Console] No arguement given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
+                        ConsoleUI.OnNewConsoleOutput($"[Console] No arguement given, please enter a valid seed value between {int.MinValue} and {int.MaxValue}.");
                         return;
                     }
                     else if (!int.TryParse(args[0], out seed))
                     {
                         Debug.LogWarning("[Console] Invalid arguement given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
+                        ConsoleUI.OnNewConsoleOutput($"[Console] Invalid arguement given, please enter a valid seed value between {int.MinValue} and {int.MaxValue}.");
                         return;
                     }
 
@@ -1221,6 +1232,7 @@ namespace RyansLibrary.Labyrinth
 
                     OnSeedUpdate?.Invoke();
                     Debug.Log($"[MapGenerator][Controller] Map Generator Seed Set to {seed}");
+                    ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Controller] Map Generator Seed Set to {seed}");
                 }
                 ));
 
@@ -1233,6 +1245,7 @@ namespace RyansLibrary.Labyrinth
                     if (args.Length < 1)
                     {
                         Debug.LogWarning("[Console] No arguement given, please enter true or false");
+                        ConsoleUI.OnNewConsoleOutput("[Console] No arguement given, please enter true or false");
                         return;
                     }
                     else if (args[0] == "true")
@@ -1246,10 +1259,12 @@ namespace RyansLibrary.Labyrinth
                     else
                     {
                         Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
+                        ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Please input either true or false.");
                     }
 
                     OnSeedUpdate?.Invoke();
                     Debug.Log($"[MapGenerator][Controller] Map Generator toggle random seed set to {generateRandomSeed}");
+                    ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Controller] Map Generator toggle random seed set to {generateRandomSeed}");
                 }));
         }
         #endregion
