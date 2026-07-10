@@ -7,6 +7,7 @@ public class FreeCameraController : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float _cameraSpeed;
     [SerializeField] private float _cameraSprintSpeed;
+    [SerializeField] private float _cameraWalkSpeed;
     [SerializeField] private float _cameraSensitivity;
     [SerializeField] private bool _invertYLook;
     [SerializeField] private float botCamAngleClamp = 0.75f;      // Clamp the top angle of vertical look
@@ -29,12 +30,14 @@ public class FreeCameraController : MonoBehaviour
         _currentCameraSpeed = _cameraSpeed;
 
         InputHandler.OnFreeCamSprint += ToggleSprint;
+        InputHandler.OnFreeCamWalk += ToggleWalk;
         EnableCamera();
     }
 
     private void OnDisable()
     {
         InputHandler.OnFreeCamSprint -= ToggleSprint;
+        InputHandler.OnFreeCamWalk -= ToggleWalk;
         DisableCamera();
     }
 
@@ -130,4 +133,13 @@ public class FreeCameraController : MonoBehaviour
         if (_debug) Debug.Log($"Free Camera: Camera Sprint = {toggle}");
     }
 
+    private void ToggleWalk(bool toggle)
+    {
+        if (toggle)
+            _currentCameraSpeed = _cameraWalkSpeed;
+        else
+            _currentCameraSpeed = _cameraSpeed;
+
+        if (_debug) Debug.Log($"Free Camera: Camera Walk = {toggle}");
+    }
 }

@@ -8,6 +8,7 @@ using System.Collections;
 using UnityEngine;
 
 using RyansLibrary.Labyrinth;
+using System;
 
 /// <summary>
 /// Controls the execution order and game states.
@@ -16,6 +17,7 @@ public class ApplicationController : MonoBehaviour
 {
     const string MAIN_SCENE_NAME = "Main";
 
+    public static event Action OnMenu;
     public static ApplicationController Instance { get; private set; }
 
     [Header("Player")]
@@ -95,5 +97,11 @@ public class ApplicationController : MonoBehaviour
         ScenesManager.Instance.LoadScene("DemoBootstrap");
         MapGeneratorController.Instance.ResetLabyrinth();
         _cameraController.SetCameraMode(CameraMode.Main);
+        OnMenu?.Invoke();
+    }
+
+    private void ShowCursor()
+    {
+
     }
 }

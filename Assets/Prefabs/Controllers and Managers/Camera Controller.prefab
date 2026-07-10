@@ -108,9 +108,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b6791d5a87222c419884fda1fc66d8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cameraSpeed: 35
-  _cameraSprintSpeed: 95
-  _cameraSensitivity: 100
+  _cameraSpeed: 20
+  _cameraSprintSpeed: 80
+  _cameraWalkSpeed: 5
+  _cameraSensitivity: 20
   _invertYLook: 0
   botCamAngleClamp: -80
   topCamAngleClamp: 80
@@ -385,7 +386,7 @@ Transform:
   m_GameObject: {fileID: 9025418829377260147}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: -8.5}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

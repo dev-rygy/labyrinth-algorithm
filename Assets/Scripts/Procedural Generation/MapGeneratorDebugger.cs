@@ -51,6 +51,7 @@ namespace RyansLibrary.Labyrinth
 
             MapGeneratorController.OnGenerationStarted += () => _debugGizmos = true;
             MapGeneratorController.OnGenerationDone += () => _debugGizmos = false;
+            ApplicationController.OnMenu += () => _debugGizmos = false;
         }
 
         private void Update()

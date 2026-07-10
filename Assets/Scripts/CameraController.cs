@@ -133,7 +133,7 @@ public class CameraController : MonoBehaviour
     private void RegisterConsoleCommand()
     {
         ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
-            "camera.togglemode",
+            "camera.mode",
             "Toggles A Camera Mode",
             args =>
             {
