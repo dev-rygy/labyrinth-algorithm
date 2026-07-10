@@ -31,7 +31,7 @@ namespace RyansLibrary.Labyrinth
             if (!TryGetInput(0, out List<Edge> edgeList))
                 return false;
 
-            if (edgeList is null)
+            if (edgeList == null)
             {
                 LogNullError();
                 return false;

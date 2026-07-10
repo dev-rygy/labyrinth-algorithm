@@ -40,7 +40,7 @@ namespace RyansLibrary.Labyrinth
             if (!TryGetInput(0, out Edge edge))
                 return false;
 
-            if (edge is null)
+            if (edge is null)       // '==' operator is overloaded for Edge class, so we can use 'is null' to check for null
             {
                 LogNullError();
                 return false;

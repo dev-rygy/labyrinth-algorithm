@@ -82,11 +82,13 @@ namespace RyansLibrary.Input
         private void Awake()
         {
             // Handle Singleton
-            if (Instance != null && Instance != this)
+            if (Instance != null)
             {
-                Destroy(gameObject);
+                Debug.LogWarning("[InputHandler] Another instance of InputHandler already exists. Deleting Object...");
+                //Destroy(gameObject);
                 return;
             }
+
             Instance = this;
 
             // Initialize
@@ -279,6 +281,9 @@ namespace RyansLibrary.Input
         // Toggles 'Player' input actions
         public void TogglePlayerInput(bool toggle)
         {
+            if (_playerControls == null)
+                return;
+
             if (toggle)
                 _playerControls.Player.Enable();
             else
@@ -288,6 +293,9 @@ namespace RyansLibrary.Input
         // Toggles 'Console' input actions
         public void ToggleConsoleInput(bool toggle)
         {
+            if (_playerControls == null)
+                return;
+
             if (toggle)
                 _playerControls.Console.Enable();
             else
@@ -297,6 +305,9 @@ namespace RyansLibrary.Input
         // Toggles 'Free Camera' input actions
         public void ToggleFreeCameraInput(bool toggle)
         {
+            if (_playerControls == null)
+                return;
+
             if (toggle)
                 _playerControls.FreeCamera.Enable();
             else
@@ -306,6 +317,9 @@ namespace RyansLibrary.Input
         // Toggles 'UI' input actions
         public void ToggleUIInput(bool toggle)
         {
+            if (_playerControls == null)
+                return;
+
             if (toggle)
                 _playerControls.UI.Enable();
             else 

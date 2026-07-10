@@ -85,7 +85,11 @@ public class CameraController : MonoBehaviour
     {
         mainCameraObject.SetActive(false);
         freeCameraObject.SetActive(false);
-        playerCamera?.gameObject.SetActive(true);
+
+        if (playerCamera != null)
+        {
+            playerCamera.gameObject.SetActive(true);
+        }
 
         currentCameraMode = CameraMode.Player;
         isFreeCameraEnabled = false;
@@ -95,7 +99,11 @@ public class CameraController : MonoBehaviour
     {
         mainCameraObject.SetActive(false);
         freeCameraObject.SetActive(true);
-        playerCamera?.gameObject.SetActive(false);
+
+        if (playerCamera != null)
+        {
+            playerCamera.gameObject.SetActive(false);
+        }
 
         currentCameraMode = CameraMode.Free;
         isFreeCameraEnabled = true;
@@ -105,7 +113,11 @@ public class CameraController : MonoBehaviour
     {
         mainCameraObject.SetActive(true);
         freeCameraObject.SetActive(false);
-        playerCamera?.gameObject.SetActive(false);
+
+        if (playerCamera != null)
+        {
+            playerCamera.gameObject.SetActive(false);
+        }
 
         currentCameraMode = CameraMode.Main;
         isFreeCameraEnabled = false;

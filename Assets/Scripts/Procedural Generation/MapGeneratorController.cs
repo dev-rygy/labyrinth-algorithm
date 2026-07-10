@@ -134,9 +134,6 @@ namespace RyansLibrary.Labyrinth
             }
 
             Instance = this;
-
-            gameObject.transform.parent = null;     // Parent must be cleared to be DNDOL
-            DontDestroyOnLoad(gameObject);  // Have this gameObject persist
         }
 
         private void Start()
@@ -376,7 +373,7 @@ namespace RyansLibrary.Labyrinth
 
                 // Dequeue the current opration
                 BlueprintOperation operation = _context.OperationQueueDequeue();
-                if (operation is null)
+                if (operation == null)
                     throw new ArgumentNullException(nameof(operation));
 
                 // Push the operation into history
@@ -680,7 +677,7 @@ namespace RyansLibrary.Labyrinth
 
             foreach (Path path in zone.Paths)
             {
-                if (path is null)
+                if (path == null)
                 {
                     Debug.LogError($"[MapGenerator][Controller] A path {path.Name} for zone {zone.name} is not assigned.");
                     return;
@@ -1034,7 +1031,7 @@ namespace RyansLibrary.Labyrinth
 
         public int GetOperationCount()
         {
-            if (_context is null)
+            if (_context == null)
             {
                 Debug.LogError("[MapGenerator][Controller] Context is not assigned.");
                 return 0;
@@ -1068,7 +1065,7 @@ namespace RyansLibrary.Labyrinth
             // This no longer works as BlueprintData is no longer static
             // BlueprintData.ToggleDebugLogs(toggle);
 
-            if (_bpg is null)
+            if (_bpg == null)
                 return;
 
             _bpg.ToggleDebugLogs(_debugBlueprintLogs);
@@ -1076,7 +1073,7 @@ namespace RyansLibrary.Labyrinth
 
         public void ToggleRoomGeneratorLogs(bool toggle)
         {
-            if (_roomGenerator is null)
+            if (_roomGenerator == null)
                 return;
 
             _roomGenerator.ToggleDebugLogs(toggle);

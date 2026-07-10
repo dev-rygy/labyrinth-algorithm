@@ -37,7 +37,7 @@ namespace RyansLibrary.Labyrinth
             if (!TryGetInput(4, out int maxPlacementAttempts))
                 return false;
 
-            if (path is null)
+            if (path == null)
             {
                 LogNullError();
                 return false;

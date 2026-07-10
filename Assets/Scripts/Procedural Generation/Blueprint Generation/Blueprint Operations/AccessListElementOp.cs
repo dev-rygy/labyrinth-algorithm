@@ -39,7 +39,7 @@ namespace RyansLibrary.Labyrinth
                 case "Edge":
                     if (!TryGetInput(1, out List<Edge> edgeList))
                         return false;
-                    if (edgeList is null)
+                    if (edgeList == null)
                     {
                         LogNullError();
                         return false;
@@ -51,7 +51,7 @@ namespace RyansLibrary.Labyrinth
                 case "Blueprint":
                     if (!TryGetInput(1, out List<Blueprint> blueprintList))
                         return false;
-                    if (blueprintList is null)
+                    if (blueprintList == null)
                     {
                         LogNullError();
                         return false;
