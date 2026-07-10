@@ -41,6 +41,16 @@ public class DemoMenuUI : MonoBehaviour
         ApplicationController.Instance.StartNewGame();      // DELETE AFTER DEMO
     }
 
+    public void Step()
+    {
+        MapGeneratorController.Instance.Advance(1);
+    }
+
+    public void StepAll()
+    {
+        MapGeneratorController.Instance.AdvanceAll();
+    }
+
     public void ExitToMenu()
     {
         ApplicationController.Instance.EndGame();

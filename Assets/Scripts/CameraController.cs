@@ -20,7 +20,8 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] private GameObject mainCameraObject;
     [SerializeField] private GameObject freeCameraObject;
-    
+
+    private GameObject currentCamera;
     private Camera playerCamera;
     private bool isFreeCameraEnabled = false;
     public CameraMode currentCameraMode = CameraMode.Main;
@@ -92,6 +93,7 @@ public class CameraController : MonoBehaviour
         }
 
         currentCameraMode = CameraMode.Player;
+        currentCamera = playerCamera.gameObject;
         isFreeCameraEnabled = false;
     }
 
@@ -105,7 +107,11 @@ public class CameraController : MonoBehaviour
             playerCamera.gameObject.SetActive(false);
         }
 
+        // Set the free camera's position and rotation to match the current camera
+        freeCameraObject.GetComponent<FreeCameraController>().SetCameraTransform(currentCamera.transform);
+
         currentCameraMode = CameraMode.Free;
+        currentCamera = freeCameraObject;
         isFreeCameraEnabled = true;
     }
 
@@ -120,6 +126,7 @@ public class CameraController : MonoBehaviour
         }
 
         currentCameraMode = CameraMode.Main;
+        currentCamera = mainCameraObject;
         isFreeCameraEnabled = false;
     }
 

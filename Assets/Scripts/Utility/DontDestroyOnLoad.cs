@@ -11,6 +11,6 @@ public class DontDestroyOnLoad : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
-        gameObject.transform.parent = null;     // Parent must be cleared to be DNDOL
+        gameObject.transform.SetParent(null);     // Parent must be cleared to be DNDOL
     }
 }

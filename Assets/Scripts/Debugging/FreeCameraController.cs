@@ -47,6 +47,12 @@ public class FreeCameraController : MonoBehaviour
         Look();
     }
 
+    public void SetCameraTransform(Transform transform)
+    {
+        _cameraPivotTransform.position = transform.position;
+        _cameraPivotTransform.rotation = transform.rotation;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void EnableCamera()
     {
@@ -123,4 +129,5 @@ public class FreeCameraController : MonoBehaviour
 
         if (_debug) Debug.Log($"Free Camera: Camera Sprint = {toggle}");
     }
+
 }

@@ -1961,6 +1961,7 @@ GameObject:
   - component: {fileID: 8331628404893149330}
   - component: {fileID: 181490983943433822}
   - component: {fileID: 5034600044197320715}
+  - component: {fileID: 1634149832411755985}
   m_Layer: 0
   m_Name: HUD Canvas
   m_TagString: Untagged
@@ -2052,6 +2053,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &1634149832411755985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7834460035053565675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 726b515f5171395408b308724aec5d1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DontDestroyOnLoad
 --- !u!1 &7992010029304219290
 GameObject:
   m_ObjectHideFlags: 0
@@ -3176,8 +3189,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

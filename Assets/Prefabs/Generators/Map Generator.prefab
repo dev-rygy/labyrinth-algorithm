@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7192508511762545472}
   - component: {fileID: 6814551060216618171}
   - component: {fileID: 402649731811173750}
+  - component: {fileID: 4672391912499399123}
   m_Layer: 0
   m_Name: Map Generator
   m_TagString: Untagged
@@ -86,14 +87,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneratorDebugger
   _zoneBoundsColor: {r: 1, g: 0.3137255, b: 0, a: 0.8}
   _zoneSpawnBoundsColor: {r: 0.030591488, g: 1, b: 0, a: 0.8}
+  _uniqueRoomBoundsColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 0.8}
   _triangulationColor: {r: 1, g: 0.10980392, b: 0.32156864, a: 0.8}
   _contiguousGraphColor: {r: 0, g: 0.9411765, b: 1, a: 0.8}
   _randomCyclesColor: {r: 0.70980394, g: 0.28627452, b: 1, a: 0.8}
   _currentEdgeColor: {r: 1, g: 0.9529412, b: 0, a: 0.8}
-  _debugGizmos: 1
+  _debugGizmos: 0
   _debugBlueprintGizmos: 1
   _debugTriangulationGizmos: 1
   _debugBoundsGizmos: 1
+--- !u!114 &4672391912499399123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6343358480617124855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 726b515f5171395408b308724aec5d1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DontDestroyOnLoad
 --- !u!1 &7723183915317619332
 GameObject:
   m_ObjectHideFlags: 0
