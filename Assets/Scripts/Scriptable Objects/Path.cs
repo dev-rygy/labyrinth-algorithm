@@ -37,7 +37,10 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public List<PathEntry> rooms1x2x1 { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms2x1x2 { get; private set; }
         [field: SerializeField] public List<PathEntry> endingRooms { get; private set; }
-            
+
+        [field: SerializeField] public bool DrunkardWalkCanGoVertical { get; private set; } = true;
+
+
         [field: Header("Room Generation Chance")]
         [Tooltip("The percent chance for a room with a tall shape to spawn when the conditions are met.")]
         [field: SerializeField][field: Range(0, 1)] public float TallRoomSpawnChance { get; private set; } = 0;          // The spawn chance of tall rooms

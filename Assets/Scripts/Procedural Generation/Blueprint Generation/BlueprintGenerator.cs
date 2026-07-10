@@ -101,17 +101,20 @@ namespace RyansLibrary.Labyrinth
             return roomBlueprints;
         }
 
-        public Blueprint PlaceBlueprintInRandomDirection(Path path, BoundsInt bounds, Blueprint previousBlueprint)
+        public Blueprint PlaceBlueprintInRandomDirection(Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
         {
+            // If path can be placed in a vertical direction then all 6 faces are available, otherwise only 4 horizontal faces are available
+            int availableDirections = canGoVertical ? STANDARD_FACE_COUNT : STANDARD_FACE_COUNT - 2;
+
             // Chose a position in a random cardinal direction and check for collisions
-            bool[] attempts = new bool[STANDARD_FACE_COUNT];
+            bool[] attempts = new bool[availableDirections];
             int failedAttempts = 0;
 
-            while (failedAttempts < STANDARD_FACE_COUNT)
+            while (failedAttempts < availableDirections)
             {
                 // Choose a random direction to be the potential position for the next room.
-                int directionalIndex = Random.Range(0, STANDARD_FACE_COUNT);
-                directionalIndex = ArrayUtils.FindIndexCircular<bool>(attempts, directionalIndex, x => x == false);
+                int directionalIndex = Random.Range(0, availableDirections);
+                directionalIndex = ArrayUtils.FindIndexCircular(attempts, directionalIndex, x => x == false);
 
                 if (directionalIndex < 0)
                     return null;

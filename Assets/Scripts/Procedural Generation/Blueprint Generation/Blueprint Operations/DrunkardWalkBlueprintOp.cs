@@ -11,8 +11,8 @@ using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Coll
 
 public class DrunkardWalkBlueprintOp : BlueprintOperation
 {
-    public DrunkardWalkBlueprintOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string branchedPathInput, string boundsInput, string startIndexInput, 
-        string endIndexInput) : base(context, bpg)
+    public DrunkardWalkBlueprintOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string branchedPathInput, string boundsInput, string startIndexInput,
+        string endIndexInput, string canGoVertical) : base(context, bpg)
     {
         OperationID = $"DrunkardWalkBlueprintOp:{context.ConsumeOperationID()}";
 
@@ -22,6 +22,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
         InputPorts.Add(boundsInput);        // Bounds Input
         InputPorts.Add(startIndexInput);    // Start Index Input
         InputPorts.Add(endIndexInput);      // End Index Input
+        InputPorts.Add(canGoVertical);      // Can Go Vertical Input
     }
 
     public override bool Execute()
@@ -36,8 +37,10 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
             return false;
         if (!TryGetInput(4, out int endIndex))
             return false;
+        if (!TryGetInput(5, out bool canGoVertical))
+            return false;
 
-        return BlueprintDrunkardWalk(path, branchedPath, bounds, startIndex, endIndex);
+        return BlueprintDrunkardWalk(path, branchedPath, bounds, startIndex, endIndex, canGoVertical);
     }
 
     /// <summary>
@@ -46,7 +49,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
     /// </summary>
     /// <param name="path">A path with a length of atleast one.</param>
     /// <param name="startRoom">The starting room for the path. If null will create it's own start room</param>
-    public bool BlueprintDrunkardWalk(Path path, Path branchedPath, BoundsInt bounds, int startIndex, int endIndex)
+    public bool BlueprintDrunkardWalk(Path path, Path branchedPath, BoundsInt bounds, int startIndex, int endIndex, bool canGoVertical)
     {
         if (!path.IsInitialized || !branchedPath.IsInitialized)
         {
@@ -81,7 +84,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
             Blueprint startBlueprint = branchedPath.BlueprintList[startIndex];
             path.ClearBlueprintRooms();
 
-            return BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint);
+            return BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint, canGoVertical);
         }
 
         int randomStartingIndex = Random.Range(startIndex, endIndex);   // Choose a random room respecting the constraints
@@ -101,7 +104,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
             if (!startBlueprint.Available)       // Check if start room is available
                 continue;
 
-            pathPlaced = BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint);
+            pathPlaced = BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint, canGoVertical);
 
             // Break out of loop to prevent duplicate path placement
             if (pathPlaced)
@@ -111,20 +114,20 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
         return pathPlaced;
     }
 
-    private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, Blueprint previousBlueprint)
+    private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
     {
         if (path.BlueprintCount() >= path.DesiredPathLength)
             return true;
 
         // Attempt to place a new room
-        Blueprint newBlueprint = _bpg.PlaceBlueprintInRandomDirection(path, bounds, previousBlueprint);
+        Blueprint newBlueprint = _bpg.PlaceBlueprintInRandomDirection(path, bounds, previousBlueprint, canGoVertical);
 
         if (newBlueprint != null)    // New room was placed -> place next room
         {
-            bool placed = BlueprintDrunkardWalkRecursive(path, bounds, newBlueprint);
+            bool placed = BlueprintDrunkardWalkRecursive(path, bounds, newBlueprint, canGoVertical);
 
             if (!placed)       // next room could not be placed? Continuation of path failed -> try prev room again
-                return BlueprintDrunkardWalkRecursive(path, bounds, previousBlueprint);          // Backtrack
+                return BlueprintDrunkardWalkRecursive(path, bounds, previousBlueprint, canGoVertical);          // Backtrack
             else
                 return true;
         }

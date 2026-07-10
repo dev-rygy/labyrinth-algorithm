@@ -689,6 +689,9 @@ namespace RyansLibrary.Labyrinth
                 PathBlueprintData pathBlueprintData = new PathBlueprintData(_context, path);
                 pathBlueprintData.LoadIntoMemory();
 
+                BoolBlueprintData canGoVerticalData = new BoolBlueprintData(_context, path.DrunkardWalkCanGoVertical);
+                canGoVerticalData.LoadIntoMemory();
+
                 GetPathLengthOp branchedpathLengthOp = new GetPathLengthOp(_context, _bpg, branchedPathBlueprintData.OutputPorts[0]);
                 _context.OperationQueueEnqueue(branchedpathLengthOp);
 
@@ -696,7 +699,7 @@ namespace RyansLibrary.Labyrinth
                 _context.OperationQueueEnqueue(lengthMinusOneOp);
 
                 DrunkardWalkBlueprintOp drunkardWalkOperation = new DrunkardWalkBlueprintOp(_context, _bpg, pathBlueprintData.OutputPorts[0], branchedPathBlueprintData.OutputPorts[0],
-                    boundsBlueprintData.OutputPorts[0], startIndexBlueprintData.OutputPorts[0], lengthMinusOneOp.OutputPorts[0]);
+                    boundsBlueprintData.OutputPorts[0], startIndexBlueprintData.OutputPorts[0], lengthMinusOneOp.OutputPorts[0], canGoVerticalData.OutputPorts[0]);
                 _context.OperationQueueEnqueue(drunkardWalkOperation);
             }
         }

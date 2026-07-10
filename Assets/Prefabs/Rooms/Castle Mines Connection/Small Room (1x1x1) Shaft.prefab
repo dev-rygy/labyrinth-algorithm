@@ -91,6 +91,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4214742041239454202}
   - {fileID: 6631329675337342064}
   - {fileID: 1084757432983674690}
   - {fileID: 580663556397179555}
@@ -360,6 +361,37 @@ Transform:
   - {fileID: 7478303255010648374}
   - {fileID: 4492226820560439432}
   m_Father: {fileID: 6631329675337342064}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6505377244482751913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4214742041239454202}
+  m_Layer: 0
+  m_Name: Lights
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4214742041239454202
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6505377244482751913}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7981488165023851680}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6756104648390535268
 GameObject:
@@ -1059,7 +1091,7 @@ PrefabInstance:
     - target: {fileID: 3555212718981034981, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
         type: 3}
       propertyPath: m_Name
-      value: Small Room (1x1x1) Fall
+      value: Small Room (1x1x1) Shaft
       objectReference: {fileID: 0}
     - target: {fileID: 3555212718981034981, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
         type: 3}
@@ -1129,7 +1161,7 @@ PrefabInstance:
     - target: {fileID: 6698013543921010159, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
         type: 3}
       propertyPath: debug
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6698013543921010159, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
         type: 3}
