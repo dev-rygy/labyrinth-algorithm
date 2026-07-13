@@ -1,25 +1,24 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/27/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   07/13/2026 (Ryan)
  * Notes:           
 */
-using RyansLibrary.Graphs;
 using System.Collections.Generic;
+using RyansLibrary.Graphs;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
     public class AccessListElementOp : BlueprintOperation
     {
-        public AccessListElementOp(MapGenerationContext context, BlueprintGenerator bpg, string indexInput, string listInput, string listType) : base(context, bpg)
+        public AccessListElementOp(MapGenerationContext context, BlueprintGenerator bpg, string indexInput, string listInput) : base(context, bpg)
         {
             OperationID = $"AccessListElementOp:{context.ConsumeOperationID()}";
 
             // Input Ports
             InputPorts.Add(indexInput);     // Index of element
             InputPorts.Add(listInput);      // The list itself
-            InputPorts.Add(listType);       // The list's type
 
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
@@ -31,38 +30,26 @@ namespace RyansLibrary.Labyrinth
         {
             if (!TryGetInput(0, out int index))
                 return false;
-            if (!TryGetInput(2, out string listType))
+            if (!TryGetInput(1, out object list))
                 return false;
 
-            switch (listType)
+            if (list is List<Edge> edgeList)
             {
-                case "Edge":
-                    if (!TryGetInput(1, out List<Edge> edgeList))
-                        return false;
-                    if (edgeList == null)
-                    {
-                        LogNullError();
-                        return false;
-                    }
-
-                    Edge edgeElement = edgeList[index];
-                    _context.Malloc(OutputPorts[0], edgeElement);
-                    return true;
-                case "Blueprint":
-                    if (!TryGetInput(1, out List<Blueprint> blueprintList))
-                        return false;
-                    if (blueprintList == null)
-                    {
-                        LogNullError();
-                        return false;
-                    }
-
-                    Blueprint blueprintElement = blueprintList[index];
-                    _context.Malloc(OutputPorts[0], blueprintElement);
-                    return true;
-                default:
-                    Debug.LogError($"[MapGenerator][BlueprintOperation] AccessListElementOp: Invalid input type 'T' for {OperationID}.");
-                    return false;
+                Edge element = edgeList[index];
+                _context.Malloc(OutputPorts[0], element);
+                return true;
+            }
+            else if (list is List<Blueprint> blueprintList)
+            {
+                Blueprint element = blueprintList[index];
+                _context.Malloc(OutputPorts[0], element);
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"[MapGenerator][BlueprintOperation] AccessListElementOp: Invalid input types for Blueprint select random operation. " +
+                    $"Types can only be List<Edge> or List<Blueprint>.");
+                return false;
             }
         }
     }

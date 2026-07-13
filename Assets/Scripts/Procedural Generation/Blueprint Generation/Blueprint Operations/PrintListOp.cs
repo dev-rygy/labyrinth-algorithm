@@ -23,44 +23,18 @@ namespace RyansLibrary.Labyrinth
 
         public override bool Execute()
         {
-            if (!TryGetInput(1, out string listType))
+            if (!TryGetInput(0, out List<object> list))
                 return false;
 
-            switch (listType)
+            if (list is null)
             {
-                case "Edge":
-                    if (!TryGetInput(0, out List<Edge> edgeList))
-                        return false;
-
-                    if (edgeList is null)
-                    {
-                        LogNullError();
-                        return false;
-                    }
-
-                    // Print List
-                    PrintList(edgeList);
-
-                    return true;
-
-                case "Blueprint":
-                    if (!TryGetInput(0, out List<Blueprint> blueprintList))
-                        return false;
-
-                    if (blueprintList is null)
-                    {
-                        LogNullError();
-                        return false;
-                    }
-
-                    // Print List
-                    PrintList(blueprintList);
-
-                    return true;
-                default:
-                    Debug.LogError($"[MapGenerator][BlueprintOperation] PrintListOp: Invalid Type for {OperationID}.");
-                    return false;
+                LogNullError();
+                return false;
             }
+
+            // Print List
+            PrintList(list);
+            return true;
         }
 
         private void PrintList<T>(List<T> list)

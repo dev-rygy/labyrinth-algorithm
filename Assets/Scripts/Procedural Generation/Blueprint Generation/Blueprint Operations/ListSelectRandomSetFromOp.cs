@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/26/2025
- * Last Modified:   11/08/2025 (Ryan)
+ * Last Modified:   07/13/2026 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Graphs;
@@ -13,59 +13,53 @@ namespace RyansLibrary.Labyrinth
 {
     public class ListSelectRandomSetFromOp : BlueprintOperation
     {
-        public ListSelectRandomSetFromOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string elementCountInput, string listType) : base(context, bpg)
+        public ListSelectRandomSetFromOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string setSize) : base(context, bpg)
         {
             OperationID = $"SelectRandomSetFromListOp:{context.ConsumeOperationID()}";
 
             // Input Ports
-            InputPorts.Add(listInput);
-            InputPorts.Add(elementCountInput);
-            InputPorts.Add(listType);
+            InputPorts.Add(listInput);      // List
+            InputPorts.Add(setSize);        // Integer for how big the random set should be
 
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
-            OutputPorts.Add(memoryID);
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListSelectRandomSetFromOp: List<Edge> space allocated for memory with ID {memoryID}");
+            OutputPorts.Add(memoryID);  // List that carries the random set
+
+            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListSelectRandomSetFromOp: List<T> space allocated for memory with ID {memoryID}");
         }
 
 
         public override bool Execute()
         {
-            if (!TryGetInput(1, out int elementCount))
+            if (!TryGetInput(0, out object list))
                 return false;
-            if (!TryGetInput(2, out string listType))
+            if (!TryGetInput(1, out int setSize))
                 return false;
 
-            switch (listType)
+            if (list is null)
             {
-                case "Edge":
-                    if (!TryGetInput(0, out List<Edge> edgeList))
-                        return false;
-                    if (edgeList is null)
-                    {
-                        LogNullError();
-                        return false;
-                    }
+                LogNullError();
+                return false;
+            }
 
-                    List<Edge> resultListEdge = SelectRandomSetFromList(edgeList, elementCount);
-                    _context.Malloc(OutputPorts[0], resultListEdge);
-                    _context.AddToRandomCyclesList(resultListEdge);
-                    return true;
-                case "Blueprint":
-                    if (!TryGetInput(1, out List<Blueprint> blueprintList))
-                        return false;
-                    if (blueprintList is null)
-                    {
-                        LogNullError();
-                        return false;
-                    }
-
-                    List<Blueprint> resultListBlueprint = SelectRandomSetFromList(blueprintList, elementCount);
-                    _context.Malloc(OutputPorts[0], resultListBlueprint);
-                    return true;
-                default:
-                    Debug.LogError($"[MapGenerator][BlueprintOperation] ListSelectRandomSetFromOp: Invalid Type for {OperationID}.");
-                    return false;
+            if (list is List<Edge> edgeList)
+            {
+                List<Edge> resultListEdge = SelectRandomSetFromList(edgeList, setSize);
+                _context.Malloc(OutputPorts[0], resultListEdge);
+                _context.AddToRandomCyclesList(resultListEdge);
+                return true;
+            }
+            else if (list is List<Blueprint> blueprintList)
+            {
+                List<Blueprint> resultListBlueprint = SelectRandomSetFromList(blueprintList, setSize);
+                _context.Malloc(OutputPorts[0], resultListBlueprint);
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"[MapGenerator][BlueprintOperation] ListSelectRandomSetFromOp: Invalid input types for Blueprint select random operation. " +
+                    $"Types can only be List<Edge> or List<Blueprint>.");
+                return false;
             }
         }
         private List<T> SelectRandomSetFromList<T>(List<T> list, int elementCount)
