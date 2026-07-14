@@ -899,7 +899,12 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                Room generatedRoom = _roomGenerator.GenerateRoom(entry.Prefab, entry.SpawnPosition, zone.MainPath);
+                // TODO: This needs to be changed to a more universal solution.
+                Vector3Int actualPosition = entry.SpawnPosition;
+                if (entry.PlacementType == RoomPlacementType.Fixed)
+                    actualPosition += zone.Bounds.position;
+
+                Room generatedRoom = _roomGenerator.GenerateRoom(entry.Prefab, actualPosition, zone.MainPath);
 
                 // TODO: Make this into a new function in the room generator. Make the function check for all rooms inside
                 // the unique room.
@@ -908,7 +913,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     for (int i = 0; i < generatedRoom.AvailableCellData.Count; i++)
                     {
-                        if (MasterDictionary.TryGetValue(entry.SpawnPosition + generatedRoom.AvailableCellData[i], out Blueprint blueprint))
+                        if (MasterDictionary.TryGetValue(actualPosition + generatedRoom.AvailableCellData[i], out Blueprint blueprint))
                         {
                             generatedRoom.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
                         }
