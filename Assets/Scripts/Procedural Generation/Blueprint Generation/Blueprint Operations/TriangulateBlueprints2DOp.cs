@@ -1,19 +1,21 @@
 /*
  * Created By:      Ryan Carpenter
- * Date Created:    10/27/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Date Created:    07/14/2026
+ * Last Modified:   07/14/2026 (Ryan)
  * Notes:           
 */
+using RyansLibrary;
 using RyansLibrary.Graphs;
+using RyansLibrary.Labyrinth;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class TriangulateBlueprintsOp : BlueprintOperation
+    public class TriangulateBlueprints2DOp : BlueprintOperation
     {
-        public TriangulateBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string blueprintListInput)
-                : base(context, bpg)
+        public TriangulateBlueprints2DOp(MapGenerationContext context, BlueprintGenerator bpg, string blueprintListInput)
+                    : base(context, bpg)
         {
             OperationID = $"TriangulateBlueprints:{context.ConsumeOperationID()}";
 
@@ -54,7 +56,9 @@ namespace RyansLibrary.Labyrinth
                 waypoints.Add(new Vertex<Blueprint>(blueprint.Position, blueprint));
             }
 
-            DelaunayTriangulation3D triangulation = DelaunayTriangulation3D.Triangulate(waypoints);
+            // TODO: DelaunayTriangulation has issues solving cases with coplanar tetrahedra; instead consider
+            // a C# library called MIConvexHull that has thousands of lines to solve these issues.
+            DelaunayTriangulation2D triangulation = DelaunayTriangulation2D.Triangulate(waypoints);
 
             return triangulation.Edges;
         }

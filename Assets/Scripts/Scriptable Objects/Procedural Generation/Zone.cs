@@ -36,7 +36,7 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public BoundsInt Bounds { get; set; }                       // For use with constrained rooms; all other rooms will ignore these bounds
     }
 
-    [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Zone", order = 1)]
+    [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Procedural Generation/Zone", order = 1)]
     public class Zone : ScriptableObject
     {
         [field: Header("General Settings")]

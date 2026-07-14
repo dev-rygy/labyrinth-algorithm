@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/23/2025
- * Last Modified:   03/31/2025 (Ryan)
+ * Last Modified:   07/13/2025 (Ryan)
  * Notes:           2D and 3D Geometry
  *                  Adapted from https://github.com/Bl4ckb0ne/delaunay-triangulation
  *                  Copyright (c) 2015-2019 Simon Zeni (simonzeni@gmail.com)
@@ -28,6 +28,8 @@ namespace RyansLibrary.Geometry
             B = b;
             C = c;
             D = d;
+
+            // TODO: solve case where Tetrahedron is coplanar
             CalculateCircumsphere();
         }
 
@@ -144,24 +146,75 @@ namespace RyansLibrary.Geometry
 
     public class Triangle
     {
-        public Vertex U { get; set; }
-        public Vertex V { get; set; }
-        public Vertex W { get; set; }
+        public Vertex A { get; set; }
+        public Vertex B { get; set; }
+        public Vertex C { get; set; }
+
+        public Vector2 Circumcenter;
+        public float CircumradiusSquared;
 
         public Triangle() { }
 
         public Triangle(Vertex u, Vertex v, Vertex w)
         {
-            U = u;
-            V = v;
-            W = w;
+            A = u;
+            B = v;
+            C = w;
+
+            CalculateCircumcircle();
+        }
+
+        public bool ContainsVertex(Vertex vertex, float precision)
+        {
+            return Vertex.AlmostEqual(vertex, A, precision) ||
+                   Vertex.AlmostEqual(vertex, B, precision) ||
+                   Vertex.AlmostEqual(vertex, C, precision);
+        }
+
+        public bool CircumCircleContains(Vector3 point)
+        {
+            Vector2 p = new Vector2(point.x, point.y);
+
+            return (p - Circumcenter).sqrMagnitude <= CircumradiusSquared;
+        }
+
+        private void CalculateCircumcircle()
+        {
+            float d =
+                2 *
+                (A.Position.x * (B.Position.y - C.Position.y) +
+                 B.Position.x * (C.Position.y - A.Position.y) +
+                 C.Position.x * (A.Position.y - B.Position.y));
+
+
+            float ux =
+                ((A.Position.sqrMagnitude * (B.Position.y - C.Position.y)) +
+                 (B.Position.sqrMagnitude * (C.Position.y - A.Position.y)) +
+                 (C.Position.sqrMagnitude * (A.Position.y - B.Position.y)))
+                 / d;
+
+
+            float uy =
+                ((A.Position.sqrMagnitude * (C.Position.x - B.Position.x)) +
+                 (B.Position.sqrMagnitude * (A.Position.x - C.Position.x)) +
+                 (C.Position.sqrMagnitude * (B.Position.x - A.Position.x)))
+                 / d;
+
+
+            Circumcenter = new Vector2(ux, uy);
+
+
+            CircumradiusSquared =
+                (Circumcenter -
+                new Vector2(A.Position.x, A.Position.y))
+                .sqrMagnitude;
         }
 
         public static bool operator ==(Triangle left, Triangle right)
         {
-            return (left.U == right.U || left.U == right.V || left.U == right.W)
-                && (left.V == right.U || left.V == right.V || left.V == right.W)
-                && (left.W == right.U || left.W == right.V || left.W == right.W);
+            return (left.A == right.A || left.A == right.B || left.A == right.C)
+                && (left.B == right.A || left.B == right.B || left.B == right.C)
+                && (left.C == right.A || left.C == right.B || left.C == right.C);
         }
 
         public static bool operator !=(Triangle left, Triangle right)
@@ -185,15 +238,15 @@ namespace RyansLibrary.Geometry
 
         public override int GetHashCode()
         {
-            return U.GetHashCode() ^ V.GetHashCode() ^ W.GetHashCode();
+            return A.GetHashCode() ^ B.GetHashCode() ^ C.GetHashCode();
         }
 
         // If both triangles are almost exactly in the same place
         public static bool AlmostEqual(Triangle left, Triangle right, float precision)
         {
-            return (Vertex.AlmostEqual(left.U, right.U, precision) || Vertex.AlmostEqual(left.U, right.V, precision) || Vertex.AlmostEqual(left.U, right.W, precision))
-                && (Vertex.AlmostEqual(left.V, right.U, precision) || Vertex.AlmostEqual(left.V, right.V, precision) || Vertex.AlmostEqual(left.V, right.W, precision))
-                && (Vertex.AlmostEqual(left.W, right.U, precision) || Vertex.AlmostEqual(left.W, right.V, precision) || Vertex.AlmostEqual(left.W, right.W, precision));
+            return (Vertex.AlmostEqual(left.A, right.A, precision) || Vertex.AlmostEqual(left.A, right.B, precision) || Vertex.AlmostEqual(left.A, right.C, precision))
+                && (Vertex.AlmostEqual(left.B, right.A, precision) || Vertex.AlmostEqual(left.B, right.B, precision) || Vertex.AlmostEqual(left.B, right.C, precision))
+                && (Vertex.AlmostEqual(left.C, right.A, precision) || Vertex.AlmostEqual(left.C, right.B, precision) || Vertex.AlmostEqual(left.C, right.C, precision));
         }
     }
 }

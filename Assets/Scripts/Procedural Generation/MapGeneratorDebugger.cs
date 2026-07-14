@@ -67,6 +67,8 @@ namespace RyansLibrary.Labyrinth
 
         private void OnDrawGizmos()
         {
+            _controller ??= GetComponent<MapGeneratorController>();
+
             if (!_debugGizmos || _controller == null)
                 return;
 

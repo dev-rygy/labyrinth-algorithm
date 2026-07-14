@@ -592,14 +592,34 @@ namespace RyansLibrary.Labyrinth
                 availableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(availibleBlueprintsOp);
 
-            TriangulateBlueprintsOp triangulationOp = new TriangulateBlueprintsOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
-            _context.OperationQueueEnqueue(triangulationOp);
+            // *** Choose Between 2D and 3D Triangulation based on bounds size
+            FindMSTOp mstOp;
+            ListDifferenceOp listDiffOp;
 
-            FindMSTOp mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
-            _context.OperationQueueEnqueue(mstOp);
+            if (zone.Bounds.size.y < 3 || zone.Bounds.size.y < 3 || zone.Bounds.size.z < 3)
+            {
+                // **** Perform 2D Triangulation
+                TriangulateBlueprints2DOp triangulationOp = new TriangulateBlueprints2DOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
+                _context.OperationQueueEnqueue(triangulationOp);
 
-            ListDifferenceOp listDiffOp = new ListDifferenceOp(_context, _bpg, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0]);
-            _context.OperationQueueEnqueue(listDiffOp);
+                mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
+                _context.OperationQueueEnqueue(mstOp);
+
+                listDiffOp = new ListDifferenceOp(_context, _bpg, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0]);
+                _context.OperationQueueEnqueue(listDiffOp);
+            }
+            else
+            {
+                // **** Perform 3D Triangulation
+                TriangulateBlueprints3DOp triangulationOp = new TriangulateBlueprints3DOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
+                _context.OperationQueueEnqueue(triangulationOp);
+
+                mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
+                _context.OperationQueueEnqueue(mstOp);
+
+                listDiffOp = new ListDifferenceOp(_context, _bpg, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0]);
+                _context.OperationQueueEnqueue(listDiffOp);
+            }
 
             ListSelectRandomSetFromOp randomCyclesListOp = new ListSelectRandomSetFromOp(_context, _bpg, listDiffOp.OutputPorts[0], 
                 setSize.OutputPorts[0]);

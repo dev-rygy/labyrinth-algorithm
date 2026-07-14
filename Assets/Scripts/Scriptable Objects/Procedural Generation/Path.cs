@@ -24,7 +24,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] [Range(0, 100)] public int Probability;
     }
 
-    [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Path", order = 2)]
+    [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Procedural Generation/Path", order = 2)]
     public class Path : ScriptableObject
     {
         // Editor Fields

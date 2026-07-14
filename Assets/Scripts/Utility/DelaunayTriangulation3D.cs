@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/23/2025
- * Last Modified:   04/03/2025 (Ryan)
+ * Last Modified:   07/13/2026 (Ryan)
  * Notes:           3D Delaunay Triangulation Algorithm
  *                  Adapted from https://github.com/Bl4ckb0ne/delaunay-triangulation
  *                  Copyright (c) 2015-2019 Simon Zeni (simonzeni@gmail.com)
@@ -25,9 +25,6 @@ namespace RyansLibrary
 
         private List<Triangle> _badTriangles;
         private List<Tetrahedron> _badTetrahedra;
-
-        // Debugging
-        private bool _debugLogs;
 
         DelaunayTriangulation3D()
         {
@@ -53,8 +50,10 @@ namespace RyansLibrary
             return delaunay;
         }
 
-        void Triangulate()
+        private void Triangulate()
         {
+
+            // *** Find the absolute minimum and absolute maximum point of all vertices ***
             float minX = Verticies[0].Position.x;        // Min = Very first room vertex
             float minY = Verticies[0].Position.y;
             float minZ = Verticies[0].Position.z;
@@ -63,7 +62,6 @@ namespace RyansLibrary
             float maxY = minY;
             float maxZ = minZ;
 
-            // Find the absolute minimum and absolute maximum point of all vertices
             foreach (var vertex in Verticies)
             {
                 if (vertex.Position.x < minX)
@@ -139,7 +137,7 @@ namespace RyansLibrary
 
                 foreach (var triangle in Triangles)
                 {                   // Add new tetrahedra after each iteration
-                    Tetrahedra.Add(new Tetrahedron(triangle.U, triangle.V, triangle.W, vertex));
+                    Tetrahedra.Add(new Tetrahedron(triangle.A, triangle.B, triangle.C, vertex));
                 }
             }
 
@@ -219,11 +217,6 @@ namespace RyansLibrary
                     Edges.Add(dc);
                 }
             }
-        }
-
-        public void ToggleDebugLogs(bool toggle)
-        {
-            _debugLogs = toggle;
         }
     }
 }

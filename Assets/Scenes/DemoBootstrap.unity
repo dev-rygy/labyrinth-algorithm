@@ -466,6 +466,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _debugGizmos
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6343358480617124855, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: m_Name
@@ -479,12 +484,40 @@ PrefabInstance:
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: _customSeed
-      value: 1442372887
+      value: -168325927
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zones.Array.size
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: generateRandomSeed
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: '_zones.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
+        type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: '_zones.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
+        type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: '_zones.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
+        type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.x
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7192508511762545472, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
