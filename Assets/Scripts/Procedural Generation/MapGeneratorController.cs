@@ -593,6 +593,8 @@ namespace RyansLibrary.Labyrinth
             _context.OperationQueueEnqueue(availibleBlueprintsOp);
 
             // *** Choose Between 2D and 3D Triangulation based on bounds size
+            // TODO: DelaunayTriangulation has issues solving cases with coplanar tetrahedra; instead consider
+            // a C# library called MIConvexHull that has thousands of lines to solve these issues.
             FindMSTOp mstOp;
             ListDifferenceOp listDiffOp;
 
@@ -820,14 +822,6 @@ namespace RyansLibrary.Labyrinth
             _context.OperationQueueEnqueue(randomBlueprintFromRoomBOp);
 
             // Fill obstructions list with all blueprints from the main paths of both zones except the ones that are part of the roomA and roomB
-            /*
-            ListDifferenceOp zoneAMainPathBlueprintsNoRoom = new ListDifferenceOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[2], placeRoomAOp.OutputPorts[0],
-                blueprintTypeBlueprintData.OutputPorts[0]);
-            _context.OperationQueueEnqueue(zoneAMainPathBlueprintsNoRoom);
-            ListDifferenceOp zoneBMainPathBlueprintsNoRoom = new ListDifferenceOp(_context, _bpg, zoneBMainPathBlueprintData.OutputPorts[2], placeRoomBOp.OutputPorts[0],
-               blueprintTypeBlueprintData.OutputPorts[0]);
-            _context.OperationQueueEnqueue(zoneBMainPathBlueprintsNoRoom);
-            */
             ListUnionOp obstructionsListOp = new ListUnionOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[2], zoneBMainPathBlueprintData.OutputPorts[2]);
             _context.OperationQueueEnqueue(obstructionsListOp);
 

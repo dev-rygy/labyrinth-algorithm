@@ -171,9 +171,10 @@ namespace RyansLibrary.Geometry
                    Vertex.AlmostEqual(vertex, C, precision);
         }
 
+        // For 2D delaunay
         public bool CircumCircleContains(Vector3 point)
         {
-            Vector2 p = new Vector2(point.x, point.y);
+            Vector2 p = new Vector2(point.x, point.z);
 
             return (p - Circumcenter).sqrMagnitude <= CircumradiusSquared;
         }
@@ -182,31 +183,31 @@ namespace RyansLibrary.Geometry
         {
             float d =
                 2 *
-                (A.Position.x * (B.Position.y - C.Position.y) +
-                 B.Position.x * (C.Position.y - A.Position.y) +
-                 C.Position.x * (A.Position.y - B.Position.y));
+                (A.Position.x * (B.Position.z - C.Position.z) +
+                 B.Position.x * (C.Position.z - A.Position.z) +
+                 C.Position.x * (A.Position.z - B.Position.z));
 
 
             float ux =
-                ((A.Position.sqrMagnitude * (B.Position.y - C.Position.y)) +
-                 (B.Position.sqrMagnitude * (C.Position.y - A.Position.y)) +
-                 (C.Position.sqrMagnitude * (A.Position.y - B.Position.y)))
+                ((A.Position.sqrMagnitude * (B.Position.z - C.Position.z)) +
+                 (B.Position.sqrMagnitude * (C.Position.z - A.Position.z)) +
+                 (C.Position.sqrMagnitude * (A.Position.z - B.Position.z)))
                  / d;
 
 
-            float uy =
+            float uz =
                 ((A.Position.sqrMagnitude * (C.Position.x - B.Position.x)) +
                  (B.Position.sqrMagnitude * (A.Position.x - C.Position.x)) +
                  (C.Position.sqrMagnitude * (B.Position.x - A.Position.x)))
                  / d;
 
 
-            Circumcenter = new Vector2(ux, uy);
+            Circumcenter = new Vector2(ux, uz);
 
 
             CircumradiusSquared =
                 (Circumcenter -
-                new Vector2(A.Position.x, A.Position.y))
+                new Vector2(A.Position.x, A.Position.z))
                 .sqrMagnitude;
         }
 

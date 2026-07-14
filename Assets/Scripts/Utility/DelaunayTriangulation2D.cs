@@ -48,14 +48,12 @@ namespace RyansLibrary
 
         private void Triangulate()
         {
-            Triangle superTriangle = new Triangle();
-
             // *** Find the absolute minimum and absolute maximum point of all vertices ***
             float minX = Vertices[0].Position.x;       // Min = Very first room vertex
-            float minY = Vertices[0].Position.y;
+            float minZ = Vertices[0].Position.z;
 
             float maxX = minX;                          // Max = Very first room vertex
-            float maxY = minY;
+            float maxZ = minZ;
 
             foreach (var vertex in Vertices)
             {
@@ -65,22 +63,22 @@ namespace RyansLibrary
                 if (vertex.Position.x > maxX)
                     maxX = vertex.Position.x;
 
-                if (vertex.Position.y < minY)
-                    minY = vertex.Position.y;
+                if (vertex.Position.z < minZ)
+                    minZ = vertex.Position.z;
 
-                if (vertex.Position.y > maxY)
-                    maxY = vertex.Position.y;
+                if (vertex.Position.z > maxZ)
+                    maxZ = vertex.Position.z;
             }
 
             // Calculate absolute difference
             float dx = maxX - minX;
-            float dy = maxY - minY;
-            float deltaMax = Mathf.Max(dx, dy) * 2;
+            float dz = maxZ - minZ;
+            float deltaMax = Mathf.Max(dx, dz) * 2;
 
             // Create *Super Tetrahedra* that encapsulates all vertices
-            Vertex p1 = new Vertex(new Vector3(minX - 1, minY - 1));
-            Vertex p2 = new Vertex(new Vector3(maxX + deltaMax, minY - 1));
-            Vertex p3 = new Vertex(new Vector3(minX - 1, maxY + deltaMax));
+            Vertex p1 = new Vertex(new Vector3(minX - 1, 0f, minZ - 1));
+            Vertex p2 = new Vertex(new Vector3(maxX + deltaMax, 0f, minZ - 1));
+            Vertex p3 = new Vertex(new Vector3(minX - 1, 0f, maxZ + deltaMax));
 
             Triangles.Add(new Triangle(p1, p2, p3));
 
@@ -105,7 +103,6 @@ namespace RyansLibrary
                     Edge bc = new Edge(triangle.B, triangle.C);
                     Edge ca = new Edge(triangle.C, triangle.A);
 
-
                     AddEdge(polygon, ab);
                     AddEdge(polygon, bc);
                     AddEdge(polygon, ca);
@@ -120,11 +117,7 @@ namespace RyansLibrary
                 // Create new triangles
                 foreach (Edge edge in polygon)
                 {
-                    Triangles.Add(
-                        new Triangle(
-                            edge.U,
-                            edge.V,
-                            vertex));
+                    Triangles.Add(new Triangle(edge.U, edge.V, vertex));
                 }
             }
 

@@ -489,7 +489,7 @@ PrefabInstance:
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: _zones.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
@@ -500,13 +500,13 @@ PrefabInstance:
         type: 3}
       propertyPath: '_zones.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
+      objectReference: {fileID: 11400000, guid: e3b0b60dc63ba6249a929d8916095167,
         type: 2}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: '_zones.Array.data[1]'
       value: 
-      objectReference: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
+      objectReference: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
         type: 2}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
@@ -518,6 +518,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.x
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Position.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7192508511762545472, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
