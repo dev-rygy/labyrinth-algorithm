@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab2be37bdc730874bbc2eaa4348fa132, type: 3}
-  m_Name: Castle_Mines_Connection_Path
-  m_EditorClassIdentifier: 
-  <Name>k__BackingField: Castle Mines Connection Path
+  m_Name: Forest_Castle_Connection_Path
+  m_EditorClassIdentifier: RyansLibrary.Scripts::RyansLibrary.Labyrinth.Path
+  <Name>k__BackingField: Forest Castle Connection Path
   <Type>k__BackingField: 0
   <DesiredPathLength>k__BackingField: 30
   <startingRooms>k__BackingField: []
   <rooms1x1x1>k__BackingField:
-  - Prefab: {fileID: 8151408096384611613, guid: 2e82e767107d33b45996a06ba7f2d73e,
+  - Prefab: {fileID: 5092292111198345554, guid: 5fe423796363d5c40b8559b169700c7b,
       type: 3}
     Probability: 100
   <rooms2x1x1>k__BackingField: []
@@ -28,4 +28,4 @@ MonoBehaviour:
   <TallRoomSpawnChance>k__BackingField: 0
   <LongRoomSpawnChance>k__BackingField: 0
   <BigRoomSpawnChance>k__BackingField: 0
-  PathGizmoColor: {r: 0.7924528, g: 0, b: 0.62481415, a: 0.29803923}
+  PathGizmoColor: {r: 0.7921569, g: 0, b: 0.62352943, a: 0.29803923}

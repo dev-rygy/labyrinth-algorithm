@@ -598,7 +598,7 @@ namespace RyansLibrary.Labyrinth
             FindMSTOp mstOp;
             ListDifferenceOp listDiffOp;
 
-            if (zone.Bounds.size.y < 3 || zone.Bounds.size.y < 3 || zone.Bounds.size.z < 3)
+            if (zone.Bounds.size.y < 3)
             {
                 // **** Perform 2D Triangulation
                 TriangulateBlueprints2DOp triangulationOp = new TriangulateBlueprints2DOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);

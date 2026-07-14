@@ -516,13 +516,77 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
+      propertyPath: '_zones.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
+        type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ZoneA>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: e3b0b60dc63ba6249a929d8916095167,
+        type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ZoneB>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
+        type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ConnectionZone>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: 7a2e63a93ad28c842b27affbfdf728df,
+        type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
       propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.x
       value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
+      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.z
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ZoneSpawnBounds>k__BackingField.m_Size.x
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ZoneSpawnBounds>k__BackingField.m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ZoneSpawnBounds>k__BackingField.m_Size.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
       propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Position.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ZoneSpawnBounds>k__BackingField.m_Position.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ZoneSpawnBounds>k__BackingField.m_Position.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneConnections.Array.data[1].<ZoneSpawnBounds>k__BackingField.m_Position.z
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 7192508511762545472, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
@@ -579,6 +643,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
+--- !u!1 &1168927737
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1168927738}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1168927738
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1168927737}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 50.63363, y: -20.57788, z: 60.00971}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1604340971
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1413,3 +1508,4 @@ SceneRoots:
   - {fileID: 2019843248}
   - {fileID: 2340906831114352255}
   - {fileID: 293531935}
+  - {fileID: 1168927738}
