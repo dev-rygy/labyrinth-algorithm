@@ -10,34 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab2be37bdc730874bbc2eaa4348fa132, type: 3}
-  m_Name: Castle_Bridge_Prize_Path_1
-  m_EditorClassIdentifier: 
-  <Name>k__BackingField: Bridge Prize Path 1
+  m_Name: Mines_Spider_Path_2
+  m_EditorClassIdentifier: RyansLibrary.Scripts::RyansLibrary.Labyrinth.Path
+  <Name>k__BackingField: Mines Spider Path
   <Type>k__BackingField: 1
-  <DesiredPathLength>k__BackingField: 5
+  <DesiredPathLength>k__BackingField: 7
   <startingRooms>k__BackingField: []
   <rooms1x1x1>k__BackingField:
-  - Prefab: {fileID: 1314207277215395588, guid: 71143acf8dc619d4da58215e9108d5f2,
+  - Prefab: {fileID: 6356692069767927518, guid: e04020d6fc4d63b40b381c3295427250,
       type: 3}
-    Probability: 25
-  - Prefab: {fileID: 1314207277215395588, guid: 511ff9aa729f2ae4f93da965d6136b69,
+    Probability: 33
+  - Prefab: {fileID: 6356692069767927518, guid: 97465307fee3e0d498965d74049ec297,
       type: 3}
-    Probability: 25
-  - Prefab: {fileID: 1314207277215395588, guid: 9e62207f248e63641bf13fa7edf4fe02,
+    Probability: 33
+  - Prefab: {fileID: 3566285224330180031, guid: 7a69b7860e33b9c48b0e1fed0fbe22d4,
       type: 3}
-    Probability: 10
-  <rooms2x1x1>k__BackingField:
-  - Prefab: {fileID: 5922598365896513114, guid: 0f591b24a4e24a84281bb3e55f89f6ab,
-      type: 3}
-    Probability: 50
-  - Prefab: {fileID: 5922598365896513114, guid: fdb9e635b43ff7b49b67edeb45efd6f3,
-      type: 3}
-    Probability: 50
+    Probability: 33
+  <rooms2x1x1>k__BackingField: []
   <rooms1x2x1>k__BackingField: []
   <rooms2x1x2>k__BackingField: []
   <endingRooms>k__BackingField: []
   <DrunkardWalkCanGoVertical>k__BackingField: 0
   <TallRoomSpawnChance>k__BackingField: 0
-  <LongRoomSpawnChance>k__BackingField: 0.55
+  <LongRoomSpawnChance>k__BackingField: 0
   <BigRoomSpawnChance>k__BackingField: 0
   PathGizmoColor: {r: 1, g: 0.99215686, b: 0.09019608, a: 0.29803923}
