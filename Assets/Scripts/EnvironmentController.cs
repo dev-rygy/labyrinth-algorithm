@@ -18,33 +18,33 @@ public class EnvironmentController : MonoBehaviour
                 if (args.Length != 1)
                 {
                     Debug.LogWarning("[Console] Missing arguement. Must state true/false.");
-                    ConsoleUI.OnNewConsoleOutput($"[Console] Missing arguement. Must state true/false.");
+                    ConsoleUI.OnNewConsoleOutput($"Missing arguement. Must state true/false.", LogType.Warning);
                     return;
                 }
 
                 if (bool.TryParse(args[0], out bool enableFog))
                 {
                     ToggleFog(enableFog);
-                    Debug.Log($"[Environment] Fog {(enableFog ? "enabled" : "disabled")}");
-                    ConsoleUI.OnNewConsoleOutput($"[Environment] Fog {(enableFog ? "enabled" : "disabled")}");
+                    Debug.Log($"[Environment] Fog {(enableFog ? "enabled" : "disabled")}.");
+                    ConsoleUI.OnNewConsoleOutput($"Fog {(enableFog ? "enabled" : "disabled")}.", LogType.Log);
                 }
                 else
                 {
-                    Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Use 'true' or 'false'");
-                    ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Use 'true' or 'false'");
+                    Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Use 'true' or 'false'.");
+                    ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. Use 'true' or 'false'.", LogType.Warning);
 
                 }
             }));
 
         ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
             "environment.setambientintensity",
-            "Sets the ambient light intensity.",
+            "Sets the ambient light intensity",
             args =>
             {
                 if (args.Length != 1)
                 {
                     Debug.LogWarning("[Console] Missing arguement. Must state a number between 0 and 255.");
-                    ConsoleUI.OnNewConsoleOutput($"[Console] Missing arguement. Must state a number between 0 and 255.");
+                    ConsoleUI.OnNewConsoleOutput($"Missing arguement. Must state a number between 0 and 255.", LogType.Warning);
                     return;
                 }
 
@@ -52,8 +52,8 @@ public class EnvironmentController : MonoBehaviour
                 {
                     if (intensity < 0 || intensity > 255)
                     {
-                        Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Must be a number between 0 and 255.");
-                        ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Must be a number between 0 and 255.");
+                        Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Must be a number between 0 and 255.");
+                        ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. Must be a number between 0 and 255.", LogType.Warning);
                         return;
                     }
 
@@ -61,11 +61,12 @@ public class EnvironmentController : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Must be a number between 0 and 255.");
-                    ConsoleUI.OnNewConsoleOutput($"[Console] Invalid Arguement {args[0]}. Must be a number between 0 and 255.");
+                    Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Must be a number between 0 and 255.");
+                    ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. Must be a number between 0 and 255.", LogType.Warning);
                 }
-                Debug.Log($"[Environment] Ambient Light Intensity set to {intensity}");
-                ConsoleUI.OnNewConsoleOutput($"[Environment] Ambient Light Intensity set to {intensity}");
+
+                Debug.Log($"[Environment] Ambient Light Intensity set to {intensity}.");
+                ConsoleUI.OnNewConsoleOutput($"Ambient Light Intensity set to {intensity}.", LogType.Log);
             }));
     }
 
@@ -74,7 +75,7 @@ public class EnvironmentController : MonoBehaviour
         if (intensity < 0 || intensity > 255)
         {
             Debug.LogWarning($"[Environment] Intensity {intensity} is not valid. Must be a number between 0 and 255.");
-            ConsoleUI.OnNewConsoleOutput($"[Environment] Intensity {intensity} is not valid. Must be a number between 0 and 255.");
+            ConsoleUI.OnNewConsoleOutput($"Intensity {intensity} is not valid. Must be a number between 0 and 255.", LogType.Warning);
             return;
         }
 

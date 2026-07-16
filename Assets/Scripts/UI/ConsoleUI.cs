@@ -7,6 +7,8 @@
 using RyansLibrary.Console;
 using RyansLibrary.Input;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,14 +19,32 @@ public class ConsoleUI : UIBehaviour
 
     public static Action OnConsoleOpened;
     public static Action OnConsoleClosed;
-    public static Action<string> OnNewConsoleOutput;        // Output to UI
+    public static Action<string, LogType> OnNewConsoleOutput;        // Output to UI
     public static Action OnClearConsole;                    // Clear UI
 
     [Header("Console Settings")]
     [SerializeField] private bool _toggleInputMemory;       // Toggle input mem on and off
     [SerializeField] private int _inputMemoryCapacity;      // Holds prev commands
 
-    [Header("Console References")]
+    [Header("Autocomplete")]
+    [SerializeField] private TMP_Text _suggestionText;      // A small text field under the input field
+    [SerializeField] private int _maxSuggestions = 5;
+
+    [Header("Tags")]
+    [SerializeField] private String _errorTextTag;
+    [SerializeField] private String _assertTextTag;
+    [SerializeField] private String _warningTextTag;
+    [SerializeField] private String _logTextTag;
+    [SerializeField] private String _exceptionTextTag;
+
+    [Header("Colors")]
+    [SerializeField] private Color _errorTextColor;
+    [SerializeField] private Color _assertTextColor;
+    [SerializeField] private Color _warningTextColor;
+    [SerializeField] private Color _logTextColor;
+    [SerializeField] private Color _exceptionTextColor;
+
+    [Header("Component References")]
     [SerializeField] private TMP_Text _outputText;
     [SerializeField] private TMP_InputField _inputField;
     [SerializeField] private ScrollRect _scrollRect;
@@ -32,6 +52,10 @@ public class ConsoleUI : UIBehaviour
     private string[] _inputMemory;
     private int _inputMemoryIndex = 0;
     private int _currentInputMemCapacity = 0;
+
+    private List<string> _currentSuggestions = new();
+    private int _suggestionIndex = 0;
+    private bool _suppressSuggestionUpdate = false;
 
     private void OnEnable()
     {
@@ -46,6 +70,9 @@ public class ConsoleUI : UIBehaviour
         InputHandler.OnSubmit += SubmitTicket;
         InputHandler.OnNext += GetNextInput;
         InputHandler.OnPrevious += GetPrevInput;
+        InputHandler.OnAutoComplete += AutoCompleteInput;
+
+        _inputField.onValueChanged.AddListener(OnInputChanged);
 
         OnNewConsoleOutput += OutputToConsole;
         OnClearConsole += ClearConsole;
@@ -60,6 +87,9 @@ public class ConsoleUI : UIBehaviour
         InputHandler.OnSubmit -= SubmitTicket;
         InputHandler.OnNext -= GetNextInput;
         InputHandler.OnPrevious -= GetPrevInput;
+        InputHandler.OnAutoComplete -= AutoCompleteInput;
+
+        _inputField.onValueChanged.RemoveListener(OnInputChanged);
 
         OnNewConsoleOutput -= OutputToConsole;
         OnClearConsole -= ClearConsole;
@@ -90,7 +120,7 @@ public class ConsoleUI : UIBehaviour
             return;
 
         // Display input on console output
-        OutputToConsole(input);
+        OutputToConsole(input, LogType.Log);
 
         // Add input to memory
         AddInputToMemory(input);
@@ -103,6 +133,59 @@ public class ConsoleUI : UIBehaviour
         _inputField.text = "";
         _inputField.ActivateInputField();
         _inputField.Select();
+    }
+
+    private void OnInputChanged(string text)
+    {
+        if (_suppressSuggestionUpdate)
+            return;
+
+        _suggestionIndex = 0;
+
+        string commandPart = text.Split(' ')[0];
+        _currentSuggestions = string.IsNullOrWhiteSpace(commandPart) ? new List<string>()
+            : CommandRegistry.GetSuggestions(commandPart, _maxSuggestions);
+
+        UpdateSuggestionDisplay();
+    }
+
+    private void UpdateSuggestionDisplay()
+    {
+        if (_suggestionText == null)
+            return;
+
+        if (_currentSuggestions.Count == 0)
+        {
+            _suggestionText.text = "";
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        // TODO: Make suggestions into a drop down and use arrow keys to switch between them
+        sb.Append(_currentSuggestions[0]);
+
+        _suggestionText.text = sb.ToString();
+    }
+
+    private void AutoCompleteInput()
+    {
+        if (_currentSuggestions.Count == 0)
+            return;
+
+        string chosen = _currentSuggestions[_suggestionIndex];
+
+        _suppressSuggestionUpdate = true;      // Don't let this text change regenerate the suggestion list
+        _inputField.text = chosen + " ";
+        _suppressSuggestionUpdate = false;
+
+        _inputField.caretPosition = _inputField.text.Length;
+        _inputField.stringPosition = _inputField.text.Length;
+
+        _suggestionIndex = _currentSuggestions.Count > 1 ? (_suggestionIndex + 1) % _currentSuggestions.Count : 0;
+
+        UpdateSuggestionDisplay();
+        _inputField.ActivateInputField();      // Keep focus in the field
     }
 
     private void AddInputToMemory(string input)
@@ -151,9 +234,45 @@ public class ConsoleUI : UIBehaviour
         }
     }
 
-    private void OutputToConsole(string output)
+    private void OutputToConsole(string output, LogType logType = LogType.Log)
     {
-        _outputText.text += output + "\n";
+        StringBuilder sb = new StringBuilder();
+
+        var typeColor = logType switch
+        {
+            LogType.Error => _errorTextColor,
+            LogType.Assert => _assertTextColor,
+            LogType.Warning => _warningTextColor,
+            LogType.Exception => _exceptionTextColor,
+            _ => _logTextColor
+        };
+
+        var typeTag = logType switch
+        {
+            LogType.Error => _errorTextTag,
+            LogType.Assert => _assertTextTag,
+            LogType.Warning => _warningTextTag,
+            LogType.Exception => _exceptionTextTag,
+            _ => _logTextTag
+        };
+
+        sb.Append("<color=#")
+          .Append(ColorUtility.ToHtmlStringRGB(typeColor))
+          .Append(">[")
+          .Append(typeTag)
+          .Append("]</color>");
+
+        sb.Append(" ");
+
+        sb.Append("<color=#")
+          .Append(ColorUtility.ToHtmlStringRGB(_logTextColor))
+          .Append(">")
+          .Append(output)
+          .Append("</color>");
+
+        sb.Append("\n");
+
+        _outputText.text += sb.ToString();
     }
 
     private void ClearConsole()
@@ -170,13 +289,17 @@ public class ConsoleUI : UIBehaviour
             "Lists all available commands.",
             args =>
             {
-                OutputToConsole($"Console Commands ({CommandRegistry.GetCommandCount()})");
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append($"*** Console Commands ({CommandRegistry.GetCommandCount()}) ***\n");
 
                 foreach (var cmd in CommandRegistry.GetAllCommands())
                 {
-                    OutputToConsole($"{cmd.CommandId}: {cmd.CommandDescription}");
+                    sb.Append($"\t{cmd.CommandId} - \t{cmd.CommandDescription}\n\n");
                 }
-                Debug.Log("[Console] Console commands listed");
+
+                OutputToConsole(sb.ToString());
+                Debug.Log("[Console] Console commands listed.");
             }));
 
         // Clear command - clear text from console interface
@@ -186,7 +309,7 @@ public class ConsoleUI : UIBehaviour
             args =>
             {
                 ClearConsole();
-                Debug.Log("[Console] Console cleared");
+                Debug.Log("[Console] Console cleared.");
             }));
 
         // Print input memory command - Print memory of console
@@ -196,7 +319,7 @@ public class ConsoleUI : UIBehaviour
             args =>
             {
                 PrintInputMemory();
-                Debug.Log("[Console] Input Memory printed to console");
+                Debug.Log("[Console] Input Memory printed to console.");
             }));
     }
 }

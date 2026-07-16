@@ -45,7 +45,7 @@ namespace RyansLibrary.Console
         {
             if (_commands.ContainsKey(command.CommandId.ToLower()))     // Prevent double command registry
             {
-                Debug.LogWarning($"[Console][ConsoleRegistry] Command '{command.CommandId}' is already registered.");
+                Debug.LogWarning($"Command '{command.CommandId}' is already registered.");
                 return;
             }
 
@@ -80,17 +80,38 @@ namespace RyansLibrary.Console
                 }
                 catch (Exception e)     // Error executing command
                 {
-                    Debug.LogError($"[Console][ConsoleRegistry] Error executing command '{commandName}': {e.Message}");
-                    ConsoleUI.OnNewConsoleOutput($"[Console][ConsoleRegistry] Error executing command '{commandName}': {e.Message}");
+                    Debug.LogError($"[Console][ConsoleRegistry] Error executing command '{commandName}': {e.Message}.");
+                    ConsoleUI.OnNewConsoleOutput($"Error executing command '{commandName}': {e.Message}.", LogType.Exception);
                 }
             }
             else    // Command keyword not recognized
             {
-                Debug.LogWarning($"[Console][ConsoleRegistry] Unknown command - {commandName}");
-                ConsoleUI.OnNewConsoleOutput($"[Console][ConsoleRegistry] Unknown command - {commandName}");
+                Debug.LogWarning($"[Console][ConsoleRegistry] Unknown command - {commandName}.");
+                ConsoleUI.OnNewConsoleOutput($"Unknown command - {commandName}.", LogType.Warning);
             }
 
             return false;
+        }
+
+        public List<string> GetSuggestions(string prefix, int maxResults = 5)
+        {
+            List<string> results = new();
+
+            if (string.IsNullOrEmpty(prefix))
+                return results;
+
+            foreach (string key in _commands.Keys)
+            {
+                if (key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    results.Add(key);
+                    if (results.Count >= maxResults)
+                        break;
+                }
+            }
+
+            results.Sort(StringComparer.OrdinalIgnoreCase);
+            return results;
         }
 
         // Parse all commands
