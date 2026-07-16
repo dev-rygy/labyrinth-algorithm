@@ -4,6 +4,7 @@
  * Last Modified:   10/23/2025 (Ryan)
  * Notes:           Map Generator
 */
+/*
 using RyansLibrary.AI;
 using RyansLibrary.Graphs;
 using RyansLibrary.UnityEditor;
@@ -1016,15 +1017,6 @@ namespace RyansLibrary.Labyrinth
         {
             foreach (List<Edge> edgeList in _triangulations)
             {
-                /*      DEPRICATED (NEED DELAUNYTRIANGULATION OBJECT FOR THIS DATA)
-                // Draw circumcircles in remaining tetrahedron from triangulation
-                foreach (Tetrahedron t in triangulation.Tetrahedra)
-                {
-                    Gizmos.color = _circumcircleColor;
-                    Gizmos.DrawSphere(t.Circumcenter * _gridUnitSize, Mathf.Sqrt(t.CircumradiusSquared) * _gridUnitSize);
-                }
-                */
-
                 // Draw remaining edges from triangulation
                 foreach (Edge e in edgeList)
                 {
@@ -1104,3 +1096,4 @@ namespace RyansLibrary.Labyrinth
         #endregion
     }
 }
+*/

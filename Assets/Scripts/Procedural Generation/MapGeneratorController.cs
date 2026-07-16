@@ -9,7 +9,6 @@ using RyansLibrary.UnityEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
 
@@ -924,14 +923,16 @@ namespace RyansLibrary.Labyrinth
         }
 
         // TODO: Update this function to match rework.
-        public bool GenerateZoneConnectionRooms(OldZoneConnectionEntry entry)
+        public bool GenerateZoneConnectionRooms(ZoneConnectionEntry entry)
         {
             // ******* Generate Room A ******
+            RoomEntry RoomA = entry.ConnectionZone.UniqueRooms[0];
+
             // Adjust parameters to fit the zone's actual position
             Vector3Int zoneAOffset = entry.ZoneA.Bounds.position;
-            Vector3Int adjustedSpawnPosA = entry.RoomA.SpawnPosition + zoneAOffset;
+            Vector3Int adjustedSpawnPosA = entry.ConnectionZone.UniqueRooms[0].SpawnPosition + zoneAOffset;
 
-            Room generatedRoomA = _roomGenerator.GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosA, entry.ZoneA.MainPath);
+            Room generatedRoomA = _roomGenerator.GenerateRoom(RoomA.Prefab, adjustedSpawnPosA, entry.ZoneA.MainPath);
 
             // Unique rooms with available cells
             if (generatedRoomA.AvailableCellData != null)
@@ -953,11 +954,13 @@ namespace RyansLibrary.Labyrinth
             generatedRoomA.Initialize();
 
             // ******* Generate Room B ******
-            // Adjust parameters to fit the zone's actual position
-            Vector3Int zoneBOffset = entry.ZoneA.Bounds.position;
-            Vector3Int adjustedSpawnPosB = entry.RoomA.SpawnPosition + zoneBOffset;
+            RoomEntry RoomB = entry.ConnectionZone.UniqueRooms[1];
 
-            Room generatedRoomB = _roomGenerator.GenerateRoom(entry.RoomA.Prefab, adjustedSpawnPosB, entry.ZoneA.MainPath);
+            // Adjust parameters to fit the zone's actual position
+            Vector3Int zoneBOffset = entry.ZoneB.Bounds.position;
+            Vector3Int adjustedSpawnPosB = RoomB.SpawnPosition + zoneBOffset;
+
+            Room generatedRoomB = _roomGenerator.GenerateRoom(RoomB.Prefab, adjustedSpawnPosB, entry.ZoneA.MainPath);
 
             // Unique rooms with available cells
             if (generatedRoomB.AvailableCellData != null)
@@ -980,10 +983,10 @@ namespace RyansLibrary.Labyrinth
 
             // ******* Spawn Rooms On Connection Path ******
             bool result;
-            result = _roomGenerator.ParsePathAndGenerateRooms(entry.ConnectionPath);
+            result = _roomGenerator.ParsePathAndGenerateRooms(entry.ConnectionZone.MainPath);
             if (!result)
             {
-                Debug.LogError($"[MapGenerator][Controller] Path Room Generation for zone connection path {entry.ConnectionPath}.");
+                Debug.LogError($"[MapGenerator][Controller] Path Room Generation for zone connection path {entry.ConnectionZone.MainPath}.");
                 return false;
             }
 

@@ -12,6 +12,27 @@ using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Coll
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Holds the properties of a psuedo room that does not actually exist in the world.
+    /// Is meant to be parsed and replaced by actual rooms later on.
+    /// </summary>
+    public class Blueprint
+    {
+        public readonly string CellID;
+        public readonly Vector3Int Position;      // Position of blueprint room in room coords
+        public bool Available { get; set; }
+        public bool[] EntryPointFlags { get; set; }
+
+        // Constructor
+        public Blueprint(Vector3Int postion, string cellID = "Blueprint")
+        {
+            Available = true;
+            CellID = cellID;
+            Position = postion;
+            EntryPointFlags = new bool[6];       // A flag to mark which entrances should be open for a room
+        }
+    }
+
     public class BlueprintGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
