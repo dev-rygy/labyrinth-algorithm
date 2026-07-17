@@ -103,7 +103,7 @@ namespace RyansLibrary.Labyrinth
             Blueprint previousBlueprint = null;
             foreach (Vector3Int pos in sequence)
             {
-                if (_context.MasterDictionary.TryGetValue(pos, out var occupiedRoom))
+                if (_context.BlueprintDictionary.TryGetValue(pos, out var occupiedRoom))
                 {
                     // Do not generate blueprint rooms if the space is already occupied
                     // Make the occupied blueprint room the currentRoom instead

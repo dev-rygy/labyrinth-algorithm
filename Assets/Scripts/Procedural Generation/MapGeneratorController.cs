@@ -871,7 +871,7 @@ namespace RyansLibrary.Labyrinth
         {
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                if (_context.MasterPath == null || _context.MasterDictionary == null)
+                if (_context.BlueprintDictionary == null)
                 {
                     Debug.Log("[MapGenerator][Controller] Masters are null.");
                     return false;
@@ -891,7 +891,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     for (int i = 0; i < generatedRoom.AvailableCellData.Count; i++)
                     {
-                        if (_context.MasterDictionary.TryGetValue(actualPosition + generatedRoom.AvailableCellData[i], out Blueprint blueprint))
+                        if (_context.BlueprintDictionary.TryGetValue(actualPosition + generatedRoom.AvailableCellData[i], out Blueprint blueprint))
                         {
                             generatedRoom.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
                         }

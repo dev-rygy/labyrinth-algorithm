@@ -51,7 +51,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Blueprint room created in room coords.</returns>
         public static Blueprint GenerateBlueprintRoom(MapGenerationContext context, Path path, Vector3Int origin, bool available = true)
         {
-            string blueprintName = $"BlueprintRoom ({context.MasterPath.BlueprintCount()})";
+            string blueprintName = $"BlueprintRoom ({context.BlueprintDictionary.Count()})";
             Blueprint newBlueprint = new Blueprint(origin, blueprintName);
             newBlueprint.Available = available;
 
@@ -59,8 +59,7 @@ namespace RyansLibrary.Labyrinth
 
             // Update paths and masters with new blueprint room
             path?.Add(newBlueprint);
-            context.MasterPath?.Add(newBlueprint);                    // Add to Master List (required)
-            context.MasterDictionary?.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
+            context.BlueprintDictionary?.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
             return newBlueprint;
         }
 
@@ -438,7 +437,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Collided or not collided</returns>
         public static bool CheckCollision(MapGenerationContext context, Vector3Int position, out Blueprint collidedBlueprint)
         {
-            return context.MasterDictionary.TryGetValue(position, out collidedBlueprint);
+            return context.BlueprintDictionary.TryGetValue(position, out collidedBlueprint);
         }
 
         /// <summary>
@@ -449,7 +448,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>Collided or not collided</returns>
         public static bool CheckCollision(MapGenerationContext context, Vector3Int position)
         {
-            return context.MasterDictionary.ContainsKey(position);
+            return context.BlueprintDictionary.ContainsKey(position);
         }
 
         public static List<Blueprint> ToggleAvailableCellsInUniqueRoom(MapGenerationContext context, Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)
@@ -461,7 +460,7 @@ namespace RyansLibrary.Labyrinth
             {
                 Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
 
-                if (context.MasterDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
+                if (context.BlueprintDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
                     blueprint.Available = available;

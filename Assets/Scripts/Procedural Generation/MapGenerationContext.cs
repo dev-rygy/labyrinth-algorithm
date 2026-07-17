@@ -21,18 +21,11 @@ namespace RyansLibrary.Labyrinth
     /// should be externally synchronized if used in multithreaded scenarios.</remarks>
     public sealed class MapGenerationContext
     {
-        // ***** CONSTANTS *****
-        const string MASTER_PATH_NAME = "Master Path";
-
         // ***** Path Containers *****
-        // The Master Path holds a reference to all blueprint rooms in entire map
-        private Path _masterPath;
-        public Path MasterPath => _masterPath;
-
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
-        private Dictionary<Vector3Int, Blueprint> _masterDictionary;
-        public Dictionary<Vector3Int, Blueprint> MasterDictionary => _masterDictionary;
+        private Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
+        public Dictionary<Vector3Int, Blueprint> BlueprintDictionary => _blueprintDictionary;
 
         public int OperationIDCounter { get; private set; } = 10000;
         public int MemoryIDCounter { get; private set; } = 20000;
@@ -53,8 +46,7 @@ namespace RyansLibrary.Labyrinth
             // Holds arguments and return values from operations
             _operationDataCache = new();
 
-            _masterDictionary = new();
-            _masterPath = new();
+            _blueprintDictionary = new();
 
             // Initialize Debugging Lists
             Triangulations = new();
@@ -69,10 +61,7 @@ namespace RyansLibrary.Labyrinth
         public void InitializeMasters()     // NOTE: This must be done before generating anything!
         {
             // Initialize Master Data Structures
-            _masterDictionary = new();
-            _masterPath = ScriptableObject.CreateInstance<Path>();
-            _masterPath.Initialize();
-            _masterPath.Name = MASTER_PATH_NAME;
+            _blueprintDictionary = new();
         }
 
         /// <summary>
@@ -325,7 +314,7 @@ namespace RyansLibrary.Labyrinth
 
         public void ClearMasters()
         {
-            _masterDictionary?.Clear();
+            _blueprintDictionary?.Clear();
             _masterPath?.ClearBlueprints();
         }
 

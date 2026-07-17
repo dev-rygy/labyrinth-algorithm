@@ -41,8 +41,7 @@ namespace RyansLibrary.Labyrinth
 
         public RoomGenerator(MapGenerationContext context, int gridUnitSize, Transform roomContainer)
         {
-            _masterPathReference = context.MasterPath;
-            _masterDictionaryReference = context.MasterDictionary;
+            _masterDictionaryReference = context.BlueprintDictionary;
 
             _gridUnitSize = gridUnitSize;
             _roomContainer = roomContainer;

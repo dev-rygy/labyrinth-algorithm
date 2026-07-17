@@ -34,7 +34,7 @@ namespace RyansLibrary.Labyrinth
             if (!TryGetInput(0, out Vector3Int position))
                 return false;
 
-            bool result = _context.MasterDictionary.TryGetValue(position, out Blueprint blueprint);
+            bool result = _context.BlueprintDictionary.TryGetValue(position, out Blueprint blueprint);
 
             if (!result)
             {
