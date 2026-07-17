@@ -22,8 +22,6 @@ public class ListSelectRandomElementOp : BlueprintOperation
         // Output Ports
         string memoryID = context.ConsumeMemoryID().ToString();
         OutputPorts.Add(memoryID);  // Random element from the list
-
-        if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListSelectRandomElementOp: List<T> space allocated for memory with ID {memoryID}");
     }
 
 

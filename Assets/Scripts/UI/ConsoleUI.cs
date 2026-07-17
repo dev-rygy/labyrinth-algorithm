@@ -20,7 +20,7 @@ public class ConsoleUI : UIBehaviour
     public static Action OnConsoleOpened;
     public static Action OnConsoleClosed;
     public static Action<string, LogType> OnNewConsoleOutput;        // Output to UI
-    public static Action OnClearConsole;                    // Clear UI
+    public static Action OnClearConsole;                             // Clear UI
 
     [Header("Console Settings")]
     [SerializeField] private bool _toggleInputMemory;       // Toggle input mem on and off

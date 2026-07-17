@@ -22,7 +22,6 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] CheckOutOfBoundsOp BoundsInt space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
@@ -35,7 +34,7 @@ namespace RyansLibrary.Labyrinth
             BoundsInt intersectingBounds = CreateIntersectingBounds(boundsA, boundsB);
 
             _context.Malloc(OutputPorts[0], intersectingBounds);
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] CheckOutOfBoundsOp: Intersecting bounds loaded into memory with ID {OutputPorts[0]}");
+            if (DebugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] CheckOutOfBoundsOp: Intersecting bounds loaded into memory with ID {OutputPorts[0]}");
             return true;
         }
 

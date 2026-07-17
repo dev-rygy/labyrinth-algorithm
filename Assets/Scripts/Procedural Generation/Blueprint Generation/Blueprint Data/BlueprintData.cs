@@ -5,6 +5,7 @@
  * Notes:           
 */
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -58,6 +59,15 @@ namespace RyansLibrary.Labyrinth
         {
             _cache = newData;
             _context.Malloc(OutputPorts[0], newData);
+        }
+
+        protected void LogDataAllocation()
+        {
+            for (int i = 0; i < OutputPorts.Count; i++)
+            {
+                Debug.Log($"[MapGenerator][BlueprintData] {DataID} ({OutputPorts[i]}) - Data loaded into memory");
+                ConsoleUI.OnNewConsoleOutput($"{DataID} ({OutputPorts[i]}) - Data loaded into memory", LogType.Log);
+            }
         }
     }
 }

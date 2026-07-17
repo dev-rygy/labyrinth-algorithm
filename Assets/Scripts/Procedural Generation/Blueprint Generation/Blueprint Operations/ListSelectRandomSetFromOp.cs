@@ -24,8 +24,6 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);  // List that carries the random set
-
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListSelectRandomSetFromOp: List<T> space allocated for memory with ID {memoryID}");
         }
 
 

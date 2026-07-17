@@ -23,7 +23,6 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);      // Blueprint List
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] PlaceBoundedBlueprintsOp: List<Blueprint> space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
@@ -58,7 +57,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (!result)
                 {
-                    if (_debugLogs) Debug.LogWarning($"[MapGenerator][BlueprintOperation] PlaceBoundedBlueprintsOp: Constrained Room {entry.Prefab.name} " +
+                    if (DebugLogs) Debug.LogWarning($"[MapGenerator][BlueprintOperation] PlaceBoundedBlueprintsOp: Constrained Room {entry.Prefab.name} " +
                         $"collided with another room and could not be placed. Retrying...");
                     return false;
                 }

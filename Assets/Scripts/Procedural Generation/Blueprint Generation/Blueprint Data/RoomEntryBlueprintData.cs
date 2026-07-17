@@ -30,8 +30,7 @@ namespace RyansLibrary.Labyrinth
             _context.Malloc(OutputPorts[0], _cache);
             _context.Malloc(OutputPorts[1], _cache.Bounds);
 
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintData] RoomEntry data loaded into memory with ID {OutputPorts[0]}");
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintData] Bounds data loaded into memory with ID {OutputPorts[1]}");
+            if (_debugLogs) LogDataAllocation();
         }
     }
 }

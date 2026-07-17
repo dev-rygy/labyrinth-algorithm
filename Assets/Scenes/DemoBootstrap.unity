@@ -471,6 +471,11 @@ PrefabInstance:
       propertyPath: _debugGizmos
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _debugBlueprintGizmos
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6343358480617124855, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: m_Name
@@ -480,6 +485,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _debugLogs
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
@@ -494,6 +504,11 @@ PrefabInstance:
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: generateRandomSeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _debugBlueprintLogs
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
@@ -520,6 +535,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
         type: 2}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _debugRoomGeneratorLogs
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: _zoneConnections.Array.size

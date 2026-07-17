@@ -24,6 +24,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
 
             Debug.Log($"[MapGenerator][Info] {msg}");
+            ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Info] {msg}", LogType.Log);
 
             return true;
         }

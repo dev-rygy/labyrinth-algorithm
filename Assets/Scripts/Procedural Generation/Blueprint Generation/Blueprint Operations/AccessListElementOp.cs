@@ -23,7 +23,6 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);      // Element
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] AccessListElementOp: Output space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()
@@ -47,8 +46,8 @@ namespace RyansLibrary.Labyrinth
             }
             else
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] AccessListElementOp: Invalid input types for Blueprint select random operation. " +
-                    $"Types can only be List<Edge> or List<Blueprint>.");
+                Debug.LogError($"[MapGenerator][BlueprintData] {OperationID} - Invalid input for operation. Types can only be List<Edge> or List<Blueprint>.");
+                ConsoleUI.OnNewConsoleOutput($"{OperationID} - Invalid input for operation. Types can only be List<Edge> or List<Blueprint>.", LogType.Error);
                 return false;
             }
         }

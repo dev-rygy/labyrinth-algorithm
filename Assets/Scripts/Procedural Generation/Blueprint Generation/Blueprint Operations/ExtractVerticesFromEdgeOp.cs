@@ -5,6 +5,7 @@
  * Notes:           
 */
 using RyansLibrary.Graphs;
+using System;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
@@ -28,11 +29,6 @@ namespace RyansLibrary.Labyrinth
             OutputPorts.Add(memoryID2);  // Vertex V
             OutputPorts.Add(memoryID3);  // Vertex U Position
             OutputPorts.Add(memoryID4);  // Vertex V Position
-
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ExtractVerticesFromEdgeOp: Vertex space allocated for memory with ID {memoryID1}");
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ExtractVerticesFromEdgeOp: Vertex space allocated for memory with ID {memoryID2}");
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ExtractVerticesFromEdgeOp: Vector3Int space allocated for memory with ID {memoryID3}");
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ExtractVerticesFromEdgeOp: Vector3Int space allocated for memory with ID {memoryID4}");
         }
 
         public override bool Execute()

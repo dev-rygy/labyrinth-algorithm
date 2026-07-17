@@ -4,6 +4,7 @@
  * Last Modified:   11/08/2025 (Ryan)
  * Notes:           
 */
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace RyansLibrary.Labyrinth
     public abstract class BlueprintOperation
     {
         // Global toggle for debug logs in all blueprint operation classes
-        protected static bool _debugLogs { get; private set; }
+        public static bool DebugLogs { get; private set; }
 
         // DataID for is used strictly for debugging purposes.
         public string OperationID { get; protected set; }
@@ -47,7 +48,7 @@ namespace RyansLibrary.Labyrinth
 
         public static void ToggleDebugLogs(bool toggle)
         {
-            _debugLogs = toggle;
+            DebugLogs = toggle;
         }
 
         // Every operation must be able to execute when it is loaded into the operation queue.
@@ -60,7 +61,8 @@ namespace RyansLibrary.Labyrinth
         {
             if (inputPortIndex < 0 && inputPortIndex >= InputPorts.Count)
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] <{OperationID}> Input index {inputPortIndex} was out of range 0 - {InputPorts.Count}.");
+                Debug.LogError($"[MapGenerator][BlueprintOperation] {OperationID} - Input index {inputPortIndex} was out of range 0 - {InputPorts.Count}.");
+                ConsoleUI.OnNewConsoleOutput($"{OperationID} - Input index {inputPortIndex} was out of range 0 - {InputPorts.Count}.", LogType.Error);
                 value = default;
                 return false;
             }
@@ -73,7 +75,9 @@ namespace RyansLibrary.Labyrinth
 
                 if (required)
                 {
-                    Debug.LogError($"[MapGenerator][BlueprintOperation] <{OperationID}> Required input was not assiged at index {inputPortIndex}.");
+                    Debug.LogError($"[MapGenerator][BlueprintOperation] {OperationID} - Required input was not assiged at index {inputPortIndex}.");
+                    ConsoleUI.OnNewConsoleOutput($"{OperationID} - Required input was not assiged at index {inputPortIndex}.", LogType.Error);
+
                     return false;
                 }    
                 return true;
@@ -81,7 +85,9 @@ namespace RyansLibrary.Labyrinth
 
             if (!_context.TryGet(memoryId, out T storedValue))
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] <{OperationID}> Input with memory ID ({memoryId}) is not valid in memory.");
+                Debug.LogError($"[MapGenerator][BlueprintOperation] {OperationID} - Input with memory ID ({memoryId}) is not valid in memory.");
+                ConsoleUI.OnNewConsoleOutput($"{OperationID} - Input with memory ID ({memoryId}) is not valid in memory.", LogType.Error);
+
                 value = default;
                 return true;
             }
@@ -92,7 +98,8 @@ namespace RyansLibrary.Labyrinth
 
         protected void LogNullError()
         {
-            Debug.LogError($"[MapGenerator][BlueprintOperation] <{OperationID}> Failed to execute due to a required value being null.");
+            Debug.LogError($"[MapGenerator][BlueprintOperation] {OperationID} - Failed to execute due to a required value being null.");
+            ConsoleUI.OnNewConsoleOutput($"{OperationID} - Failed to execute due to a required value being null.", LogType.Error);
         }
     }
 }

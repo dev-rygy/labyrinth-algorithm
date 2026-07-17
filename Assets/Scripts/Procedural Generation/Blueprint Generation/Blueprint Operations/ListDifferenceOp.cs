@@ -6,6 +6,7 @@
 */
 using RyansLibrary.Graphs;
 using RyansLibrary.Utils;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,9 +28,6 @@ namespace RyansLibrary.Labyrinth
             string memoryID2 = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID1);      // List
             OutputPorts.Add(memoryID2);      // List count
-
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListDifferenceOp: List<T> space allocated for memory with ID {memoryID1}");
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] ListDifferenceOp: Int space allocated for memory with ID {memoryID2}");
         }
 
 

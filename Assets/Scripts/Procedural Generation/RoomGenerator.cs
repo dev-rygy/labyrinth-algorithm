@@ -27,8 +27,6 @@ namespace RyansLibrary.Labyrinth
         const int STANDARD_FACE_COUNT = 6;
 
         // ***** Master References *****
-        // The Master Path holds a reference to all bluprint rooms in a zone
-        private readonly Path _masterPathReference;
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
         private readonly Dictionary<Vector3Int, Blueprint> _masterDictionaryReference;
@@ -105,7 +103,6 @@ namespace RyansLibrary.Labyrinth
                     // Hook up blueprintRoom.entrancewayflags to new room
                     genRoom = GenerateRoom(RoomShape.bigRoom, rType, path, indexedBlueprint, rDir);         // **** Spawn B-Room
                     path.Add(genRoom);              // Add new room to paths
-                    _masterPathReference.Add(genRoom);
 
                     if (genRoom == null)
                     {
@@ -122,7 +119,6 @@ namespace RyansLibrary.Labyrinth
                 {
                     genRoom = GenerateRoom(RoomShape.tallRoom, rType, path, indexedBlueprint, rDir);        // **** Spawn T-Room
                     path.Add(genRoom);              // Add new room to paths
-                    _masterPathReference.Add(genRoom);
 
                     if (genRoom == null)
                     {
@@ -146,7 +142,6 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     path.Add(genRoom);              // Add new room to paths
-                    _masterPathReference.Add(genRoom);
 
                     if (_debugLogs) 
                         Debug.Log($"[MapGenerator][RoomGenerator] Path {path.Name} Generated Long Room: {genRoom.name}");
@@ -166,7 +161,6 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     path.Add(genRoom);              // Add new room to paths
-                    _masterPathReference.Add(genRoom);
 
                     if (_debugLogs) 
                         Debug.Log($"[MapGenerator][RoomGenerator] Path {path.Name} Generated Small Room: {genRoom.name}");
@@ -421,7 +415,6 @@ namespace RyansLibrary.Labyrinth
             Room generatedRoom = Object.Instantiate(prefab, ConvertToWorldCoords(placementPosition), rotation, _roomContainer).GetComponent<Room>();
 
             path.Add(generatedRoom);
-            _masterPathReference.Add(generatedRoom);
             return generatedRoom;
         }
 

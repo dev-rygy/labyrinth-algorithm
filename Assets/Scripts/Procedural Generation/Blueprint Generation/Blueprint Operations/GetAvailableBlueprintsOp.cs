@@ -24,7 +24,6 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] GetAvailableBlueprintsOp: List<Blueprint> space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()

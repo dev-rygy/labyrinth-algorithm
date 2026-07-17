@@ -25,7 +25,6 @@ namespace RyansLibrary.Labyrinth
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
             OutputPorts.Add(memoryID);
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] TriangulateBlueprintsOp: List<Edge> space allocated for memory with ID {memoryID}");
         }
 
         public override bool Execute()

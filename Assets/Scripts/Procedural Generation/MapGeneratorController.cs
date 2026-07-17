@@ -89,16 +89,16 @@ namespace RyansLibrary.Labyrinth
         // ***** Private Variables *****
         private Coroutine _mapGeneratorCoroutine;
         private RoomGenerator _roomGenerator;
+
+        // Storage for blueprints and blueprint operations
         private MapGenerationContext _context;
         public MapGenerationContext Context => _context;
 
         // Debugging
-        private bool _debug = false;
-
-        // Logs
-        private bool _debugLogs = false;
-        private bool _debugBlueprintLogs = false;
-        private bool _debugRoomGeneratorLogs = false;
+        [Header("Debug")]
+        [SerializeField] private bool _debugLogs = false;
+        [SerializeField] private bool _debugBlueprintLogs = false;
+        [SerializeField] private bool _debugRoomGeneratorLogs = false;
 
         // Stepwise procedure
         private int _stepBudget = 0;
@@ -130,13 +130,6 @@ namespace RyansLibrary.Labyrinth
             if (!_enabled)
                 yield break;
 
-            if (_debug)
-            {
-                Debug.Log("[MapGenerator][Controller] Debug On");
-            }
-            else
-                Debug.Log("[MapGenerator][Controller] Debug Off");
-
             _mapGeneratorCoroutine = StartCoroutine(GenerateLabyrinth());
             yield return _mapGeneratorCoroutine;
         }
@@ -159,19 +152,16 @@ namespace RyansLibrary.Labyrinth
 
             OnSeedUpdate?.Invoke();
 
-            if (_debugLogs) Debug.Log($"[MapGenerator][Controller] Generating map with seed: {_seed}");
+            if (_debugLogs)
+            {
+                Debug.Log($"[MapGenerator][Controller] Generating map with seed: ({_seed})");
+                ConsoleUI.OnNewConsoleOutput($"Generating map with seed ({_seed})", LogType.Log);
+            }
 
             _context = new();
 
-            // Initialize Master Data Structures
-            _context.InitializeMasters();
-
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
-
-            // Toggle Logs
-            ToggleBlueprintLogs(_debugBlueprintLogs);
-            ToggleRoomGeneratorLogs(_debugRoomGeneratorLogs);
 
             // Initialize the Main Path in each Zone
             foreach (Zone zone in _zones)
@@ -182,6 +172,10 @@ namespace RyansLibrary.Labyrinth
             {
                 InitializeZone(entry.ConnectionZone);
             }
+
+            // Toggle Logs
+            ToggleBlueprintLogs(_debugBlueprintLogs);
+            ToggleRoomGeneratorLogs(_debugRoomGeneratorLogs);
         }
 
         private void InitializeZone(Zone zone)
@@ -359,20 +353,28 @@ namespace RyansLibrary.Labyrinth
                 _context.OperationHistory.Push(operation);
 
                 // Execute Operation
-                if (_debugBlueprintLogs) Debug.Log($"[MapGenerator][Controller] Running Operation {operation.OperationID}...");
+                if (_debugBlueprintLogs)
+                {
+                    Debug.Log($"[MapGenerator][Controller] {operation.OperationID} - Running Operation...");
+                    ConsoleUI.OnNewConsoleOutput($"{operation.OperationID} - Running Operation...", LogType.Log);
+                }
 
                 bool result = operation.Execute();
                 OnOperationExecuted?.Invoke();
                 OnOperationsUpdate?.Invoke(GetOperationCount());
 
-                if (_debugBlueprintLogs) Debug.Log(result ? "[MapGenerator][Controller] Execution Success!" :
-                    "[MapGenerator][Controller] Execution Failure");
+                if (_debugBlueprintLogs)
+                {
+                    Debug.Log(result ? $"[MapGenerator][Controller] {operation.OperationID} - Execution success!" : 
+                        $"{operation.OperationID} - Execution Failure.");
+                    ConsoleUI.OnNewConsoleOutput(result ? $"{operation.OperationID} - Execution success!" :
+                        $"{operation.OperationID} - Execution Failure.", LogType.Log);
+                }
 
                 // Operation failed to execute; stop running generation
                 if (!result)
                 {
                     GenerationFailed();
-                    Debug.LogError("[MapGenerator][Controller] Operation failed to execute. Stopping coroutine.");
                     yield break;
                 }
             }
@@ -426,7 +428,8 @@ namespace RyansLibrary.Labyrinth
             _stepBudget = 0;
             _runToEnd = false;
 
-            if (_debugLogs) Debug.Log("[MapGenerator][Controller] Map generation restarting.");
+            Debug.Log("[MapGenerator][Controller] Map generator restarting.");
+            ConsoleUI.OnNewConsoleOutput("Map generator restarting.", LogType.Log);
 
             DestroyAllRooms();      // Destroy all rooms from last generation
         }
@@ -439,9 +442,12 @@ namespace RyansLibrary.Labyrinth
             IsGenerating = false;
 
             StopCoroutine(_mapGeneratorCoroutine);
-            ResetLabyrinth();
 
             Debug.LogError("[MapGenerator][Controller] Map generation failed.");
+            ConsoleUI.OnNewConsoleOutput("[MapGenerator][Controller] Map generation failed.", LogType.Error);
+
+            ResetLabyrinth();
+
             OnGenerationFailed?.Invoke();
         }
         #endregion
@@ -990,9 +996,7 @@ namespace RyansLibrary.Labyrinth
         {
             _debugBlueprintLogs = toggle;
             BlueprintOperation.ToggleDebugLogs(toggle);
-
-            // This no longer works as BlueprintData is no longer static
-            // BlueprintData.ToggleDebugLogs(toggle);
+            // BlueprintData<>.ToggleDebugLogs(toggle);
 
             BlueprintGenerator.ToggleDebugLogs(_debugBlueprintLogs);
         }
@@ -1133,6 +1137,36 @@ namespace RyansLibrary.Labyrinth
                     OnSeedUpdate?.Invoke();
                     Debug.Log($"[MapGenerator][Controller] Map Generator toggle random seed set to {_generateRandomSeed}.");
                     ConsoleUI.OnNewConsoleOutput($"Map Generator toggle random seed set to {_generateRandomSeed}.", LogType.Log);
+                }));
+
+            // Map generator restart command - Resets and restarts the map generator state.
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.toggleblueprintstacktrace",
+                "Displays blueprint operation log to the console.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("[Console] No argument given, please enter true or false.");
+                        ConsoleUI.OnNewConsoleOutput("No argument given, please enter true or false.", LogType.Warning);
+                        return;
+                    }
+                    else if (args[0] == "true")
+                    {
+                        ToggleBlueprintLogs(true);
+                    }
+                    else if (args[0] == "false")
+                    {
+                        ToggleBlueprintLogs(false);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Please input either true or false.");
+                        ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. Please input either true or false.", LogType.Warning);
+                    }
+
+                    Debug.Log($"[MapGenerator][Controller] Blueprint stack trace set to {_debugBlueprintLogs}.");
+                    ConsoleUI.OnNewConsoleOutput($"Blueprint stack trace set to {_debugBlueprintLogs}.", LogType.Log);
                 }));
         }
         #endregion
