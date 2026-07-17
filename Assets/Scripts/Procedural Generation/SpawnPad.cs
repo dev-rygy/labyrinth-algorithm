@@ -61,6 +61,6 @@ public class SpawnPad : MonoBehaviour
             return;
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(transform.position, _gizmoArea);
+        Gizmos.DrawWireCube(transform.position - new Vector3(0f, -0.5f, 0f), _gizmoArea);
     }
 }

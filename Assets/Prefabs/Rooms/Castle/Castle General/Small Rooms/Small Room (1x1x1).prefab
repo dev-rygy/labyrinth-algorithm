@@ -165,8 +165,8 @@ Transform:
   m_Children:
   - {fileID: 823869513721391978}
   - {fileID: 1159246825050166735}
-  - {fileID: 6916052650981431971}
   - {fileID: 425088875111540002}
+  - {fileID: 6916052650981431971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6698013543921010159
@@ -193,9 +193,9 @@ MonoBehaviour:
   RoomSpawners:
   - {fileID: 4060726308336955401}
   roomShape: 0
-  debug: 0
   <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
   <RoomType>k__BackingField: 0
+  _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3573013305882329200
@@ -944,6 +944,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 903101394478323945, guid: c4640ba5d2b4d964f9b52469f5c99229,
         type: 3}
+      propertyPath: _debug
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 903101394478323945, guid: c4640ba5d2b4d964f9b52469f5c99229,
+        type: 3}
       propertyPath: _gizmoArea.x
       value: 2
       objectReference: {fileID: 0}
@@ -960,7 +965,7 @@ PrefabInstance:
     - target: {fileID: 6281812748208676064, guid: c4640ba5d2b4d964f9b52469f5c99229,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6281812748208676064, guid: c4640ba5d2b4d964f9b52469f5c99229,
         type: 3}

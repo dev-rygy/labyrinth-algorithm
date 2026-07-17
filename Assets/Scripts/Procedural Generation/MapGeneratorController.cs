@@ -35,10 +35,12 @@ namespace RyansLibrary.Labyrinth
         public static MapGeneratorController Instance { get; private set; }
 
         // ***** Events *****
+        // General Events
         public static event Action OnGenerationStarted;
         public static event Action OnGenerationDone;
         public static event Action OnGenerationFailed;
 
+        // Blueprint Events
         public static event Action OnOperationsStarted;
         public static event Action<int> OnOperationsGetTotal;
         public static event Action<int> OnOperationsUpdate;
@@ -46,6 +48,7 @@ namespace RyansLibrary.Labyrinth
         public static event Action OnOperationsEnded;
         public static event Action OnSeedUpdate;
 
+        // Room Events
         public static event Action OnRoomParseStarted;
         public static event Action OnRoomParseDone;
 
@@ -61,19 +64,19 @@ namespace RyansLibrary.Labyrinth
         [Header("Seed")]
         [SerializeField] private int _customSeed = 0;
         [SerializeField] private bool _generateRandomSeed = true;
-        [SerializeField, ReadOnly] 
+        [SerializeField, ReadOnly]
         private int _seed = 0;
         public int Seed => _seed;
 
         [Header("Global Settings")]
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
         [SerializeField] 
-        private int _gridUnitSize = 13;                        // The unit size of the room grid's cell
+        private int _gridUnitSize = 13;                         // The unit size of a single grid cell
         public int GridUnitSize => _gridUnitSize;
-        [SerializeField] private Transform _roomContainer;                      // Parent transform that will contain all the spawned rooms
+        [SerializeField] private Transform _roomContainer;      // Parent transform that will contain all the spawned rooms
 
         [Header("Blueprint Settings")]
-        [SerializeField] private int _maxPlacementAttempts = 50;
+        [SerializeField] private int _maxPlacementAttempts = 50;        // Prevents infinate loops with divergent room placement.
 
         [Header("Zones")]
         [SerializeField] 
@@ -445,8 +448,6 @@ namespace RyansLibrary.Labyrinth
 
             Debug.LogError("[MapGenerator][Controller] Map generation failed.");
             ConsoleUI.OnNewConsoleOutput("[MapGenerator][Controller] Map generation failed.", LogType.Error);
-
-            ResetLabyrinth();
 
             OnGenerationFailed?.Invoke();
         }

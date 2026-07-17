@@ -1,12 +1,14 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    12/26/2024
- * Last Modified:   12/26/2024 (Ryan)
+ * Last Modified:   07/17/2026 (Ryan)
  * Notes:           Loot Generator
  *                      Procedure starts after the Map Generation Procedure
  *                      Parse through the Master Path and spawn loot where
  *                      applicable.
 */
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
@@ -18,12 +20,16 @@ namespace RyansLibrary.Labyrinth
         [Header("Debug")]
         [SerializeField] private bool _debug;
 
-        private Path _masterPathReference;
-
-        private void Awake()
+        private void OnEnable()
         {
             // Subscribe to "Done" event in map generator and spawn loot after
-            // OldMapGeneratorController.OnGenerationDone += SpawnLoot;
+            MapGeneratorController.OnGenerationDone += SpawnLoot;
+        }
+
+        private void OnDisable()
+        {
+            // Unsubscribe to "Done" event in map generator and spawn loot after
+            MapGeneratorController.OnGenerationDone -= SpawnLoot;
         }
 
         private void SpawnLoot()
@@ -32,33 +38,29 @@ namespace RyansLibrary.Labyrinth
             if (!_enabled)
                 return;
 
-            // Get reference to MasterPath in Map Generator
-            // _masterPathReference = OldMapGeneratorController.Instance?.MasterPath;
+            List<Zone> zones = MapGeneratorController.Instance.Zones;
 
-            // Return if the masterpath is not initialized
-            if (_masterPathReference == null)
-            {
-                Debug.LogError("[LootGenerator] Master Path was null.");
+            if (zones == null)
                 return;
-            }
-            // Return if the masterpath does not contain any rooms
-            if (_masterPathReference.Rooms.Count <= 0)
-            {
-                Debug.LogError("[LootGenerator] Master Path has no rooms.");
-                return;
-            }
 
-            if (_debug) Debug.Log("[LootGenerator] Loot Spawn Procedure has begun.");
-
-            foreach (Room room in _masterPathReference.Rooms)
+            foreach (var zone in zones)
             {
-                foreach (SpawnPad spawnPad in room.RoomSpawners)
+                foreach (var altPath in zone.Paths)
                 {
-                    //if (room.RoomType == RoomType.prize && spawnPad.type == PadType.chest)
-                    //{
-                        //spawnPad.SpawnObject();
-                        //if (_debug) Debug.Log("[LootGenerator] Chest spawned in " + room.name);
-                    //}
+                    foreach (var room in altPath.Rooms)
+                    {
+                        if (room.RoomType == RoomType.prize)
+                        {
+                            foreach (SpawnPad spawnPad in room.RoomSpawners)
+                            {
+                                if (spawnPad.Type == PadType.chest)
+                                {
+                                    // Spawn chest
+                                    spawnPad.SpawnObject();
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

@@ -222,8 +222,13 @@ PrefabInstance:
     - target: {fileID: 5431788957954653393, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
         type: 3}
       propertyPath: RoomSpawners.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5431788957954653393, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
+        type: 3}
+      propertyPath: 'RoomSpawners.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4207420408275106386}
     - target: {fileID: 5431788957954653393, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
         type: 3}
       propertyPath: <AvailableCellData>k__BackingField.Array.size
@@ -247,6 +252,11 @@ PrefabInstance:
     - target: {fileID: 6989868716758818044, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7021683215842720404, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7716016972406204705, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
@@ -621,6 +631,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 50889490803328207}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4207420408275106386 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4239867646458560157, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
+    type: 3}
+  m_PrefabInstance: {fileID: 50889490803328207}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e42a3070d765134eb49bd361c9a1d7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &4255812935052798609 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4304144816854773342, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
