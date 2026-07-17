@@ -82,7 +82,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
         {
             // Choose new start room and clear rooms from last iteration if failed
             Blueprint startBlueprint = branchedPath.BlueprintList[startIndex];
-            path.ClearBlueprintRooms();
+            path.ClearBlueprints();
 
             return BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint, canGoVertical);
         }
@@ -99,7 +99,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
         {
             // Choose new start room and clear rooms from last iteration if failed
             Blueprint startBlueprint = branchedPath.BlueprintList[i];
-            path.ClearBlueprintRooms();
+            path.ClearBlueprints();
 
             if (!startBlueprint.Available)       // Check if start room is available
                 continue;

@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/27/2025
- * Last Modified:   02/08/2025 (Ryan)
+ * Last Modified:   07/16/2025 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Utils;
@@ -75,7 +75,7 @@ namespace RyansLibrary.Labyrinth
             // Update paths and masters with new blueprint room
             path?.Add(newBlueprint);
             _masterPath?.Add(newBlueprint);                    // Add to Master List (required)
-            _masterDictionary?.Add(origin, newBlueprint);    // Add to Master Dictionary (required)
+            _masterDictionary?.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
             return newBlueprint;
         }
 

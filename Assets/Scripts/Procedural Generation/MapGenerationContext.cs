@@ -46,12 +46,12 @@ namespace RyansLibrary.Labyrinth
         public List<List<Edge>> RandomCycles { get; private set; }
 
         // Private Variables
-        private Dictionary<string, object> _blueprintMemory;
+        private Dictionary<string, object> _operationDataCache;
 
         public MapGenerationContext()
         {
             // Holds arguments and return values from operations
-            _blueprintMemory = new Dictionary<string, object>();
+            _operationDataCache = new();
 
             _masterDictionary = new();
             _masterPath = new();
@@ -69,7 +69,7 @@ namespace RyansLibrary.Labyrinth
         public void InitializeMasters()     // NOTE: This must be done before generating anything!
         {
             // Initialize Master Data Structures
-            _masterDictionary = new Dictionary<Vector3Int, Blueprint>();
+            _masterDictionary = new();
             _masterPath = ScriptableObject.CreateInstance<Path>();
             _masterPath.Initialize();
             _masterPath.Name = MASTER_PATH_NAME;
@@ -229,7 +229,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>true if a value of type <typeparamref name="T"> was found for the specified memory ID; otherwise, false.</returns>
         public bool TryGet<T>(string memoryID, out T value)
         {
-            if (_blueprintMemory is null)
+            if (_operationDataCache is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 value = default;
@@ -237,7 +237,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Check to see if memory contains the requested ID and if the value is of the expected type
-            if (_blueprintMemory.TryGetValue(memoryID, out object obj) && obj is T castValue)
+            if (_operationDataCache.TryGetValue(memoryID, out object obj) && obj is T castValue)
             {
                 value = castValue;
                 return true;
@@ -255,13 +255,13 @@ namespace RyansLibrary.Labyrinth
         /// <param name="value">The value to associate with the specified memory identifier. Can be any object.</param>
         public void Malloc(string memoryID, object value)
         {
-            if (_blueprintMemory is null)
+            if (_operationDataCache is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return;
             }
 
-            _blueprintMemory[memoryID] = value;
+            _operationDataCache[memoryID] = value;
         }
 
         /// <summary>
@@ -271,13 +271,13 @@ namespace RyansLibrary.Labyrinth
         /// <returns>true if an entry with the specified identifier exists in the memory; otherwise, false.</returns>
         public bool Contains(string memoryID)
         {
-            if (_blueprintMemory is null)
+            if (_operationDataCache is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return false;
             }
 
-            return _blueprintMemory.ContainsKey(memoryID);
+            return _operationDataCache.ContainsKey(memoryID);
         }
 
         /// <summary>
@@ -286,29 +286,14 @@ namespace RyansLibrary.Labyrinth
         /// <param name="memoryID">The unique identifier of the memory entry to remove. Cannot be null.</param>
         public void Remove(string memoryID)
         {
-            if (_blueprintMemory is null)
+            if (_operationDataCache is null)
             {
                 Debug.LogError($"[MapGenerator][Context] Memory object not set.");
                 return;
             }
 
-            if (_blueprintMemory.ContainsKey(memoryID))
-                _blueprintMemory.Remove(memoryID);
-        }
-
-        /// <summary>
-        /// Clears all data stored in the memory object associated with the current context.
-        /// </summary>
-        /// <remarks>This method should be called only when it is safe to discard all memory data.</remarks>
-        internal void ClearMemory()
-        {
-            if (_blueprintMemory is null)
-            {
-                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
-                return;
-            }
-
-            _blueprintMemory.Clear();
+            if (_operationDataCache.ContainsKey(memoryID))
+                _operationDataCache.Remove(memoryID);
         }
 
         /// <summary>
@@ -320,41 +305,51 @@ namespace RyansLibrary.Labyrinth
         public void ClearAll()
         {
             // Clear memory
-            if (_blueprintMemory == null)
-            {
-                Debug.LogWarning("[MapGenerator][Context] _memory is null; skipping memory clear.");
-            }
-            else
-            {
-                _blueprintMemory.Clear();
-            }
+            ClearMemory();
 
             // Clear debugging lists (clear what exists)
-            if (Triangulations == null)
-                Debug.LogWarning("[MapGenerator][Context] Triangulations is null; skipping.");
-            else
-                Triangulations.Clear();
-
-            if (MinimumSpanningTrees == null)
-                Debug.LogWarning("[MapGenerator][Context] MinimumSpanningTrees is null; skipping.");
-            else
-                MinimumSpanningTrees.Clear();
-
-            if (RandomCycles == null)
-                Debug.LogWarning("[MapGenerator][Context] RandomCycles is null; skipping.");
-            else
-                RandomCycles.Clear();
+            ClearDebuggingLists();
 
             // Clear operation collections
-            if (OperationQueue == null)
-                Debug.LogWarning("[MapGenerator][Context] OperationQueue is null; skipping.");
-            else
-                OperationQueue.Clear();
+            ClearOperationCollections();
 
-            if (OperationHistory == null)
-                Debug.LogWarning("[MapGenerator][Context] OperationHistory is null; skipping.");
-            else
-                OperationHistory.Clear();
+            // Clear Master Lists
+            ClearMasters();
+        }
+
+        public void ClearOperationCollections()
+        {
+            OperationQueue?.Clear();
+            OperationHistory?.Clear();
+        }
+
+        public void ClearMasters()
+        {
+            _masterDictionary?.Clear();
+            _masterPath?.ClearBlueprints();
+        }
+
+        public void ClearDebuggingLists()
+        {
+            // Clear debugging lists (clear what exists)
+            Triangulations?.Clear();
+            MinimumSpanningTrees?.Clear();
+            RandomCycles?.Clear();
+        }
+
+        /// <summary>
+        /// Clears all data stored in the memory object associated with the current context.
+        /// </summary>
+        /// <remarks>This method should be called only when it is safe to discard all memory data.</remarks>
+        internal void ClearMemory()
+        {
+            if (_operationDataCache is null)
+            {
+                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
+                return;
+            }
+
+            _operationDataCache.Clear();
         }
 
         /// <summary>

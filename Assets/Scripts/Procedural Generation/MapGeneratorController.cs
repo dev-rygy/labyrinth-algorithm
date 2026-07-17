@@ -169,7 +169,7 @@ namespace RyansLibrary.Labyrinth
             _context.InitializeMasters();
 
             // Initialize Blueprint Generator
-            _bpg = new (_context);
+            _bpg = new(_context);
 
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
@@ -444,8 +444,7 @@ namespace RyansLibrary.Labyrinth
             IsGenerating = false;
 
             StopCoroutine(_mapGeneratorCoroutine);
-            _mapGeneratorCoroutine = null;
-            _context.ClearAll();
+            ResetLabyrinth();
 
             Debug.LogError("[MapGenerator][Controller] Map generation failed.");
             OnGenerationFailed?.Invoke();
