@@ -68,7 +68,7 @@ namespace RyansLibrary.Console
                 return false;
 
             string commandName = splitString[0].ToLower();      // First part of string is command keyword
-            string[] args = splitString.Length > 1 ? splitString[1..] : Array.Empty<string>();      // All rest are arguements
+            string[] args = splitString.Length > 1 ? splitString[1..] : Array.Empty<string>();      // All rest are arguments
 
             // Search command registry for command with the name specified
             if (_commands.TryGetValue(commandName, out var command))

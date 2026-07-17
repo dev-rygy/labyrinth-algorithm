@@ -16,7 +16,7 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private bool _enabled = true;
 
         [Header("Debug")]
-        [SerializeField] private bool debug;
+        [SerializeField] private bool _debug;
 
         private Path _masterPathReference;
 
@@ -48,21 +48,21 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
-            if (debug) Debug.Log("[LootGenerator] Loot Spawn Procedure has begun.");
+            if (_debug) Debug.Log("[LootGenerator] Loot Spawn Procedure has begun.");
 
             foreach (Room room in _masterPathReference.Rooms)
             {
                 foreach (SpawnPad spawnPad in room.RoomSpawners)
                 {
-                    if (room.RoomType == RoomType.prize && spawnPad.type == PadType.chest)
-                    {
-                        spawnPad.SpawnObject();
-                        if (debug) Debug.Log("[LootGenerator] Chest spawned in " + room.name);
-                    }
+                    //if (room.RoomType == RoomType.prize && spawnPad.type == PadType.chest)
+                    //{
+                        //spawnPad.SpawnObject();
+                        //if (_debug) Debug.Log("[LootGenerator] Chest spawned in " + room.name);
+                    //}
                 }
             }
 
-            if (debug) Debug.Log("[LootGenerator] Loot Spawn Procedure has ended.");
+            if (_debug) Debug.Log("[LootGenerator] Loot Spawn Procedure has ended.");
         }
     }
 }

@@ -102,7 +102,7 @@ namespace RyansLibrary.Geometry
                 || Vertex.AlmostEqual(v, D, precision);
         }
 
-        // Check if the vertex lies within the circum circle by checking it's difference from the circumcurcle radius
+        // Check if the vertex lies within the circumsphere by checking it's difference from the circumcurcle radius
         public bool CircumCircleContains(Vector3 v)
         {
             Vector3 dist = v - Circumcenter;

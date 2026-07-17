@@ -139,8 +139,8 @@ public class CameraController : MonoBehaviour
             {
                 if (args.Length != 1)
                 {
-                    Debug.LogWarning("[Console] No arguement given, please enter a camera mode.");
-                    ConsoleUI.OnNewConsoleOutput($"No arguement given, please enter a camera mode.", LogType.Warning);
+                    Debug.LogWarning("[Console] No argument given, please enter a camera mode.");
+                    ConsoleUI.OnNewConsoleOutput($"No argument given, please enter a camera mode.", LogType.Warning);
                     return;
                 }
 

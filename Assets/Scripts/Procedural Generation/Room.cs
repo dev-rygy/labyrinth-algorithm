@@ -27,7 +27,6 @@ namespace RyansLibrary.Labyrinth
         start,
         end,
         prize,
-        toBoss,
         boss
     }
 
@@ -40,11 +39,11 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Room Properties")]
         [SerializeField] public RoomShape roomShape;
-
-        [Header("Debug")]
-        [SerializeField] private bool debug = false;
         [field: SerializeField] public Vector3Int RoomDimensions { get; private set; } = Vector3Int.one;
         [field: SerializeField] public RoomType RoomType { get; private set; }
+
+        [Header("Debug")]
+        [SerializeField] private bool _debug = false;
         [SerializeField] private Color _roomBoundsColor = Color.red;
         [SerializeField] private Color _availableCellColor = Color.green;
 
@@ -94,7 +93,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (rotation == Vector3.zero)        // If no rotation return
             {
-                if (debug) Debug.Log($"[MapGenerator][Room] Room {gameObject.name} was not rotated.");
+                if (_debug) Debug.Log($"[MapGenerator][Room] Room {gameObject.name} was not rotated.");
                 return bluePrintArray;
             }
 
@@ -107,7 +106,7 @@ namespace RyansLibrary.Labyrinth
                 rotatedArray[3] = bluePrintArray[0];        // Negative Z direction the same
                 rotatedArray[4] = bluePrintArray[4];        // Positive Y to Positive X
                 rotatedArray[5] = bluePrintArray[5];        // Negative Y to Negative X
-                if (debug) Debug.Log($"[MapGenerator][Room] Room {gameObject.name} has been rotated by 90 degrees.");
+                if (_debug) Debug.Log($"[MapGenerator][Room] Room {gameObject.name} has been rotated by 90 degrees.");
             }
             else
                 Debug.LogError($"[MapGenerator][Room] Room {gameObject.name} has been rotated incorrectly.");
@@ -149,7 +148,7 @@ namespace RyansLibrary.Labyrinth
 
         private void OnDrawGizmos()
         {
-            if (!debug) 
+            if (!_debug) 
                 return;
 
             DrawDimensions();

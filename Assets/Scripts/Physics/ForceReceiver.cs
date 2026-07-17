@@ -15,7 +15,7 @@ using UnityEngine.InputSystem.XR;
 /// Returns the movement when the forces are applied to an object. Essetially
 /// makes the object have a rigidbody when they are not using Unity's physics system
 /// </summary>
-public class ForceReciever : MonoBehaviour
+public class ForceReceiver : MonoBehaviour
 {
     [field: Header("Falling and Grounded")]
     [field: SerializeField] public float GravityMultiplier { get; private set; } = -9.81f;

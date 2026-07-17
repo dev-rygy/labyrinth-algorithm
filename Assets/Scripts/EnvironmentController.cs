@@ -17,8 +17,8 @@ public class EnvironmentController : MonoBehaviour
             {
                 if (args.Length != 1)
                 {
-                    Debug.LogWarning("[Console] Missing arguement. Must state true/false.");
-                    ConsoleUI.OnNewConsoleOutput($"Missing arguement. Must state true/false.", LogType.Warning);
+                    Debug.LogWarning("[Console] Missing argument. Must state true/false.");
+                    ConsoleUI.OnNewConsoleOutput($"Missing argument. Must state true/false.", LogType.Warning);
                     return;
                 }
 
@@ -43,8 +43,8 @@ public class EnvironmentController : MonoBehaviour
             {
                 if (args.Length != 1)
                 {
-                    Debug.LogWarning("[Console] Missing arguement. Must state a number between 0 and 255.");
-                    ConsoleUI.OnNewConsoleOutput($"Missing arguement. Must state a number between 0 and 255.", LogType.Warning);
+                    Debug.LogWarning("[Console] Missing argument. Must state a number between 0 and 255.");
+                    ConsoleUI.OnNewConsoleOutput($"Missing argument. Must state a number between 0 and 255.", LogType.Warning);
                     return;
                 }
 

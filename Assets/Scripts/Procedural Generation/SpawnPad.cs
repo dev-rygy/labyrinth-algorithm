@@ -17,7 +17,7 @@ public enum PadType
 public class SpawnPad : MonoBehaviour
 {
     // What type of object the pad will spawn
-    [SerializeField] public PadType type;
+    [SerializeField] public PadType Type;
 
     // The object it is to spawn
     [SerializeField] private GameObject _spawnObject;

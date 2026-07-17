@@ -2,7 +2,7 @@
  * Created By:      Ryan Carpenter
  * Date Created:    01/23/2025
  * Last Modified:   10/23/2025 (Ryan)
- * Notes:           Holds all the path's in an zone and the 
+ * Notes:           Holds all the paths in an zone and the 
  *                      bounds that they may spawn rooms in
 */
 using System.Collections.Generic;

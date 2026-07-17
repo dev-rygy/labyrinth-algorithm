@@ -27,7 +27,7 @@ namespace RyansLibrary.Labyrinth
         const int STANDARD_FACE_COUNT = 6;
 
         // ***** Master References *****
-        // The Master Path holds a reference to all bluprint rooms in an zone
+        // The Master Path holds a reference to all bluprint rooms in a zone
         private readonly Path _masterPathReference;
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
@@ -39,10 +39,10 @@ namespace RyansLibrary.Labyrinth
         // Debugging
         private bool _debugLogs;
 
-        public RoomGenerator(Path masterPath, Dictionary<Vector3Int, Blueprint> masterDictionary, int gridUnitSize, Transform roomContainer)
+        public RoomGenerator(MapGenerationContext context, int gridUnitSize, Transform roomContainer)
         {
-            _masterPathReference = masterPath;
-            _masterDictionaryReference = masterDictionary;
+            _masterPathReference = context.MasterPath;
+            _masterDictionaryReference = context.MasterDictionary;
 
             _gridUnitSize = gridUnitSize;
             _roomContainer = roomContainer;
@@ -639,35 +639,35 @@ namespace RyansLibrary.Labyrinth
         /// Takes the absolute probability meaning the function chooses a random position in the realm
         /// of all room possibilities.
         /// </summary>
-        /// <param name="pathEntrys">The path entry list of a particular room shape in the path object.</param>
+        /// <param name="pathEntries">The path entry list of a particular room shape in the path object.</param>
         /// <returns></returns>
-        private GameObject ChooseRandomRoomFromWeights(List<PathEntry> pathEntrys)
+        private GameObject ChooseRandomRoomFromWeights(List<PathEntry> pathEntries)
         {
             // If the path's room entry list contains no room return null
-            if (pathEntrys.Count == 0)
+            if (pathEntries.Count == 0)
             {
                 Debug.LogError("Map Generator Error: Probability of Room Weights Failed, room list empty.");
                 return null;
             }
 
             // If the path's room entry list contains one room return that room's prefab
-            if (pathEntrys.Count == 1)
-                return pathEntrys[0].Prefab;
+            if (pathEntries.Count == 1)
+                return pathEntries[0].Prefab;
 
             // Choose a random room prefab based on probability
             int totalWeight = 0;
-            foreach (PathEntry pathEntry in pathEntrys)
+            foreach (PathEntry pathEntry in pathEntries)
             {
                 totalWeight += pathEntry.Probability;
             }
 
             int roll = Random.Range(0, totalWeight + 1);        // roll 1 - 101; max exclusive
             int runningTotal = 0;
-            for (int i = 0; i < pathEntrys.Count; i++)
+            for (int i = 0; i < pathEntries.Count; i++)
             {
-                runningTotal += pathEntrys[i].Probability;
+                runningTotal += pathEntries[i].Probability;
                 if (roll <= runningTotal)
-                    return pathEntrys[i].Prefab;
+                    return pathEntries[i].Prefab;
             }
 
             Debug.LogError("Map Generator Error: Probability of Room Weights Failed, unknown error.");

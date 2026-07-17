@@ -112,7 +112,7 @@ public class PlayerStateMachine : StateMachine
     public CharacterController Controller { get; private set; } // reference to the player's controller
     public Animator Animator { get; private set; }  // reference to the player's animator
     public AnimationTimestamps AnimationTimestamps { get; private set; }        // reference to player animator events
-    public ForceReciever ForceReciever { get; private set; }        // reference to player physics
+    public ForceReceiver ForceReciever { get; private set; }        // reference to player physics
     public EntityHealth Health { get; private set; }        // Reference to player health
     #endregion
 
@@ -133,7 +133,7 @@ public class PlayerStateMachine : StateMachine
         Controller = GetComponent<CharacterController>();           // The player must have a character controller
         Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
         AnimationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
-        ForceReciever = GetComponent<ForceReciever>();              // The player must have a force reciever to interact with gravity
+        ForceReciever = GetComponent<ForceReceiver>();              // The player must have a force reciever to interact with gravity
         Health = GetComponent<EntityHealth>();                      // Player's health behavior is shared with all entities
 
         OnPlayerSpawned?.Invoke(this);

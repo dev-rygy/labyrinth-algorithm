@@ -225,8 +225,8 @@ namespace RyansLibrary.Labyrinth
                 {
                     if (args.Length < 1)
                     {
-                        Debug.LogWarning("[Console] No arguement given, please enter 'true' or 'false'.");
-                        ConsoleUI.OnNewConsoleOutput("No arguement given, please enter 'true' or 'false'.", LogType.Warning);
+                        Debug.LogWarning("[Console] No argument given, please enter 'true' or 'false'.");
+                        ConsoleUI.OnNewConsoleOutput("No argument given, please enter 'true' or 'false'.", LogType.Warning);
                         return;
                     }
 
@@ -240,8 +240,8 @@ namespace RyansLibrary.Labyrinth
                     }
                     else
                     {
-                        Debug.LogWarning($"[Console] Invalid Arguement {args[0]}. Please input either 'true' or 'false'.");
-                        ConsoleUI.OnNewConsoleOutput($"Invalid Arguement {args[0]}. Please input either 'true' or 'false'.", LogType.Warning);
+                        Debug.LogWarning($"[Console] Invalid argument {args[0]}. Please input either 'true' or 'false'.");
+                        ConsoleUI.OnNewConsoleOutput($"Invalid argument {args[0]}. Please input either 'true' or 'false'.", LogType.Warning);
                     }
                     Debug.Log($"[MapGenerator][Debugger] Map Generator Gizmos set to {_debugGizmos}.");
                     ConsoleUI.OnNewConsoleOutput($"Map Generator Gizmos set to '{_debugGizmos}'.", LogType.Log);

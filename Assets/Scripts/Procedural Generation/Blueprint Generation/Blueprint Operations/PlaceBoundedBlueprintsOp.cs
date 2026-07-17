@@ -80,7 +80,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Will place rooms randomly in an zone but will pull rooms randomly from the main path.
+        /// Will place rooms randomly in a zone but will pull rooms randomly from the main path.
         /// </summary>
         /// <param name="zone"></param>
         /// <returns></returns>
@@ -123,7 +123,7 @@ namespace RyansLibrary.Labyrinth
             {
                 Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
 
-                if (_bpg.GetMasterDictionary().TryGetValue(cellPosition, out Blueprint blueprint))
+                if (_context.MasterDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
                     blueprint.Available = available;

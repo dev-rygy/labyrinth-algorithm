@@ -46,7 +46,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Places fixed room within the bounds of an zone; returns false if the
+        /// Places fixed room within the bounds of a zone; returns false if the
         /// room could not be placed correctly.
         /// </summary>
         /// <param name="entry">Room Entry</param>
@@ -102,7 +102,7 @@ namespace RyansLibrary.Labyrinth
             {
                 Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
 
-                if (_bpg.GetMasterDictionary().TryGetValue(cellPosition, out Blueprint blueprint))
+                if (_context.MasterDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
                     blueprint.Available = available;
