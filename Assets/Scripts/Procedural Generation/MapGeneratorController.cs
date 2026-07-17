@@ -114,7 +114,7 @@ namespace RyansLibrary.Labyrinth
             // Handle Singleton
             if (Instance != null)
             {
-                Debug.LogWarning("[MapGenerator][Controller] Another instance of MapGeneratorController already exists. Deleting Object...");
+                Debug.LogWarning("Another instance of MapGeneratorController already exists. Deleting Object...");
                 Destroy(gameObject);
                 return;
             }
@@ -157,8 +157,7 @@ namespace RyansLibrary.Labyrinth
 
             if (_debugLogs)
             {
-                Debug.Log($"[MapGenerator][Controller] Generating map with seed: ({_seed})");
-                ConsoleUI.OnNewConsoleOutput($"Generating map with seed ({_seed})", LogType.Log);
+                Debug.Log($"Generating map with seed: ({_seed})");
             }
 
             _context = new();
@@ -250,7 +249,7 @@ namespace RyansLibrary.Labyrinth
                 }
                 else
                 {
-                    Debug.LogError("[MapGenerator][Controller] Zone Connection cannot fit within the spawning bounds.");
+                    Debug.LogError("Zone Connection cannot fit within the spawning bounds.");
                     return;
                 }
             }
@@ -276,14 +275,14 @@ namespace RyansLibrary.Labyrinth
                 // Must have a zone to generate anything
                 if (zone == null)
                 {
-                    Debug.LogError("[MapGenerator][Controller] Zone Entry Missing for blueprint procedure.");
+                    Debug.LogError("Zone Entry Missing for blueprint procedure.");
                     return;
                 }
 
                 // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
                 if (!CheckZoneBoundedVolume(zone))
                 {
-                    Debug.LogError($"[MapGenerator][Controller] The amount of blueprint rooms desired for zone {zone.Name} exceeds " +
+                    Debug.LogError($"The amount of blueprint rooms desired for zone {zone.Name} exceeds " +
                         $"the bounding box's volume or the bounding box is inverted.");
                     return;
                 }
@@ -358,8 +357,7 @@ namespace RyansLibrary.Labyrinth
                 // Execute Operation
                 if (_debugBlueprintLogs)
                 {
-                    Debug.Log($"[MapGenerator][Controller] {operation.OperationID} - Running Operation...");
-                    ConsoleUI.OnNewConsoleOutput($"{operation.OperationID} - Running Operation...", LogType.Log);
+                    Debug.Log($"{operation.OperationID} - Running Operation...");
                 }
 
                 bool result = operation.Execute();
@@ -368,10 +366,8 @@ namespace RyansLibrary.Labyrinth
 
                 if (_debugBlueprintLogs)
                 {
-                    Debug.Log(result ? $"[MapGenerator][Controller] {operation.OperationID} - Execution success!" : 
+                    Debug.Log(result ? $"{operation.OperationID} - Execution success!" : 
                         $"{operation.OperationID} - Execution Failure.");
-                    ConsoleUI.OnNewConsoleOutput(result ? $"{operation.OperationID} - Execution success!" :
-                        $"{operation.OperationID} - Execution Failure.", LogType.Log);
                 }
 
                 // Operation failed to execute; stop running generation
@@ -384,7 +380,7 @@ namespace RyansLibrary.Labyrinth
 
             OnOperationsEnded?.Invoke();
 
-            if (_debugBlueprintLogs) Debug.Log("[MapGenerator][Controller] End of operation execution.");
+            if (_debugBlueprintLogs) Debug.Log("End of operation execution.");
         }
 
         private void GenerateRooms()
@@ -407,7 +403,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (!GenerateZoneRooms(zone))
                 {
-                    Debug.LogError("[MapGenerator][Controller] Rooms failed to generate.");
+                    Debug.LogError("Rooms failed to generate.");
                     GenerationFailed();
                     return;
                 }
@@ -415,7 +411,7 @@ namespace RyansLibrary.Labyrinth
 
             OnRoomParseDone?.Invoke();
 
-            if (_debugBlueprintLogs) Debug.Log("[MapGenerator][Controller] End of room generation.");
+            if (_debugBlueprintLogs) Debug.Log("End of room generation.");
         }
 
         public void ResetLabyrinth()
@@ -431,8 +427,7 @@ namespace RyansLibrary.Labyrinth
             _stepBudget = 0;
             _runToEnd = false;
 
-            Debug.Log("[MapGenerator][Controller] Map generator restarting.");
-            ConsoleUI.OnNewConsoleOutput("Map generator restarting.", LogType.Log);
+            Debug.Log("Map generator restarting.");
 
             DestroyAllRooms();      // Destroy all rooms from last generation
         }
@@ -446,8 +441,7 @@ namespace RyansLibrary.Labyrinth
 
             StopCoroutine(_mapGeneratorCoroutine);
 
-            Debug.LogError("[MapGenerator][Controller] Map generation failed.");
-            ConsoleUI.OnNewConsoleOutput("[MapGenerator][Controller] Map generation failed.", LogType.Error);
+            Debug.LogError("Map generation failed.");
 
             OnGenerationFailed?.Invoke();
         }
@@ -465,7 +459,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (zone.MainPath == null)      // Throw error if MainPath for zone does not exist
             {   
-                Debug.LogError($"[MapGenerator][Controller] The Main Path for zone {zone.Name} is not assigned.");
+                Debug.LogError($"The Main Path for zone {zone.Name} is not assigned.");
                 return;
             }
 
@@ -478,7 +472,7 @@ namespace RyansLibrary.Labyrinth
             // Generate Delauney Triangulation
             LoadMainPathConnectionsOperations(zone);
 
-            if (_debugLogs) Debug.Log($"[MapGenerator][Controller] {zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
+            if (_debugLogs) Debug.Log($"{zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
         }
 
         /// <summary>
@@ -685,7 +679,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (path == null)
                 {
-                    Debug.LogError($"[MapGenerator][Controller] A path {path.Name} for zone {zone.name} is not assigned.");
+                    Debug.LogError($"A path {path.Name} for zone {zone.name} is not assigned.");
                     return;
                 }
 
@@ -715,27 +709,27 @@ namespace RyansLibrary.Labyrinth
             // *** Error Handleing ***
             if (connectionZone == null)
             {
-                Debug.LogError("[MapGenerator][Controller] Connection Zone of zone connection was null.");
+                Debug.LogError("Connection Zone of zone connection was null.");
                 return;
             }
             if (zoneA == null)
             {
-                Debug.LogError("[MapGenerator][Controller] Zone A of zone connection was null.");
+                Debug.LogError("Zone A of zone connection was null.");
                 return;
             }
             if (zoneB == null)
             {
-                Debug.LogError("[MapGenerator][Controller] zone B of zone connection was null.");
+                Debug.LogError("zone B of zone connection was null.");
                 return;
             }
             if (connectionZone.MainPath == null)
             {
-                Debug.LogError($"[MapGenerator][Controller] The Main Path for connection zone {connectionZone.Name} is not assigned.");
+                Debug.LogError($"The Main Path for connection zone {connectionZone.Name} is not assigned.");
                 return;
             }
             if (connectionZone.UniqueRooms.Count < 2)
             {
-                Debug.LogError($"[MapGenerator][Controller] Connection zone {connectionZone.Name} must have at least two unique rooms assigned for zone connection.");
+                Debug.LogError($"Connection zone {connectionZone.Name} must have at least two unique rooms assigned for zone connection.");
                 return;
             }
 
@@ -829,7 +823,7 @@ namespace RyansLibrary.Labyrinth
             // Must have a zone to generate anything
             if (zone == null)
             {
-                Debug.LogError($"[MapGenerator][Controller] Zone Entry Missing for room generation procedure.");
+                Debug.LogError($"Zone Entry Missing for room generation procedure.");
                 return false;
             }
 
@@ -838,7 +832,7 @@ namespace RyansLibrary.Labyrinth
             result = GenerateUniqueRooms(zone);
             if (!result)
             {
-                Debug.LogError($"[MapGenerator][Controller] Unique Room Generation for zone {zone} failed.");
+                Debug.LogError($"Unique Room Generation for zone {zone} failed.");
                 return false;
             }
 
@@ -848,16 +842,16 @@ namespace RyansLibrary.Labyrinth
                 if (entry.Prefab.TryGetComponent(out Room room))
                     BlueprintGenerator.ToggleAvailableCellsInUniqueRoom(_context, zone.MainPath, room.AvailableCellData, entry.SpawnPosition, false);
                 else
-                    Debug.LogError($"[MapGenerator][Controller] Failed to get Room component from prefab {entry.Prefab}.");
+                    Debug.LogError($"Failed to get Room component from prefab {entry.Prefab}.");
 
-                if (_debugRoomGeneratorLogs) Debug.Log("[MapGeneratorController] Blueprint Room: " + entry.SpawnPosition + "has available cells disabled.");
+                if (_debugRoomGeneratorLogs) Debug.Log("Blueprint Room: " + entry.SpawnPosition + "has available cells disabled.");
             }
 
             // Generate Rooms along main path
             result = _roomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
             if (!result)
             {
-                Debug.LogError($"[MapGenerator][Controller] Path Room Generation for path {zone.MainPath} in zone {zone} failed.");
+                Debug.LogError($"Path Room Generation for path {zone.MainPath} in zone {zone} failed.");
                 return false;
             }
 
@@ -867,7 +861,7 @@ namespace RyansLibrary.Labyrinth
                 result = _roomGenerator.ParsePathAndGenerateRooms(path);
                 if (!result)
                 {
-                    Debug.LogError($"[MapGenerator][Controller] Path Room Generation for path {path} in zone {zone} failed.");
+                    Debug.LogError($"Path Room Generation for path {path} in zone {zone} failed.");
                     return false;
                 }
             }
@@ -880,7 +874,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (_context.BlueprintDictionary == null)
                 {
-                    Debug.Log("[MapGenerator][Controller] Masters are null.");
+                    Debug.Log("Masters are null.");
                     return false;
                 }
 
@@ -904,7 +898,7 @@ namespace RyansLibrary.Labyrinth
                         }
                         else
                         {
-                            Debug.LogError($"[MapGenerator][Controller] Could not copy entranceway flags into unique room {entry}.");
+                            Debug.LogError($"Could not copy entranceway flags into unique room {entry}.");
                             return false;
                         }
                     }
@@ -934,7 +928,7 @@ namespace RyansLibrary.Labyrinth
                     totalCellOccupancy += room.GetRoomOccupancy();
                 }
                 else
-                    Debug.LogWarning("[MapGenerator][Controller] Room Entry Prefab has no Room Script");
+                    Debug.LogWarning("Room Entry Prefab has no Room Script");
             }
 
             // Add Divergent Room volume
@@ -969,7 +963,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_context == null)
             {
-                Debug.LogError("[MapGenerator][Controller] Context is not assigned.");
+                Debug.LogError("Context is not assigned.");
                 return 0;
             }
 
@@ -1037,9 +1031,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         if (stepLength < 1)
                         {
-                            Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
-                            ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. " +
-                                $"Please enter a positive amount of steps to advance.", LogType.Warning);
+                            Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
                             return;
                         }
 
@@ -1047,12 +1039,9 @@ namespace RyansLibrary.Labyrinth
                     }
                     else
                     {
-                        Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
-                        ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. " +
-                            $"Please enter a positive amount of steps to advance.", LogType.Warning);
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
                     }
-                    Debug.Log($"[MapGenerator][Controller] Map generator stepped {stepLength} operation(s).");
-                    ConsoleUI.OnNewConsoleOutput($"Map generator stepped {stepLength} operation(s).", LogType.Log);
+                    Debug.Log($"Map generator stepped {stepLength} operation(s).");
                 }));
 
             // Map generator step all command - Execute all of the remaining map generator operations.
@@ -1062,8 +1051,7 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     AdvanceAll();
-                    Debug.Log("[MapGenerator][Controller] Map Generator executed all remaining operations.");
-                    ConsoleUI.OnNewConsoleOutput("Map Generator executed all remaining operations.", LogType.Log);
+                    Debug.Log("Map Generator executed all remaining operations.");
                 }));
 
             // Map generator reset command - Resets and restarts the map generator state.
@@ -1074,8 +1062,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     ResetLabyrinth();
                     ApplicationController.Instance.StartNewGame();      // DELETE AFTER DEMO
-                    Debug.Log("[MapGenerator][Controller] All data deleted. Map Generator restarted.");
-                    ConsoleUI.OnNewConsoleOutput("All data deleted. Map Generator restarted.", LogType.Log);
+                    Debug.Log("All data deleted. Map Generator restarted.");
                 }));
 
             // Register custom seed command - Sets the map generator to use a custom seed for generation.
@@ -1088,24 +1075,19 @@ namespace RyansLibrary.Labyrinth
 
                     if (args.Length < 1)
                     {
-                        Debug.LogWarning("[Console] No argument given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
-                        ConsoleUI.OnNewConsoleOutput($"No argument given, please enter a valid seed value " +
-                            $"between {int.MinValue} and {int.MaxValue}.", LogType.Warning);
+                        Debug.LogWarning("No argument given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
                         return;
                     }
                     else if (!int.TryParse(args[0], out seed))
                     {
-                        Debug.LogWarning("[Console] Invalid argument given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
-                        ConsoleUI.OnNewConsoleOutput($"Invalid argument given, please enter a valid seed value " +
-                            $"between {int.MinValue} and {int.MaxValue}.", LogType.Warning);
+                        Debug.LogWarning("Invalid argument given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
                         return;
                     }
 
                     _customSeed = seed;
 
                     OnSeedUpdate?.Invoke();
-                    Debug.Log($"[MapGenerator][Controller] Map Generator seed set to {seed}.");
-                    ConsoleUI.OnNewConsoleOutput($"Map Generator seed set to {seed}.", LogType.Log);
+                    Debug.Log($"Map Generator seed set to {seed}.");
                 }
                 ));
 
@@ -1117,8 +1099,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     if (args.Length < 1)
                     {
-                        Debug.LogWarning("[Console] No argument given, please enter true or false.");
-                        ConsoleUI.OnNewConsoleOutput("No argument given, please enter true or false.", LogType.Warning);
+                        Debug.LogWarning("No argument given, please enter true or false.");
                         return;
                     }
                     else if (args[0] == "true")
@@ -1131,13 +1112,11 @@ namespace RyansLibrary.Labyrinth
                     }
                     else
                     {
-                        Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Please input either true or false.");
-                        ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. Please input either true or false.", LogType.Warning);
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please input either true or false.");
                     }
 
                     OnSeedUpdate?.Invoke();
-                    Debug.Log($"[MapGenerator][Controller] Map Generator toggle random seed set to {_generateRandomSeed}.");
-                    ConsoleUI.OnNewConsoleOutput($"Map Generator toggle random seed set to {_generateRandomSeed}.", LogType.Log);
+                    Debug.Log($"Map Generator toggle random seed set to {_generateRandomSeed}.");
                 }));
 
             // Map generator restart command - Resets and restarts the map generator state.
@@ -1148,8 +1127,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     if (args.Length < 1)
                     {
-                        Debug.LogWarning("[Console] No argument given, please enter true or false.");
-                        ConsoleUI.OnNewConsoleOutput("No argument given, please enter true or false.", LogType.Warning);
+                        Debug.LogWarning("No argument given, please enter true or false.");
                         return;
                     }
                     else if (args[0] == "true")
@@ -1162,12 +1140,10 @@ namespace RyansLibrary.Labyrinth
                     }
                     else
                     {
-                        Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Please input either true or false.");
-                        ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. Please input either true or false.", LogType.Warning);
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please input either true or false.");
                     }
 
-                    Debug.Log($"[MapGenerator][Controller] Blueprint stack trace set to {_debugBlueprintLogs}.");
-                    ConsoleUI.OnNewConsoleOutput($"Blueprint stack trace set to {_debugBlueprintLogs}.", LogType.Log);
+                    Debug.Log($"Blueprint stack trace set to {_debugBlueprintLogs}.");
                 }));
         }
         #endregion

@@ -60,7 +60,7 @@ namespace RyansLibrary.Labyrinth
             }
             else
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] ListDifferenceOp: Invalid input types for Blueprint difference operation. " +
+                Debug.LogError($"ListDifferenceOp: Invalid input types for Blueprint difference operation. " +
                     $"Types can only be List<Edge> or List<Blueprint>. Both lists must be of the same type.");
                 return false;
             }

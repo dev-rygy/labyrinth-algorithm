@@ -55,7 +55,7 @@ namespace RyansLibrary.Labyrinth
             Blueprint newBlueprint = new Blueprint(origin, blueprintName);
             newBlueprint.Available = available;
 
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintGenerator] Generated blueprint room {blueprintName} at {origin}");
+            if (_debugLogs) Debug.Log($"Generated blueprint room {blueprintName} at {origin}");
 
             // Update paths and masters with new blueprint room
             path?.Add(newBlueprint);
@@ -88,7 +88,7 @@ namespace RyansLibrary.Labyrinth
                         if (CheckCollision(context, blueprintroomPos, out Blueprint collidedBlueprint))
                         {
                             if (_debugLogs)
-                                Debug.LogWarning($"[MapGenerator][BlueprintGenerator] Failed to generate blueprint room due to collision with {collidedBlueprint.CellID}");
+                                Debug.LogWarning($"Failed to generate blueprint room due to collision with {collidedBlueprint.CellID}");
                             return null;
                         }
 
@@ -194,7 +194,7 @@ namespace RyansLibrary.Labyrinth
                 case 5:
                     return Vector3Int.down;     // F5 : (0, 1, 0); Wall Bot
                 default:
-                    Debug.LogError("[MapGenerator][BlueprintGenerator] Direction choosen does not exist.");
+                    Debug.LogError("Direction choosen does not exist.");
                     return Vector3Int.zero;
             }
         }
@@ -235,7 +235,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (entrFlagIdx < 0)
             {
-                Debug.LogError("[MapGenerator][BlueprintGenerator] The two blueprints are invalid for entrance connection");
+                Debug.LogError("The two blueprints are invalid for entrance connection");
                 return;
             }
 
@@ -266,14 +266,14 @@ namespace RyansLibrary.Labyrinth
             // Check if range is valid
             if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (path.BlueprintCount() - 1)))
             {
-                Debug.LogError("[MapGenerator][BlueprintGenerator] Path index out of range or set incorrectly.");
+                Debug.LogError("Path index out of range or set incorrectly.");
                 return null;
             }
 
             // Check if path to choose from is valid
             if (path.BlueprintCount() <= 0)
             {
-                Debug.LogError($"[MapGenerator][BlueprintGenerator] A starting room could not be choosen because {path.Name} has no rooms.");
+                Debug.LogError($"A starting room could not be choosen because {path.Name} has no rooms.");
                 return null;
             }
 
@@ -290,7 +290,7 @@ namespace RyansLibrary.Labyrinth
                 blueprint = ChooseRandomBlueprintInPath(path, startIndex, endIndex);
             }
 
-            if (_debugLogs) Debug.Log($"[MapGenerator][BlueprintGenerator] Random room choosen from {path.Name} at index {randomBlueprintListIndex}");
+            if (_debugLogs) Debug.Log($"Random room choosen from {path.Name} at index {randomBlueprintListIndex}");
 
             return blueprint;
         }
@@ -299,7 +299,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (path == null)
             {
-                Debug.LogError("[MapGenerator][BlueprintGenerator] Path was null.");
+                Debug.LogError("Path was null.");
                 return null;
             }
 
@@ -353,7 +353,7 @@ namespace RyansLibrary.Labyrinth
             Vector3Int amountOutOfBounds = CheckOutOfBounds(position, size, intersectedBounds);
             if (amountOutOfBounds != Vector3.zero)
             {
-                Debug.LogWarning("[MapGenerator][BlueprintGenerator] Desired intersecting bounds lies outside the overarching bounds. Adjusting size...");
+                Debug.LogWarning("Desired intersecting bounds lies outside the overarching bounds. Adjusting size...");
                 size -= amountOutOfBounds;
             }
 

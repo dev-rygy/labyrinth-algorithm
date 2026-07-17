@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    06/04/2025
- * Last Modified:   06/13/2025 (Ryan)
+ * Last Modified:   07/17/2026 (Ryan)
  * Notes:           Controls the user interface of the debug console
 */
 using RyansLibrary.Console;
@@ -77,6 +77,8 @@ public class ConsoleUI : UIBehaviour
         OnNewConsoleOutput += OutputToConsole;
         OnClearConsole += ClearConsole;
 
+        Application.logMessageReceived += HandleUnityLog;
+
         AddBasicConsoleCommandsToRegistry();
     }
 
@@ -90,6 +92,8 @@ public class ConsoleUI : UIBehaviour
         InputHandler.OnAutoComplete -= AutoCompleteInput;
 
         _inputField.onValueChanged.RemoveListener(OnInputChanged);
+
+        Application.logMessageReceived -= HandleUnityLog;
 
         OnNewConsoleOutput -= OutputToConsole;
         OnClearConsole -= ClearConsole;
@@ -234,6 +238,11 @@ public class ConsoleUI : UIBehaviour
         }
     }
 
+    private void HandleUnityLog(string logString, string stackTrace, LogType type)
+    {
+        OutputToConsole(logString, type);
+    }
+
     private void OutputToConsole(string output, LogType logType = LogType.Log)
     {
         StringBuilder sb = new StringBuilder();
@@ -299,7 +308,7 @@ public class ConsoleUI : UIBehaviour
                 }
 
                 OutputToConsole(sb.ToString());
-                Debug.Log("[Console] Console commands listed.");
+                Debug.Log("Console commands listed.");
             }));
 
         // Clear command - clear text from console interface
@@ -309,7 +318,7 @@ public class ConsoleUI : UIBehaviour
             args =>
             {
                 ClearConsole();
-                Debug.Log("[Console] Console cleared.");
+                Debug.Log("Console cleared.");
             }));
 
         // Print input memory command - Print memory of console
@@ -319,7 +328,7 @@ public class ConsoleUI : UIBehaviour
             args =>
             {
                 PrintInputMemory();
-                Debug.Log("[Console] Input Memory printed to console.");
+                Debug.Log("Input Memory printed to console.");
             }));
     }
 }

@@ -46,8 +46,7 @@ namespace RyansLibrary.Labyrinth
             }
             else
             {
-                Debug.LogError($"[MapGenerator][BlueprintData] {OperationID} - Invalid input for operation. Types can only be List<Edge> or List<Blueprint>.");
-                ConsoleUI.OnNewConsoleOutput($"{OperationID} - Invalid input for operation. Types can only be List<Edge> or List<Blueprint>.", LogType.Error);
+                Debug.LogError($"{OperationID} - Invalid input for operation. Types can only be List<Edge> or List<Blueprint>.");
                 return false;
             }
         }

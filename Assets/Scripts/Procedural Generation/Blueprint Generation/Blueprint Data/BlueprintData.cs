@@ -65,8 +65,7 @@ namespace RyansLibrary.Labyrinth
         {
             for (int i = 0; i < OutputPorts.Count; i++)
             {
-                Debug.Log($"[MapGenerator][BlueprintData] {DataID} ({OutputPorts[i]}) - Data loaded into memory");
-                ConsoleUI.OnNewConsoleOutput($"{DataID} ({OutputPorts[i]}) - Data loaded into memory", LogType.Log);
+                Debug.Log($"{DataID} ({OutputPorts[i]}) - Data loaded into memory");
             }
         }
     }

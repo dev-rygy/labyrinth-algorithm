@@ -116,7 +116,7 @@ namespace RyansLibrary.Labyrinth
             Shader shader = Shader.Find("Hidden/Internal-Colored");
             if (shader == null)
             {
-                Debug.LogError("[RuntimeGizmos] Could not find shader 'Hidden/Internal-Colored'. " +
+                Debug.LogError("Could not find shader 'Hidden/Internal-Colored'. " +
                     "Add it to Project Settings > Graphics > Always Included Shaders so it survives build stripping.");
                 return;
             }

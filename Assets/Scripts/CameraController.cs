@@ -42,7 +42,7 @@ public class CameraController : MonoBehaviour
         // Handle singleton; if instance has a reference and the reference is not this object
         if (Instance != null)
         {
-            Debug.LogWarning("[CameraController] Another instance of CameraController already exists. Deleting Object...");
+            Debug.LogWarning("Another instance of CameraController already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }
@@ -77,7 +77,7 @@ public class CameraController : MonoBehaviour
                 EnableMainCamera();
                 break;
             default:
-                Debug.LogError("[CameraController] Invalid camera mode: " + mode);  
+                Debug.LogError("Invalid camera mode: " + mode);  
                 break;
         }
     }
@@ -139,8 +139,7 @@ public class CameraController : MonoBehaviour
             {
                 if (args.Length != 1)
                 {
-                    Debug.LogWarning("[Console] No argument given, please enter a camera mode.");
-                    ConsoleUI.OnNewConsoleOutput($"No argument given, please enter a camera mode.", LogType.Warning);
+                    Debug.LogWarning("No argument given, please enter a camera mode.");
                     return;
                 }
 
@@ -149,28 +148,23 @@ public class CameraController : MonoBehaviour
                     case "player":
                         if (currentCameraMode == CameraMode.Player)
                         {
-                            Debug.LogWarning("[CameraController] Player Camera is already enabled.");
-                            ConsoleUI.OnNewConsoleOutput($"Player Camera is already enabled.", LogType.Warning);
+                            Debug.LogWarning("Player Camera is already enabled.");
                             return;
                         }
 
                         if (playerCamera == null)
                         {
-                            Debug.LogWarning("[CameraController] Player Camera is not yet initialized. Please wait until the player has spawned.");
-                            ConsoleUI.OnNewConsoleOutput($"Player Camera is not yet initialized. " +
-                                $"Please wait until the player has spawned.", LogType.Warning);
+                            Debug.LogWarning("Player Camera is not yet initialized. Please wait until the player has spawned.");
                             return;
                         }
 
                         SetCameraMode(CameraMode.Player);
-                        Debug.Log($"[CameraController] Player Camera toggled.");
-                        ConsoleUI.OnNewConsoleOutput($"[CameraController] Player Camera toggled.", LogType.Log);
+                        Debug.Log($"Player Camera toggled.");
                         break;
                     case "free":
                         if (currentCameraMode == CameraMode.Free)
                         {
-                            Debug.LogWarning("[CameraController] Free Camera is already enabled.");
-                            ConsoleUI.OnNewConsoleOutput($"Free Camera is already enabled.", LogType.Warning);
+                            Debug.LogWarning("Free Camera is already enabled.");
                             return;
                         }
 
@@ -184,24 +178,20 @@ public class CameraController : MonoBehaviour
                             SetCameraMode(CameraMode.Free);
                         }
 
-                        Debug.Log($"[CameraController] Free Camera toggled.");
-                        ConsoleUI.OnNewConsoleOutput($"Free Camera toggled", LogType.Log);
+                        Debug.Log($"Free Camera toggled.");
                         break;
                     case "main":
                         if (currentCameraMode == CameraMode.Main)
                         {
-                            Debug.LogWarning("[CameraController] Main Camera is already enabled.");
-                            ConsoleUI.OnNewConsoleOutput($"Main Camera is already enabled.", LogType.Warning);
+                            Debug.LogWarning("Main Camera is already enabled.");
                             return;
                         }
 
                         SetCameraMode(CameraMode.Main);
-                        Debug.Log($"[CameraController] Main Camera toggled.");
-                        ConsoleUI.OnNewConsoleOutput($"Main Camera toggled.", LogType.Log);
+                        Debug.Log($"Main Camera toggled.");
                         break;
                     default:
-                        Debug.LogWarning($"[Console] Invalid argument '{args[0]}'. Please enter a valid camera mode.");
-                        ConsoleUI.OnNewConsoleOutput($"Invalid argument '{args[0]}'. Please enter a valid camera mode.", LogType.Warning);
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a valid camera mode.");
                         return;
                 }
             }));

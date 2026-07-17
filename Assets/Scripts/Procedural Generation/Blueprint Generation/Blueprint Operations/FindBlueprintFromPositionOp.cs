@@ -36,7 +36,7 @@ namespace RyansLibrary.Labyrinth
 
             if (!result)
             {
-                Debug.LogWarning($"[MapGenerator][BlueprintOperation] FindBlueprintFromPositionOp: Blueprint could not be found from position {position}.");
+                Debug.LogWarning($"FindBlueprintFromPositionOp: Blueprint could not be found from position {position}.");
                 return false;
             }
 

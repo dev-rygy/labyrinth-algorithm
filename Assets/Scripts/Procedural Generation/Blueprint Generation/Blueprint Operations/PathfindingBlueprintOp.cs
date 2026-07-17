@@ -73,12 +73,12 @@ namespace RyansLibrary.Labyrinth
         {
             if (path is null)
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] PathfindingBlueprintOp: Error: Path object was null for pathfind.");
+                Debug.LogError($"PathfindingBlueprintOp: Error: Path object was null for pathfind.");
                 return false;
             }
             if (startBlueprint is null || endBlueprint is null)
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] PathfindingBlueprintOp: Error: Starting/Ending Blueprint was null for pathfind.");
+                Debug.LogError($"PathfindingBlueprintOp: Error: Starting/Ending Blueprint was null for pathfind.");
                 return false;
             }
 
@@ -95,7 +95,7 @@ namespace RyansLibrary.Labyrinth
 
             if (sequence == null)
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] PathfindingBlueprintOp: Error: Pathfinding failed for edge.");
+                Debug.LogError($"PathfindingBlueprintOp: Error: Pathfinding failed for edge.");
                 return false;
             }
 

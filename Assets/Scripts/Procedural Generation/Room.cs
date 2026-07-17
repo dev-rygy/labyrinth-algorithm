@@ -93,7 +93,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (rotation == Vector3.zero)        // If no rotation return
             {
-                if (_debug) Debug.Log($"[MapGenerator][Room] Room {gameObject.name} was not rotated.");
+                if (_debug) Debug.Log($"Room {gameObject.name} was not rotated.");
                 return bluePrintArray;
             }
 
@@ -106,10 +106,10 @@ namespace RyansLibrary.Labyrinth
                 rotatedArray[3] = bluePrintArray[0];        // Negative Z direction the same
                 rotatedArray[4] = bluePrintArray[4];        // Positive Y to Positive X
                 rotatedArray[5] = bluePrintArray[5];        // Negative Y to Negative X
-                if (_debug) Debug.Log($"[MapGenerator][Room] Room {gameObject.name} has been rotated by 90 degrees.");
+                if (_debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
             }
             else
-                Debug.LogError($"[MapGenerator][Room] Room {gameObject.name} has been rotated incorrectly.");
+                Debug.LogError($"Room {gameObject.name} has been rotated incorrectly.");
             
             return rotatedArray;
         }

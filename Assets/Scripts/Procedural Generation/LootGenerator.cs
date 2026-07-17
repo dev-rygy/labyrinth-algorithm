@@ -64,7 +64,7 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            if (_debug) Debug.Log("[LootGenerator] Loot Spawn Procedure has ended.");
+            if (_debug) Debug.Log("Loot Spawn Procedure has ended.");
         }
     }
 }

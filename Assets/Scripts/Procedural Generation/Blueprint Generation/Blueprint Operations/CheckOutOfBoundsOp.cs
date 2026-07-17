@@ -34,7 +34,7 @@ namespace RyansLibrary.Labyrinth
             BoundsInt intersectingBounds = CreateIntersectingBounds(boundsA, boundsB);
 
             _context.Malloc(OutputPorts[0], intersectingBounds);
-            if (DebugLogs) Debug.Log($"[MapGenerator][BlueprintOperation] CheckOutOfBoundsOp: Intersecting bounds loaded into memory with ID {OutputPorts[0]}");
+            if (DebugLogs) Debug.Log($"CheckOutOfBoundsOp: Intersecting bounds loaded into memory with ID {OutputPorts[0]}");
             return true;
         }
 
@@ -50,7 +50,7 @@ namespace RyansLibrary.Labyrinth
             Vector3Int amountOutOfBounds = BlueprintGenerator.CheckOutOfBounds(position, size, intersectedBounds);
             if (amountOutOfBounds != Vector3.zero)
             {
-                Debug.LogWarning("[MapGenerator][BlueprintOperation] CheckOutOfBoundsOp: Desired intersecting bounds lies outside the overarching bounds. Adjusting size...");
+                Debug.LogWarning("CheckOutOfBoundsOp: Desired intersecting bounds lies outside the overarching bounds. Adjusting size...");
                 size -= amountOutOfBounds;
             }
 

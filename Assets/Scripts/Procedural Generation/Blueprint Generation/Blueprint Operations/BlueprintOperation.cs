@@ -61,8 +61,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (inputPortIndex < 0 && inputPortIndex >= InputPorts.Count)
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] {OperationID} - Input index {inputPortIndex} was out of range 0 - {InputPorts.Count}.");
-                ConsoleUI.OnNewConsoleOutput($"{OperationID} - Input index {inputPortIndex} was out of range 0 - {InputPorts.Count}.", LogType.Error);
+                Debug.LogError($"{OperationID} - Input index {inputPortIndex} was out of range 0 - {InputPorts.Count}.");
                 value = default;
                 return false;
             }
@@ -75,8 +74,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (required)
                 {
-                    Debug.LogError($"[MapGenerator][BlueprintOperation] {OperationID} - Required input was not assiged at index {inputPortIndex}.");
-                    ConsoleUI.OnNewConsoleOutput($"{OperationID} - Required input was not assiged at index {inputPortIndex}.", LogType.Error);
+                    Debug.LogError($"{OperationID} - Required input was not assiged at index {inputPortIndex}.");
 
                     return false;
                 }    
@@ -85,8 +83,7 @@ namespace RyansLibrary.Labyrinth
 
             if (!_context.TryGet(memoryId, out T storedValue))
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] {OperationID} - Input with memory ID ({memoryId}) is not valid in memory.");
-                ConsoleUI.OnNewConsoleOutput($"{OperationID} - Input with memory ID ({memoryId}) is not valid in memory.", LogType.Error);
+                Debug.LogError($"{OperationID} - Input with memory ID ({memoryId}) is not valid in memory.");
 
                 value = default;
                 return true;
@@ -98,8 +95,7 @@ namespace RyansLibrary.Labyrinth
 
         protected void LogNullError()
         {
-            Debug.LogError($"[MapGenerator][BlueprintOperation] {OperationID} - Failed to execute due to a required value being null.");
-            ConsoleUI.OnNewConsoleOutput($"{OperationID} - Failed to execute due to a required value being null.", LogType.Error);
+            Debug.LogError($"{OperationID} - Failed to execute due to a required value being null.");
         }
     }
 }

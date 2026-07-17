@@ -81,7 +81,6 @@ namespace RyansLibrary.Labyrinth
             if (BlueprintOperation.DebugLogs)
             {
                 Debug.Log($"{op.OperationID} - Operation loaded into memory.");
-                ConsoleUI.OnNewConsoleOutput($"{op.OperationID} - Operation loaded into memory.", LogType.Log);
             }
         }
 
@@ -125,14 +124,14 @@ namespace RyansLibrary.Labyrinth
             // Check to see if queue has operations
             if (OperationQueue.Count <= 0)
             {
-                Debug.LogError("[MapGenerator][Context] Attempted to perform jump operation while the operation queue was empty.");
+                Debug.LogError("Attempted to perform jump operation while the operation queue was empty.");
                 return false;
             }
 
             // Validate target operation ID format
             if (!TryParseOpNum(targetOperationID, out int targetOperationNum))
             {
-                Debug.LogError($"[MapGenerator][Context] Invalid target operation ID format ({targetOperationID}). Expected \"prefix:number\".");
+                Debug.LogError($"Invalid target operation ID format ({targetOperationID}). Expected \"prefix:number\".");
                 return false;
             }
 
@@ -145,7 +144,7 @@ namespace RyansLibrary.Labyrinth
                 BlueprintOperation current = OperationQueuePeek();
                 if (current == null)
                 {
-                    Debug.LogError($"[MapGenerator][Context] Operation queue exhausted before reaching target ({targetOperationID}).");
+                    Debug.LogError($"Operation queue exhausted before reaching target ({targetOperationID}).");
                     return false;
                 }
 
@@ -155,7 +154,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (!TryParseOpNum(current.OperationID, out int currNum))
                 {
-                    Debug.LogError($"[MapGenerator][Context] Invalid operation ID format in queue ({current.OperationID}).");
+                    Debug.LogError($"Invalid operation ID format in queue ({current.OperationID}).");
                     return false;
                 }
 
@@ -172,7 +171,7 @@ namespace RyansLibrary.Labyrinth
                     // If the queue became empty, we can't reach anything further
                     if (OperationQueue.Count == 0)
                     {
-                        Debug.LogError($"[MapGenerator][Context] Target operation not found in queue ({targetOperationID}).");
+                        Debug.LogError($"Target operation not found in queue ({targetOperationID}).");
                         return false;
                     }
                 }
@@ -181,7 +180,7 @@ namespace RyansLibrary.Labyrinth
                     // Move backward: history -> queue front
                     if (OperationHistory.Count == 0)
                     {
-                        Debug.LogError($"[MapGenerator][Context] Operation history exhausted while attempting reverse jump to ({targetOperationID}).");
+                        Debug.LogError($"Operation history exhausted while attempting reverse jump to ({targetOperationID}).");
                         return false;
                     }
 
@@ -190,7 +189,7 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            Debug.LogError($"[MapGenerator][Context] Jump aborted (guard limit hit). Target not found: {targetOperationID}.");
+            Debug.LogError($"Jump aborted (guard limit hit). Target not found: {targetOperationID}.");
             return false;
 
             static bool TryParseOpNum(string operationId, out int num)
@@ -221,7 +220,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_dataCache is null)
             {
-                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
+                Debug.LogError($"Memory object not set.");
                 value = default;
                 return false;
             }
@@ -233,7 +232,7 @@ namespace RyansLibrary.Labyrinth
                 return true;
             }
 
-            Debug.LogWarning($"[MapGenerator][Context] Data with memory ID ({memoryID}) could not be found.");
+            Debug.LogWarning($"Data with memory ID ({memoryID}) could not be found.");
             value = default;
             return false;
         }
@@ -247,7 +246,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_dataCache is null)
             {
-                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
+                Debug.LogError($"Memory object not set.");
                 return;
             }
 
@@ -263,7 +262,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_dataCache is null)
             {
-                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
+                Debug.LogError($"Memory object not set.");
                 return false;
             }
 
@@ -278,7 +277,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_dataCache is null)
             {
-                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
+                Debug.LogError($"Memory object not set.");
                 return;
             }
 
@@ -334,7 +333,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (_dataCache is null)
             {
-                Debug.LogError($"[MapGenerator][Context] Memory object not set.");
+                Debug.LogError($"Memory object not set.");
                 return;
             }
 
@@ -394,7 +393,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (OperationQueue is null)
             {
-                Debug.LogError("[MapGenerator][Context] Operation Queue is not yet assigned.");
+                Debug.LogError("Operation Queue is not yet assigned.");
                 return 0;
             }
 
@@ -405,7 +404,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (OperationHistory is null)
             {
-                Debug.LogError("[MapGenerator][Context] Operation History is not yet assigned.");
+                Debug.LogError("Operation History is not yet assigned.");
                 return 0;
             }
 

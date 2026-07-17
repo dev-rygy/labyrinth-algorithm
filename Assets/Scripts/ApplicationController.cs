@@ -39,7 +39,7 @@ public class ApplicationController : MonoBehaviour
         // Handle Singleton
         if (Instance != null)
         {
-            Debug.LogWarning("[ApplicationController] Another instance of ApplicationController already exists. Deleting Object...");
+            Debug.LogWarning("Another instance of ApplicationController already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }

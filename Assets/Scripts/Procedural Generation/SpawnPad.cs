@@ -33,7 +33,7 @@ public class SpawnPad : MonoBehaviour
     {
         if (_spawnObject == null)
         {
-            Debug.LogWarning("[SpawnPad] Spawn Pad has no valid object to spawn.");
+            Debug.LogWarning("Spawn Pad has no valid object to spawn.");
             return;
         }
 
@@ -48,7 +48,7 @@ public class SpawnPad : MonoBehaviour
     {
         if (spawnObject == null)
         {
-            Debug.LogWarning("[SpawnPad] Spawn Pad was passed in an object of type null.");
+            Debug.LogWarning("Spawn Pad was passed in an object of type null.");
             return;
         }
 

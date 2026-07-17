@@ -55,7 +55,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (path == null)      // Throw error if path does not exist
             {
-                Debug.LogError($"[MapGenerator][RoomGenerator] The {path.Name} is not assigned for Room Generation.");
+                Debug.LogError($"The {path.Name} is not assigned for Room Generation.");
                 return false;
             }
 
@@ -106,12 +106,12 @@ namespace RyansLibrary.Labyrinth
 
                     if (genRoom == null)
                     {
-                        Debug.LogError($"[MapGenerator][RoomGenerator] Path {path.Name} attempted to spawn a Small Room but failed.");
+                        Debug.LogError($"Path {path.Name} attempted to spawn a Small Room but failed.");
                         return false;
                     }
 
                     if (_debugLogs)
-                        Debug.Log($"[MapGenerator][RoomGenerator] Path {path.Name} Generated Big Room: {genRoom.name}");
+                        Debug.Log($"Path {path.Name} Generated Big Room: {genRoom.name}");
                 }
 
                 // Check conditions to spawn a Tall Room starting at the indexed room's position
@@ -122,12 +122,12 @@ namespace RyansLibrary.Labyrinth
 
                     if (genRoom == null)
                     {
-                        Debug.LogError($"[MapGenerator][RoomGenerator] Path {path.Name} attempted to spawn a Small Room but failed.");
+                        Debug.LogError($"Path {path.Name} attempted to spawn a Small Room but failed.");
                         return false;
                     }
 
                     if (_debugLogs) 
-                        Debug.Log($"[MapGenerator][RoomGenerator] Path {path.Name} Generated Tall Room: {genRoom.name}");
+                        Debug.Log($"Path {path.Name} Generated Tall Room: {genRoom.name}");
                 }
 
                 // Check conditions to spawn a Long Room starting at the indexed room's position
@@ -137,14 +137,14 @@ namespace RyansLibrary.Labyrinth
 
                     if (genRoom == null)
                     {
-                        Debug.LogError($"[MapGenerator][RoomGenerator] Path {path.Name} attempted to spawn a Small Room but failed.");
+                        Debug.LogError($"Path {path.Name} attempted to spawn a Small Room but failed.");
                         return false;
                     }
 
                     path.Add(genRoom);              // Add new room to paths
 
                     if (_debugLogs) 
-                        Debug.Log($"[MapGenerator][RoomGenerator] Path {path.Name} Generated Long Room: {genRoom.name}");
+                        Debug.Log($"Path {path.Name} Generated Long Room: {genRoom.name}");
                 }
 
                 // Default: Spawn a Small room at the indexed room's position
@@ -156,14 +156,14 @@ namespace RyansLibrary.Labyrinth
                     genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, indexedBlueprint, 0); // Spawn S-Room
                     if (genRoom == null)
                     {
-                        Debug.LogError($"[MapGenerator][RoomGenerator] Path {path.Name} attempted to spawn a Small Room but failed.");
+                        Debug.LogError($"Path {path.Name} attempted to spawn a Small Room but failed.");
                         return false;
                     }
 
                     path.Add(genRoom);              // Add new room to paths
 
                     if (_debugLogs) 
-                        Debug.Log($"[MapGenerator][RoomGenerator] Path {path.Name} Generated Small Room: {genRoom.name}");
+                        Debug.Log($"Path {path.Name} Generated Small Room: {genRoom.name}");
                 }
             }
 
@@ -352,7 +352,7 @@ namespace RyansLibrary.Labyrinth
                     }
                 default:
                     {
-                        Debug.LogError($"[MapGenerator][RoomGenerator] Room condition checked wrong room shape.");
+                        Debug.LogError($"Room condition checked wrong room shape.");
                         return false;
                     }
             }
@@ -512,7 +512,7 @@ namespace RyansLibrary.Labyrinth
                         generatedRoom.Initialize(rType);
                     }
                     else
-                        Debug.LogError($"[MapGenerator][RoomGenerator] Roomcase does not match any valid Tall-Room Cases.");
+                        Debug.LogError($"Roomcase does not match any valid Tall-Room Cases.");
                     break;
 
                 // ********* Generate Tall Room (1x2x1) **************
@@ -541,7 +541,7 @@ namespace RyansLibrary.Labyrinth
                     }
                     else
                     {
-                        Debug.LogError("[MapGenerator][RoomGenerator] Roomcase does not match any valid Tall-Room Cases.");
+                        Debug.LogError("Roomcase does not match any valid Tall-Room Cases.");
                     }
                     break;
 
@@ -592,7 +592,7 @@ namespace RyansLibrary.Labyrinth
                         generatedRoom.Initialize(rType);
                     }
                     else
-                        Debug.LogError("[MapGenerator][RoomGenerator] Roomcase does not match any valid Long-Room Cases.");
+                        Debug.LogError("Roomcase does not match any valid Long-Room Cases.");
                     break;
 
                 // ********* Generate Small Room (1x1x1) **************
@@ -608,7 +608,7 @@ namespace RyansLibrary.Labyrinth
 
                 // ********* Error **************
                 default:
-                    Debug.LogError("[MapGenerator][RoomGenerator] Room Shape Invalid.");
+                    Debug.LogError("Room Shape Invalid.");
                     break;
             }
 
@@ -638,7 +638,7 @@ namespace RyansLibrary.Labyrinth
             // If the path's room entry list contains no room return null
             if (pathEntries.Count == 0)
             {
-                Debug.LogError("Map Generator Error: Probability of Room Weights Failed, room list empty.");
+                Debug.LogError("Probability of room weights failed, room list empty.");
                 return null;
             }
 
@@ -662,7 +662,7 @@ namespace RyansLibrary.Labyrinth
                     return pathEntries[i].Prefab;
             }
 
-            Debug.LogError("Map Generator Error: Probability of Room Weights Failed, unknown error.");
+            Debug.LogError("Probability of room weights failed, unknown error.");
             return null;
         }
         #endregion

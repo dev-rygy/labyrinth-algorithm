@@ -23,8 +23,7 @@ namespace RyansLibrary.Labyrinth
             if (!TryGetInput(0, out string msg))
                 return false;
 
-            Debug.Log($"[MapGenerator][Info] {msg}");
-            ConsoleUI.OnNewConsoleOutput($"[MapGenerator][Info] {msg}", LogType.Log);
+            Debug.Log($"[MapGenerator] {msg}");
 
             return true;
         }

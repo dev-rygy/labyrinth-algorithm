@@ -225,8 +225,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     if (args.Length < 1)
                     {
-                        Debug.LogWarning("[Console] No argument given, please enter 'true' or 'false'.");
-                        ConsoleUI.OnNewConsoleOutput("No argument given, please enter 'true' or 'false'.", LogType.Warning);
+                        Debug.LogWarning("No argument given, please enter 'true' or 'false'.");
                         return;
                     }
 
@@ -240,11 +239,9 @@ namespace RyansLibrary.Labyrinth
                     }
                     else
                     {
-                        Debug.LogWarning($"[Console] Invalid argument {args[0]}. Please input either 'true' or 'false'.");
-                        ConsoleUI.OnNewConsoleOutput($"Invalid argument {args[0]}. Please input either 'true' or 'false'.", LogType.Warning);
+                        Debug.LogWarning($"Invalid argument {args[0]}. Please input either 'true' or 'false'.");
                     }
-                    Debug.Log($"[MapGenerator][Debugger] Map Generator Gizmos set to {_debugGizmos}.");
-                    ConsoleUI.OnNewConsoleOutput($"Map Generator Gizmos set to '{_debugGizmos}'.", LogType.Log);
+                    Debug.Log($"Map Generator Gizmos set to {_debugGizmos}.");
                 }
                 ));
 
@@ -254,8 +251,7 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     _debugBlueprintGizmos = !_debugBlueprintGizmos;
-                    Debug.Log($"[MapGenerator][Debugger] Blueprint Gizmos set to '{_debugBlueprintGizmos}'.");
-                    ConsoleUI.OnNewConsoleOutput($"Blueprint Gizmos set to '{_debugBlueprintGizmos}'.", LogType.Log);
+                    Debug.Log($"Blueprint Gizmos set to '{_debugBlueprintGizmos}'.");
                 }));
 
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
@@ -264,8 +260,7 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     _debugTriangulationGizmos = !_debugTriangulationGizmos;
-                    Debug.Log($"[MapGenerator][Debugger] Triangulation Gizmos set to '{_debugTriangulationGizmos}'.");
-                    ConsoleUI.OnNewConsoleOutput($"Triangulation Gizmos set to '{_debugTriangulationGizmos}'.", LogType.Log);
+                    Debug.Log($"Triangulation Gizmos set to '{_debugTriangulationGizmos}'.");
                 }));
 
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
@@ -274,8 +269,7 @@ namespace RyansLibrary.Labyrinth
                 args =>
                 {
                     _debugBoundsGizmos = !_debugBoundsGizmos;
-                    Debug.Log($"[MapGenerator][Debugger] Bounds Gizmos set to '{_debugBoundsGizmos}'.");
-                    ConsoleUI.OnNewConsoleOutput($"Bounds Gizmos set to '{_debugBoundsGizmos}'.", LogType.Log);
+                    Debug.Log($"Bounds Gizmos set to '{_debugBoundsGizmos}'.");
                 }));
 
         }

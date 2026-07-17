@@ -59,7 +59,7 @@ namespace RyansLibrary.Labyrinth
             }
             else
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] ListUnionOp: Invalid input types for Blueprint union operation. " +
+                Debug.LogError($"ListUnionOp: Invalid input types for Blueprint union operation. " +
                     $"Types can only be List<Edge> or List<Blueprint>. Both lists must be of the same type.");
                 return false;
             }

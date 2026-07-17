@@ -55,7 +55,7 @@ namespace RyansLibrary.Labyrinth
             }
             else
             {
-                Debug.LogError($"[MapGenerator][BlueprintOperation] ListSelectRandomSetFromOp: Invalid input types for Blueprint select random operation. " +
+                Debug.LogError($"ListSelectRandomSetFromOp: Invalid input types for Blueprint select random operation. " +
                     $"Types can only be List<Edge> or List<Blueprint>.");
                 return false;
             }

@@ -80,14 +80,12 @@ namespace RyansLibrary.Console
                 }
                 catch (Exception e)     // Error executing command
                 {
-                    Debug.LogError($"[Console][ConsoleRegistry] Error executing command '{commandName}': {e.Message}.");
-                    ConsoleUI.OnNewConsoleOutput($"Error executing command '{commandName}': {e.Message}.", LogType.Exception);
+                    Debug.LogError($"Error executing command '{commandName}': {e.Message}.");
                 }
             }
             else    // Command keyword not recognized
             {
-                Debug.LogWarning($"[Console][ConsoleRegistry] Unknown command - {commandName}.");
-                ConsoleUI.OnNewConsoleOutput($"Unknown command - {commandName}.", LogType.Warning);
+                Debug.LogWarning($"Unknown command - {commandName}.");
             }
 
             return false;
