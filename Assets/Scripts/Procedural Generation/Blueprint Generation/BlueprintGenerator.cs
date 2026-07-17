@@ -105,6 +105,41 @@ namespace RyansLibrary.Labyrinth
             return roomBlueprints;
         }
 
+        /// <summary>
+        /// Will place rooms randomly in a zone but will pull rooms randomly from the main path.
+        /// </summary>
+        /// <param name="zone"></param>
+        /// <returns></returns>
+        public static bool PlaceBoundedBlueprints(MapGenerationContext context, Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true)
+        {
+            // Adjust the upper bounds so that the room's volume will properly fit within the bounded space; in
+            // other words it will never spawn outside it's bounds
+            Vector3Int adjUpperBound = new Vector3Int(
+                bounds.xMax - dimensions.x,
+                bounds.yMax - dimensions.y,
+                bounds.zMax - dimensions.z
+            );
+
+            // Choose random spawn pos in the room's bounds;
+            // NOTE: this random position is in room coords
+            Vector3Int randomSpawnPos = new Vector3Int(
+                Random.Range(bounds.xMin, adjUpperBound.x + 1),
+                Random.Range(bounds.yMin, adjUpperBound.y + 1),
+                Random.Range(bounds.zMin, adjUpperBound.z + 1)
+            );
+
+            // Append the newly generated blueprint rooms to the end of the list
+            List<Blueprint> newBlueprints = BlueprintGenerator.GenerateBlueprintsFromDimensions(context, path, randomSpawnPos, dimensions, available);
+
+            spawnPosition = randomSpawnPos;
+
+            // do not advance iteration if nothing was spawned
+            if (newBlueprints == null)
+                return false;
+
+            return true;
+        }
+
         public static Blueprint PlaceBlueprintInRandomDirection(MapGenerationContext context, Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
         {
             // If path can be placed in a vertical direction then all 6 faces are available, otherwise only 4 horizontal faces are available
@@ -167,17 +202,17 @@ namespace RyansLibrary.Labyrinth
 
         private static int GetIndexFromDirection(Vector3Int direction)
         {
-            if (direction == Vector3Int.right)
+            if (direction == Vector3Int.right)          // F0 : (1, 0, 0); Wall Right
                 return 0;
-            else if (direction == Vector3Int.left)
+            else if (direction == Vector3Int.left)      // F1 : (-1, 0, 0); Wall Left
                 return 1;
-            else if (direction == Vector3Int.forward)
+            else if (direction == Vector3Int.forward)   // F2 : (0, 0, 1); Wall Forward
                 return 2;
-            else if (direction == Vector3Int.back)
+            else if (direction == Vector3Int.back)      // F3 : (0, 0, -1); Wall Back
                 return 3;
-            else if (direction == Vector3Int.up)
+            else if (direction == Vector3Int.up)        // F4 : (0, 1, 0); Wall Top
                 return 4;
-            else if (direction == Vector3Int.down)
+            else if (direction == Vector3Int.down)      // F5 : (0, 1, 0); Wall Bot
                 return 5;
             else
                 return -1;   // Default or error case

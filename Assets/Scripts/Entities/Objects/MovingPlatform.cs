@@ -18,10 +18,17 @@ public class MovingPlatform : MonoBehaviour
 
     [Header("Trigger Settings")]
     [SerializeField] protected bool _needsTrigger = false;
-    [SerializeField] protected Trigger MainTriggerObject;
+    [SerializeField] protected Trigger _mainTriggerObject;
+    [SerializeField] protected Trigger _baseRecallTriggerObject;
+    [SerializeField] protected Trigger _endRecallTriggerObject;
 
     [Header("Debugger")]
     [SerializeField] private bool _debugLogs = false;
+
+    protected bool CheckDistance(Vector3 waypoint) => Vector3.Distance(transform.position, waypoint) <= _waypointPrecision;
+
+    protected Vector3 _baseRecallWaypoint = Vector3.zero;
+    protected Vector3 _endRecallWaypoint = Vector3.zero;
 
     protected bool _isMoving = false;
 
@@ -33,16 +40,33 @@ public class MovingPlatform : MonoBehaviour
 
     protected virtual void Start()
     {
-        if (_needsTrigger && MainTriggerObject == null)
+        if (_needsTrigger && _mainTriggerObject == null)
         {
             Debug.LogError("Platform is set to need a trigger, but no trigger object is assigned.");
             return;
         }
-        if (MainTriggerObject != null)
+        if (_mainTriggerObject != null)
         {
-            MainTriggerObject.OnTriggerActivated += MoveToNextWaypoint;
+            _mainTriggerObject.OnTriggerActivated += MoveToNextWaypoint;
             if (_debugLogs) Debug.Log("Subscribed to trigger events for platform.");
         }
+
+        if (_baseRecallTriggerObject != null)
+            _baseRecallTriggerObject.OnTriggerActivated += MoveToBase;
+
+        if (_endRecallTriggerObject != null)
+            _endRecallTriggerObject.OnTriggerActivated += MoveToEnd;
+    }
+
+    private void OnDisable()
+    {
+        _mainTriggerObject.OnTriggerActivated -= MoveToNextWaypoint;
+
+        if (_baseRecallTriggerObject != null)
+            _baseRecallTriggerObject.OnTriggerActivated -= MoveToBase;
+
+        if (_endRecallTriggerObject != null)
+            _endRecallTriggerObject.OnTriggerActivated -= MoveToEnd;
     }
 
     protected virtual void Update()
@@ -78,7 +102,7 @@ public class MovingPlatform : MonoBehaviour
         _isMoving = true;
         Vector3 currentWaypoint = _waypoints.Dequeue();
 
-        while (Vector3.Distance(transform.position, currentWaypoint) > _waypointPrecision)
+        while (!CheckDistance(currentWaypoint))
         {
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, _speed * Time.deltaTime);
 
@@ -94,5 +118,15 @@ public class MovingPlatform : MonoBehaviour
         if (_debugLogs) Debug.Log("Platform stopped moving.");
     }
 
+    protected virtual void MoveToEnd()
+    {
+        if (CheckDistance(_baseRecallWaypoint))
+            MoveToNextWaypoint();
+    }
 
+    protected virtual void MoveToBase()
+    {
+        if (CheckDistance(_endRecallWaypoint))
+            MoveToNextWaypoint();
+    }
 }

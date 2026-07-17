@@ -13,10 +13,11 @@ public class Elevator : MovingPlatform
     [SerializeField] private bool _useRaycast = false;
     [SerializeField] private Vector3 _raycastOffset;
     [SerializeField] private bool _useOrigin = false;
+    [SerializeField] private Vector3 _baseTriggerOffset;
+    [SerializeField] private Vector3 _endTriggerOffset;
+    [Header("Chain Settings")]
     [SerializeField] private GameObject _chainObject;
     [SerializeField] private GameObject _chainParent;
-    [SerializeField] private GameObject _colliders;
-    [Header("Chain Settings")]
     [SerializeField] private float _spawnChainAtDistInterval = 5f;
     [SerializeField] private float _chainLinkLength = 10f;
     [SerializeField] private Vector3 _chainSpawnStartPoint;
@@ -36,11 +37,19 @@ public class Elevator : MovingPlatform
             {
                 Vector3 adjHit = hit.point + Vector3.up * 0.2f; // Slightly above the hit point to prevent clipping
                 _waypoints.Enqueue(adjHit);
+                _endRecallWaypoint = adjHit;
+
+                _endRecallTriggerObject.gameObject.transform.position = _endRecallWaypoint + _endTriggerOffset;
+                _endRecallTriggerObject.transform.parent = null;
             }
         }
         if (_useOrigin)
         {
             _waypoints.Enqueue(transform.position);
+            _baseRecallWaypoint = transform.position;
+
+            _baseRecallTriggerObject.gameObject.transform.position = _baseRecallWaypoint + _baseTriggerOffset;
+            _baseRecallTriggerObject.transform.parent = null;
         }
 
         _chainLinkObjects = new Stack<GameObject>();
@@ -59,22 +68,8 @@ public class Elevator : MovingPlatform
             return;
         }
 
-        SpawnChain();
-        DespawnChain();
-
-        if (_isMoving)
-            ToggleColliders(true);
-        else
-            ToggleColliders(false);
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (_useRaycast)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position + _raycastOffset, transform.position + _raycastOffset + Vector3.down * 100f);
-        }
+        //SpawnChain();
+        //DespawnChain();
     }
 
     private void SpawnChain()
@@ -89,10 +84,6 @@ public class Elevator : MovingPlatform
             
             _prevElevatorPositionY = Mathf.Ceil(transform.position.y);
             _chainLinkObjects.Push(chainLink);
-
-            //Debug.Log("Chain link spawned when elevator is at: " + transform.localPosition);
-            //Debug.Log("New Chain Spawn " + (_prevElevatorPositionY - _spawnChainAtDistInterval));
-            //Debug.Log("Chains in Queue: " + _chainLinkObjects.Count);
         }
     }
 
@@ -110,19 +101,15 @@ public class Elevator : MovingPlatform
 
             GameObject chainLink = _chainLinkObjects.Pop();
             Destroy(chainLink);
-
-            //Debug.Log("Chain link despawned when elevator is at: " + transform.localPosition);
-            //Debug.Log("New Chain Despawn " + (_prevElevatorPositionY + _spawnChainAtDistInterval));
-            //Debug.Log("Chains in Queue: " + _chainLinkObjects.Count);
         }
     }
 
-    private void ToggleColliders(bool toggle)
+    private void OnDrawGizmos()
     {
-        if (toggle)
-            _colliders.SetActive(true);
-
-        else
-            _colliders.SetActive(false);
+        if (_useRaycast)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position + _raycastOffset, transform.position + _raycastOffset + Vector3.down * 100f);
+        }
     }
 }

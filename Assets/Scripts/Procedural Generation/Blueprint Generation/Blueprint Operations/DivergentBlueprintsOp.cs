@@ -1,17 +1,16 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   10/28/2025 (Ryan)
+ * Last Modified:   07/16/2026 (Ryan)
  * Notes:           
 */
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
     public class DivergentBlueprintsOp : BlueprintOperation
     {
-        public DivergentBlueprintsOp(MapGenerationContext context, string pathInput, string boundsInput, string dimensionsInput, string cellCountInput, 
+        public DivergentBlueprintsOp(MapGenerationContext context, string pathInput, string boundsInput, string dimensionsInput, string cellCountInput,
             string maxPlacementAttempsInput) : base(context)
         {
             OperationID = $"PlaceDivergentBlueprints:{context.ConsumeOperationID()}";
@@ -64,7 +63,7 @@ namespace RyansLibrary.Labyrinth
                 while (!successfullyPlaced && placementAttempts < maxPlacementAttempts)
                 {
                     // Attempt to spawn blueprints
-                    successfullyPlaced = PlaceBoundedBlueprints(path, bounds, Vector3Int.one, out Vector3Int spawnPos);
+                    successfullyPlaced = BlueprintGenerator.PlaceBoundedBlueprints(_context, path, bounds, Vector3Int.one, out Vector3Int spawnPos);
 
                     if (!successfullyPlaced)     // Failed placement
                         placementAttempts++;        // Increase attempts
@@ -77,41 +76,6 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
             }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Will place rooms randomly in a zone but will pull rooms randomly from the main path.
-        /// </summary>
-        /// <param name="zone"></param>
-        /// <returns></returns>
-        private bool PlaceBoundedBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true)
-        {
-            // Adjust the upper bounds so that the room's volume will properly fit within the bounded space; in
-            // other words it will never spawn outside it's bounds
-            Vector3Int adjUpperBound = new Vector3Int(
-                bounds.xMax - dimensions.x,
-                bounds.yMax - dimensions.y,
-                bounds.zMax - dimensions.z
-            );
-
-            // Choose random spawn pos in the room's bounds;
-            // NOTE: this random position is in room coords
-            Vector3Int randomSpawnPos = new Vector3Int(
-                Random.Range(bounds.xMin, adjUpperBound.x + 1),
-                Random.Range(bounds.yMin, adjUpperBound.y + 1),
-                Random.Range(bounds.zMin, adjUpperBound.z + 1)
-            );
-
-            // Append the newly generated blueprint rooms to the end of the list
-            List<Blueprint> newBlueprints = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, randomSpawnPos, dimensions, available);
-
-            spawnPosition = randomSpawnPos;
-
-            // do not advance iteration if nothing was spawned
-            if (newBlueprints == null)
-                return false;
 
             return true;
         }

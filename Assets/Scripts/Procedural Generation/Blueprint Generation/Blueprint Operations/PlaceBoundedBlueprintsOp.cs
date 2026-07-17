@@ -54,7 +54,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component
             {
-                bool result = PlaceBoundedBlueprints(path, bounds, room.RoomDimensions, out Vector3Int spawnPosition, false);
+                bool result = BlueprintGenerator.PlaceBoundedBlueprints(_context, path, bounds, room.RoomDimensions, out Vector3Int spawnPosition, false);
 
                 if (!result)
                 {
@@ -77,41 +77,6 @@ namespace RyansLibrary.Labyrinth
             }
             Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceBoundedBlueprintsOp: {entry.Prefab.name} does not have a Room script!");
             return false;
-        }
-
-        /// <summary>
-        /// Will place rooms randomly in a zone but will pull rooms randomly from the main path.
-        /// </summary>
-        /// <param name="zone"></param>
-        /// <returns></returns>
-        private bool PlaceBoundedBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true)
-        {
-            // Adjust the upper bounds so that the room's volume will properly fit within the bounded space; in
-            // other words it will never spawn outside it's bounds
-            Vector3Int adjUpperBound = new Vector3Int(
-                bounds.xMax - dimensions.x,
-                bounds.yMax - dimensions.y,
-                bounds.zMax - dimensions.z
-            );
-
-            // Choose random spawn pos in the room's bounds;
-            // NOTE: this random position is in room coords
-            Vector3Int randomSpawnPos = new Vector3Int(
-                Random.Range(bounds.xMin, adjUpperBound.x + 1),
-                Random.Range(bounds.yMin, adjUpperBound.y + 1),
-                Random.Range(bounds.zMin, adjUpperBound.z + 1)
-            );
-
-            // Append the newly generated blueprint rooms to the end of the list
-            List<Blueprint> newBlueprints = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, randomSpawnPos, dimensions, available);
-
-            spawnPosition = randomSpawnPos;
-
-            // do not advance iteration if nothing was spawned
-            if (newBlueprints == null)
-                return false;
-
-            return true;
         }
 
         public List<Blueprint> ToggleAvailableCellsInUniqueRoom(Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)

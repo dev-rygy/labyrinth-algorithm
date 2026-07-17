@@ -16550,9 +16550,9 @@ MonoBehaviour:
   - {x: 1, y: 1, z: 3}
   RoomSpawners: []
   roomShape: 4
-  debug: 0
   <RoomDimensions>k__BackingField: {x: 4, y: 2, z: 3}
   <RoomType>k__BackingField: 0
+  _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6675453439286995284
@@ -34275,10 +34275,55 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3272843101474617145, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3272843101474617145, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3272843101474617145, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6694885652576740455, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: _endTriggerOffset.x
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6694885652576740455, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: _endTriggerOffset.y
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6694885652576740455, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: _baseTriggerOffset.x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6694885652576740455, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: _baseTriggerOffset.y
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6694885652576740455, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: _baseTriggerOffset.z
+      value: -4
+      objectReference: {fileID: 0}
     - target: {fileID: 6717959425924819118, guid: 4e19c9f6b35eb3a408643b85f250478c,
         type: 3}
       propertyPath: m_Name
       value: Elevator
+      objectReference: {fileID: 0}
+    - target: {fileID: 9158291372410429891, guid: 4e19c9f6b35eb3a408643b85f250478c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
