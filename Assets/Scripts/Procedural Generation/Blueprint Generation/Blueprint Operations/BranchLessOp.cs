@@ -9,7 +9,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class BranchLessOp : BlueprintOperation
     {
-        public BranchLessOp(MapGenerationContext context, BlueprintGenerator bpg, string targetOpIDInput, string intAInput, string intBInput) : base(context, bpg)
+        public BranchLessOp(MapGenerationContext context, string targetOpIDInput, string intAInput, string intBInput) : base(context)
         {
             OperationID = $"BranchLessThanOp:{context.ConsumeOperationID()}";
 

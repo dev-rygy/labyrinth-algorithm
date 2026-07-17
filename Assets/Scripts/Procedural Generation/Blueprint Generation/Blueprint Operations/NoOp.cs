@@ -9,7 +9,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class NoOp : BlueprintOperation
     {
-        public NoOp(MapGenerationContext context, BlueprintGenerator bpg) : base(context, bpg)
+        public NoOp(MapGenerationContext context) : base(context)
         {
             OperationID = $"NoOp:{context.ConsumeOperationID()}";
         }

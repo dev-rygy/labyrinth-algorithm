@@ -88,8 +88,6 @@ namespace RyansLibrary.Labyrinth
 
         // ***** Private Variables *****
         private Coroutine _mapGeneratorCoroutine;
-
-        private BlueprintGenerator _bpg;
         private RoomGenerator _roomGenerator;
         private MapGenerationContext _context;
         public MapGenerationContext Context => _context;
@@ -167,9 +165,6 @@ namespace RyansLibrary.Labyrinth
 
             // Initialize Master Data Structures
             _context.InitializeMasters();
-
-            // Initialize Blueprint Generator
-            _bpg = new(_context);
 
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
@@ -499,7 +494,7 @@ namespace RyansLibrary.Labyrinth
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    PlaceFixedBlueprintsOp placeFixedBlueprintOp = new PlaceFixedBlueprintsOp(_context, _bpg,
+                    PlaceFixedBlueprintsOp placeFixedBlueprintOp = new PlaceFixedBlueprintsOp(_context,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     _context.OperationQueueEnqueue(placeFixedBlueprintOp);
                 }
@@ -514,11 +509,11 @@ namespace RyansLibrary.Labyrinth
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    CheckOutOfBoundsOp adjBoundsBlueprintOp = new CheckOutOfBoundsOp(_context, _bpg,
+                    CheckOutOfBoundsOp adjBoundsBlueprintOp = new CheckOutOfBoundsOp(_context,
                         zoneBoundsBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[1]);
                     _context.OperationQueueEnqueue(adjBoundsBlueprintOp);
 
-                    PlaceBoundedBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedBlueprintsOp(_context, _bpg,
+                    PlaceBoundedBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedBlueprintsOp(_context,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], adjBoundsBlueprintOp.OutputPorts[0]);
                     _context.OperationQueueEnqueue(placeBoundedBlueprintsOp);
                 }
@@ -532,7 +527,7 @@ namespace RyansLibrary.Labyrinth
                     RoomEntryBlueprintData roomEntryBlueprintData = new RoomEntryBlueprintData(_context, entry);
                     roomEntryBlueprintData.LoadIntoMemory();
 
-                    PlaceBoundedBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedBlueprintsOp(_context, _bpg,
+                    PlaceBoundedBlueprintsOp placeBoundedBlueprintsOp = new PlaceBoundedBlueprintsOp(_context,
                         mainPathBlueprintData.OutputPorts[0], roomEntryBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0]);
                     _context.OperationQueueEnqueue(placeBoundedBlueprintsOp);
                 }
@@ -552,7 +547,7 @@ namespace RyansLibrary.Labyrinth
             IntBlueprintData maxPlacementAttemptsData = new IntBlueprintData(_context, _maxPlacementAttempts);
             maxPlacementAttemptsData.LoadIntoMemory();
 
-            DivergentBlueprintsOp divergentRoomsOp = new DivergentBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0],
+            DivergentBlueprintsOp divergentRoomsOp = new DivergentBlueprintsOp(_context, mainPathBlueprintData.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0],
                 dimensionsData.OutputPorts[0], cellCountData.OutputPorts[0], maxPlacementAttemptsData.OutputPorts[0]);
             _context.OperationQueueEnqueue(divergentRoomsOp);
         }
@@ -571,7 +566,7 @@ namespace RyansLibrary.Labyrinth
             IntBlueprintData setSize = new IntBlueprintData(_context, zone.RandomCyclesInGraph);
             setSize.LoadIntoMemory();
 
-            GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[2], 
+            GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, mainPathBlueprintData.OutputPorts[2], 
                 availableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(availibleBlueprintsOp);
 
@@ -584,33 +579,33 @@ namespace RyansLibrary.Labyrinth
             if (zone.Bounds.size.y < 3)
             {
                 // **** Perform 2D Triangulation
-                TriangulateBlueprints2DOp triangulationOp = new TriangulateBlueprints2DOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
+                TriangulateBlueprints2DOp triangulationOp = new TriangulateBlueprints2DOp(_context, availibleBlueprintsOp.OutputPorts[0]);
                 _context.OperationQueueEnqueue(triangulationOp);
 
-                mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
+                mstOp = new FindMSTOp(_context, triangulationOp.OutputPorts[0]);
                 _context.OperationQueueEnqueue(mstOp);
 
-                listDiffOp = new ListDifferenceOp(_context, _bpg, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0]);
+                listDiffOp = new ListDifferenceOp(_context, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0]);
                 _context.OperationQueueEnqueue(listDiffOp);
             }
             else
             {
                 // **** Perform 3D Triangulation
-                TriangulateBlueprints3DOp triangulationOp = new TriangulateBlueprints3DOp(_context, _bpg, availibleBlueprintsOp.OutputPorts[0]);
+                TriangulateBlueprints3DOp triangulationOp = new TriangulateBlueprints3DOp(_context, availibleBlueprintsOp.OutputPorts[0]);
                 _context.OperationQueueEnqueue(triangulationOp);
 
-                mstOp = new FindMSTOp(_context, _bpg, triangulationOp.OutputPorts[0]);
+                mstOp = new FindMSTOp(_context, triangulationOp.OutputPorts[0]);
                 _context.OperationQueueEnqueue(mstOp);
 
-                listDiffOp = new ListDifferenceOp(_context, _bpg, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0]);
+                listDiffOp = new ListDifferenceOp(_context, triangulationOp.OutputPorts[0], mstOp.OutputPorts[0]);
                 _context.OperationQueueEnqueue(listDiffOp);
             }
 
-            ListSelectRandomSetFromOp randomCyclesListOp = new ListSelectRandomSetFromOp(_context, _bpg, listDiffOp.OutputPorts[0], 
+            ListSelectRandomSetFromOp randomCyclesListOp = new ListSelectRandomSetFromOp(_context, listDiffOp.OutputPorts[0], 
                 setSize.OutputPorts[0]);
             _context.OperationQueueEnqueue(randomCyclesListOp);
 
-            ListUnionOp zoneGraphUnionOp = new ListUnionOp(_context, _bpg, mstOp.OutputPorts[0], randomCyclesListOp.OutputPorts[0]);
+            ListUnionOp zoneGraphUnionOp = new ListUnionOp(_context, mstOp.OutputPorts[0], randomCyclesListOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(zoneGraphUnionOp);
 
             // **** Pathfinding
@@ -626,7 +621,7 @@ namespace RyansLibrary.Labyrinth
             zoneBoundsBlueprintData.LoadIntoMemory();
 
             // Loop
-            BranchGreaterOrEqualOp bgeOp = new BranchGreaterOrEqualOp(_context, _bpg, targetOpIDBlueprintData.OutputPorts[0], currentIndexBlueprintData.OutputPorts[0],
+            BranchGreaterOrEqualOp bgeOp = new BranchGreaterOrEqualOp(_context, targetOpIDBlueprintData.OutputPorts[0], currentIndexBlueprintData.OutputPorts[0],
                 zoneGraphUnionOp.OutputPorts[1]);
             _context.OperationQueueEnqueue(bgeOp);
 
@@ -634,36 +629,36 @@ namespace RyansLibrary.Labyrinth
             branchIDBlueprintData.LoadIntoMemory();
 
             // Pathfinding logic
-            AccessListElementOp currentEdgeOp = new AccessListElementOp(_context, _bpg, currentIndexBlueprintData.OutputPorts[0], zoneGraphUnionOp.OutputPorts[0]);
+            AccessListElementOp currentEdgeOp = new AccessListElementOp(_context, currentIndexBlueprintData.OutputPorts[0], zoneGraphUnionOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(currentEdgeOp);
 
-            ExtractVerticesFromEdgeOp verticiesFromEdgeOp = new ExtractVerticesFromEdgeOp(_context, _bpg, currentEdgeOp.OutputPorts[0]);
+            ExtractVerticesFromEdgeOp verticiesFromEdgeOp = new ExtractVerticesFromEdgeOp(_context, currentEdgeOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(verticiesFromEdgeOp);
 
-            FindBlueprintFromPositionOp blueprintStart = new FindBlueprintFromPositionOp(_context, _bpg, verticiesFromEdgeOp.OutputPorts[2]);
+            FindBlueprintFromPositionOp blueprintStart = new FindBlueprintFromPositionOp(_context, verticiesFromEdgeOp.OutputPorts[2]);
             _context.OperationQueueEnqueue(blueprintStart);
 
-            FindBlueprintFromPositionOp blueprintEnd = new FindBlueprintFromPositionOp(_context, _bpg, verticiesFromEdgeOp.OutputPorts[3]);
+            FindBlueprintFromPositionOp blueprintEnd = new FindBlueprintFromPositionOp(_context, verticiesFromEdgeOp.OutputPorts[3]);
             _context.OperationQueueEnqueue(blueprintEnd);
 
-            GetAvailableBlueprintsOp findObstructionsOp = new GetAvailableBlueprintsOp(_context, _bpg, mainPathBlueprintData.OutputPorts[2], 
+            GetAvailableBlueprintsOp findObstructionsOp = new GetAvailableBlueprintsOp(_context, mainPathBlueprintData.OutputPorts[2], 
                 unavailableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(findObstructionsOp);
 
-            PathfindingBlueprintOp pathFindingOp = new PathfindingBlueprintOp(_context, _bpg, mainPathBlueprintData.OutputPorts[0], blueprintStart.OutputPorts[0], 
+            PathfindingBlueprintOp pathFindingOp = new PathfindingBlueprintOp(_context, mainPathBlueprintData.OutputPorts[0], blueprintStart.OutputPorts[0], 
                 blueprintEnd.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0], findObstructionsOp.OutputPorts[0], pathfindingHeuristicData.OutputPorts[0]);
             _context.OperationQueueEnqueue(pathFindingOp);
             // End of Pathfinding logic
 
-            AddIntOp incrementOp = new AddIntOp(_context, _bpg, currentIndexBlueprintData.OutputPorts[0], intOneBlueprintData.OutputPorts[0], 
+            AddIntOp incrementOp = new AddIntOp(_context, currentIndexBlueprintData.OutputPorts[0], intOneBlueprintData.OutputPorts[0], 
                 currentIndexBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(incrementOp);
 
-            JumpOp jumpOp = new JumpOp(_context, _bpg, branchIDBlueprintData.OutputPorts[0]);
+            JumpOp jumpOp = new JumpOp(_context, branchIDBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(jumpOp);
             // End loop
 
-            NoOp targetIDNoOp = new NoOp(_context, _bpg);                       // Load this operation after loop; jump target for bge
+            NoOp targetIDNoOp = new NoOp(_context);                       // Load this operation after loop; jump target for bge
             targetOpIDBlueprintData.ModifyData(targetIDNoOp.OperationID);
             _context.OperationQueueEnqueue(targetIDNoOp);
         }
@@ -696,13 +691,13 @@ namespace RyansLibrary.Labyrinth
                 BoolBlueprintData canGoVerticalData = new BoolBlueprintData(_context, path.DrunkardWalkCanGoVertical);
                 canGoVerticalData.LoadIntoMemory();
 
-                GetPathLengthOp branchedpathLengthOp = new GetPathLengthOp(_context, _bpg, branchedPathBlueprintData.OutputPorts[0]);
+                GetPathLengthOp branchedpathLengthOp = new GetPathLengthOp(_context, branchedPathBlueprintData.OutputPorts[0]);
                 _context.OperationQueueEnqueue(branchedpathLengthOp);
 
-                AddIntOp lengthMinusOneOp = new AddIntOp(_context, _bpg, branchedpathLengthOp.OutputPorts[0], negativeOneBlueprintData.OutputPorts[0]);
+                AddIntOp lengthMinusOneOp = new AddIntOp(_context, branchedpathLengthOp.OutputPorts[0], negativeOneBlueprintData.OutputPorts[0]);
                 _context.OperationQueueEnqueue(lengthMinusOneOp);
 
-                DrunkardWalkBlueprintOp drunkardWalkOperation = new DrunkardWalkBlueprintOp(_context, _bpg, pathBlueprintData.OutputPorts[0], branchedPathBlueprintData.OutputPorts[0],
+                DrunkardWalkBlueprintOp drunkardWalkOperation = new DrunkardWalkBlueprintOp(_context, pathBlueprintData.OutputPorts[0], branchedPathBlueprintData.OutputPorts[0],
                     boundsBlueprintData.OutputPorts[0], startIndexBlueprintData.OutputPorts[0], lengthMinusOneOp.OutputPorts[0], canGoVerticalData.OutputPorts[0]);
                 _context.OperationQueueEnqueue(drunkardWalkOperation);
             }
@@ -769,21 +764,21 @@ namespace RyansLibrary.Labyrinth
 
             // **** Room A Placement Operations ***
             // Find the bounds area intersection of the two zones to find where the connection can be placed; this will be used for placing the room and path of the zone connection
-            BoundsIntersectOp zoneConnectzoneAIntersectOp = new BoundsIntersectOp(_context, _bpg, zoneABoundsBlueprintData.OutputPorts[0], 
+            BoundsIntersectOp zoneConnectzoneAIntersectOp = new BoundsIntersectOp(_context, zoneABoundsBlueprintData.OutputPorts[0], 
                 zoneConnectionBoundsBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(zoneConnectzoneAIntersectOp);
             // Place Room A in Zone A
-            PlaceBoundedBlueprintsOp placeRoomAOp = new PlaceBoundedBlueprintsOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[0], roomABlueprintData.OutputPorts[0],
+            PlaceBoundedBlueprintsOp placeRoomAOp = new PlaceBoundedBlueprintsOp(_context, zoneAMainPathBlueprintData.OutputPorts[0], roomABlueprintData.OutputPorts[0],
                 zoneConnectzoneAIntersectOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(placeRoomAOp);
 
             // **** Room B Placement Operations ***
             // Find the bounds area intersection of the two zones to find where the connection can be placed; this will be used for placing the room and path of the zone connection
-            BoundsIntersectOp zoneConnectzoneBIntersectOp = new BoundsIntersectOp(_context, _bpg, zoneConnectionBoundsBlueprintData.OutputPorts[0],
+            BoundsIntersectOp zoneConnectzoneBIntersectOp = new BoundsIntersectOp(_context, zoneConnectionBoundsBlueprintData.OutputPorts[0],
                 zoneBBoundsBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(zoneConnectzoneBIntersectOp);
             // Place Room B in Zone B
-            PlaceBoundedBlueprintsOp placeRoomBOp = new PlaceBoundedBlueprintsOp(_context, _bpg, zoneBMainPathBlueprintData.OutputPorts[0], roomBBlueprintData.OutputPorts[0],
+            PlaceBoundedBlueprintsOp placeRoomBOp = new PlaceBoundedBlueprintsOp(_context, zoneBMainPathBlueprintData.OutputPorts[0], roomBBlueprintData.OutputPorts[0],
                 zoneConnectzoneBIntersectOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(placeRoomBOp);
 
@@ -795,21 +790,21 @@ namespace RyansLibrary.Labyrinth
             blueprintTypeBlueprintData.LoadIntoMemory();
 
             // Select random available blueprints from each room to be the start and end points for pathfinding
-            GetAvailableBlueprintsOp roomAAvailableBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, placeRoomAOp.OutputPorts[0], availableBlueprintData.OutputPorts[0]);
+            GetAvailableBlueprintsOp roomAAvailableBlueprintsOp = new GetAvailableBlueprintsOp(_context, placeRoomAOp.OutputPorts[0], availableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(roomAAvailableBlueprintsOp);
-            GetAvailableBlueprintsOp roomBAvailableBlueprintsOp = new GetAvailableBlueprintsOp(_context, _bpg, placeRoomBOp.OutputPorts[0], availableBlueprintData.OutputPorts[0]);
+            GetAvailableBlueprintsOp roomBAvailableBlueprintsOp = new GetAvailableBlueprintsOp(_context, placeRoomBOp.OutputPorts[0], availableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(roomBAvailableBlueprintsOp);
-            ListSelectRandomElementOp randomBlueprintFromRoomAOp = new ListSelectRandomElementOp(_context, _bpg, roomAAvailableBlueprintsOp.OutputPorts[0]);
+            ListSelectRandomElementOp randomBlueprintFromRoomAOp = new ListSelectRandomElementOp(_context, roomAAvailableBlueprintsOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(randomBlueprintFromRoomAOp);
-            ListSelectRandomElementOp randomBlueprintFromRoomBOp = new ListSelectRandomElementOp(_context, _bpg, roomBAvailableBlueprintsOp.OutputPorts[0]);
+            ListSelectRandomElementOp randomBlueprintFromRoomBOp = new ListSelectRandomElementOp(_context, roomBAvailableBlueprintsOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(randomBlueprintFromRoomBOp);
 
             // Fill obstructions list with all blueprints from the main paths of both zones except the ones that are part of the roomA and roomB
-            ListUnionOp obstructionsListOp = new ListUnionOp(_context, _bpg, zoneAMainPathBlueprintData.OutputPorts[2], zoneBMainPathBlueprintData.OutputPorts[2]);
+            ListUnionOp obstructionsListOp = new ListUnionOp(_context, zoneAMainPathBlueprintData.OutputPorts[2], zoneBMainPathBlueprintData.OutputPorts[2]);
             _context.OperationQueueEnqueue(obstructionsListOp);
 
             // Pathfind a connection between the two rooms along the bounds intersection area while avoiding main path blueprints
-            PathfindingBlueprintOp pathfindOp = new PathfindingBlueprintOp(_context, _bpg, zoneConnectionMainPathBlueprintData.OutputPorts[0], randomBlueprintFromRoomAOp.OutputPorts[0],
+            PathfindingBlueprintOp pathfindOp = new PathfindingBlueprintOp(_context, zoneConnectionMainPathBlueprintData.OutputPorts[0], randomBlueprintFromRoomAOp.OutputPorts[0],
                 randomBlueprintFromRoomBOp.OutputPorts[0], zoneConnectionBoundsBlueprintData.OutputPorts[0]);//  obstructionsListOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(pathfindOp);
         }
@@ -844,7 +839,7 @@ namespace RyansLibrary.Labyrinth
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.Prefab.TryGetComponent(out Room room))
-                    _bpg.ToggleAvailableCellsInUniqueRoom(zone.MainPath, room.AvailableCellData, entry.SpawnPosition, false);
+                    BlueprintGenerator.ToggleAvailableCellsInUniqueRoom(_context, zone.MainPath, room.AvailableCellData, entry.SpawnPosition, false);
                 else
                     Debug.LogError($"[MapGenerator][Controller] Failed to get Room component from prefab {entry.Prefab}.");
 
@@ -999,10 +994,7 @@ namespace RyansLibrary.Labyrinth
             // This no longer works as BlueprintData is no longer static
             // BlueprintData.ToggleDebugLogs(toggle);
 
-            if (_bpg == null)
-                return;
-
-            _bpg.ToggleDebugLogs(_debugBlueprintLogs);
+            BlueprintGenerator.ToggleDebugLogs(_debugBlueprintLogs);
         }
 
         public void ToggleRoomGeneratorLogs(bool toggle)

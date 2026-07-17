@@ -13,8 +13,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class PathfindingBlueprintOp : BlueprintOperation
     {
-        public PathfindingBlueprintOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string blueprintStartInput, string blueprintEndInput,
-            string boundsInput, string obstructionsInput = "", string heuristicInput = "") : base(context, bpg)
+        public PathfindingBlueprintOp(MapGenerationContext context, string pathInput, string blueprintStartInput, string blueprintEndInput,
+            string boundsInput, string obstructionsInput = "", string heuristicInput = "") : base(context)
         {
             OperationID = $"PathfindingBlueprintOp:{context.ConsumeOperationID()}";
 
@@ -110,7 +110,7 @@ namespace RyansLibrary.Labyrinth
                     currentBlueprint = occupiedRoom;
                 }
                 else
-                    currentBlueprint = _bpg.GenerateBlueprintRoom(path, pos);
+                    currentBlueprint = BlueprintGenerator.GenerateBlueprintRoom(_context, path, pos);
 
                 if (previousBlueprint == null)
                 {
@@ -120,7 +120,7 @@ namespace RyansLibrary.Labyrinth
 
                 // Flag doorways of blueprint rooms
                 Vector3Int difference = currentBlueprint.Position - previousBlueprint.Position;
-                _bpg.FlagEntryPoints(currentBlueprint, previousBlueprint, difference);
+                BlueprintGenerator.FlagEntryPoints(currentBlueprint, previousBlueprint, difference);
 
                 previousBlueprint = currentBlueprint;
             }

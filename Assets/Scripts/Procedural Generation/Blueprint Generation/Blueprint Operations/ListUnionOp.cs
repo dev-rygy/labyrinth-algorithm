@@ -13,8 +13,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class ListUnionOp : BlueprintOperation
     {
-        public ListUnionOp(MapGenerationContext context, BlueprintGenerator bpg, string listAInput, string listBInput)
-                : base(context, bpg)
+        public ListUnionOp(MapGenerationContext context, string listAInput, string listBInput)
+                : base(context)
         {
             OperationID = $"ListUnionOp:{context.ConsumeOperationID()}";
 

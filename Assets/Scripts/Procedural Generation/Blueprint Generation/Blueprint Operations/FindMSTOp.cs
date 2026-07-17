@@ -12,8 +12,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class FindMSTOp : BlueprintOperation
     {
-        public FindMSTOp(MapGenerationContext context, BlueprintGenerator bpg, string edgeListInput)
-                : base(context, bpg)
+        public FindMSTOp(MapGenerationContext context, string edgeListInput)
+                : base(context)
         {
             OperationID = $"FindMST:{context.ConsumeOperationID()}";
 

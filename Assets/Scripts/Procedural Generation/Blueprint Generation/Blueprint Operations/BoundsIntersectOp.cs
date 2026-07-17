@@ -10,8 +10,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class BoundsIntersectOp : BlueprintOperation
     {
-        public BoundsIntersectOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
-            : base(context, bpg)
+        public BoundsIntersectOp(MapGenerationContext context, string boundsAInput, string boundsBInput)
+            : base(context)
         {
             OperationID = $"BoundsIntersectOp:{context.ConsumeOperationID()}";
 

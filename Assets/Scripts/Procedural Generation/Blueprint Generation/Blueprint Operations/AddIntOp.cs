@@ -10,7 +10,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class AddIntOp : BlueprintOperation
     {
-        public AddIntOp(MapGenerationContext context, BlueprintGenerator bpg, string intAInput, string intBInput, string dataID = "") : base(context, bpg)
+        public AddIntOp(MapGenerationContext context, string intAInput, string intBInput, string dataID = "") : base(context)
         {
             OperationID = $"AddIntOp:{context.ConsumeOperationID()}";
 

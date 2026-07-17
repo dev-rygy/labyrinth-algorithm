@@ -10,8 +10,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class CheckOutOfBoundsOp : BlueprintOperation
     {
-        public CheckOutOfBoundsOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
-            : base(context, bpg)
+        public CheckOutOfBoundsOp(MapGenerationContext context, string boundsAInput, string boundsBInput)
+            : base(context)
         {
             OperationID = $"IntersectBoundsOp:{context.ConsumeOperationID()}";
 
@@ -48,7 +48,7 @@ namespace RyansLibrary.Labyrinth
         {
             Vector3Int position = intersectedBounds.min + offset;
 
-            Vector3Int amountOutOfBounds = _bpg.CheckOutOfBounds(position, size, intersectedBounds);
+            Vector3Int amountOutOfBounds = BlueprintGenerator.CheckOutOfBounds(position, size, intersectedBounds);
             if (amountOutOfBounds != Vector3.zero)
             {
                 Debug.LogWarning("[MapGenerator][BlueprintOperation] CheckOutOfBoundsOp: Desired intersecting bounds lies outside the overarching bounds. Adjusting size...");

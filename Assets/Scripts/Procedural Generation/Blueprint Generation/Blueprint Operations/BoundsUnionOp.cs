@@ -10,8 +10,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class BoundsUnionOp : BlueprintOperation
     {
-        public BoundsUnionOp(MapGenerationContext context, BlueprintGenerator bpg, string boundsAInput, string boundsBInput)
-            : base(context, bpg)
+        public BoundsUnionOp(MapGenerationContext context, string boundsAInput, string boundsBInput)
+            : base(context)
         {
             OperationID = $"BoundsUnionOp:{context.ConsumeOperationID()}";
 

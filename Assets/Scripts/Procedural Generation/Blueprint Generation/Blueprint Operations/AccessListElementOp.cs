@@ -12,7 +12,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class AccessListElementOp : BlueprintOperation
     {
-        public AccessListElementOp(MapGenerationContext context, BlueprintGenerator bpg, string indexInput, string listInput) : base(context, bpg)
+        public AccessListElementOp(MapGenerationContext context, string indexInput, string listInput) : base(context)
         {
             OperationID = $"AccessListElementOp:{context.ConsumeOperationID()}";
 

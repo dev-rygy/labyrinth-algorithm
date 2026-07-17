@@ -35,16 +35,14 @@ namespace RyansLibrary.Labyrinth
         public List<string> OutputPorts { get; protected set; }
 
         // References to required map generation systems
-        protected BlueprintGenerator _bpg;
         protected MapGenerationContext _context;
 
-        public BlueprintOperation(MapGenerationContext context, BlueprintGenerator bpg)
+        public BlueprintOperation(MapGenerationContext context)
         {
             InputPorts = new List<string>();
             OutputPorts = new List<string>();
 
             _context = context;
-            _bpg = bpg;
         }
 
         public static void ToggleDebugLogs(bool toggle)

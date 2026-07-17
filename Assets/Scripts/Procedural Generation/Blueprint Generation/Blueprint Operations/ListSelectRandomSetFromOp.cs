@@ -13,7 +13,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class ListSelectRandomSetFromOp : BlueprintOperation
     {
-        public ListSelectRandomSetFromOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string setSize) : base(context, bpg)
+        public ListSelectRandomSetFromOp(MapGenerationContext context, string listInput, string setSize) : base(context)
         {
             OperationID = $"SelectRandomSetFromListOp:{context.ConsumeOperationID()}";
 

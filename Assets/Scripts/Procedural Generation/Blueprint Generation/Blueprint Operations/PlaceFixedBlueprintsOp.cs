@@ -11,8 +11,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class PlaceFixedBlueprintsOp : BlueprintOperation
     {
-        public PlaceFixedBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput)
-            : base(context, bpg)
+        public PlaceFixedBlueprintsOp(MapGenerationContext context, string pathInput, string roomEntryInput, string boundsInput) : base(context)
         {
             OperationID = $"PlaceFixedUniqueBlueprint:{context.ConsumeOperationID()}";
 
@@ -62,7 +61,7 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int roomOrigin = entry.SpawnPosition + zoneOffset;
 
                 // Check Collision with the zone's bounds
-                Vector3 difference = _bpg.CheckOutOfBounds(roomOrigin, room.RoomDimensions, bounds);
+                Vector3 difference = BlueprintGenerator.CheckOutOfBounds(roomOrigin, room.RoomDimensions, bounds);
                 if (difference != Vector3.zero)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceFixedBlueprintsOp: Unique Fixed Room \"{room.name}\" was " +
@@ -72,7 +71,7 @@ namespace RyansLibrary.Labyrinth
 
                 // Check Collision with other rooms
                 List<Blueprint> blueprintList;
-                blueprintList = _bpg.GenerateBlueprintsFromDimensions(path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
+                blueprintList = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
                 if (blueprintList is null)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"[MapGenerator][BlueprintOperation] PlaceFixedBlueprintsOp: Unique Fixed Room \"{room.name}\" was obstructed and could not be placed.");
@@ -108,7 +107,7 @@ namespace RyansLibrary.Labyrinth
                     blueprint.Available = available;
                 }
                 else
-                    availibleBlueprints.Add(_bpg.GenerateBlueprintRoom(path, cellPosition, available));
+                    availibleBlueprints.Add(BlueprintGenerator.GenerateBlueprintRoom(_context, path, cellPosition, available));
             }
 
             return availibleBlueprints;

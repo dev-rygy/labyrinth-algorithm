@@ -13,8 +13,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class ListDifferenceOp : BlueprintOperation
     {
-        public ListDifferenceOp(MapGenerationContext context, BlueprintGenerator bpg, string listAInput, string listBInput)
-                : base(context, bpg)
+        public ListDifferenceOp(MapGenerationContext context, string listAInput, string listBInput)
+                : base(context)
         {
             OperationID = $"ListDifferenceOp:{context.ConsumeOperationID()}";
 

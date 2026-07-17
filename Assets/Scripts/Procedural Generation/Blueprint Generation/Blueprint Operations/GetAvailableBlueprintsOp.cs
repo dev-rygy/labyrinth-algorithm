@@ -12,8 +12,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class GetAvailableBlueprintsOp : BlueprintOperation
     {
-        public GetAvailableBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string blueprintListInput, string availableToggleInput)
-                : base(context, bpg)
+        public GetAvailableBlueprintsOp(MapGenerationContext context, string blueprintListInput, string availableToggleInput)
+                : base(context)
         {
             OperationID = $"GetAvailableBlueprintsOp:{context.ConsumeOperationID()}";
 

@@ -11,7 +11,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class FindBlueprintFromPositionOp : BlueprintOperation
     {
-        public FindBlueprintFromPositionOp(MapGenerationContext context, BlueprintGenerator bpg, string positionInput) : base(context, bpg)
+        public FindBlueprintFromPositionOp(MapGenerationContext context, string positionInput) : base(context)
         {
             OperationID = $"FindBlueprintFromPositionOp:{context.ConsumeOperationID()}";
 

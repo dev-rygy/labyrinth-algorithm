@@ -12,7 +12,7 @@ using UnityEngine;
 
 public class ListSelectRandomElementOp : BlueprintOperation
 {
-    public ListSelectRandomElementOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput) : base(context, bpg)
+    public ListSelectRandomElementOp(MapGenerationContext context, string listInput) : base(context)
     {
         OperationID = $"SelectRandomElementFromListOp:{context.ConsumeOperationID()}";
 

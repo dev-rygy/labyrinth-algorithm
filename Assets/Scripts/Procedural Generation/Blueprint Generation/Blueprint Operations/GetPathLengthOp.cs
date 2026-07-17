@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class GetPathLengthOp : BlueprintOperation
 {
-    public GetPathLengthOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput) : base(context, bpg)
+    public GetPathLengthOp(MapGenerationContext context, string pathInput) : base(context)
     {
         OperationID = $"GetPathLengthOp:{context.ConsumeOperationID()}";
 

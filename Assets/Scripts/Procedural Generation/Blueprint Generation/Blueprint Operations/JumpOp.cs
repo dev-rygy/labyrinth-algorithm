@@ -9,8 +9,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class JumpOp : BlueprintOperation
     {
-        public JumpOp(MapGenerationContext context, BlueprintGenerator bpg, string targetOpIDInput)
-                : base(context, bpg)
+        public JumpOp(MapGenerationContext context, string targetOpIDInput)
+                : base(context)
         {
             OperationID = $"JumpOp:{context.ConsumeOperationID()}";
 

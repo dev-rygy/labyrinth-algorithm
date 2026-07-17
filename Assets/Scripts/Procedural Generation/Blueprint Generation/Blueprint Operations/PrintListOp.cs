@@ -12,7 +12,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class PrintListOp : BlueprintOperation
     {
-        public PrintListOp(MapGenerationContext context, BlueprintGenerator bpg, string listInput, string listType) : base(context, bpg)
+        public PrintListOp(MapGenerationContext context, string listInput, string listType) : base(context)
         {
             OperationID = $"PrintOp:{context.ConsumeOperationID()}";
 

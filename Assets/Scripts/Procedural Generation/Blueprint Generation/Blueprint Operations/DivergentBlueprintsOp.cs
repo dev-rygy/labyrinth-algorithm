@@ -11,8 +11,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class DivergentBlueprintsOp : BlueprintOperation
     {
-        public DivergentBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string boundsInput, string dimensionsInput, string cellCountInput, 
-            string maxPlacementAttempsInput) : base(context, bpg)
+        public DivergentBlueprintsOp(MapGenerationContext context, string pathInput, string boundsInput, string dimensionsInput, string cellCountInput, 
+            string maxPlacementAttempsInput) : base(context)
         {
             OperationID = $"PlaceDivergentBlueprints:{context.ConsumeOperationID()}";
 
@@ -105,7 +105,7 @@ namespace RyansLibrary.Labyrinth
             );
 
             // Append the newly generated blueprint rooms to the end of the list
-            List<Blueprint> newBlueprints = _bpg.GenerateBlueprintsFromDimensions(path, randomSpawnPos, dimensions, available);
+            List<Blueprint> newBlueprints = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, randomSpawnPos, dimensions, available);
 
             spawnPosition = randomSpawnPos;
 

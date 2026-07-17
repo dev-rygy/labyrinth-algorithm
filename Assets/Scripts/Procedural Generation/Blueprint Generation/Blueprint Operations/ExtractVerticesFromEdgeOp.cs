@@ -11,7 +11,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class ExtractVerticesFromEdgeOp : BlueprintOperation
     {
-        public ExtractVerticesFromEdgeOp(MapGenerationContext context, BlueprintGenerator bpg, string edgeInput) : base(context, bpg)
+        public ExtractVerticesFromEdgeOp(MapGenerationContext context, string edgeInput) : base(context)
         {
             OperationID = $"ExtractVerticesFromEdgeOp:{context.ConsumeOperationID()}";
 

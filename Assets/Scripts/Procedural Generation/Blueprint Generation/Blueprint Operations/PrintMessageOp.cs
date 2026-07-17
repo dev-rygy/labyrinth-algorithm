@@ -10,7 +10,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class PrintMessageOp : BlueprintOperation
     {
-        public PrintMessageOp(MapGenerationContext context, BlueprintGenerator bpg, string messageInput) : base(context, bpg)
+        public PrintMessageOp(MapGenerationContext context, string messageInput) : base(context)
         {
             OperationID = $"PrintOp:{context.ConsumeOperationID()}";
 

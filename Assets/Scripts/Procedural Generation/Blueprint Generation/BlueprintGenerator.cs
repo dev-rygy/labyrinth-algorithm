@@ -33,27 +33,12 @@ namespace RyansLibrary.Labyrinth
         }
     }
 
-    public class BlueprintGenerator
+    public static class BlueprintGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
         const int STANDARD_FACE_COUNT = 6;
 
-        // ***** Master References *****
-        // The Master Path holds a reference to all blueprint rooms generated
-        private readonly Path _masterPath;
-
-        // Master Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions.
-        // Holds reference to all blueprint rooms
-        // Keys are in room coords
-        private readonly Dictionary<Vector3Int, Blueprint> _masterDictionary;
-
-        private bool _debugLogs = false;
-
-        public BlueprintGenerator(MapGenerationContext context)
-        {
-            _masterPath = context.MasterPath;
-            _masterDictionary = context.MasterDictionary;
-        }
+        private static bool _debugLogs = false;
         
         #region Blueprint Room Generation
         /// <summary>
@@ -64,9 +49,9 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">The desired path to add the new blueprint room to.</param>
         /// <param name="origin">The desired position to spawn the new room at. Must be in world coords</param>
         /// <returns>Blueprint room created in room coords.</returns>
-        public Blueprint GenerateBlueprintRoom(Path path, Vector3Int origin, bool available = true)
+        public static Blueprint GenerateBlueprintRoom(MapGenerationContext context, Path path, Vector3Int origin, bool available = true)
         {
-            string blueprintName = $"BlueprintRoom ({_masterPath.BlueprintCount()})";
+            string blueprintName = $"BlueprintRoom ({context.MasterPath.BlueprintCount()})";
             Blueprint newBlueprint = new Blueprint(origin, blueprintName);
             newBlueprint.Available = available;
 
@@ -74,8 +59,8 @@ namespace RyansLibrary.Labyrinth
 
             // Update paths and masters with new blueprint room
             path?.Add(newBlueprint);
-            _masterPath?.Add(newBlueprint);                    // Add to Master List (required)
-            _masterDictionary?.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
+            context.MasterPath?.Add(newBlueprint);                    // Add to Master List (required)
+            context.MasterDictionary?.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
             return newBlueprint;
         }
 
@@ -88,7 +73,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="origin">Start position</param>
         /// <param name="roomDimensions"></param>
         /// <returns>Blueprint rooms generated in a list if needed.</returns>
-        public List<Blueprint> GenerateBlueprintsFromDimensions(Path path, Vector3Int origin, Vector3Int roomDimensions, bool available = true)
+        public static List<Blueprint> GenerateBlueprintsFromDimensions(MapGenerationContext context, Path path, Vector3Int origin, Vector3Int roomDimensions, bool available = true)
         {
             List<Blueprint> roomBlueprints = new List<Blueprint>();
             List<Vector3Int> blueprintroomPositions = new List<Vector3Int>();
@@ -101,7 +86,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         Vector3Int blueprintroomPos = new Vector3Int(x, y, z);
 
-                        if (CheckCollision(blueprintroomPos, out Blueprint collidedBlueprint))
+                        if (CheckCollision(context, blueprintroomPos, out Blueprint collidedBlueprint))
                         {
                             if (_debugLogs)
                                 Debug.LogWarning($"[MapGenerator][BlueprintGenerator] Failed to generate blueprint room due to collision with {collidedBlueprint.CellID}");
@@ -115,12 +100,12 @@ namespace RyansLibrary.Labyrinth
 
             // If no errors then generate blueprint rooms from dimensions
             foreach (Vector3Int spawnPosition in blueprintroomPositions)
-                roomBlueprints.Add(GenerateBlueprintRoom(path, spawnPosition, available));      // Call to method above
+                roomBlueprints.Add(GenerateBlueprintRoom(context, path, spawnPosition, available));      // Call to method above
 
             return roomBlueprints;
         }
 
-        public Blueprint PlaceBlueprintInRandomDirection(Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
+        public static Blueprint PlaceBlueprintInRandomDirection(MapGenerationContext context, Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
         {
             // If path can be placed in a vertical direction then all 6 faces are available, otherwise only 4 horizontal faces are available
             int availableDirections = canGoVertical ? STANDARD_FACE_COUNT : STANDARD_FACE_COUNT - 2;
@@ -141,10 +126,10 @@ namespace RyansLibrary.Labyrinth
                 Vector3Int tempPos = previousBlueprint.Position + GetDirectionFromIndex(directionalIndex);
 
                 // Check position in hash map; if failed then flag face attempt and try choosing a new position 
-                if (!CheckOutOfBounds(tempPos, bounds) && !CheckCollision(tempPos))     // If position is not out of bounds and not colliding with another room
+                if (!CheckOutOfBounds(tempPos, bounds) && !CheckCollision(context, tempPos))     // If position is not out of bounds and not colliding with another room
                 {
                     // Return new blueprint room
-                    Blueprint newBlueprint = GenerateBlueprintRoom(path, tempPos);
+                    Blueprint newBlueprint = GenerateBlueprintRoom(context, path, tempPos);
                     FlagEntryPoints(newBlueprint, previousBlueprint, directionalIndex);                    // Flag the face that touches the opposite room
 
                     return newBlueprint;
@@ -157,7 +142,7 @@ namespace RyansLibrary.Labyrinth
             return null;
         }
 
-        private Vector3Int GetDirectionFromIndex(int index)
+        private static Vector3Int GetDirectionFromIndex(int index)
         {
             switch (index)
             {
@@ -180,24 +165,28 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
-        public void FlagEntryPoints(Blueprint blueprintA, Blueprint blueprintB, Vector3Int difference)
+        private static int GetIndexFromDirection(Vector3Int direction)
+        {
+            if (direction == Vector3Int.right)
+                return 0;
+            else if (direction == Vector3Int.left)
+                return 1;
+            else if (direction == Vector3Int.forward)
+                return 2;
+            else if (direction == Vector3Int.back)
+                return 3;
+            else if (direction == Vector3Int.up)
+                return 4;
+            else if (direction == Vector3Int.down)
+                return 5;
+            else
+                return -1;   // Default or error case
+        }
+
+        public static void FlagEntryPoints(Blueprint blueprintA, Blueprint blueprintB, Vector3Int difference)
         {
             // TODO: Bad way of handling this. Find a better way
-            int entrFlagIdx;
-            if (difference == Vector3Int.right)
-                entrFlagIdx = 0;
-            else if (difference == Vector3Int.left)
-                entrFlagIdx = 1;
-            else if (difference == Vector3Int.forward)
-                entrFlagIdx = 2;
-            else if (difference == Vector3Int.back)
-                entrFlagIdx = 3;
-            else if (difference == Vector3Int.up)
-                entrFlagIdx = 4;
-            else if (difference == Vector3Int.down)
-                entrFlagIdx = 5;
-            else
-                entrFlagIdx = -1;   // Default or error case
+            int entrFlagIdx = GetIndexFromDirection(difference);
 
             FlagEntryPoints(blueprintA, blueprintB, entrFlagIdx);
         }
@@ -208,11 +197,11 @@ namespace RyansLibrary.Labyrinth
         /// <param name="blueprintA">First blueprint room</param>
         /// <param name="blueprintB">Second blueprint room</param>
         /// <param name="entrFlagIdx">The index of the choosen face of the *first* room.</param>
-        public void FlagEntryPoints(Blueprint blueprintA, Blueprint blueprintB, int entrFlagIdx) // Flag the entranceways to be activated in each room
+        public static void FlagEntryPoints(Blueprint blueprintA, Blueprint blueprintB, int entrFlagIdx) // Flag the entranceways to be activated in each room
         {
             if (entrFlagIdx < 0)
             {
-                Debug.LogError("[MapGenerator][BlueprintGenerator] Two rooms are invalid for entrance connection");
+                Debug.LogError("[MapGenerator][BlueprintGenerator] The two blueprints are invalid for entrance connection");
                 return;
             }
 
@@ -234,7 +223,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">The path to choose the starting room from</param>
         /// <param name="startIndex">Index to start from</param>
         /// <returns>The Choosen Blueprint Room.</returns>
-        public Blueprint ChooseRandomBlueprintInPath(Path path, int startIndex = 0, int endIndex = -1)
+        public static Blueprint ChooseRandomBlueprintInPath(Path path, int startIndex = 0, int endIndex = -1)
         {
             // Default the endIndex to the path's end index
             if (endIndex == -1)
@@ -272,7 +261,7 @@ namespace RyansLibrary.Labyrinth
             return blueprint;
         }
 
-        public Blueprint FindClosestBlueprintInPath(Path path, Vector3Int point)     // UNUSED
+        public static Blueprint FindClosestBlueprintInPath(Path path, Vector3Int point)     // UNUSED
         {
             if (path == null)
             {
@@ -298,17 +287,17 @@ namespace RyansLibrary.Labyrinth
             return closestCell;
         }
 
-        public List<Blueprint> FindBlueprintsWithAvailibility(List<Blueprint> blueprintList, bool availibility)
+        public static List<Blueprint> FindBlueprintsWithAvailibility(List<Blueprint> blueprintList, bool availibility)
         {
             return new List<Blueprint>(blueprintList.Where(b => (b.Available == availibility)).ToList());
         }
 
-        public Blueprint FindFirstBlueprintWithAvailibility(List<Blueprint> blueprintList, bool availibility)
+        public static Blueprint FindFirstBlueprintWithAvailibility(List<Blueprint> blueprintList, bool availibility)
         {
             return blueprintList.FirstOrDefault(b => (b.Available == availibility));
         }
 
-        public BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
+        public static BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
         {
             // Create shared bounds between two zones
             BoundsInt combinedBounds = new BoundsInt();
@@ -323,7 +312,7 @@ namespace RyansLibrary.Labyrinth
             return combinedBounds;
         }
 
-        public BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, Vector3Int size, Vector3Int offset)
+        public static BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, Vector3Int size, Vector3Int offset)
         {
             Vector3Int position = intersectedBounds.min + offset;
 
@@ -337,7 +326,7 @@ namespace RyansLibrary.Labyrinth
             return new BoundsInt(position, size);
         }
 
-        public BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, BoundsInt intersectingBounds)
+        public static BoundsInt CreateIntersectingBounds(BoundsInt intersectedBounds, BoundsInt intersectingBounds)
         {
             return CreateIntersectingBounds(intersectedBounds, intersectingBounds.size, intersectingBounds.position);
         }
@@ -348,7 +337,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="desiredPosition">The desired position to spawn the next room</param>
         /// <returns>Returns TRUE if the space is out of bounds and FALSE otherwise.</returns>
-        public bool CheckOutOfBounds(Vector3Int desiredPosition, Vector3Int upperBound, Vector3Int lowerBound)
+        public static bool CheckOutOfBounds(Vector3Int desiredPosition, Vector3Int upperBound, Vector3Int lowerBound)
         {
             Vector3Int differenceUpper = upperBound - desiredPosition;
             Vector3Int differenceLower = lowerBound - desiredPosition;
@@ -360,7 +349,7 @@ namespace RyansLibrary.Labyrinth
             return true;           // Invalid space
         }
 
-        public bool CheckOutOfBounds(Vector3Int desiredPos, BoundsInt bounds)
+        public static bool CheckOutOfBounds(Vector3Int desiredPos, BoundsInt bounds)
         {
             if (bounds.Contains(desiredPos))        // Valid space
                 return false;
@@ -377,7 +366,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="dimensions">Blueprint dimensions</param>
         /// <param name="bounds">Bounds</param>
         /// <returns>Zero if in bounds, otherwise will return the offset amount in room coords</returns>
-        public Vector3Int CheckOutOfBounds(Vector3Int origin, Vector3Int dimensions, BoundsInt bounds)
+        public static Vector3Int CheckOutOfBounds(Vector3Int origin, Vector3Int dimensions, BoundsInt bounds)
         {
             // Find the lower and upper cell point of the blueprint
             Vector3Int lowerPoint = origin;
@@ -412,9 +401,9 @@ namespace RyansLibrary.Labyrinth
         /// <param name="position">The position of the blueprint room</param>
         /// <param name="collidedBlueprint">If any room was found to collide then return the room otherwise will be null</param>
         /// <returns>Collided or not collided</returns>
-        public bool CheckCollision(Vector3Int position, out Blueprint collidedBlueprint)
+        public static bool CheckCollision(MapGenerationContext context, Vector3Int position, out Blueprint collidedBlueprint)
         {
-            return _masterDictionary.TryGetValue(position, out collidedBlueprint);
+            return context.MasterDictionary.TryGetValue(position, out collidedBlueprint);
         }
 
         /// <summary>
@@ -423,12 +412,12 @@ namespace RyansLibrary.Labyrinth
         /// <param name="position">The position of the blueprint room</param>
         /// <param name="collidedRoom">If any room was found to collide then return the room otherwise will be null</param>
         /// <returns>Collided or not collided</returns>
-        public bool CheckCollision(Vector3Int position)
+        public static bool CheckCollision(MapGenerationContext context, Vector3Int position)
         {
-            return _masterDictionary.ContainsKey(position);
+            return context.MasterDictionary.ContainsKey(position);
         }
 
-        public List<Blueprint> ToggleAvailableCellsInUniqueRoom(Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)
+        public static List<Blueprint> ToggleAvailableCellsInUniqueRoom(MapGenerationContext context, Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)
         {
             List<Blueprint> availibleBlueprints = new List<Blueprint>();
 
@@ -437,13 +426,13 @@ namespace RyansLibrary.Labyrinth
             {
                 Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
 
-                if (_masterDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
+                if (context.MasterDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
                     blueprint.Available = available;
                 }
                 else
-                    availibleBlueprints.Add(GenerateBlueprintRoom(path, cellPosition, available));
+                    availibleBlueprints.Add(GenerateBlueprintRoom(context, path, cellPosition, available));
             }
 
             return availibleBlueprints;
@@ -451,7 +440,7 @@ namespace RyansLibrary.Labyrinth
         #endregion
 
         #region Debug
-        public void ToggleDebugLogs(bool toggle)
+        public static void ToggleDebugLogs(bool toggle)
         {
             _debugLogs = toggle;
         }

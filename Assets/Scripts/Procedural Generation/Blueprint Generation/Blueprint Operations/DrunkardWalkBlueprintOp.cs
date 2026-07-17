@@ -11,8 +11,8 @@ using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Coll
 
 public class DrunkardWalkBlueprintOp : BlueprintOperation
 {
-    public DrunkardWalkBlueprintOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string branchedPathInput, string boundsInput, string startIndexInput,
-        string endIndexInput, string canGoVertical) : base(context, bpg)
+    public DrunkardWalkBlueprintOp(MapGenerationContext context, string pathInput, string branchedPathInput, string boundsInput, string startIndexInput,
+        string endIndexInput, string canGoVertical) : base(context)
     {
         OperationID = $"DrunkardWalkBlueprintOp:{context.ConsumeOperationID()}";
 
@@ -120,7 +120,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
             return true;
 
         // Attempt to place a new room
-        Blueprint newBlueprint = _bpg.PlaceBlueprintInRandomDirection(path, bounds, previousBlueprint, canGoVertical);
+        Blueprint newBlueprint = BlueprintGenerator.PlaceBlueprintInRandomDirection(_context, path, bounds, previousBlueprint, canGoVertical);
 
         if (newBlueprint != null)    // New room was placed -> place next room
         {

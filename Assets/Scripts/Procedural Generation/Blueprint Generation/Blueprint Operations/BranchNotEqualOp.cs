@@ -9,7 +9,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class BranchNotEqualOp : BlueprintOperation
     {
-        public BranchNotEqualOp(MapGenerationContext context, BlueprintGenerator bpg, string targetOpIDInput, string intAInput, string intBInput) : base(context, bpg)
+        public BranchNotEqualOp(MapGenerationContext context, string targetOpIDInput, string intAInput, string intBInput) : base(context)
         {
             OperationID = $"BranchNotEqualOp:{context.ConsumeOperationID()}";
 

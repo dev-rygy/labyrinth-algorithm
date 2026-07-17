@@ -11,7 +11,7 @@ namespace RyansLibrary.Labyrinth
 {
     public class PlaceBoundedBlueprintsOp : BlueprintOperation
     {
-        public PlaceBoundedBlueprintsOp(MapGenerationContext context, BlueprintGenerator bpg, string pathInput, string roomEntryInput, string boundsInput) : base(context, bpg)
+        public PlaceBoundedBlueprintsOp(MapGenerationContext context, string pathInput, string roomEntryInput, string boundsInput) : base(context)
         {
             OperationID = $"PlaceBoundedUniqueBlueprint:{context.ConsumeOperationID()}";
 
@@ -103,7 +103,7 @@ namespace RyansLibrary.Labyrinth
             );
 
             // Append the newly generated blueprint rooms to the end of the list
-            List<Blueprint> newBlueprints = _bpg.GenerateBlueprintsFromDimensions(path, randomSpawnPos, dimensions, available);
+            List<Blueprint> newBlueprints = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, randomSpawnPos, dimensions, available);
 
             spawnPosition = randomSpawnPos;
 
@@ -129,7 +129,7 @@ namespace RyansLibrary.Labyrinth
                     blueprint.Available = available;
                 }
                 else
-                    availibleBlueprints.Add(_bpg.GenerateBlueprintRoom(path, cellPosition, available));
+                    availibleBlueprints.Add(BlueprintGenerator.GenerateBlueprintRoom(_context, path, cellPosition, available));
             }
 
             return availibleBlueprints;

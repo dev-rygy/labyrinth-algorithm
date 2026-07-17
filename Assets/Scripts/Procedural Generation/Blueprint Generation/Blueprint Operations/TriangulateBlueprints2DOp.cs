@@ -14,8 +14,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class TriangulateBlueprints2DOp : BlueprintOperation
     {
-        public TriangulateBlueprints2DOp(MapGenerationContext context, BlueprintGenerator bpg, string blueprintListInput)
-                    : base(context, bpg)
+        public TriangulateBlueprints2DOp(MapGenerationContext context, string blueprintListInput)
+                    : base(context)
         {
             OperationID = $"TriangulateBlueprints:{context.ConsumeOperationID()}";
 
