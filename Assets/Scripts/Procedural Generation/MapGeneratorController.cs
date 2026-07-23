@@ -155,10 +155,7 @@ namespace RyansLibrary.Labyrinth
 
             OnSeedUpdate?.Invoke();
 
-            if (_debugLogs)
-            {
-                Debug.Log($"Generating map with seed: ({_seed})");
-            }
+            if (_debugLogs) Debug.Log($"Generating map with seed: ({_seed})");
 
             _context = new();
 

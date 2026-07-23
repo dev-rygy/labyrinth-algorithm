@@ -44,7 +44,7 @@ namespace RyansLibrary.Labyrinth
             {
                 List<Edge> resultListEdge = SelectRandomSetFromList(edgeList, setSize);
                 _context.Malloc(OutputPorts[0], resultListEdge);
-                _context.AddToRandomCyclesList(resultListEdge);
+                _context.InvokeNewRandonCycles(resultListEdge);
                 return true;
             }
             else if (list is List<Blueprint> blueprintList)

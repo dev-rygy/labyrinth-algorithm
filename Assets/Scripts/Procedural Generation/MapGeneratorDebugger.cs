@@ -39,19 +39,47 @@ namespace RyansLibrary.Labyrinth
         private readonly IGizmoDrawer _editorDrawer = new EditorGizmoDrawer();
         private readonly IGizmoDrawer _runtimeDrawer = new RuntimeGizmoDrawer();
 
+        // Debugging Lists - These lists are intended to store intermediate results for debugging and visualization purposes
+        public List<List<Edge>> Triangulations { get; private set; }
+        public List<List<Edge>> MinimumSpanningTrees { get; private set; }
+        public List<List<Edge>> RandomCycles { get; private set; }
+
         #region Mono
         private void Awake()
         {
             _controller = GetComponent<MapGeneratorController>();
+
+            // Initialize Debugging Lists
+            Triangulations = new();
+            MinimumSpanningTrees = new();
+            RandomCycles = new();
         }
 
         private void Start()
         {
             RegisterConsoleCommands();
+        }
 
+        private void OnEnable()
+        {
             MapGeneratorController.OnGenerationStarted += () => _debugGizmos = true;
             MapGeneratorController.OnGenerationDone += () => _debugGizmos = false;
             ApplicationController.OnMenu += () => _debugGizmos = false;
+
+            MapGenerationContext.OnNewTriangulation += (triangulation) => Triangulations.Add(triangulation);
+            MapGenerationContext.OnNewMST += (mst) => MinimumSpanningTrees.Add(mst);
+            MapGenerationContext.OnNewRandomCycles += (rndCycle) => RandomCycles.Add(rndCycle);
+        }
+
+        private void OnDisable()
+        {
+            MapGeneratorController.OnGenerationStarted -= () => _debugGizmos = true;
+            MapGeneratorController.OnGenerationDone -= () => _debugGizmos = false;
+            ApplicationController.OnMenu -= () => _debugGizmos = false;
+
+            MapGenerationContext.OnNewTriangulation -= (triangulation) => Triangulations.Add(triangulation);
+            MapGenerationContext.OnNewMST -= (mst) => Triangulations.Add(mst);
+            MapGenerationContext.OnNewRandomCycles -= (rndCycle) => Triangulations.Add(rndCycle);
         }
 
         private void Update()
@@ -131,11 +159,11 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawTriangulation(IGizmoDrawer drawer, Color color)
         {
-            if (_controller.Context is null || _controller.Context.Triangulations is null)
+            if (_controller.Context is null || Triangulations is null)
                 return;
 
             int gridUnitSize = _controller.GridUnitSize;
-            foreach (List<Edge> edgeList in _controller.Context.Triangulations)
+            foreach (List<Edge> edgeList in Triangulations)
             {
                 // Draw remaining edges from triangulation
                 foreach (Edge e in edgeList)
@@ -148,11 +176,11 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawMSTs(IGizmoDrawer drawer, Color color)
         {
-            if (_controller.Context is null || _controller.Context.MinimumSpanningTrees is null)
+            if (_controller.Context is null || MinimumSpanningTrees is null)
                 return;
 
             int gridUnitSize = _controller.GridUnitSize;
-            foreach (List<Edge> edgeList in _controller.Context.MinimumSpanningTrees)
+            foreach (List<Edge> edgeList in MinimumSpanningTrees)
             {
                 if (edgeList is null)
                     continue;
@@ -168,11 +196,11 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawRandomCycles(IGizmoDrawer drawer, Color color)
         {
-            if (_controller.Context is null || _controller.Context.RandomCycles is null)
+            if (_controller.Context is null || RandomCycles is null)
                 return;
 
             int gridUnitSize = _controller.GridUnitSize;
-            foreach (List<Edge> edgeList in _controller.Context.RandomCycles)
+            foreach (List<Edge> edgeList in RandomCycles)
             {
                 if (edgeList is null)
                     continue;
@@ -212,6 +240,14 @@ namespace RyansLibrary.Labyrinth
                     drawer.Cube(blueprint.Position * gridUnitSize, unitSize);
                 }
             }
+        }
+
+        public void ClearDebuggingLists()
+        {
+            // Clear debugging lists (clear what exists)
+            Triangulations?.Clear();
+            MinimumSpanningTrees?.Clear();
+            RandomCycles?.Clear();
         }
         #endregion
 

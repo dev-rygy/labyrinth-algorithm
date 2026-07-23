@@ -41,7 +41,7 @@ namespace RyansLibrary.Labyrinth
             List<Edge> edgeList = GenerateTriangulation(blueprintList);
 
             _context.Malloc(OutputPorts[0], edgeList);
-            _context.AddToTriangulationsList(edgeList);
+            _context.InvokeNewTriangulation(edgeList);
 
             return true;
         }

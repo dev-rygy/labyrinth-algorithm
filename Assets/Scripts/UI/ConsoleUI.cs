@@ -31,11 +31,11 @@ public class ConsoleUI : UIBehaviour
     [SerializeField] private int _maxSuggestions = 5;
 
     [Header("Tags")]
-    [SerializeField] private String _errorTextTag;
-    [SerializeField] private String _assertTextTag;
-    [SerializeField] private String _warningTextTag;
-    [SerializeField] private String _logTextTag;
-    [SerializeField] private String _exceptionTextTag;
+    [SerializeField] private string _errorTextTag;
+    [SerializeField] private string _assertTextTag;
+    [SerializeField] private string _warningTextTag;
+    [SerializeField] private string _logTextTag;
+    [SerializeField] private string _exceptionTextTag;
 
     [Header("Colors")]
     [SerializeField] private Color _errorTextColor;

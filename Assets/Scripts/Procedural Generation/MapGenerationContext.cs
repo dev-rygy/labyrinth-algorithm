@@ -5,6 +5,7 @@
  * Notes:           
 */
 using RyansLibrary.Graphs;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,10 @@ namespace RyansLibrary.Labyrinth
     /// should be externally synchronized if used in multithreaded scenarios.</remarks>
     public sealed class MapGenerationContext
     {
+        public static event Action<List<Edge>> OnNewTriangulation;
+        public static event Action<List<Edge>> OnNewMST;
+        public static event Action<List<Edge>> OnNewRandomCycles;
+
         // ***** Path Containers *****
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
@@ -34,9 +39,6 @@ namespace RyansLibrary.Labyrinth
         public Stack<BlueprintOperation> OperationHistory { get; private set; }
 
         // Debugging Lists - These lists are intended to store intermediate results for debugging and visualization purposes
-        public List<List<Edge>> Triangulations { get; private set; }
-        public List<List<Edge>> MinimumSpanningTrees { get; private set; }
-        public List<List<Edge>> RandomCycles { get; private set; }
 
         // Private Variables
         private Dictionary<string, object> _dataCache;
@@ -48,11 +50,6 @@ namespace RyansLibrary.Labyrinth
 
             // Holds all blueprint objects in scene
             _blueprintDictionary = new();
-
-            // Initialize Debugging Lists
-            Triangulations = new();
-            MinimumSpanningTrees = new();
-            RandomCycles = new();
 
             // Initialize operations
             OperationQueue = new();
@@ -296,9 +293,6 @@ namespace RyansLibrary.Labyrinth
             // Clear memory
             ClearMemory();
 
-            // Clear debugging lists (clear what exists)
-            ClearDebuggingLists();
-
             // Clear operation collections
             ClearOperationCollections();
 
@@ -315,14 +309,6 @@ namespace RyansLibrary.Labyrinth
         public void ClearDictionary()
         {
             _blueprintDictionary?.Clear();
-        }
-
-        public void ClearDebuggingLists()
-        {
-            // Clear debugging lists (clear what exists)
-            Triangulations?.Clear();
-            MinimumSpanningTrees?.Clear();
-            RandomCycles?.Clear();
         }
 
         /// <summary>
@@ -366,27 +352,27 @@ namespace RyansLibrary.Labyrinth
         /// Adds a triangulation, represented as a list of edges, to the collection of triangulations to be used for debugging purposes.
         /// </summary>
         /// <param name="triangulation">The list of edges that defines the triangulation to add. Cannot be null.</param>
-        public void AddToTriangulationsList(List<Edge> triangulation)
+        public void InvokeNewTriangulation(List<Edge> triangulation)
         {
-            Triangulations?.Add(triangulation);
+            OnNewTriangulation?.Invoke(triangulation);
         }
 
         /// <summary>
         /// Adds a MST, represented as a list of edges, to the collection of MSTs to be used for debugging purposes.
         /// </summary>
         /// <param name="mst">The list of edges that defines the minimum spanning tree to add. Cannot be null.</param>
-        public void AddToMSTList(List<Edge> mst)
+        public void InvokeNewMST(List<Edge> mst)
         {
-            MinimumSpanningTrees?.Add(mst);
+            OnNewMST?.Invoke(mst);
         }
 
         /// <summary>
         /// Adds a random cycle, represented as a list of edges, to the collection of random cycles to be used for debugging purposes.
         /// </summary>
         /// <param name="rcList">The list of edges that defines the random cycle to add. Cannot be null.</param>
-        public void AddToRandomCyclesList(List<Edge> rcList)
+        public void InvokeNewRandonCycles(List<Edge> rcList)
         {
-            RandomCycles?.Add(rcList);
+            OnNewRandomCycles?.Invoke(rcList);
         }
 
         public int GetOperationQueueCount()
