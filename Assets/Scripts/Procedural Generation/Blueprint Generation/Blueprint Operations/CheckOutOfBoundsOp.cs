@@ -8,6 +8,12 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Despite the name, this doesn't return a bool - it builds the sub-bounds of boundsA that intersects
+    /// boundsB's size/position, shrinking that sub-bounds if it would otherwise poke outside boundsA
+    /// (BlueprintGenerator.CheckOutOfBounds reports how far out and by how much to shrink). Used to safely carve a
+    /// smaller bounded region (e.g. a room or sub-zone) out of a larger one without ever exceeding its parent.
+    /// </summary>
     public class CheckOutOfBoundsOp : BlueprintOperation
     {
         public CheckOutOfBoundsOp(MapGenerationContext context, string boundsAInput, string boundsBInput)
@@ -16,12 +22,12 @@ namespace RyansLibrary.Labyrinth
             OperationID = $"IntersectBoundsOp:{context.ConsumeOperationID()}";
 
             // Input Ports
-            InputPorts.Add(boundsAInput);
-            InputPorts.Add(boundsBInput);
+            InputPorts.Add(boundsAInput);       // Bounds A
+            InputPorts.Add(boundsBInput);       // Bounds B
 
             // Output Ports
             string memoryID = context.ConsumeMemoryID().ToString();
-            OutputPorts.Add(memoryID);
+            OutputPorts.Add(memoryID);          
         }
 
         public override bool Execute()

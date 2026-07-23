@@ -802,6 +802,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3001415781675097524, guid: 905355292a4ddff4ba8986f7df2c039e,
+        type: 3}
+      propertyPath: _runtimeTextDescription
+      value: 'Press ''~'' to open/close console
+
+        Type "help" for a list of
+        commands
+
+        Type "camera.mode" in console to switch between
+
+        camera
+        modes (main, free, player)
+
+        Press ''E'' to interact with ladders
+        and hatches'
+      objectReference: {fileID: 0}
     - target: {fileID: 3136922493775479100, guid: 905355292a4ddff4ba8986f7df2c039e,
         type: 3}
       propertyPath: m_Pivot.x
@@ -970,35 +986,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 9210393091268786974, guid: 905355292a4ddff4ba8986f7df2c039e,
-        type: 3}
-      insertIndex: 3
-      addedObject: {fileID: 2316748284968084391}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 905355292a4ddff4ba8986f7df2c039e, type: 3}
---- !u!1 &2316748284968084390 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9210393091268786974, guid: 905355292a4ddff4ba8986f7df2c039e,
-    type: 3}
-  m_PrefabInstance: {fileID: 2316748284968084389}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2316748284968084391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2316748284968084390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!1001 &4332677726402747442
 PrefabInstance:
   m_ObjectHideFlags: 0

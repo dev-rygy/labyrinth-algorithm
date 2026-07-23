@@ -8,6 +8,11 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Operation that computes the overlapping region of two BoundsInt volumes (see BoundsIntUtils.IntersectBounds). Used when a
+    /// zone needs to be constrained to the area shared between two other bounds, e.g. clipping a sub-zone so it
+    /// never spills outside its parent zone.
+    /// </summary>
     public class BoundsIntersectOp : BlueprintOperation
     {
         public BoundsIntersectOp(MapGenerationContext context, string boundsAInput, string boundsBInput)

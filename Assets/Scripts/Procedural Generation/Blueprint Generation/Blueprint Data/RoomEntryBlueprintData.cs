@@ -9,7 +9,9 @@ using UnityEngine;
 namespace RyansLibrary.Labyrinth
 {
     /// <summary>
-    /// Holds data for a RoomEntry in the map generator's memory.
+    /// Holds data for a RoomEntry in the map generator's memory, exposing both the RoomEntry itself and its Bounds
+    /// as separate output ports so placement operations (PlaceBoundedBlueprintsOp/PlaceFixedBlueprintsOp) can wire
+    /// up just the bounds where that's all they need.
     /// </summary>
     public class RoomEntryBlueprintData : BlueprintData<RoomEntry>
     {

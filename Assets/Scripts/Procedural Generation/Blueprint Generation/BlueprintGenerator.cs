@@ -13,26 +13,42 @@ using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Coll
 namespace RyansLibrary.Labyrinth
 {
     /// <summary>
-    /// Holds the properties of a psuedo room that does not actually exist in the world.
+    /// Holds the properties of a psuedo room (Blueprint) that does not actually exist in the world.
     /// Is meant to be parsed and replaced by actual rooms later on.
     /// </summary>
+    /// <remarks>
+    /// The whole labyrinth is generated in two passes: first the algorithm reasons about the *layout* using cheap,
+    /// abstract Blueprint objects on a room-sized grid (one unit = one room cell, see "room coords" throughout this
+    /// file), then a later pass (RoomGenerator) walks the finished blueprint graph and instantiates real room
+    /// prefabs in world space. Working in this abstract space first is what makes graph algorithms like Delaunay
+    /// triangulation / MST / A* / drunkard-walk cheap and simple: they only ever operate on integer grid positions
+    /// and a dictionary lookup, never on actual geometry.
+    /// </remarks>
     public class Blueprint
     {
         public readonly string CellID;
-        public readonly Vector3Int Position;      // Position of blueprint room in room coords
-        public bool Available { get; set; }
+        public readonly Vector3Int Position;    // Position of blueprint room in room coords
+        public bool Claimed { get; set; }       // Prevents parsing algorithm from using blueprint in algorithm
         public bool[] EntryPointFlags { get; set; }
 
         // Constructor
         public Blueprint(Vector3Int postion, string cellID = "Blueprint")
         {
-            Available = true;
+            Claimed = true;
             CellID = cellID;
             Position = postion;
             EntryPointFlags = new bool[6];       // A flag to mark which entrances should be open for a room
         }
     }
 
+    /// <summary>
+    /// Static toolbox of primitive operations for building and querying the blueprint grid (placing rooms,
+    /// checking collisions/bounds, flagging doorways between neighboring rooms, etc). This is the layer that the
+    /// higher-level Blueprint Operations (DrunkardWalkBlueprintOp, PathfindingBlueprintOp, PlaceBoundedBlueprintsOp,
+    /// ...) are built on top of - those classes decide *when* and *where* to call into these methods, while this
+    /// class enforces the low-level invariants (no two rooms in the same cell, doorways always flagged on both
+    /// sides, etc).
+    /// </summary>
     public static class BlueprintGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
@@ -49,17 +65,29 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">The desired path to add the new blueprint room to.</param>
         /// <param name="origin">The desired position to spawn the new room at. Must be in world coords</param>
         /// <returns>Blueprint room created in room coords.</returns>
-        public static Blueprint GenerateBlueprintRoom(MapGenerationContext context, Path path, Vector3Int origin, bool available = true)
+        public static Blueprint GenerateBlueprint(MapGenerationContext context, Path path, Vector3Int origin, bool available = true)
         {
+            if (context == null || context.BlueprintDictionary == null || path == null)
+            {
+                Debug.LogError("Context/Dictionary/Path not initialized to spawn Blueprint.");
+                return null;
+            }
+
+            if (context.BlueprintDictionary.TryGetValue(origin, out Blueprint blueprint))
+            {
+                Debug.LogError("Blueprint already exists in location. Terminating spawn.");
+                return null;
+            }
+
             string blueprintName = $"BlueprintRoom ({context.BlueprintDictionary.Count()})";
             Blueprint newBlueprint = new Blueprint(origin, blueprintName);
-            newBlueprint.Available = available;
-
-            if (_debugLogs) Debug.Log($"Generated blueprint room {blueprintName} at {origin}");
+            newBlueprint.Claimed = available;
 
             // Update paths and masters with new blueprint room
-            path?.Add(newBlueprint);
-            context.BlueprintDictionary?.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
+            path.Add(newBlueprint);
+            context.BlueprintDictionary.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
+
+            if (_debugLogs) Debug.Log($"Generated blueprint room {blueprintName} at {origin}");
             return newBlueprint;
         }
 
@@ -99,7 +127,7 @@ namespace RyansLibrary.Labyrinth
 
             // If no errors then generate blueprint rooms from dimensions
             foreach (Vector3Int spawnPosition in blueprintroomPositions)
-                roomBlueprints.Add(GenerateBlueprintRoom(context, path, spawnPosition, available));      // Call to method above
+                roomBlueprints.Add(GenerateBlueprint(context, path, spawnPosition, available));      // Call to method above
 
             return roomBlueprints;
         }
@@ -128,7 +156,7 @@ namespace RyansLibrary.Labyrinth
             );
 
             // Append the newly generated blueprint rooms to the end of the list
-            List<Blueprint> newBlueprints = BlueprintGenerator.GenerateBlueprintsFromDimensions(context, path, randomSpawnPos, dimensions, available);
+            List<Blueprint> newBlueprints = GenerateBlueprintsFromDimensions(context, path, randomSpawnPos, dimensions, available);
 
             spawnPosition = randomSpawnPos;
 
@@ -139,6 +167,10 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
+        // This is the single-step move used by the drunkard-walk algorithm (see DrunkardWalkBlueprintOp): given the
+        // last room placed, try to grow the path by one room in a random cardinal direction. Every direction is
+        // tried at most once per call (never the same failed direction twice) before giving up, so the caller can
+        // reliably tell "no room fits here at all" apart from "just got unlucky."
         public static Blueprint PlaceBlueprintInRandomDirection(MapGenerationContext context, Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
         {
             // If path can be placed in a vertical direction then all 6 faces are available, otherwise only 4 horizontal faces are available
@@ -152,6 +184,8 @@ namespace RyansLibrary.Labyrinth
             {
                 // Choose a random direction to be the potential position for the next room.
                 int directionalIndex = Random.Range(0, availableDirections);
+                // attempts[] marks directions already ruled out this call; FindIndexCircular walks forward from the
+                // random index to the next direction not yet tried, so repeated failures can't roll the same dud twice.
                 directionalIndex = ArrayUtils.FindIndexCircular(attempts, directionalIndex, x => x == false);
 
                 if (directionalIndex < 0)
@@ -163,7 +197,7 @@ namespace RyansLibrary.Labyrinth
                 if (!CheckOutOfBounds(tempPos, bounds) && !CheckCollision(context, tempPos))     // If position is not out of bounds and not colliding with another room
                 {
                     // Return new blueprint room
-                    Blueprint newBlueprint = GenerateBlueprintRoom(context, path, tempPos);
+                    Blueprint newBlueprint = GenerateBlueprint(context, path, tempPos);
                     FlagEntryPoints(newBlueprint, previousBlueprint, directionalIndex);                    // Flag the face that touches the opposite room
 
                     return newBlueprint;
@@ -226,7 +260,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Pass in two rooms and link their entrancways together. 
+        /// Pass in two rooms and link their entrancways together.
         /// </summary>
         /// <param name="blueprintA">First blueprint room</param>
         /// <param name="blueprintB">Second blueprint room</param>
@@ -239,6 +273,10 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
+            // Faces are stored in opposite pairs at adjacent indices (0/1 = right/left, 2/3 = forward/back,
+            // 4/5 = up/down - see GetDirectionFromIndex), so "the opposite face" is always +1 (from an even index)
+            // or -1 (from an odd index). This lets a door be opened on both sides of the connection with simple
+            // integer math instead of a lookup table.
             // Flag the fact of the next room facing the prev. room
             if (Math.IsEven(entrFlagIdx))                                   // If choosen an even numbered side then set opposite to true (Ex. F4 -> F3 = true)
                 blueprintA.EntryPointFlags[entrFlagIdx + 1] = true;
@@ -284,7 +322,7 @@ namespace RyansLibrary.Labyrinth
             Blueprint blueprint = path.BlueprintList[randomBlueprintListIndex];
 
             // TODO: Make a circular array handle this
-            if (!blueprint.Available)
+            if (!blueprint.Claimed)
             {
                 //Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
                 blueprint = ChooseRandomBlueprintInPath(path, startIndex, endIndex);
@@ -307,7 +345,7 @@ namespace RyansLibrary.Labyrinth
             float distance = Mathf.Infinity;
             foreach (Blueprint blueprint in path.BlueprintList)
             {
-                if (blueprint.Available)
+                if (blueprint.Claimed)
                 {
                     float currentDistance = Vector3Int.Distance(point, blueprint.Position);
                     if (currentDistance < distance)
@@ -323,12 +361,12 @@ namespace RyansLibrary.Labyrinth
 
         public static List<Blueprint> FindBlueprintsWithAvailibility(List<Blueprint> blueprintList, bool availibility)
         {
-            return new List<Blueprint>(blueprintList.Where(b => (b.Available == availibility)).ToList());
+            return new List<Blueprint>(blueprintList.Where(b => (b.Claimed == availibility)).ToList());
         }
 
         public static Blueprint FindFirstBlueprintWithAvailibility(List<Blueprint> blueprintList, bool availibility)
         {
-            return blueprintList.FirstOrDefault(b => (b.Available == availibility));
+            return blueprintList.FirstOrDefault(b => (b.Claimed == availibility));
         }
 
         public static BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
@@ -463,10 +501,10 @@ namespace RyansLibrary.Labyrinth
                 if (context.BlueprintDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
-                    blueprint.Available = available;
+                    blueprint.Claimed = available;
                 }
                 else
-                    availibleBlueprints.Add(GenerateBlueprintRoom(context, path, cellPosition, available));
+                    availibleBlueprints.Add(GenerateBlueprint(context, path, cellPosition, available));
             }
 
             return availibleBlueprints;

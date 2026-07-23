@@ -30,6 +30,11 @@ namespace RyansLibrary.Labyrinth
         boss
     }
 
+    /// <summary>
+    /// Runtime component on every room prefab. Doesn't decide anything about layout itself - RoomGenerator decides
+    /// where/what to spawn, then calls CopyBlueprintEntranceFlags per underlying blueprint cell and Initialize() to
+    /// actually open the correct doorways/close the correct walls on this specific prefab instance.
+    /// </summary>
     public class Room : MonoBehaviour
     {
         [Header("Room Components")]
@@ -47,6 +52,9 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private Color _roomBoundsColor = Color.red;
         [SerializeField] private Color _availableCellColor = Color.green;
 
+        // [unit, face]: a merged room prefab (see RoomGenerator's bigRoom/tallRoom/longRoom shapes) can represent
+        // up to 4 of the original 1x1x1 blueprint cells, each with its own 6 faces/walls - this is where those get
+        // flattened into one prefab's worth of "which walls should be doors" before AcivateEntranceways() applies it.
         private bool[,] openEntranceways;
 
         private void Awake()
@@ -97,6 +105,9 @@ namespace RyansLibrary.Labyrinth
                 return bluePrintArray;
             }
 
+            // A 90-degree yaw swaps which physical wall each blueprint face flag now points at (e.g. the wall that
+            // used to face +Z now faces +X), so the flags have to be permuted to match, not just copied - otherwise
+            // a rotated longRoom (see RoomGenerator's PosZ/NegZ longRoom cases) would open doors on the wrong walls.
             bool[] rotatedArray = new bool[bluePrintArray.Length];
             if (rotation.y == 90)      // If 90 degree rotation shift down
             {
@@ -135,6 +146,10 @@ namespace RyansLibrary.Labyrinth
         /// Activate an Entranceway in the entranceway list
         /// </summary>
         /// <param name="entranceNum"></param>
+        // _roomWalls is expected to be laid out in the prefab in the same flattened [unit*6 + face] order as
+        // openEntranceways, and each wall transform's child 0/1 are expected to be the open-doorway
+        // mesh/collider and the solid-wall mesh/collider respectively - swapping which one is active is how a
+        // face becomes a walkable doorway instead of a solid wall.
         private void ActivateEntranceway(int entranceNum)
         {
             _roomWalls[entranceNum].GetChild(0).gameObject.SetActive(true);   // Activate Entranceway

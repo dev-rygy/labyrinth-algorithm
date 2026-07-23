@@ -10,6 +10,13 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Builds a Delaunay triangulation (DelaunayTriangulation3D, tetrahedra-based) over every available blueprint
+    /// room's 3D position. Used for zones with real vertical extent (see MapGeneratorController: chosen when
+    /// zone.Bounds.size.y >= 3); for flat, single-floor zones TriangulateBlueprints2DOp is used instead since it's
+    /// simpler and avoids the coplanar-tetrahedra edge case noted below. Feeds directly into FindMSTOp.
+    /// </summary>
+    /// <remarks> Feeds directly into FindMSTOp to trim this into a spanning tree. </remarks>
     public class TriangulateBlueprints3DOp : BlueprintOperation
     {
         public TriangulateBlueprints3DOp(MapGenerationContext context, string blueprintListInput)

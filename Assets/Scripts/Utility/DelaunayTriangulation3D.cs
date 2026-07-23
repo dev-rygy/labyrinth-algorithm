@@ -13,6 +13,16 @@ using System.Collections.Generic;
 
 namespace RyansLibrary
 {
+    /// <summary>
+    /// 3D Delaunay triangulation via Bowyer-Watson, tetrahedra instead of 2D's triangles: start from one super
+    /// tetrahedron containing every point, insert points one at a time discarding every tetrahedron whose
+    /// circumsphere contains the new point ("bad" tetrahedra), and re-tetrahedralize the resulting cavity by fanning
+    /// new tetrahedra from its boundary faces to the new point (see the pairwise Triangle.AlmostEqual check below for
+    /// how those boundary faces are found - the 3D equivalent of DelaunayTriangulation2D's edge-cancellation trick).
+    /// Used by TriangulateBlueprints3DOp for zones with real vertical extent; for flat zones
+    /// TriangulateBlueprints2DOp is preferred instead, partly because coplanar (same-plane) points can make this
+    /// tetrahedra-based approach behave inconsistently - see the TODO on TriangulateBlueprints3DOp.
+    /// </summary>
     public class DelaunayTriangulation3D
     {
         // Precision required for checking if a piece of geometry is nearly the same
@@ -114,6 +124,10 @@ namespace RyansLibrary
                     }
                 }
 
+                // Find the cavity's boundary faces: each bad tetrahedron contributes its 4 triangular faces, and a
+                // face shared between two bad tetrahedra is internal to the cavity (found here via pairwise
+                // AlmostEqual and marked bad on both copies), while a face touching only one bad tetrahedron is on
+                // the cavity's boundary and survives to be fanned into a new tetrahedron with the inserted vertex.
                 // If a Triangle is basically on top of another triangle then it is a bad triangle
                 for (int i = 0; i < Triangles.Count; i++)               // Select first triangle
                 {

@@ -11,6 +11,7 @@ public class DemoMenuUI : MonoBehaviour
 {
     public void StartNewGame()
     {
+        MapGeneratorController.Instance.ToggleStepwiseDebugging(false);
         ApplicationController.Instance.StartNewGame();
     }
 

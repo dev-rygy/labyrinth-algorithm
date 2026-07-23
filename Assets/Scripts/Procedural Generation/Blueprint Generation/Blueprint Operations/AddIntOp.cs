@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Operation to add two ints together.
+    /// </summary>
     public class AddIntOp : BlueprintOperation
     {
         public AddIntOp(MapGenerationContext context, string intAInput, string intBInput, string dataID = "") : base(context)
@@ -19,6 +22,8 @@ namespace RyansLibrary.Labyrinth
             InputPorts.Add(intBInput);
             InputPorts.Add(dataID);
 
+            // If a memory ID was passed in for dataID, reuse that slot (in-place accumulation) instead of consuming
+            // a brand new one - this is what lets this op double as a loop counter's "i = i + 1" increment.
             if (dataID != "")
                 OutputPorts.Add(dataID);
             else

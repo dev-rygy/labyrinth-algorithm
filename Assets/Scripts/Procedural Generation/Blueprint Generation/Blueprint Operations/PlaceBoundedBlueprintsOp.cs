@@ -9,6 +9,11 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Places a "unique" room prefab at a random valid position within a bounds, retrying with a new
+    /// random position whenever it collides with something already placed.
+    /// </summary>
+    // TODO: There are no good loop safeguards in this operation. Needs fixing later.
     public class PlaceBoundedBlueprintsOp : BlueprintOperation
     {
         public PlaceBoundedBlueprintsOp(MapGenerationContext context, string pathInput, string roomEntryInput, string boundsInput) : base(context)
@@ -90,10 +95,10 @@ namespace RyansLibrary.Labyrinth
                 if (_context.BlueprintDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
-                    blueprint.Available = available;
+                    blueprint.Claimed = available;
                 }
                 else
-                    availibleBlueprints.Add(BlueprintGenerator.GenerateBlueprintRoom(_context, path, cellPosition, available));
+                    availibleBlueprints.Add(BlueprintGenerator.GenerateBlueprint(_context, path, cellPosition, available));
             }
 
             return availibleBlueprints;

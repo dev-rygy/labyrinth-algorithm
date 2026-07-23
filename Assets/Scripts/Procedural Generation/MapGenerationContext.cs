@@ -15,11 +15,16 @@ namespace RyansLibrary.Labyrinth
     /// Provides context and state management for procedural map generation operations, including operation sequencing,
     /// memory storage, and debugging data structures.
     /// </summary>
-    /// <remarks>MapGenerationContext tracks the execution of blueprint operations through queues and history
+    /// <remarks>
+    /// MapGenerationContext tracks the execution of blueprint operations through queues and history
     /// stacks, manages unique identifiers for operations and memory, and stores intermediate results such as
     /// triangulations, minimum spanning trees, and random cycles. It also offers methods for memory access and
-    /// manipulation, enabling operations to share data and results. This class is not thread-safe; concurrent access
-    /// should be externally synchronized if used in multithreaded scenarios.</remarks>
+    /// manipulation, enabling operations to share data and results. 
+    /// </remarks>
+    /// <remarks>
+    /// WARNING: This class is not yet thread-safe; concurrent access
+    /// should be externally synchronized if used in multithreaded scenarios.
+    /// </remarks>
     public sealed class MapGenerationContext
     {
         public static event Action<List<Edge>> OnNewTriangulation;

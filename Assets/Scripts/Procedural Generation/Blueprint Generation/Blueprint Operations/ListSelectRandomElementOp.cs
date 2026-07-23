@@ -10,6 +10,10 @@ using RyansLibrary.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Picks a single random element out of a Edge or Blueprint List and writes just that element out.
+/// Compare to ListSelectRandomSetFromOp, which picks several elements at once.
+/// </summary>
 public class ListSelectRandomElementOp : BlueprintOperation
 {
     public ListSelectRandomElementOp(MapGenerationContext context, string listInput) : base(context)

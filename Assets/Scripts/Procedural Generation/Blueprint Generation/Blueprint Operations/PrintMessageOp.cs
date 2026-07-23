@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Debug utility operation: logs a fixed string to the console when reached in the operation queue.
+    /// </summary>
     public class PrintMessageOp : BlueprintOperation
     {
         public PrintMessageOp(MapGenerationContext context, string messageInput) : base(context)

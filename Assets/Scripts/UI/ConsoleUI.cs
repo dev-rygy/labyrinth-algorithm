@@ -300,7 +300,7 @@ public class ConsoleUI : UIBehaviour
             {
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append($"*** Console Commands ({CommandRegistry.GetCommandCount()}) ***\n");
+                sb.Append($"*** Console Commands ({CommandRegistry.GetCommandCount()}) ***\n\n");
 
                 foreach (var cmd in CommandRegistry.GetAllCommands())
                 {
@@ -308,7 +308,6 @@ public class ConsoleUI : UIBehaviour
                 }
 
                 OutputToConsole(sb.ToString());
-                Debug.Log("Console commands listed.");
             }));
 
         // Clear command - clear text from console interface
@@ -318,7 +317,6 @@ public class ConsoleUI : UIBehaviour
             args =>
             {
                 ClearConsole();
-                Debug.Log("Console cleared.");
             }));
 
         // Print input memory command - Print memory of console

@@ -8,6 +8,11 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Operation that combines two BoundsInt volumes into the largest volume that can possibly
+    /// contain both (see BoundsIntUtils.CombineBounds). Used to grow a zone's bounds to encompass
+    /// a neighboring zone/room rather than clipping to their overlap (the opposite of BoundsIntersectOp).
+    /// </summary>
     public class BoundsUnionOp : BlueprintOperation
     {
         public BoundsUnionOp(MapGenerationContext context, string boundsAInput, string boundsBInput)

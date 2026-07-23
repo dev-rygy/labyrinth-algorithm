@@ -21,6 +21,10 @@ namespace RyansLibrary.AI
         Dijkstra
     }
 
+    /// <summary>
+    /// Standard grid A* over a 3D BoundsInt, 6-directional movement (no diagonals - matches the
+    /// room grid's face-based doorway model). Tied to PathfindingBlueprintOp operation.
+    /// </summary>
     public class SimpleAStar3D
     {
         private class Node

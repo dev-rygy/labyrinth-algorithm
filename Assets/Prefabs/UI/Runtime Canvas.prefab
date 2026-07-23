@@ -2025,6 +2025,7 @@ GameObject:
   - component: {fileID: 3136922493775479100}
   - component: {fileID: 2438449599723422354}
   - component: {fileID: 4423077141077227976}
+  - component: {fileID: 1349982191707902392}
   - component: {fileID: 3001415781675097524}
   m_Layer: 0
   m_Name: Runtime Canvas
@@ -2101,6 +2102,23 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &1349982191707902392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9210393091268786974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &3001415781675097524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2124,16 +2142,18 @@ MonoBehaviour:
     Type "help" for
     a list of commands
 
-    Type "tfc" in console to enable/disable free camera
+    Type "camera.mode" in console to switch between
 
-    Press
-    ''E'' to interact with ladders and hatches'
+    camera
+    modes
+
+    Press ''E'' to interact with ladders and hatches'
   _debuggingTextDescription: 'Press ''~'' to open/close console
 
     Type "help"
     for a list of commands
 
-    Type "mapgenerator.step <number of steps>" to execute
-    operations
+    Type "camera.mode" in console to switch between
 
-    Type "mapgenerator.stepall" to execute the remaining operations'
+    camera
+    modes'

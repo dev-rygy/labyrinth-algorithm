@@ -7,6 +7,11 @@
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Conditional jump operation: if intA >= intB, jump to the target operation, otherwise fall through to the next queued
+    /// operation as normal. Used as a loop's exit test - e.g. "if (loopIndex >= edgeCount) jump past the loop body"
+    /// </summary>
+    /// <remarks>It is safest to make the jump to a NoOp operation.</remarks>
     public class BranchGreaterOrEqualOp : BlueprintOperation
     {
         public BranchGreaterOrEqualOp(MapGenerationContext context, string targetOpIDInput, string intAInput, string intBInput) : base(context)

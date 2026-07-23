@@ -11,6 +11,13 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Pure visualization layer - draws zone bounds, triangulations, MSTs, and the random re-added cycle edges as
+    /// gizmos while a MapGeneratorController is generating. Has no influence on generation itself; it just listens
+    /// to MapGenerationContext's debug events (OnNewTriangulation/OnNewMST/OnNewRandomCycles) to capture the
+    /// intermediate graph state at each stage of MapGeneratorController.LoadMainPathConnectionsOperations for
+    /// inspection.
+    /// </summary>
     [RequireComponent(typeof(MapGeneratorController))]
     public class MapGeneratorDebugger : MonoBehaviour
     {
@@ -69,6 +76,8 @@ namespace RyansLibrary.Labyrinth
             MapGenerationContext.OnNewTriangulation += (triangulation) => Triangulations.Add(triangulation);
             MapGenerationContext.OnNewMST += (mst) => MinimumSpanningTrees.Add(mst);
             MapGenerationContext.OnNewRandomCycles += (rndCycle) => RandomCycles.Add(rndCycle);
+
+            MapGeneratorController.OnGenerationReset += ClearDebuggingLists;
         }
 
         private void OnDisable()
@@ -80,6 +89,8 @@ namespace RyansLibrary.Labyrinth
             MapGenerationContext.OnNewTriangulation -= (triangulation) => Triangulations.Add(triangulation);
             MapGenerationContext.OnNewMST -= (mst) => Triangulations.Add(mst);
             MapGenerationContext.OnNewRandomCycles -= (rndCycle) => Triangulations.Add(rndCycle);
+
+            MapGeneratorController.OnGenerationReset -= ClearDebuggingLists;
         }
 
         private void Update()
@@ -91,6 +102,14 @@ namespace RyansLibrary.Labyrinth
                 return;
 
             DrawAll(_runtimeDrawer);
+        }
+
+        public void ClearDebuggingLists()
+        {
+            // Clear debugging lists (clear what exists)
+            Triangulations?.Clear();
+            MinimumSpanningTrees?.Clear();
+            RandomCycles?.Clear();
         }
 
         private void OnDrawGizmos()
@@ -240,14 +259,6 @@ namespace RyansLibrary.Labyrinth
                     drawer.Cube(blueprint.Position * gridUnitSize, unitSize);
                 }
             }
-        }
-
-        public void ClearDebuggingLists()
-        {
-            // Clear debugging lists (clear what exists)
-            Triangulations?.Clear();
-            MinimumSpanningTrees?.Clear();
-            RandomCycles?.Clear();
         }
         #endregion
 

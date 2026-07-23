@@ -35,6 +35,9 @@ namespace RyansLibrary.Utils
             return list[randomIndex];
         }
 
+        // Reservoir-free random sample without replacement: removes each pick from the pool so it can't be chosen
+        // twice. Backs ListSelectRandomSetFromOp, most notably picking which leftover triangulation edges get added
+        // back to the MST as extra loops (see MapGeneratorController.LoadMainPathConnectionsOperations).
         public static List<T> SelectRandomSet<T>(List<T> list, int elementCount)
         {
             List<T> selectedElements = new List<T>();

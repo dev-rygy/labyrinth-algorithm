@@ -10,7 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;      // Use Unity Engine's Random not System.Collection's Random
+using Random = UnityEngine.Random;      // Using Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
 {
@@ -27,6 +27,21 @@ namespace RyansLibrary.Labyrinth
     }
     #endregion
 
+    /// <summary>
+    /// Top-level driver and entry point for the whole labyrinth algorithm. GenerateLabyrinth() below runs the
+    /// pipeline in four stages:
+    ///   1. InitializeLabyrinth/SpawnZones - seed the RNG and position each Zone's bounds in world space.
+    ///   2. LoadOperations - *builds* the generation algorithm as data: for every zone this constructs a chain of
+    ///      BlueprintOperation/BlueprintData nodes (drunkard walk, triangulation, MST, pathfinding, ...) and queues
+    ///      them in MapGenerationContext.OperationQueue. Nothing is actually generated yet at this point.
+    ///   3. ExecuteOperations - drains that queue one operation at a time (a coroutine so it can be stepped/paused
+    ///      for debugging via DebugSequential/Advance/AdvanceAll). This is where the abstract Blueprint grid actually
+    ///      gets filled in.
+    ///   4. GenerateRooms - walks the finished Blueprint grid and hands it to RoomGenerator to instantiate real room
+    ///      prefabs in world space.
+    /// Splitting "decide the algorithm" (stage 2) from "run it" (stage 3) is what the whole BlueprintOperation graph
+    /// design is for.
+    /// </summary>
     public class MapGeneratorController : MonoBehaviour
     {
         #region Variables
@@ -39,6 +54,7 @@ namespace RyansLibrary.Labyrinth
         public static event Action OnGenerationStarted;
         public static event Action OnGenerationDone;
         public static event Action OnGenerationFailed;
+        public static event Action OnGenerationReset;
 
         // Blueprint Events
         public static event Action OnOperationsStarted;
@@ -140,16 +156,21 @@ namespace RyansLibrary.Labyrinth
 
         #region Labyrinth Algorithm Sequence
         #region Labyrinth Init Functions
+        /// <summary>
+        /// Set seed an initialize zone main paths.
+        /// </summary>
         private void InitializeLabyrinth()
         {
-            // Handle Map Seed Generation
+            // Generate Seed
             if (_generateRandomSeed)
             {
-                int seed = Random.Range(int.MinValue, int.MaxValue);                  // Generate with random seed
+                // Generate with random seed
+                int seed = Random.Range(int.MinValue, int.MaxValue);
                 SetSeed(seed);
             }
             else
-                SetSeed(_customSeed);         // Generate with custom seed
+                // Generate with custom seed
+                SetSeed(_customSeed);
 
             Random.InitState(_seed);
 
@@ -157,22 +178,25 @@ namespace RyansLibrary.Labyrinth
 
             if (_debugLogs) Debug.Log($"Generating map with seed: ({_seed})");
 
+            // Create new context - Proc gen state and storage manager
             _context = new();
 
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
 
-            // Initialize the Main Path in each Zone
+            // Initialize the main path in each zone
             foreach (Zone zone in _zones)
             {
+                // Init main zones
                 InitializeZone(zone);
             }
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
+                // Init connection zones
                 InitializeZone(entry.ConnectionZone);
             }
 
-            // Toggle Logs
+            // Toggle Debug Logs
             ToggleBlueprintLogs(_debugBlueprintLogs);
             ToggleRoomGeneratorLogs(_debugRoomGeneratorLogs);
         }
@@ -183,6 +207,14 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
+        /// <summary>
+        /// Entire generation procedure.
+        /// 1. Initialization
+        /// 2. Zone Spawning
+        /// 3. Load and Execute Blueprint Operations
+        /// 4. Generate Rooms
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator GenerateLabyrinth()
         {
             // Do not Generate a labyrinth if one is already generating
@@ -218,6 +250,8 @@ namespace RyansLibrary.Labyrinth
 
         private void SpawnZones()
         {
+            // Spawn connection zone bounds
+            // Each connection zone can spawn randomly inside a bounded space
             foreach (ZoneConnectionEntry zoneConnection in _zoneConnections)
             {
                 BoundsInt connectionZoneBounds = zoneConnection.ConnectionZone.Bounds;
@@ -254,17 +288,15 @@ namespace RyansLibrary.Labyrinth
 
         private void LoadOperations()
         {
-            // ******* Generate Zone Connection Blueprints *******
+            // ******* Load Zone Connection Blueprints *******
+            // Load connection zone blueprints first and add parts of it to the zones
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
-                // TODO: Make a zone connection entry that takes a connection zone and the two zones it connects and
-                // generates the connection path and room between them; this will make sure the connection generation
-                // has access to all needed data and is generated in the correct order in relation to zone blueprint generation
-
+                // Connect zones together with A*
                 LoadConnectionZoneOperations(entry.ConnectionZone, entry.ZoneA, entry.ZoneB);
             }
 
-            // ******* Generate Blueprint Map For Each Zone *******
+            // ******* Load Zone Blueprints *******
             // Will generate an entire blueprint for a zone. Generates all paths
             // in zone and makes sure they are contiguous.
             foreach (Zone zone in _zones)
@@ -279,11 +311,10 @@ namespace RyansLibrary.Labyrinth
                 // Take the volume of the bounding cubic space and return an error if the amount of rooms to spawn is larger than that volume; make sure we have space for needed rooms
                 if (!CheckZoneBoundedVolume(zone))
                 {
-                    Debug.LogError($"The amount of blueprint rooms desired for zone {zone.Name} exceeds " +
+                    Debug.LogError($"The amount of determined blueprint rooms desired for zone {zone.Name} exceeds " +
                         $"the bounding box's volume or the bounding box is inverted.");
                     return;
                 }
-
 
                 // ******* Generate Zone Blueprints *******
                 // Generate Main Path to boss
@@ -424,7 +455,8 @@ namespace RyansLibrary.Labyrinth
             _stepBudget = 0;
             _runToEnd = false;
 
-            Debug.Log("Map generator restarting.");
+            OnGenerationReset?.Invoke();
+            if (_debugLogs) Debug.Log("Map generator restarting.");
 
             DestroyAllRooms();      // Destroy all rooms from last generation
         }
@@ -550,9 +582,21 @@ namespace RyansLibrary.Labyrinth
             _context.OperationQueueEnqueue(divergentRoomsOp);
         }
 
+        // This method is the heart of the labyrinth algorithm: it turns a scattered set of rooms into a connected,
+        // loopy dungeon graph and then physically carves corridors between them. Overview of the pipeline it builds
+        // (each step below is queued as a BlueprintOperation node, not executed immediately - see BlueprintOperation.cs
+        // for why operations talk through memory IDs instead of calling each other directly):
+        //   1. Delaunay-triangulate every available room position (2D or 3D depending on the zone's height) to get
+        //      a graph where nearby rooms are connected - this over-connects everything, which is intentional.
+        //   2. Run Prim's algorithm (FindMSTOp) to reduce that to a Minimum Spanning Tree: the fewest edges needed
+        //      so every room is still reachable. A pure MST makes a maze with no loops, which plays poorly, so...
+        //   3. A pure MST makes a maze with no loops, which plays poorly, so random edges from the triangulation graph
+        //      are choosen to make forks and cycles in the dungeon.
+        //   4. Each choosen edge is turned into an actual corridor of rooms via A* pathfinding (PathfindingBlueprintOp),
+        //      obstructed by rooms already claimed by the main path so corridors don't cut through existing rooms.
         private void LoadMainPathConnectionsOperations(Zone zone)
         {
-            // ***** Triangulation
+            // ***** Form Triangulation *****
             PathBlueprintData mainPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
             mainPathBlueprintData.LoadIntoMemory();
             BoolBlueprintData availableBlueprintData = new BoolBlueprintData(_context, true);
@@ -568,7 +612,7 @@ namespace RyansLibrary.Labyrinth
                 availableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(availibleBlueprintsOp);
 
-            // *** Choose Between 2D and 3D Triangulation based on bounds size
+            // *** Choose Between 2D and 3D Triangulation based on bounds size *****
             // TODO: DelaunayTriangulation has issues solving cases with coplanar tetrahedra; instead consider
             // a C# library called MIConvexHull that has thousands of lines to solve these issues.
             FindMSTOp mstOp;
@@ -576,7 +620,7 @@ namespace RyansLibrary.Labyrinth
 
             if (zone.Bounds.size.y < 3)
             {
-                // **** Perform 2D Triangulation
+                // Perform 2D Triangulation if bounds size is < 3
                 TriangulateBlueprints2DOp triangulationOp = new TriangulateBlueprints2DOp(_context, availibleBlueprintsOp.OutputPorts[0]);
                 _context.OperationQueueEnqueue(triangulationOp);
 
@@ -588,7 +632,7 @@ namespace RyansLibrary.Labyrinth
             }
             else
             {
-                // **** Perform 3D Triangulation
+                // Perform 3D Triangulation if bounds size in >= 3
                 TriangulateBlueprints3DOp triangulationOp = new TriangulateBlueprints3DOp(_context, availibleBlueprintsOp.OutputPorts[0]);
                 _context.OperationQueueEnqueue(triangulationOp);
 
@@ -599,14 +643,14 @@ namespace RyansLibrary.Labyrinth
                 _context.OperationQueueEnqueue(listDiffOp);
             }
 
-            ListSelectRandomSetFromOp randomCyclesListOp = new ListSelectRandomSetFromOp(_context, listDiffOp.OutputPorts[0], 
+            ListSelectRandomSetOp randomCyclesListOp = new ListSelectRandomSetOp(_context, listDiffOp.OutputPorts[0], 
                 setSize.OutputPorts[0]);
             _context.OperationQueueEnqueue(randomCyclesListOp);
 
             ListUnionOp zoneGraphUnionOp = new ListUnionOp(_context, mstOp.OutputPorts[0], randomCyclesListOp.OutputPorts[0]);
             _context.OperationQueueEnqueue(zoneGraphUnionOp);
 
-            // **** Pathfinding
+            // **** Pathfinding *****
             IntBlueprintData currentIndexBlueprintData = new IntBlueprintData(_context, 0);     // i = 0
             currentIndexBlueprintData.LoadIntoMemory();
             IntBlueprintData intOneBlueprintData = new IntBlueprintData(_context, 1);           // Increment amount
@@ -661,6 +705,9 @@ namespace RyansLibrary.Labyrinth
             _context.OperationQueueEnqueue(targetIDNoOp);
         }
 
+        // Builds one drunkard-walk branch per Path in zone.Paths (side content: prize rooms, trial rooms, etc.),
+        // each one starting from a random point already claimed on the main path (branchedPathBlueprintData) rather
+        // than from scratch, so alt paths always connect back into the zone's spine instead of floating disconnected.
         private void LoadAltPathOperations(Zone zone)
         {
             PathBlueprintData branchedPathBlueprintData = new PathBlueprintData(_context, zone.MainPath);
@@ -701,6 +748,12 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
+        // A "connection zone" is a small in-between zone (e.g. a hallway/gate) that links two otherwise separate
+        // zones together: its first two UniqueRooms (connectionZone.UniqueRooms[0]/[1]) are placed inside the
+        // overlapping area between the connection zone and each parent zone (BoundsIntersectOp), then a corridor
+        // is pathfound between a random open cell in each of those two rooms. This is how the overall labyrinth
+        // ends up as multiple independently-generated zones stitched into one connected world instead of one giant
+        // zone.
         public void LoadConnectionZoneOperations(Zone connectionZone, Zone zoneA, Zone zoneB)
         {
             // *** Error Handleing ***
@@ -865,6 +918,10 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
+        // Unlike ParsePathAndGenerateRooms (which picks a room shape/prefab based on the path's blueprint layout),
+        // unique rooms already know their exact prefab from RoomEntry, so this just instantiates it directly at its
+        // resolved position and copies over whichever entranceway flags were set on the blueprint grid during
+        // generation (so doors line up with whatever corridor was pathfound into this room).
         public bool GenerateUniqueRooms(Zone zone)
         {
             foreach (RoomEntry entry in zone.UniqueRooms)

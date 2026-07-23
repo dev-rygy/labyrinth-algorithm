@@ -13,6 +13,12 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Third and final pass, run strictly after the labyrinth finishes generating (subscribes to
+    /// MapGeneratorController.OnGenerationDone rather than being called directly. 
+    /// For now, walks every alt-path's prize rooms and triggers their chest spawn pads - loot placement is
+    /// deliberately decoupled from room/blueprint generation so it can be re-run or disabled independently.
+    /// </summary>
     public class LootGenerator : MonoBehaviour
     {
         [SerializeField] private bool _enabled = true;

@@ -11,6 +11,15 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Operation that carves a corridor of blueprint rooms between two existing rooms using A* (SimpleAStar3D).
+    /// Generates a new blueprint room for every step of the A* path (skipping cells that already have a room)
+    /// and flags doorways between each consecutive pair so the corridor is walkable end to end. 
+    /// </summary>
+    /// <remarks>
+    /// Obstructions let the caller forbid corridors from tunneling through rooms that are already claimed elsewhere 
+    /// (see the findObstructionsOp usage in MapGeneratorController).
+    /// </remarks>
     public class PathfindingBlueprintOp : BlueprintOperation
     {
         public PathfindingBlueprintOp(MapGenerationContext context, string pathInput, string blueprintStartInput, string blueprintEndInput,
@@ -41,21 +50,6 @@ namespace RyansLibrary.Labyrinth
                 return false;
             if (!TryGetInput(5, out Heuristic heuristic, false))
                 return false;
-
-            /* DEPRICATED: This was the old way of getting inputs, but it was not as clean as the new way above.
-            List<Blueprint> obstructionList = null;
-            Heuristic heuristic = Heuristic.Euclidean;
-            if (InputPorts[4] != "")
-            {
-                if (!TryGetInput(4, out obstructionList))
-                    return false;
-            }
-            if (InputPorts[5] != "")
-            {
-                if (!TryGetInput(5, out heuristic))
-                    return false;
-            }
-            */
 
             if (path is null || startBlueprint is null || endBlueprint is null)
             {
@@ -110,7 +104,7 @@ namespace RyansLibrary.Labyrinth
                     currentBlueprint = occupiedRoom;
                 }
                 else
-                    currentBlueprint = BlueprintGenerator.GenerateBlueprintRoom(_context, path, pos);
+                    currentBlueprint = BlueprintGenerator.GenerateBlueprint(_context, path, pos);
 
                 if (previousBlueprint == null)
                 {

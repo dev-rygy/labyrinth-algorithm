@@ -5,11 +5,16 @@
  * Notes:           
 */
 using RyansLibrary.Graphs;
-using System;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Unpacks a graph Edge (produced by triangulation/MST) into its two endpoint Vertex objects and their raw
+    /// grid positions. Graph edges only carry abstract vertices, so this is the bridge that lets downstream
+    /// operations (FindBlueprintFromPositionOp, PathfindingBlueprintOp) go from "an edge in the room graph" to
+    /// "the two actual Blueprint rooms it connects."
+    /// </summary>
     public class ExtractVerticesFromEdgeOp : BlueprintOperation
     {
         public ExtractVerticesFromEdgeOp(MapGenerationContext context, string edgeInput) : base(context)

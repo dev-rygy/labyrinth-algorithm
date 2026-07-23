@@ -9,6 +9,12 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Places a "unique" room prefab at a specific, predetermined spawn position (relative to the
+    /// zone's bounds), failing outright if that exact spot is out of bounds or collides with an existing room -
+    /// no retry. Used for rooms whose placement is meant to be deterministic (e.g. a spawn room fixed relative 
+    /// to its zone) rather than randomized.
+    /// </summary>
     public class PlaceFixedBlueprintsOp : BlueprintOperation
     {
         public PlaceFixedBlueprintsOp(MapGenerationContext context, string pathInput, string roomEntryInput, string boundsInput) : base(context)
@@ -71,14 +77,14 @@ namespace RyansLibrary.Labyrinth
                 // Check Collision with other rooms
                 List<Blueprint> blueprintList;
                 blueprintList = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
-                if (blueprintList is null)     // Room was outside the bounds of the zone
+                if (blueprintList == null)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"PlaceFixedBlueprintsOp: Unique Fixed Room \"{room.name}\" was obstructed and could not be placed.");
                     return false;
                 }
 
                 List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, room.AvailableCellData, roomOrigin);
-                if (availableBlueprints is null)
+                if (availableBlueprints == null)
                 {
                     Debug.LogError($"PlaceFixedBlueprintsOp: Unique Room \"{room.name}\" has no available blueprint cells.");
                     return false;
@@ -103,10 +109,10 @@ namespace RyansLibrary.Labyrinth
                 if (_context.BlueprintDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
-                    blueprint.Available = available;
+                    blueprint.Claimed = available;
                 }
                 else
-                    availibleBlueprints.Add(BlueprintGenerator.GenerateBlueprintRoom(_context, path, cellPosition, available));
+                    availibleBlueprints.Add(BlueprintGenerator.GenerateBlueprint(_context, path, cellPosition, available));
             }
 
             return availibleBlueprints;

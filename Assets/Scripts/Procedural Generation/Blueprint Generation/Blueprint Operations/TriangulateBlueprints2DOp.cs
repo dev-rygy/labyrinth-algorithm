@@ -12,6 +12,13 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Builds a Delaunay triangulation (DelaunayTriangulation2D) over the XZ positions of every available blueprint
+    /// room, producing a graph that connects each room to its natural neighbors without any long edges crossing
+    /// through unrelated rooms. Used for flat zones (see MapGeneratorController: chosen when zone.Bounds.size.y < 3,
+    /// since 3D tetrahedral triangulation is unnecessary and buggy.
+    /// </summary>
+    /// <remarks> Feeds directly into FindMSTOp to trim this into a spanning tree. </remarks>
     public class TriangulateBlueprints2DOp : BlueprintOperation
     {
         public TriangulateBlueprints2DOp(MapGenerationContext context, string blueprintListInput)

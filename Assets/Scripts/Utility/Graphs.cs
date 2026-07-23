@@ -92,6 +92,9 @@ namespace RyansLibrary.Graphs
         }
 
         // Edges are equal if they are right on top of each other
+        // Undirected comparison: Edge(A,B) == Edge(B,A). This matters because triangulation and MST/pathfinding
+        // don't agree on which endpoint is U vs V, so ListDifferenceOp/ListUnionOp (which rely on List.Contains ->
+        // Equals) would otherwise treat the same physical corridor as two different edges.
         public static bool operator == (Edge left, Edge right)
         {
             return (left.U == right.U || left.U == right.V)

@@ -12,6 +12,14 @@ using RyansLibrary.Graphs;
 
 namespace RyansLibrary.Geometry
 {
+    /// <summary>
+    /// A 3D Delaunay simplex (4 vertices) whose circumsphere is precomputed on construction via the standard
+    /// determinant-based formula (see CalculateCircumsphere). CircumCircleContains is the core "is this point too
+    /// close" test DelaunayTriangulation3D uses to decide whether a tetrahedron must be discarded and
+    /// re-triangulated when a new point is inserted - the Delaunay property being maintained is that no vertex ever
+    /// lies inside another simplex's circumsphere. Vertex order (A/B/C/D) doesn't matter for equality - see the ==
+    /// operator, which checks all four vertices match in any combination.
+    /// </summary>
     public class Tetrahedron : IEquatable<Tetrahedron>
     {
         public Vertex A { get; set; }       // Custom vertex class
@@ -144,6 +152,13 @@ namespace RyansLibrary.Geometry
         }
     }
 
+    /// <summary>
+    /// The 2D counterpart to Tetrahedron: a Delaunay simplex (3 vertices, circumcircle computed in the XZ plane
+    /// instead of a circumsphere) used the same way by DelaunayTriangulation2D. Also reused as a scratch type inside
+    /// DelaunayTriangulation3D, where a tetrahedron's 4 triangular faces are compared with AlmostEqual to find which
+    /// faces are shared between two "bad" tetrahedra (internal, get cancelled) versus which sit on the boundary of
+    /// the re-triangulation cavity (survive).
+    /// </summary>
     public class Triangle
     {
         public Vertex A { get; set; }

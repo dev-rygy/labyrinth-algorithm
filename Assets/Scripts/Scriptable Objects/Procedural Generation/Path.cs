@@ -24,6 +24,15 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] [Range(0, 100)] public int Probability;
     }
 
+    /// <summary>
+    /// Designer-facing configuration + runtime storage for one corridor of the labyrinth (the zone's main path, or
+    /// one of its side/alt paths). Doubles as both: the SerializeField settings above (room-shape prefab pools,
+    /// spawn chances, desired length) are read while the BlueprintOperation graph is being built, while
+    /// BlueprintList/Rooms are populated during Execute() as generation actually runs (see DrunkardWalkBlueprintOp,
+    /// which appends to BlueprintList, and RoomGenerator.ParsePathAndGenerateRooms, which appends to Rooms).
+    /// Must have Initialize() called before generation starts and IsInitialized checked before use, since a Path
+    /// asset can be shared/reused across multiple generation runs.
+    /// </summary>
     [CreateAssetMenu(fileName = "Path", menuName = "Scriptable Objects/Procedural Generation/Path", order = 2)]
     public class Path : ScriptableObject
     {

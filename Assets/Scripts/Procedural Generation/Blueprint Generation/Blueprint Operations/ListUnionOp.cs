@@ -11,6 +11,11 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Set union: merges two lists of either Edge or Blueprint into one. Its main use is recombining the
+    /// MST with the randomly re-selected loop edges (ListSelectRandomSetFromOp) into the single final edge list that
+    /// gets walked to carve corridors - see MapGeneratorController.LoadMainPathConnectionsOperations.
+    /// </summary>
     public class ListUnionOp : BlueprintOperation
     {
         public ListUnionOp(MapGenerationContext context, string listAInput, string listBInput)

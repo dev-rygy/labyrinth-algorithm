@@ -11,9 +11,12 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class ListSelectRandomSetFromOp : BlueprintOperation
+    /// <summary>
+    /// Picks a random subset of a given size out of a Edge or Blueprint List (no repeats).
+    /// </summary>
+    public class ListSelectRandomSetOp : BlueprintOperation
     {
-        public ListSelectRandomSetFromOp(MapGenerationContext context, string listInput, string setSize) : base(context)
+        public ListSelectRandomSetOp(MapGenerationContext context, string listInput, string setSize) : base(context)
         {
             OperationID = $"SelectRandomSetFromListOp:{context.ConsumeOperationID()}";
 

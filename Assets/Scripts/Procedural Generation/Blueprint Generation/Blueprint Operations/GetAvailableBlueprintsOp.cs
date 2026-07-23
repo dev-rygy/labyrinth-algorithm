@@ -10,6 +10,10 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Operation that filters a blueprint list down to only the rooms whose Available flag matches the requested value. 
+    /// Used to separate rooms that already claimed blueprints.
+    /// </summary>
     public class GetAvailableBlueprintsOp : BlueprintOperation
     {
         public GetAvailableBlueprintsOp(MapGenerationContext context, string blueprintListInput, string availableToggleInput)
@@ -48,7 +52,7 @@ namespace RyansLibrary.Labyrinth
 
         private List<Blueprint> GetAvailableBlueprints(List<Blueprint> list, bool availbility)
         {
-            return list.Where(bp => (bp.Available == availbility)).ToList();
+            return list.Where(bp => (bp.Claimed == availbility)).ToList();
         }
     }
 }

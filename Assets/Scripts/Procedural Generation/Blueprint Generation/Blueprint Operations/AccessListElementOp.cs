@@ -10,6 +10,10 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Operation to index into a Edge List or a Blueprint List stored in memory and writes the single element back out -
+    /// effectively "array[i]" as a graph node.
+    /// </summary>
     public class AccessListElementOp : BlueprintOperation
     {
         public AccessListElementOp(MapGenerationContext context, string indexInput, string listInput) : base(context)

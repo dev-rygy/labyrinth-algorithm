@@ -2,6 +2,11 @@ using UnityEngine;
 
 namespace RyansLibrary
 {
+    /// <summary>
+    /// Basic set-style operations on BoundsInt volumes, backing BoundsIntersectOp/BoundsUnionOp and zone-fitting
+    /// checks (e.g. MapGeneratorController.SpawnZones uses CanContainBounds to make sure a connection zone's
+    /// spawn area is big enough before picking a random position inside it).
+    /// </summary>
     public class BoundsIntUtils
     {
         public static BoundsInt IntersectBounds(BoundsInt boundsA, BoundsInt boundsB)

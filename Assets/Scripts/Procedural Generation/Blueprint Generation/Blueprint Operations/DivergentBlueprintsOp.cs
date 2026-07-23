@@ -8,6 +8,11 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Scatters a batch of small, single or multi-celled "divergent" rooms randomly within a bounds
+    /// maxPlacementAttempts safeguards from an infinate loop
+    /// </summary>
+    // TODO: This operation needs to be better safeguarded with more than just a maxPlacementAttempts variable
     public class DivergentBlueprintsOp : BlueprintOperation
     {
         public DivergentBlueprintsOp(MapGenerationContext context, string pathInput, string boundsInput, string dimensionsInput, string cellCountInput,
@@ -16,11 +21,11 @@ namespace RyansLibrary.Labyrinth
             OperationID = $"PlaceDivergentBlueprints:{context.ConsumeOperationID()}";
 
             // Input Ports
-            InputPorts.Add(pathInput);
-            InputPorts.Add(boundsInput);
-            InputPorts.Add(dimensionsInput);
-            InputPorts.Add(cellCountInput);
-            InputPorts.Add(maxPlacementAttempsInput);
+            InputPorts.Add(pathInput);                  // Path
+            InputPorts.Add(boundsInput);                // Bounds
+            InputPorts.Add(dimensionsInput);     // Largest Room Dimensions
+            InputPorts.Add(cellCountInput);             // Cell Count
+            InputPorts.Add(maxPlacementAttempsInput);   // Max Placement Attempts
         }
 
         public override bool Execute()
@@ -44,6 +49,7 @@ namespace RyansLibrary.Labyrinth
 
             return PlaceDivergentBlueprints(path, bounds, dimensions, cellCount, maxPlacementAttempts);
         }
+
         private bool PlaceDivergentBlueprints(Path path, BoundsInt bounds, Vector3Int dimensions, int cellCount, int maxPlacementAttempts)
         {
             int indexOffset = dimensions.x * dimensions.y;      // Increment by the cells taken up from the room dimensions
@@ -55,6 +61,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
+            // Place all blueprints
             for (int i = 0; i < cellCount; i += indexOffset)
             {
                 bool successfullyPlaced = false;
@@ -63,9 +70,9 @@ namespace RyansLibrary.Labyrinth
                 while (!successfullyPlaced && placementAttempts < maxPlacementAttempts)
                 {
                     // Attempt to spawn blueprints
-                    successfullyPlaced = BlueprintGenerator.PlaceBoundedBlueprints(_context, path, bounds, Vector3Int.one, out Vector3Int spawnPos);
+                    successfullyPlaced = BlueprintGenerator.PlaceBoundedBlueprints(_context, path, bounds, dimensions, out Vector3Int spawnPos);
 
-                    if (!successfullyPlaced)     // Failed placement
+                    if (!successfullyPlaced)        // Failed placement
                         placementAttempts++;        // Increase attempts
                 }
 

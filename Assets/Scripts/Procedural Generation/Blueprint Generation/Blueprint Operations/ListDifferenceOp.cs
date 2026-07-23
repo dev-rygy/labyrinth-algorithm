@@ -12,6 +12,10 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Set difference (A - B): returns the elements of list A that do not appear in list B, for either
+    /// an Edge or Blueprint List
+    /// </summary>
     public class ListDifferenceOp : BlueprintOperation
     {
         public ListDifferenceOp(MapGenerationContext context, string listAInput, string listBInput)

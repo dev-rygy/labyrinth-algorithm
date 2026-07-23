@@ -10,6 +10,10 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Operation that finds the Minimum Spanning Tree via Prim's algorithm (RyansLibrary.Graphs.PrimsAlgorithm)
+    /// Uses a 3D graph's edges as input.
+    /// </summary>
     public class FindMSTOp : BlueprintOperation
     {
         public FindMSTOp(MapGenerationContext context, string edgeListInput)

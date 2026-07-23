@@ -7,6 +7,12 @@
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Conditional jump: branches to the target operation if intA != intB, otherwise falls through. See
+    /// BranchGreaterOrEqualOp.cs for how these branch ops act as loop/if conditions on top of the linear
+    /// operation queue.
+    /// </summary>
+    /// <remarks>It is safest to make the jump to a NoOp operation.</remarks>
     public class BranchNotEqualOp : BlueprintOperation
     {
         public BranchNotEqualOp(MapGenerationContext context, string targetOpIDInput, string intAInput, string intBInput) : base(context)

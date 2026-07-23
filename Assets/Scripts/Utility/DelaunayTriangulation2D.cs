@@ -13,6 +13,15 @@ using System.Collections.Generic;
 
 namespace RyansLibrary
 {
+    /// <summary>
+    /// 2D Delaunay triangulation (in the XZ plane) via the Bowyer-Watson algorithm: start with one giant "super
+    /// triangle" that contains every input point, then insert points one at a time, each time removing every
+    /// triangle whose circumcircle contains the new point ("bad" triangles) and re-triangulating the hole they leave
+    /// behind by fanning new triangles from the hole's boundary edges to the new point. Once every point is
+    /// inserted, any triangle still touching one of the three original super-triangle corners is discarded, and
+    /// what's left is converted to a deduplicated edge list. Used by TriangulateBlueprints2DOp to build the
+    /// candidate room-connection graph that FindMSTOp later trims down.
+    /// </summary>
     public class DelaunayTriangulation2D
     {
         // Precision required for checking if a piece of geometry is nearly the same
@@ -148,6 +157,9 @@ namespace RyansLibrary
             }
         }
 
+        // Building the hole boundary: an edge shared by two "bad" triangles is internal to the hole (cancels out,
+        // gets removed here), while an edge that only belongs to one bad triangle is on the hole's outer boundary
+        // and survives - those are exactly the edges that get fanned into new triangles with the inserted vertex.
         private void AddEdge(List<Edge> edges, Edge edge)
         {
             // If edge already exists it is internal and should be removed

@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Debug utility operation: logs every element of a list stored in memory to the console, one line per element.
+    /// </summary>
     public class PrintListOp : BlueprintOperation
     {
         public PrintListOp(MapGenerationContext context, string listInput, string listType) : base(context)

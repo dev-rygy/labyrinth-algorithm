@@ -9,6 +9,14 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;  // Use Unity Engine's Random not System.Collection's Random
 
+/// <summary>
+/// Grows from the *main* critical path a zone using a classic "drunkard's walk": starting from a room, take a
+/// random step to an adjacent, unoccupied cell, repeat until the path reaches its desired length, and backtrack
+/// (via recursion) whenever a step gets boxed in with nowhere left to go. Unlike the divergent rooms/triangulation
+/// step later in the pipeline, this produces a single winding, guaranteed-connected corridor with no branches -
+/// it's meant to be the spine the rest of the zone's rooms get connected back to.
+/// </summary>
+/// <remarks>This operation is safeguarded by recursion.</remarks>
 public class DrunkardWalkBlueprintOp : BlueprintOperation
 {
     public DrunkardWalkBlueprintOp(MapGenerationContext context, string pathInput, string branchedPathInput, string boundsInput, string startIndexInput,
@@ -101,7 +109,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
             Blueprint startBlueprint = branchedPath.BlueprintList[i];
             path.ClearBlueprints();
 
-            if (!startBlueprint.Available)       // Check if start room is available
+            if (!startBlueprint.Claimed)       // Check if start room is available
                 continue;
 
             pathPlaced = BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint, canGoVertical);

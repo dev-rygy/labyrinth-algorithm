@@ -9,6 +9,13 @@ using System.Collections.Generic;
 
 namespace RyansLibrary.Graphs
 {
+    /// <summary>
+    /// Classic Prim's MST algorithm (grow-a-tree-from-a-start-vertex, always take the cheapest edge leaving the
+    /// tree). Used by FindMSTOp to reduce a labyrinth zone's Delaunay triangulation down to the minimum set of
+    /// corridors needed to connect every room, before random cycle edges get layered back on top for loops.
+    /// O(E*V) here (rescans every edge each iteration) rather than a heap-based O(E log V) - fine at the room
+    /// counts a single zone deals with, but worth knowing if zones ever get large.
+    /// </summary>
     public static class PrimsAlgorithm
     {
         // Prim's algorithm to find the minimum spanning tree

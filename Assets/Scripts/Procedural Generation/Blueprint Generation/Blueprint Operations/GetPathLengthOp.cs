@@ -7,6 +7,11 @@
 using RyansLibrary.Labyrinth;
 using UnityEngine;
 
+/// <summary>
+/// Operation that reads how many blueprint rooms currently exist in a Path and returns the count mainly for
+/// downstream operations (e.g. bounds checks, loop conditions driven by BranchGreaterOrEqualOp) that can react
+/// to path length without reaching into the Path object directly.
+/// </summary>
 public class GetPathLengthOp : BlueprintOperation
 {
     public GetPathLengthOp(MapGenerationContext context, string pathInput) : base(context)

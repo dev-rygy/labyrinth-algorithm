@@ -10,6 +10,11 @@ using static UnityEngine.LowLevelPhysics2D.PhysicsComposer;
 
 namespace RyansLibrary.Labyrinth
 {
+    /// <summary>
+    /// Holds a Path in the map generator's memory. Unlike most BlueprintData types this exposes three output ports
+    /// instead of one - the Path itself, its current blueprint count, and its raw blueprint list - so downstream
+    /// operations that only need the length.
+    /// </summary>
     public class PathBlueprintData : BlueprintData<Path>
     {
         public PathBlueprintData(MapGenerationContext context, Path value) : base(context, value)

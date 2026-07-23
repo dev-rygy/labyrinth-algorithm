@@ -10,6 +10,14 @@ using UnityEngine;
 
 namespace RyansLibrary
 {
+    /// <summary>
+    /// Flat 1D array backing a 3D grid of arbitrary type T, sized to a BoundsInt. Used by SimpleAStar3D to store one
+    /// pathfinding Node per cell. Important gotcha: GetIndex/the indexers expect *local* coordinates in the range
+    /// [0, Size), not world/room coordinates - callers using an offset bounds (any BoundsInt not positioned at the
+    /// origin) must subtract Bounds.position themselves before indexing (see SimpleAStar3D's `offset` field for how
+    /// that's handled there). InBoundsExclusive/InBoundsInclusive, by contrast, do take real Bounds-space
+    /// coordinates since they check against the stored BoundsInt directly.
+    /// </summary>
     public class Grid3D<T>
     {
         public Vector3Int Size { get; private set; }
@@ -26,6 +34,7 @@ namespace RyansLibrary
             Bounds = bounds;
         }
 
+        // Flattens a 3D local coordinate into the 1D backing array (row-major, X fastest-varying then Y then Z).
         public int GetIndex(Vector3Int pos)
         {
             return pos.x + (Size.x * pos.y) + (Size.x * Size.y * pos.z);
