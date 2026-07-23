@@ -889,12 +889,17 @@ namespace RyansLibrary.Labyrinth
             // Turn off blueprint availability for unique rooms; we do not want to parse and spawn new rooms in these spots
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
+                // If room is Fixed then actual position needs to be calculated
+                Vector3Int actualPosition = entry.SpawnPosition;
+                if (entry.PlacementType == RoomPlacementType.Fixed)
+                    actualPosition += zone.Bounds.position;
+
                 if (entry.Prefab.TryGetComponent(out Room room))
-                    BlueprintGenerator.ToggleAvailableCellsInUniqueRoom(_context, zone.MainPath, room.AvailableCellData, entry.SpawnPosition, false);
+                    BlueprintGenerator.ToggleAvailableCellsInUniqueRoom(_context, zone.MainPath, room.AvailableCellData, actualPosition, false);
                 else
                     Debug.LogError($"Failed to get Room component from prefab {entry.Prefab}.");
 
-                if (_debugRoomGeneratorLogs) Debug.Log("Blueprint Room: " + entry.SpawnPosition + "has available cells disabled.");
+                if (_debugRoomGeneratorLogs) Debug.Log("Blueprint Room: " + actualPosition + "has available cells disabled.");
             }
 
             // Generate Rooms along main path
