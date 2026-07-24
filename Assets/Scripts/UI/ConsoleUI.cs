@@ -57,7 +57,7 @@ public class ConsoleUI : UIBehaviour
     private int _suggestionIndex = 0;
     private bool _suppressSuggestionUpdate = false;
 
-    private void OnEnable()
+    public void InitConsole()
     {
         CommandRegistry = new ConsoleCommandRegistry();          // Init. registry
         _inputMemory = new string[_inputMemoryCapacity];        // Init. command memory        
@@ -82,7 +82,7 @@ public class ConsoleUI : UIBehaviour
         AddBasicConsoleCommandsToRegistry();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         InputHandler.OnConsoleOpen -= OpenConsole;
         InputHandler.OnConsoleClose -= CloseConsole;

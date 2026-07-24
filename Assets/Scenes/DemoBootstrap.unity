@@ -693,6 +693,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 726b515f5171395408b308724aec5d1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RyansLibrary.Scripts::DontDestroyOnLoad
+--- !u!114 &1312785535 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3513895308959663556, guid: ea4379ffa3cc78549a609c693a2ee9b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 2019843248}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d6921279494b544909ab3dfd74126b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1603682300 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8622095278140402878, guid: 12fe6f7fe5bcaa44c9c93a738ce7a7ff,
@@ -1047,6 +1059,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4642571715643624325, guid: ea4379ffa3cc78549a609c693a2ee9b3,
+        type: 3}
+      propertyPath: console
+      value: 
+      objectReference: {fileID: 1312785535}
     - target: {fileID: 4931766044148232940, guid: ea4379ffa3cc78549a609c693a2ee9b3,
         type: 3}
       propertyPath: m_SizeDelta.y

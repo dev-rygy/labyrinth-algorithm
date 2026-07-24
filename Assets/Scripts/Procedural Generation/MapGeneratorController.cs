@@ -449,6 +449,7 @@ namespace RyansLibrary.Labyrinth
 
             IsGenerating = false;
 
+            StopCoroutine(_mapGeneratorCoroutine);
             _mapGeneratorCoroutine = null;
             _context.ClearAll();
 
