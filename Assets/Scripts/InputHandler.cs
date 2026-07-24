@@ -85,8 +85,8 @@ namespace RyansLibrary.Input
             // Handle Singleton
             if (Instance != null)
             {
-                Debug.LogWarning("Another instance of InputHandler already exists. Deleting Object...");
-                //Destroy(gameObject);
+                // Debug.LogWarning("Another instance of InputHandler already exists. Deleting Object...");
+                // Destroy(gameObject);
                 return;
             }
 

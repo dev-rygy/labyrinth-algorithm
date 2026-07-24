@@ -1,6 +1,5 @@
 using RyansLibrary.Labyrinth;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class RunTimeUI : MonoBehaviour
@@ -25,7 +24,6 @@ public class RunTimeUI : MonoBehaviour
         if (_mapGeneratorInstance.DebugSequential)
         {
             ShowDebuggingOptions();
-
         }
         else
         {

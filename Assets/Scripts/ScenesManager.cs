@@ -21,7 +21,7 @@ public class ScenesManager : MonoBehaviour
         // Handle singleton
         if (Instance != null)
         {
-            Debug.LogWarning("Another instance of ScenesManager already exists. Deleting Object...");
+            // Debug.LogWarning("Another instance of ScenesManager already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }

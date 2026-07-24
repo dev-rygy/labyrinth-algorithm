@@ -69,6 +69,17 @@ public class MovingPlatform : MonoBehaviour
             _endRecallTriggerObject.OnTriggerActivated -= MoveToEnd;
     }
 
+    private void OnDestroy()
+    {
+        _mainTriggerObject.OnTriggerActivated -= MoveToNextWaypoint;
+
+        if (_baseRecallTriggerObject != null)
+            _baseRecallTriggerObject.OnTriggerActivated -= MoveToBase;
+
+        if (_endRecallTriggerObject != null)
+            _endRecallTriggerObject.OnTriggerActivated -= MoveToEnd;
+    }
+
     protected virtual void Update()
     {
         if (!_needsTrigger && !_isMoving)

@@ -7,6 +7,7 @@
 using System;
 using UnityEngine;
 using RyansLibrary.Input;
+using RyansLibrary.Labyrinth;
 
 public class Trigger: MonoBehaviour
 {
@@ -17,6 +18,15 @@ public class Trigger: MonoBehaviour
     private void Awake()
     {
         InputHandler.OnInteract1 += Activate;
+
+        MapGeneratorController.OnGenerationReset += DestroyTrigger;
+    }
+
+    private void OnDestroy()
+    {
+        InputHandler.OnInteract1 -= Activate;
+
+        MapGeneratorController.OnGenerationReset -= DestroyTrigger;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -37,5 +47,10 @@ public class Trigger: MonoBehaviour
         {
             OnTriggerActivated?.Invoke();
         }
+    }
+
+    public void DestroyTrigger()
+    {
+        Destroy(gameObject);
     }
 }

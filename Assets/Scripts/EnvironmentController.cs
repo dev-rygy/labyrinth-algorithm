@@ -3,15 +3,21 @@ using UnityEngine;
 
 public class EnvironmentController : MonoBehaviour
 {
+    [SerializeField] private bool _enableFogOnGameStart = true;
+    [SerializeField, Range(0, 255)] private int _ambientIntensityOnGameStart = 0;
+
     private void Start()
     {
         RegisterConsoleCommands();
+
+        SetAmbientIntensity(_ambientIntensityOnGameStart);
+        ToggleFog(_enableFogOnGameStart);
     }
 
     private void RegisterConsoleCommands()
     {
         ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
-            "environment.togglefog",
+            "environment.fog",
             "Toggles global fog.",
             args =>
             {

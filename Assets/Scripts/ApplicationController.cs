@@ -39,7 +39,7 @@ public class ApplicationController : MonoBehaviour
         // Handle Singleton
         if (Instance != null)
         {
-            Debug.LogWarning("Another instance of ApplicationController already exists. Deleting Object...");
+            // Debug.LogWarning("Another instance of ApplicationController already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }
@@ -98,10 +98,5 @@ public class ApplicationController : MonoBehaviour
         MapGeneratorController.Instance.ResetLabyrinth();
         _cameraController.SetCameraMode(CameraMode.Main);
         OnMenu?.Invoke();
-    }
-
-    private void ShowCursor()
-    {
-
     }
 }

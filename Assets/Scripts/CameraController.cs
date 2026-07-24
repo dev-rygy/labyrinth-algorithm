@@ -42,7 +42,7 @@ public class CameraController : MonoBehaviour
         // Handle singleton; if instance has a reference and the reference is not this object
         if (Instance != null)
         {
-            Debug.LogWarning("Another instance of CameraController already exists. Deleting Object...");
+            // Debug.LogWarning("Another instance of CameraController already exists. Deleting Object...");
             Destroy(gameObject);
             return;
         }
