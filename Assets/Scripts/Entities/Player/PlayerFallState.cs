@@ -65,8 +65,10 @@ public class PlayerFallState : PlayerState
         // Wait until the animator is fully in the landing animation state
         yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).shortNameHash == ANIM_LANDING_HASH);
 
-        // Now wait until this specific animation has finished
-        yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f < 0.01f && !stateMachine.Animator.IsInTransition(0));
+        // Now wait until this specific animation has finished. normalizedTime increases monotonically past 1
+        // once the clip completes (it does not wrap on its own), so this can't be missed the way a narrow
+        // "% 1.0f < 0.01f" window could if a frame landed just past the wrap point.
+        yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f && !stateMachine.Animator.IsInTransition(0));
 
         stateMachine.ForceReciever.EnableGroundCheck = true;
 

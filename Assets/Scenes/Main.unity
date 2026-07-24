@@ -434,6 +434,21 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3001415781675097524, guid: 905355292a4ddff4ba8986f7df2c039e,
+        type: 3}
+      propertyPath: _debuggingTextDescription
+      value: 'Press ''~'' to open/close console
+
+        Type "help" for a list of
+        commands
+
+        Type "camera.mode" in console to switch between
+
+        camera
+        modes
+
+        Use "Step" buttons/commands to generate map'
+      objectReference: {fileID: 0}
     - target: {fileID: 3136922493775479100, guid: 905355292a4ddff4ba8986f7df2c039e,
         type: 3}
       propertyPath: m_Pivot.x

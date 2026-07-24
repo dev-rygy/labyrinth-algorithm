@@ -693,18 +693,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 726b515f5171395408b308724aec5d1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RyansLibrary.Scripts::DontDestroyOnLoad
---- !u!114 &1312785535 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3513895308959663556, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-    type: 3}
-  m_PrefabInstance: {fileID: 2019843248}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48d6921279494b544909ab3dfd74126b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1603682300 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8622095278140402878, guid: 12fe6f7fe5bcaa44c9c93a738ce7a7ff,
@@ -1014,75 +1002,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1470011687003382644, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1470011687003382644, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1470011687003382644, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 1863
-      objectReference: {fileID: 0}
-    - target: {fileID: 1470011687003382644, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1470011687003382644, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1981705977111090554, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1981705977111090554, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1981705977111090554, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -17
-      objectReference: {fileID: 0}
-    - target: {fileID: 4621725426906330551, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4642571715643624325, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: console
-      value: 
-      objectReference: {fileID: 1312785535}
-    - target: {fileID: 4931766044148232940, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 20
-      objectReference: {fileID: 0}
     - target: {fileID: 7834460035053565675, guid: ea4379ffa3cc78549a609c693a2ee9b3,
         type: 3}
       propertyPath: m_Name
       value: HUD Canvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 8609062324835456799, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8609062324835456799, guid: ea4379ffa3cc78549a609c693a2ee9b3,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
