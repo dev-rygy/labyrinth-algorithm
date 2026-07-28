@@ -5,39 +5,50 @@
  * Notes:           Spawn Pad Used for spawning a variety of different objects 
  *                      and entities.
 */
-using System.Collections;
+using RyansLibrary;
 using System.Collections.Generic;
 using UnityEngine;
 
 public enum PadType
 {
-    chest
+    chest,
+    enemy
 }
 
 public class SpawnPad : MonoBehaviour
 {
+
     // What type of object the pad will spawn
     [SerializeField] public PadType Type;
 
     // The object it is to spawn
-    [SerializeField] private GameObject _spawnObject;
+    [SerializeField] private List<ProbabilityEntry<GameObject>> _spawnEntries;
 
     [Header("Debug")]
     [SerializeField] private bool _debug;
     [SerializeField] private Vector3 _gizmoArea;
+    [SerializeField] private Vector3 _gizmoOffset; 
+    [SerializeField] private Color _gizmoColor;
+
+    private void Start()
+    {
+        _spawnEntries = new List<ProbabilityEntry<GameObject>>();
+    }
 
     /// <summary>
     /// Spawn the object from the inspector. If no object is in the inspector then do not spawn anything.
     /// </summary>
     public void SpawnObject()
     {
-        if (_spawnObject == null)
+        if (_spawnEntries.Count <= 0)
         {
             Debug.LogWarning("Spawn Pad has no valid object to spawn.");
             return;
         }
 
-        Instantiate(_spawnObject, transform.position, Quaternion.identity, transform);
+        ProbabilityEntry<GameObject> choosenObject = Probability<GameObject>.ChooseRandomFromWeights(_spawnEntries);
+
+        Instantiate(choosenObject.Object, transform.position, Quaternion.identity, transform);
     }
 
     /// <summary>
@@ -60,7 +71,7 @@ public class SpawnPad : MonoBehaviour
         if (!_debug)
             return;
 
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(transform.position - new Vector3(0f, -0.5f, 0f), _gizmoArea);
+        Gizmos.color = _gizmoColor;
+        Gizmos.DrawWireCube(transform.position + _gizmoOffset, _gizmoArea);
     }
 }

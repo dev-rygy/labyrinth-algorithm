@@ -108,7 +108,7 @@ public class CameraController : MonoBehaviour
         }
 
         // Set the free camera's position and rotation to match the current camera
-        freeCameraObject.GetComponent<FreeCameraController>().SetCameraTransform(currentCamera.transform);
+        freeCameraObject.GetComponent<FreeCamera>().SetCameraTransform(currentCamera.transform);
 
         currentCameraMode = CameraMode.Free;
         currentCamera = freeCameraObject;

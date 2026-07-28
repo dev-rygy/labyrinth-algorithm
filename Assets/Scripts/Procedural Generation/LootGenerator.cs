@@ -3,9 +3,7 @@
  * Date Created:    12/26/2024
  * Last Modified:   07/17/2026 (Ryan)
  * Notes:           Loot Generator
- *                      Procedure starts after the Map Generation Procedure
- *                      Parse through the Master Path and spawn loot where
- *                      applicable.
+ *                      Procedure starts after the Map Generation Procedure.
 */
 using System;
 using System.Collections.Generic;

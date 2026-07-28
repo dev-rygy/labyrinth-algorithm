@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7055968261616053012
+--- !u!1 &7477701230790737276
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6281812748208676064}
-  - component: {fileID: 903101394478323945}
+  - component: {fileID: 8015100966450457934}
+  - component: {fileID: 3366063573675213771}
   m_Layer: 0
-  m_Name: Chest Spawner
+  m_Name: Enemy Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6281812748208676064
+--- !u!4 &8015100966450457934
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7055968261616053012}
+  m_GameObject: {fileID: 7477701230790737276}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
@@ -32,24 +32,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &903101394478323945
+--- !u!114 &3366063573675213771
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7055968261616053012}
+  m_GameObject: {fileID: 7477701230790737276}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e42a3070d765134eb49bd361c9a1d7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 0
+  Type: 1
   _spawnEntries:
   - Probability: 100
-    Object: {fileID: 3613171402832450249, guid: 94746827f554bcb4dae5f5a21af59c05,
+    Object: {fileID: 4730593741865664228, guid: 49d7099142be95541a60579ccf67e22b,
       type: 3}
   _debug: 1
-  _gizmoArea: {x: 1, y: 1, z: 2}
-  _gizmoOffset: {x: 0, y: 0.5, z: 0}
-  _gizmoColor: {r: 0, g: 1, b: 0.85423136, a: 1}
+  _gizmoArea: {x: 1, y: 2, z: 1}
+  _gizmoOffset: {x: 0, y: 1, z: 0}
+  _gizmoColor: {r: 1, g: 0, b: 0.010103226, a: 1}

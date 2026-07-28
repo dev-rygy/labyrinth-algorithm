@@ -2,7 +2,7 @@ using RyansLibrary.Console;
 using RyansLibrary.Input;
 using UnityEngine;
 
-public class FreeCameraController : MonoBehaviour
+public class FreeCamera : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float _cameraSpeed;

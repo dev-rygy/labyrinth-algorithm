@@ -1,5 +1,91 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &358156792991991908
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8911892519985252531}
+    m_Modifications:
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.8986399
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.4228606
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7505994781003860834, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_Name
+      value: Enemy Spawner Castle General
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 66a902233db69144581740ae05238d84, type: 3}
+--- !u!114 &2711803121906417073 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2403285195473597909, guid: 66a902233db69144581740ae05238d84,
+    type: 3}
+  m_PrefabInstance: {fileID: 358156792991991908}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e42a3070d765134eb49bd361c9a1d7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &7219184109491753780 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+    type: 3}
+  m_PrefabInstance: {fileID: 358156792991991908}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &407610605913196005
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -515,6 +601,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: RoomSpawners.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: 'RoomSpawners.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2711803121906417073}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: 'RoomSpawners.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8166305492420256340}
+    - target: {fileID: 7205644606278743040, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -558,6 +664,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2273029758133937768}
+    - targetCorrespondingSourceObject: {fileID: 6916052650981431971, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7219184109491753780}
+    - targetCorrespondingSourceObject: {fileID: 6916052650981431971, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3519977300863454417}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd27e97f036c1354fa942368a32fa135, type: 3}
 --- !u!4 &1588316798919436043 stripped
@@ -575,6 +689,12 @@ Transform:
 --- !u!4 &4505289386716747685 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1932509239576479157, guid: fd27e97f036c1354fa942368a32fa135,
+    type: 3}
+  m_PrefabInstance: {fileID: 2618744475833012752}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8911892519985252531 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6916052650981431971, guid: fd27e97f036c1354fa942368a32fa135,
     type: 3}
   m_PrefabInstance: {fileID: 2618744475833012752}
   m_PrefabAsset: {fileID: 0}
@@ -874,6 +994,92 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4882801832195064646}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5768729260897294209
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8911892519985252531}
+    m_Modifications:
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.10136
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.5771403
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7505994781003860834, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: m_Name
+      value: Enemy Spawner Castle General (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 66a902233db69144581740ae05238d84, type: 3}
+--- !u!4 &3519977300863454417 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
+    type: 3}
+  m_PrefabInstance: {fileID: 5768729260897294209}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8166305492420256340 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2403285195473597909, guid: 66a902233db69144581740ae05238d84,
+    type: 3}
+  m_PrefabInstance: {fileID: 5768729260897294209}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e42a3070d765134eb49bd361c9a1d7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6980366403965899729
 PrefabInstance:
   m_ObjectHideFlags: 0

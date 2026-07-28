@@ -105,16 +105,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 3449371456224964283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b6791d5a87222c419884fda1fc66d8a, type: 3}
+  m_Script: {fileID: 11500000, guid: b35c8d7ed558f9e43bd8f253899a22b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cameraSpeed: 20
-  _cameraSprintSpeed: 80
+  _cameraSpeed: 15
+  _cameraSprintSpeed: 50
   _cameraWalkSpeed: 5
-  _cameraSensitivity: 20
+  _cameraSensitivity: 50
   _invertYLook: 0
-  botCamAngleClamp: -80
-  topCamAngleClamp: 80
+  botCamAngleClamp: -90
+  topCamAngleClamp: 90
   _cameraPivotTransform: {fileID: 3694520592215932498}
   _cameraOffsetTransform: {fileID: 6206706438432413159}
   _debug: 0
@@ -263,7 +263,7 @@ MonoBehaviour:
   _radius: 225
   _height: 110
   _orbitSpeed: 20
-  _showAngle: 1
+  _showAngle: 0
 --- !u!1 &4834395608862152687
 GameObject:
   m_ObjectHideFlags: 0
