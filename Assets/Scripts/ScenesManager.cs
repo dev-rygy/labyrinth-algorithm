@@ -4,6 +4,7 @@
  * Last Modified:   10/13/2024 
  * Notes:           Wrapper class for Unity's Scene Management class
 */
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +16,8 @@ public class ScenesManager : MonoBehaviour
 {
     // TODO: Just make the class static?
     public static ScenesManager Instance { get; private set; }
+
+    public static event Action OnSceneLoaded;
 
     private void Awake()
     {
@@ -46,16 +49,20 @@ public class ScenesManager : MonoBehaviour
     {
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(sceneIndex);
+
+        OnSceneLoaded?.Invoke();
     }
 
     public void LoadScene(int index)
     {
         SceneManager.LoadScene(index);
+        OnSceneLoaded?.Invoke();
     }
 
     public void LoadScene(string name)
     {
         SceneManager.LoadScene(name);
+        OnSceneLoaded?.Invoke();
     }
 
     public IEnumerator LoadSceneAsync(int index)
@@ -66,6 +73,8 @@ public class ScenesManager : MonoBehaviour
         {
             yield return null;
         }
+
+        OnSceneLoaded?.Invoke();
     }
 
     public IEnumerator LoadSceneAsync(string name)
@@ -76,6 +85,8 @@ public class ScenesManager : MonoBehaviour
         {
             yield return null;
         }
+
+        OnSceneLoaded?.Invoke();
     }
 
     public IEnumerator ReloadSceneAsync()
@@ -87,17 +98,23 @@ public class ScenesManager : MonoBehaviour
         {
             yield return null;
         }
+
+        OnSceneLoaded?.Invoke();
     }
 
     public void LoadNextScene()
     {
         int sceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
         SceneManager.LoadScene(sceneIndex);
+
+        OnSceneLoaded?.Invoke();
     }
 
     public void LoadPreviousScene()
     {
         int sceneIndex = SceneManager.GetActiveScene().buildIndex - 1;
         SceneManager.LoadScene(sceneIndex);
+
+        OnSceneLoaded?.Invoke();
     }
 }

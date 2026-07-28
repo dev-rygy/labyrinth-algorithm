@@ -25,7 +25,7 @@ public class ApplicationController : MonoBehaviour
     [SerializeField] private Vector3 playerSpawnPoint = new Vector3(65, 0, 0);
     [Header("Camera")]
     [SerializeField] private CameraController _cameraController;
-    [SerializeField] private bool _setCameraToPlayerOnGameStart = true;
+    [SerializeField] private CameraMode _startCameraMode = CameraMode.Player;
     [Header("Cursor")]
     [SerializeField] private bool _hideCursorOnGameStart = false;
     [SerializeField] private CursorLockMode _cursorLockMode = CursorLockMode.None;
@@ -85,8 +85,7 @@ public class ApplicationController : MonoBehaviour
         // Spawn player
         _player = Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
 
-        if (_setCameraToPlayerOnGameStart)
-            _cameraController.SetCameraMode(CameraMode.Player);
+        _cameraController.SetCameraMode(_startCameraMode);
 
         Cursor.visible = _hideCursorOnGameStart ? false : true;
         Cursor.lockState = _cursorLockMode;

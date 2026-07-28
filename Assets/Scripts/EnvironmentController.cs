@@ -1,15 +1,26 @@
 using RyansLibrary.Console;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnvironmentController : MonoBehaviour
 {
-    [SerializeField] private bool _enableFogOnGameStart = true;
-    [SerializeField, Range(0, 255)] private int _ambientIntensityOnGameStart = 0;
+    [SerializeField] private bool _enableFogOnGameStart;
+    [SerializeField, Range(0, 255)] private int _ambientIntensityOnGameStart;
 
     private void Start()
     {
         RegisterConsoleCommands();
 
+        ScenesManager.OnSceneLoaded += SetDefaultEnvironmentVariables;
+    }
+
+    private void OnDisable()
+    {
+        ScenesManager.OnSceneLoaded -= SetDefaultEnvironmentVariables;
+    }
+
+    private void SetDefaultEnvironmentVariables()
+    {
         SetAmbientIntensity(_ambientIntensityOnGameStart);
         ToggleFog(_enableFogOnGameStart);
     }
