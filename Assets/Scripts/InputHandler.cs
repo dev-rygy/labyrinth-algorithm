@@ -6,7 +6,7 @@
 */
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using RyansLibrary.Console;
 public enum InputMap
 {
     Player,
@@ -110,6 +110,33 @@ namespace RyansLibrary.Input
             ToggleUIInput(true);
         }
 
+        private void Start()
+        {
+            RegisterConsoleCommands();
+        }
+
+        private void OnEnable()
+        {
+            TogglePlayerInput(true);
+            ToggleConsoleInput(false);
+            ToggleFreeCameraInput(false);
+            ToggleUIInput(true);
+
+            _activeActionMap = _playerInputActionMap;
+            _prevActionMap = null;
+        }
+
+        private void OnDisable()
+        {
+            TogglePlayerInput(false);
+            ToggleConsoleInput(false);
+            ToggleFreeCameraInput(false);
+            ToggleUIInput(true);
+
+            _activeActionMap = null;
+            _prevActionMap = null;
+        }
+
         private void SubscribeToPlayerEvents()
         {
             // Movement Input Events
@@ -187,28 +214,6 @@ namespace RyansLibrary.Input
             _playerControls.Console.PageDown.performed += _ => OnPageDown?.Invoke();
             _playerControls.Console.Previous.performed += _ => OnPrevious?.Invoke();
             _playerControls.Console.Next.performed += _ => OnNext?.Invoke();
-        }
-
-        private void OnEnable()
-        {
-            TogglePlayerInput(true);
-            ToggleConsoleInput(false);
-            ToggleFreeCameraInput(false);
-            ToggleUIInput(true);
-
-            _activeActionMap = _playerInputActionMap;
-            _prevActionMap = null;
-        }
-
-        private void OnDisable()
-        {
-            TogglePlayerInput(false);
-            ToggleConsoleInput(false);
-            ToggleFreeCameraInput(false);
-            ToggleUIInput(true);
-
-            _activeActionMap = null;
-            _prevActionMap = null;
         }
 
         public void UnsubscribePlayerInputEvents()
@@ -317,6 +322,7 @@ namespace RyansLibrary.Input
                 _playerControls.FreeCamera.Disable();
         }
 
+
         // Toggles 'UI' input actions
         public void ToggleUIInput(bool toggle)
         {
@@ -327,7 +333,7 @@ namespace RyansLibrary.Input
                 _playerControls.UI.Enable();
             else 
                 _playerControls.UI.Disable();
-        }    
+        }
 
         private void OnMovementInput(InputAction.CallbackContext context)
         {
@@ -425,45 +431,40 @@ namespace RyansLibrary.Input
             // Close Console
             OnConsoleClose?.Invoke();
         }
-
-        /* Jump Input (DEPRICATED)
-        private void OnJumpInput(InputAction.CallbackContext context)
-        {
-            if (!context.started)
-                return;
-
-            OnJump?.Invoke();
-        }
-
-        private void OnLookInput(InputAction.CallbackContext context)
-        {
-            // Read value from input and set the movementInput Vector to it
-            LookInput = context.ReadValue<Vector2>();
-            OnLook?.Invoke();
-
-            if (_debug) Debug.Log("The Look Input read was = " + LookInput);
-        }
-        */
-
-        /*      Interact Input Functions (DEPRICATED)
-        private void OnInteract1Input(InputAction.CallbackContext context)
-        {
-            if (!context.started)
-                return;
-
-            OnInteract1?.Invoke();
-            if (_debug) Debug.Log("Player has interacted");
-        }
-
-        private void OnInteract2Input(InputAction.CallbackContext context)
-        {
-            if (!context.started)
-                return;
-
-            OnInteract2?.Invoke();
-            if (_debug) Debug.Log("Player has interacted");
-        }
-        */
         #endregion
+
+        private void RegisterConsoleCommands()
+        {
+            // Map generator restart command - Resets and restarts the map generator state.
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                    "input.map",
+                    "switches input to a specific action map.",
+                args =>
+                    {
+                        if (args.Length < 1)
+                        {
+                            Debug.LogWarning("No argument given, please enter true or false.");
+                            return;
+                        }
+                        else if (args[0] == "player")
+                        {
+                            SwitchActionMap(InputMap.Player);
+                        }
+                        else if (args[0] == "freecam")
+                        {
+                            SwitchActionMap(InputMap.FreeCam);
+                        }
+                        else if (args[0] == "console")
+                        {
+                            SwitchActionMap(InputMap.Console);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Invalid argument '{args[0]}'. Please input 'player', 'freecam', or 'console'.");
+                        }
+
+                        Debug.Log($"Input map was switched to {args[0]}.");
+                    }));
+        }
     }
 }
