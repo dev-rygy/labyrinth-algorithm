@@ -11,7 +11,7 @@ I've always admired how games like _The Binding of Isaac_, _Enter the Gungeon_, 
 
 The algorithm was made in Unity 3D but can be rewritten to work in any game engine.
 
-![Demo of map generation](Docs/images/demo.gif).
+![Demo of map generation](Docs/images/orbit.gif)
 
 ## Blueprints
 Blueprints are the backbone of the algorithm. They must exist in order for any rooms to generate. Blueprints are simply single-celled marks on a grid that tell the algorithm "a room can eventually spawn here". When the blueprints are done generating a second pass then parses the blueprints and generates rooms based on a set of rules. Think of how Rule-Tiles work in game engines.
