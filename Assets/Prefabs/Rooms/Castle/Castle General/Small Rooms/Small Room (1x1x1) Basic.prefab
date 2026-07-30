@@ -546,10 +546,35 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2237783175017605046, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_Name
+      value: (W2) Wall Forward
+      objectReference: {fileID: 0}
+    - target: {fileID: 2942216689207972348, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_Name
+      value: '(W4) Wall Top '
+      objectReference: {fileID: 0}
+    - target: {fileID: 3437040517702481827, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_Name
+      value: (W0) Wall Right
+      objectReference: {fileID: 0}
     - target: {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
       propertyPath: m_Name
       value: Small Room (1x1x1) Basic
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000012949379028760, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_Name
+      value: (W1) Wall Left
+      objectReference: {fileID: 0}
+    - target: {fileID: 5857742882111890808, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_Name
+      value: (W3) Wall Back
       objectReference: {fileID: 0}
     - target: {fileID: 6498468685537148166, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
@@ -616,6 +641,11 @@ PrefabInstance:
       propertyPath: 'RoomSpawners.Array.data[2]'
       value: 
       objectReference: {fileID: 8166305492420256340}
+    - target: {fileID: 6944168403148575479, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: m_Name
+      value: (W5) Wall Bot
+      objectReference: {fileID: 0}
     - target: {fileID: 7205644606278743040, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
       propertyPath: m_LocalPosition.y

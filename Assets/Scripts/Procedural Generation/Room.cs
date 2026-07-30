@@ -94,29 +94,28 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Simply shift the values in the blueprint array around to handle a 90 degree rotation.
         /// </summary>
-        /// <param name="bluePrintArray">The blueprint array</param>
+        /// <param name="entrypointFlagArray">The blueprint array</param>
         /// <param name="rotation">The angle of applied rotation</param>
         /// <returns></returns>
-        private bool[] HandleRotation(bool[] bluePrintArray, Vector3 rotation)
+        private bool[] HandleRotation(bool[] entrypointFlagArray, Vector3 rotation)
         {
             if (rotation == Vector3.zero)        // If no rotation return
             {
                 if (_debug) Debug.Log($"Room {gameObject.name} was not rotated.");
-                return bluePrintArray;
+                return entrypointFlagArray;
             }
 
             // A 90-degree yaw swaps which physical wall each blueprint face flag now points at (e.g. the wall that
-            // used to face +Z now faces +X), so the flags have to be permuted to match, not just copied - otherwise
-            // a rotated longRoom (see RoomGenerator's PosZ/NegZ longRoom cases) would open doors on the wrong walls.
-            bool[] rotatedArray = new bool[bluePrintArray.Length];
+            // used to face +Z now faces +X), so the flags have to be permuted to match and not just copied.
+            bool[] rotatedArray = new bool[entrypointFlagArray.Length];
             if (rotation.y == 90)      // If 90 degree rotation shift down
             {
-                rotatedArray[0] = bluePrintArray[2];        // Positive X to Negative Z
-                rotatedArray[1] = bluePrintArray[3];        // Negative X to Positive z
-                rotatedArray[2] = bluePrintArray[1];        // Positive Z direction the same
-                rotatedArray[3] = bluePrintArray[0];        // Negative Z direction the same
-                rotatedArray[4] = bluePrintArray[4];        // Positive Y to Positive X
-                rotatedArray[5] = bluePrintArray[5];        // Negative Y to Negative X
+                rotatedArray[0] = entrypointFlagArray[2];        // Positive X to Negative Z
+                rotatedArray[1] = entrypointFlagArray[3];        // Negative X to Positive z
+                rotatedArray[2] = entrypointFlagArray[1];        // Positive Z direction the same
+                rotatedArray[3] = entrypointFlagArray[0];        // Negative Z direction the same
+                rotatedArray[4] = entrypointFlagArray[4];        // Positive Y to Positive X
+                rotatedArray[5] = entrypointFlagArray[5];        // Negative Y to Negative X
                 if (_debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
             }
             else

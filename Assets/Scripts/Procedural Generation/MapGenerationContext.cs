@@ -31,7 +31,7 @@ namespace RyansLibrary.Labyrinth
         public static event Action<List<Edge>> OnNewMST;
         public static event Action<List<Edge>> OnNewRandomCycles;
 
-        // ***** Path Containers *****
+        // ***** Blueprint Container *****
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
         // Keys are in room coords
         private Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
@@ -40,12 +40,15 @@ namespace RyansLibrary.Labyrinth
         public int OperationIDCounter { get; private set; } = 10000;
         public int MemoryIDCounter { get; private set; } = 20000;
 
+        // Stores blueprint operations to be executed later
         public LinkedList<BlueprintOperation> OperationQueue { get; private set; }
+
+        // UNIMPLEMENTED: Later this can be used for backtracking or undoing operations
         public Stack<BlueprintOperation> OperationHistory { get; private set; }
 
         // Debugging Lists - These lists are intended to store intermediate results for debugging and visualization purposes
 
-        // Private Variables
+        // Stores outputs from blueprint operations
         private Dictionary<string, object> _dataCache;
 
         public MapGenerationContext()

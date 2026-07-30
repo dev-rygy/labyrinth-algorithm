@@ -27,8 +27,8 @@ namespace RyansLibrary.Labyrinth
     public class Blueprint
     {
         public readonly string CellID;
-        public readonly Vector3Int Position;    // Position of blueprint room in room coords
-        public bool Claimed { get; set; }       // Prevents parsing algorithm from using blueprint in algorithm
+        public readonly Vector3Int Position;    // Position of blueprint coords on grid
+        public bool Claimed { get; set; }       // Prevents/allows parsing algorithm from using blueprint in algorithm
         public bool[] EntryPointFlags { get; set; }
 
         // Constructor
@@ -214,7 +214,7 @@ namespace RyansLibrary.Labyrinth
         {
             switch (index)
             {
-                // E0 - E5 is the face count for a unit room, this will be used later for entranceways
+                // F0 - F5 is the face count for a unit room, this will be used later for entranceways
                 case 0:
                     return Vector3Int.right;    // F0 : (1, 0, 0); Wall Right
                 case 1:

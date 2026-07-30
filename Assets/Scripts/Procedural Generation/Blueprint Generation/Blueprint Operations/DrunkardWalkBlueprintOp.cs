@@ -124,21 +124,22 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
 
     private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
     {
+        // Amount of desired blueprints placed; stop condition
         if (path.BlueprintCount() >= path.DesiredPathLength)
             return true;
 
-        // Attempt to place a new room
+        // Attempt to place a new blueprint
         Blueprint newBlueprint = BlueprintGenerator.PlaceBlueprintInRandomDirection(_context, path, bounds, previousBlueprint, canGoVertical);
 
-        if (newBlueprint != null)    // New room was placed -> place next room
+        if (newBlueprint != null)    // New blueprint was placed -> place next blueprint
         {
             bool placed = BlueprintDrunkardWalkRecursive(path, bounds, newBlueprint, canGoVertical);
 
-            if (!placed)       // next room could not be placed? Continuation of path failed -> try prev room again
+            if (!placed)       // next blueprint could not be placed? Continuation of path failed -> try prev blueprint again
                 return BlueprintDrunkardWalkRecursive(path, bounds, previousBlueprint, canGoVertical);          // Backtrack
             else
                 return true;
         }
-        return false;    // No room could be placed
+        return false;    // No blueprint could be placed; not enough valid space
     }
 }

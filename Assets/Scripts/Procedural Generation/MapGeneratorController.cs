@@ -286,6 +286,9 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
+        /// <summary>
+        /// Hardcoded operations listed in their order of execution. Loaded into context to be executed later.
+        /// </summary>
         private void LoadOperations()
         {
             // ******* Load Zone Connection Blueprints *******
@@ -363,11 +366,12 @@ namespace RyansLibrary.Labyrinth
             OnOperationsStarted?.Invoke();
             OnOperationsGetTotal?.Invoke(GetOperationCount());
 
-            // Generate Blueprints
+            // Execute operations and generate blueprints
             while (_context.OperationQueue.Count > 0)
             {
                 if (DebugSequential)
                 {
+                    // Halt the execution of operations
                     while (!_runToEnd && _stepBudget <= 0)
                         yield return null;
 
@@ -398,7 +402,7 @@ namespace RyansLibrary.Labyrinth
                         $"{operation.OperationID} - Execution Failure.");
                 }
 
-                // Operation failed to execute; stop running generation
+                // Operation failed to execute; stop running coroutine
                 if (!result)
                 {
                     GenerationFailed();

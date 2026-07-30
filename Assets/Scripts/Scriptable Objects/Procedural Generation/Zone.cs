@@ -56,7 +56,6 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public string Name { get; private set; }
         [field: SerializeField] public Heuristic DefaultPathfindingHeuristic { get; private set; }
 
-        // TODO: Convert Bounding Box Parameters to Vector3Int!
         [field: Header("Bounding Box")]
         [Tooltip("No rooms can spawn outside of these bounds.")]
         [field: SerializeField] public BoundsInt Bounds { get; set; }

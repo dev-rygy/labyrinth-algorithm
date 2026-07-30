@@ -443,7 +443,7 @@ namespace RyansLibrary.Input
                     {
                         if (args.Length < 1)
                         {
-                            Debug.LogWarning("No argument given, please enter true or false.");
+                            Debug.LogWarning("No argument given, please enter 'player', 'freecam', or 'console'.");
                             return;
                         }
                         else if (args[0] == "player")
