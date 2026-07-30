@@ -614,7 +614,7 @@ PrefabInstance:
     - target: {fileID: 3025117295075328031, guid: e5e269a7e5f91f044be5193fb55263bc,
         type: 3}
       propertyPath: _enableFogOnGameStart
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3025117295075328031, guid: e5e269a7e5f91f044be5193fb55263bc,
         type: 3}
@@ -867,7 +867,7 @@ PrefabInstance:
     - target: {fileID: 1323803375079589868, guid: 6ab9a3f62de25f545aee86b11d767568,
         type: 3}
       propertyPath: _startCameraMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1323803375079589868, guid: 6ab9a3f62de25f545aee86b11d767568,
         type: 3}
@@ -1459,6 +1459,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1199437630901284582, guid: 407020cce5592a34f82d0bdb7b14f004,
+        type: 3}
+      propertyPath: _showAngle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1225897609747816536, guid: 407020cce5592a34f82d0bdb7b14f004,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 37
+      objectReference: {fileID: 0}
     - target: {fileID: 6318210593823812084, guid: 407020cce5592a34f82d0bdb7b14f004,
         type: 3}
       propertyPath: m_Name

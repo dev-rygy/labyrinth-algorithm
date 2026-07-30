@@ -99,7 +99,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns></returns>
         private bool[] HandleRotation(bool[] entrypointFlagArray, Vector3 rotation)
         {
-            if (rotation == Vector3.zero)        // If no rotation return
+            if (rotation == Vector3.zero)        // If no rotation return original array
             {
                 if (_debug) Debug.Log($"Room {gameObject.name} was not rotated.");
                 return entrypointFlagArray;
