@@ -1,4 +1,5 @@
 # Labyrinth Algorithm
+![Blueprints](Docs/images/unique_blueprints.png)
 
 ## Overview
 **Labyrinth** is a procedural dungeon generation algorithm built in Unity/C# that creates seamlessly connected, thematically distinct 3D areas without loading screens. The algorithm's rules are heavily inspired by the roguelike variety of games like _Enter the Gungeon_ and the intentional level design of games like _Dark Souls_ and _Zelda_.
@@ -24,8 +25,6 @@ I've always admired how games like _The Binding of Isaac_, _Enter the Gungeon_, 
 The algorithm was made in Unity 3D but can be rewritten to work in any game engine.
 ## Blueprints
 Blueprints are the backbone of the algorithm. They must exist in order for any rooms to generate. Blueprints are simply single-celled marks on a grid that tell the algorithm "a room can eventually spawn here". When the blueprints are done generating a second pass then parses the blueprints and generates rooms based on a set of rules. Think of how Rule-Tiles work in game engines.
-
-![Blueprints](Docs/images/unique_blueprints.png)
 
 ```
 public class Blueprint
@@ -206,7 +205,7 @@ public sealed class MapGenerationContext
 ## Blueprint Graph
 Around the time I was implementing this feature, I started learning a bit of Unreal Engine and was impressed by its visual scripting graph, conveniently called "Blueprints." That's when I came upon a revelation. How different is my way of executing Blueprint Operations from Unreal's way of executing code, really? Each operation is essentially a node with inputs, outputs, and an execution order. They can be executed in any order and support a wide range of use cases. For example, this implementation lets me require a key from a separate path to unlock a door to a new one, or pathfind to any given room using any heuristic of my choosing. This is great for hidden secrets, connecting zones, and countless other unique cases.
 
-![[Pasted image 20260729133359.png]]
+![Diagram of hard-coded blueprint graph.](Docs/images/blueprint_graph.png)
 
 The graph contains many intermediary operations that are also useful to the developer. Set operations like union, intersection, and difference can be applied to blueprints for interesting generations. There are random access operations for variation, and even branch and jump operations for loops.
 
@@ -366,7 +365,7 @@ As stated earlier, the Blueprint class contains an array called `EntryPointFlags
 - Index 4 — Top Face (0, 1, 0)
 - Index 5 — Bottom Face (0, -1, 0)
 
-![[Pasted image 20260729172710.png]]
+![Wall prefabs being stored in room script.](Docs/images/room_walls.png)
 #### Room Rotation
 Rooms can be made to rotate if suitable blueprints are found in different orientations. For instance, if two blueprints are found occupying a (1, 1, 2) space, we know a "Long" room can fit there, although how can we generate them when they are oriented (2, 1, 1) by default? Rotation handles this case by rotating not only the room prefab, but also the entry point array of each Blueprint associated with the room, so the entrances still correctly line up with adjacent rooms.
 
