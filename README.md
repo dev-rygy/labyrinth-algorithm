@@ -311,16 +311,20 @@ Many pathfinding algorithms exist that could help connect blueprints together, b
 A cost/heuristic function tells A\* how to path toward each blueprint. The heuristic can make the path curvy, straight, or zig-zagged. There are endless possibilities for what the cost function can be, but as of now I use four well-known functions:
 
 1. **Euclidean:** creates a fairly straight path to the target.
-	$$D(a, b) = sqrt[ (x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2 ]$$
+	
+$$D(a, b) = sqrt[ (x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2 ]$$
 
 2. **Manhattan:** causes the path to stay parallel to the x, y, and z axes.
-	$$D(a, b) = | x_2 - x_1 | + | y_2 - y_1 | + | z_2 - z_1 |$$
+	
+$$D(a, b) = | x_2 - x_1 | + | y_2 - y_1 | + | z_2 - z_1 |$$
 	
 3. **Chebyshev:** causes the path to zig-zag and staircase.
-	$$D(a, b) = max[ | x_2 - x_1 |, | y_2 - y_1 |, | z_2 - z_1 | ]$$
+	
+$$D(a, b) = max[ | x_2 - x_1 |, | y_2 - y_1 |, | z_2 - z_1 | ]$$
 
 4. **Dijkstra:** guaranteed optimal path; cheapest route.
-	$$D(a, b) = 0$$
+	
+$$D(a, b) = 0$$
 
 ## The Drunkard's Walk
 This was the first algorithm that gave birth to the Labyrinth. Simply put, a blueprint is placed randomly in one of six directions from a point in space. This continues until a pathway is generated with the desired number of rooms. Seems simple enough at first, but I ran into a problem: what if the point is already surrounded by other blueprints? Should the algorithm just stop generating and cut its losses?
@@ -400,10 +404,16 @@ private bool[] HandleRotation(bool[] entrypointArray, Vector3 rotation)
 - Player map
 ## Sources
 \[1] [Procedurally Generated Dungeons](https://vazgriz.com/119/procedurally-generated-dungeons/)
+
 \[2] [Unity 2D Random Dungeon Generator for a Roguelike Video Game](https://www.udemy.com/share/101T4A3@iQWR-gXQBP0oQQ_dAg3i3d5jfOSPVi2ix_LewsRvxU0q2CbuDME-xcoRxJmfYLCYxw==/)
+
 \[3] [D&D Dungeon Generation By Marvin van der Sluis](https://summit-2223-sem1.game-lab.nl/?p=49)
-\[4] [Boyer-Watson Algorithm](https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm) 
+
+\[4] [Boyer-Watson Algorithm](https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm)
+
 \[5] [Amit's A* Pages](https://theory.stanford.edu/~amitp/GameProgramming/)
+
 \[6] [(PRO) Enter the Gungeon](https://ondrejnepozitek.github.io/Edgar-Unity/docs/next/examples/enter-the-gungeon/)
+
 
 
