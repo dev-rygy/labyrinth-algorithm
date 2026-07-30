@@ -9,6 +9,9 @@
 - **A* pathfinding** with four swappable heuristics to shape corridor style.
 - **Zone system** — modular, themed areas that connect enabling multi-entry-point worlds with no scene loading.
 - **Blueprints** — a self-designed grid-based intermediate representation that decouples "where a room can go" from "what room actually spawns there."
+
+![Demo of map generation.](Docs/images/orbit_loop.gif)
+
 ## Backstory
 I began building this algorithm back in 2023 for a club at my university. My peers and I were tasked with procedurally generating a 3D dungeon for an FPS we were making. It goes without saying that, between coursework and other obligations, a single semester wasn't enough time to finish a game of that magnitude. . The game itself never came together, but it was enough to hook me. I picked the algorithm back up and kept developing it in 2024.
 
@@ -19,11 +22,10 @@ Most of the algorithms the Labyrinth uses today are well known in the proc-gen c
 I've always admired how games like _The Binding of Isaac_, _Enter the Gungeon_, and _Wizard of Legend_ generate their maps, but I equally admired the intricate, deliberate level design of games like _Zelda_ and _Dark Souls_. Was there a way to randomize dungeon layouts while still producing levels that felt hand-crafted and made sense? Is it possible to link these levels together seamlessly so that different themed areas didn't need to be loaded in a different scene? That's the problem I set out to solve.
 
 The algorithm was made in Unity 3D but can be rewritten to work in any game engine.
-
-![Demo of map generation.](Docs/images/orbit_loop.gif)
-
 ## Blueprints
 Blueprints are the backbone of the algorithm. They must exist in order for any rooms to generate. Blueprints are simply single-celled marks on a grid that tell the algorithm "a room can eventually spawn here". When the blueprints are done generating a second pass then parses the blueprints and generates rooms based on a set of rules. Think of how Rule-Tiles work in game engines.
+
+![Blueprints](Docs/images/unique_blueprints.png)
 
 ```
 public class Blueprint
@@ -282,6 +284,8 @@ public class MapGenerationController
 One of the most important problems I set out to solve was a way to generate themed areas and connect them together in a seamless fashion. As stated in the intro, alongside rogue-likes I'm also a huge fan of RPGs that can transport the player to different areas from multiple entry points on the map. The concept of "Zones" helped me accomplish this.
 
 Zones connect to one another through intermediary zones I call "Connection Zones." These zones simply intersect their bounds with others and connect them via their own blueprint operations.
+
+![Zone connection blueprints being generated](Docs/images/zone_connection_showcase.gif)
 
 As of now, Zones are purely containers that house unique rooms, branches, and bounds that contain their blueprints. A controller still determines zone generation, though in a future update, Zones will be able to house their own operations and blueprint graph for unique generation rules.
 

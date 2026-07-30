@@ -128,9 +128,11 @@ namespace RyansLibrary.Labyrinth
         {
             foreach (Zone zone in _controller.Zones)
             {
+                // Draw zone blueprints
                 if (_debugBlueprintGizmos)
                     DrawBluePrintGizmos(zone, drawer);
 
+                // Draw triangulation blueprints
                 if (_debugTriangulationGizmos)
                 {
                     DrawTriangulation(drawer, _triangulationColor);
@@ -139,25 +141,33 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 if (_debugBoundsGizmos)
+                {
+                    // Draw zone bounds
                     DrawBoundingBox(zone.Bounds, Vector3.zero, _zoneBoundsColor, drawer);
 
-                foreach (RoomEntry room in zone.UniqueRooms)
-                {
-                    if (room == null)
-                        continue;
+                    // Draw unique room bounds
+                    foreach (RoomEntry room in zone.UniqueRooms)
+                    {
+                        if (room == null)
+                            continue;
 
-                    if (room.PlacementType != RoomPlacementType.Constrained)
-                        continue;
+                        if (room.PlacementType != RoomPlacementType.Constrained)
+                            continue;
 
-                    DrawBoundingBox(room.Bounds, zone.Bounds.position, _uniqueRoomBoundsColor, drawer);
+                        DrawBoundingBox(room.Bounds, zone.Bounds.position, _uniqueRoomBoundsColor, drawer);
+                    }
                 }
             }
 
+            return;
+
             foreach (ZoneConnectionEntry entry in _controller.ZoneConnections)
             {
+                // Draw zone connection blueprints
                 if (_debugBlueprintGizmos)
                     DrawBluePrintGizmos(entry.ConnectionZone, drawer);
 
+                // Draw zone connection bounds
                 if (_debugBoundsGizmos)
                 {
                     DrawBoundingBox(entry.ConnectionZone.Bounds, Vector3.zero, _zoneBoundsColor, drawer);
