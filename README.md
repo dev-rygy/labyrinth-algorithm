@@ -1,5 +1,5 @@
 # Labyrinth Algorithm
-![Blueprints](Docs/images/unique_blueprints.png)
+![Demo of map generation.](Docs/images/orbit_loop.gif)
 
 ## Overview
 **Labyrinth** is a procedural dungeon generation algorithm built in Unity/C# that creates seamlessly connected, thematically distinct 3D areas without loading screens. The algorithm's rules are heavily inspired by the roguelike variety of games like _Enter the Gungeon_ and the intentional level design of games like _Dark Souls_ and _Zelda_.
@@ -10,8 +10,6 @@
 - **A* pathfinding** with four swappable heuristics to shape corridor style.
 - **Zone system** — modular, themed areas that connect enabling multi-entry-point worlds with no scene loading.
 - **Blueprints** — a self-designed grid-based intermediate representation that decouples "where a room can go" from "what room actually spawns there."
-
-![Demo of map generation.](Docs/images/orbit_loop.gif)
 
 ## Backstory
 I began building this algorithm back in 2023 for a club at my university. My peers and I were tasked with procedurally generating a 3D dungeon for an FPS we were making. It goes without saying that, between coursework and other obligations, a single semester wasn't enough time to finish a game of that magnitude. . The game itself never came together, but it was enough to hook me. I picked the algorithm back up and kept developing it in 2024.
