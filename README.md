@@ -300,6 +300,9 @@ Divergent rooms are a set number of blueprints randomly spawned within a zone. T
 Delaunay Triangulation takes a set of defined points and creates a triangle mesh that can later be used as a graph for pathfinding. In 2D it's fairly simple, but in 3D it gets more complicated, instead of triangles we must use tetrahedra and calculate the volume of those tetrahedra using the determinant function.
 
 Delaunay uses a set of blueprint positions as points and creates edges connecting them. It also helps prevent the generation of a dungeon with too many long and unnecessary paths between rooms.
+
+![Bowyer-Watson Algorithm in real time.](Docs/images/triangulation.gif)
+
 #### Handling Coplanar Tetrahedra
 A major problem I faced was dealing with degenerate tetrahedra, which can occur when all four points are coplanar. I needed to ensure that at least one blueprint point used in a tetrahedron exists on a different floor than the other three, to prevent this from happening. When a zone is completely flat (one floor), I can just use 2D Delaunay to connect the blueprints instead.
 #### Greedy Algorithms
