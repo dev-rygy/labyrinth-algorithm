@@ -1,6 +1,5 @@
 # Labyrinth Algorithm
 ![Demo of map generation.](Docs/images/orbit_loop.gif)
-
 ## Overview
 **Labyrinth** is a procedural dungeon generation algorithm built in Unity/C# that creates seamlessly connected, thematically distinct 3D areas without loading screens. The algorithm's rules are heavily inspired by the roguelike variety of games like _Enter the Gungeon_ and the intentional level design of games like _Dark Souls_ and _Zelda_.
 #### Highlights
@@ -117,7 +116,6 @@ public sealed class MapGenerationContext
     public void OperationQueueEnqueue(BlueprintOperation op)
     {
         OperationQueue?.AddLast(op);
-
     }
 
     public void OperationQueueAddFront(BlueprintOperation op)
@@ -168,10 +166,7 @@ public sealed class MapGenerationContext
     public bool Contains(string memoryID)
     {
         if (_dataCache is null)
-        {
-            Debug.LogError($"Memory object not set.");
             return false;
-        }
 
         return _dataCache.ContainsKey(memoryID);
     }
@@ -180,10 +175,7 @@ public sealed class MapGenerationContext
     public void Remove(string memoryID)
     {
         if (_dataCache is null)
-        {
-            Debug.LogError($"Memory object not set.");
             return;
-        }
 
         if (_dataCache.ContainsKey(memoryID))
             _dataCache.Remove(memoryID);
@@ -309,26 +301,26 @@ A major problem I faced was dealing with degenerate tetrahedra, which can occur 
 Delaunay ensures every point in the resultant graph is connected, which means no room is left out. However, this can still result in too many edges, leading to an excess of branches and rooms. To manage this, I use a greedy algorithm, Prim's Algorithm, to find the MST (minimum spanning tree) in the graph. From there, we can randomly select other edges in the graph if we want some loops in our dungeon.
 ## Pathfinding
 Many pathfinding algorithms exist that could help connect blueprints together, but none are as fast and versatile as A\*. Using a pathfinding operation, I can either connect two blueprints directly or pass in a graph and connect all of its nodes. A\* returns all the positions needed to connect the blueprints, and from there I simply spawn new blueprints in their place.
-
 #### Heuristic Functions
 A cost/heuristic function tells A\* how to path toward each blueprint. The heuristic can make the path curvy, straight, or zig-zagged. There are endless possibilities for what the cost function can be, but as of now I use four well-known functions:
 
 1. **Euclidean:** creates a fairly straight path to the target.
 	
-$$D(a, b) = \sqrt{((x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2)}$$
+$$D(x, y) = \sqrt{((x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2)}$$
 
 2. **Manhattan:** causes the path to stay parallel to the x, y, and z axes.
 	
-$$D(a, b) = | x_2 - x_1 | + | y_2 - y_1 | + | z_2 - z_1 |$$
+$$D(x, y) = | x_2 - x_1 | + | y_2 - y_1 | + | z_2 - z_1 |$$
 	
 3. **Chebyshev:** causes the path to zig-zag and staircase.
 	
-$$D(a, b) = max[ | x_2 - x_1 |, | y_2 - y_1 |, | z_2 - z_1 | ]$$
+$$D(x, y) = max( | x_2 - x_1 |, | y_2 - y_1 |, | z_2 - z_1 | )$$
 
 4. **Dijkstra:** guaranteed optimal path; cheapest route.
 	
-$$D(a, b) = 0$$
+$$D(x, y) = 0$$
 
+![Bowyer-Watson Algorithm in real time.](Docs/images/heuristic_showcase.gif)
 ## The Drunkard's Walk
 This was the first algorithm that gave birth to the Labyrinth. Simply put, a blueprint is placed randomly in one of six directions from a point in space. This continues until a pathway is generated with the desired number of rooms. Seems simple enough at first, but I ran into a problem: what if the point is already surrounded by other blueprints? Should the algorithm just stop generating and cut its losses?
 #### Backtracking
@@ -417,6 +409,7 @@ private bool[] HandleRotation(bool[] entrypointArray, Vector3 rotation)
 \[5] [Amit's A* Pages](https://theory.stanford.edu/~amitp/GameProgramming/)
 
 \[6] [(PRO) Enter the Gungeon](https://ondrejnepozitek.github.io/Edgar-Unity/docs/next/examples/enter-the-gungeon/)
+
 
 
 
