@@ -1208,7 +1208,7 @@ namespace RyansLibrary.Labyrinth
                     }
 
                     Debug.Log($"Blueprint stack trace set to {_debugBlueprintLogs}.");
-                }));
+                }, true));
         }
         #endregion
     }

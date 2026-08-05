@@ -159,8 +159,6 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            return;
-
             foreach (ZoneConnectionEntry entry in _controller.ZoneConnections)
             {
                 // Draw zone connection blueprints
@@ -309,7 +307,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     _debugBlueprintGizmos = !_debugBlueprintGizmos;
                     Debug.Log($"Blueprint Gizmos set to '{_debugBlueprintGizmos}'.");
-                }));
+                }, true));
 
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglegizmos.triangulationgizmos",
@@ -318,7 +316,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     _debugTriangulationGizmos = !_debugTriangulationGizmos;
                     Debug.Log($"Triangulation Gizmos set to '{_debugTriangulationGizmos}'.");
-                }));
+                }, true));
 
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglegizmos.boundsgizmos",
@@ -327,7 +325,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     _debugBoundsGizmos = !_debugBoundsGizmos;
                     Debug.Log($"Bounds Gizmos set to '{_debugBoundsGizmos}'.");
-                }));
+                }, true));
 
         }
         #endregion

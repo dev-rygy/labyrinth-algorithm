@@ -7,6 +7,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RyansLibrary.Console
@@ -19,23 +20,31 @@ namespace RyansLibrary.Console
         private string _commandId;
         private string _commandDescription;
         private Action<string[]> _execute;
+        private bool _isDevCommand;
 
         public string CommandId { get { return _commandId; } }      // Unique command identifier
         public string CommandDescription { get { return _commandDescription; } }    // Description of command's purpose
         public Action<string[]> Execute { get { return _execute; } }        // Event that will execute from command
+        public bool IsDevCommand { get { return _isDevCommand; } }
 
-        public ConsoleCommand(string commandId, string commandDescription, Action<string[]> execute)
+        public ConsoleCommand(string commandId, string commandDescription, Action<string[]> execute, bool isDevCommand = false)
         {
             _commandId = commandId;
             _commandDescription = commandDescription;
             _execute = execute;
+            _isDevCommand = isDevCommand;
         }
     }
 
     public class ConsoleCommandRegistry
     {
+        private const string DEV_MODE_PASSCODE = "notpasscode";
+
         // List to hold all commands
         private Dictionary<string, ConsoleCommand> _commands = new();
+        private bool _devCommandsVisible = false;
+
+        public bool DevCommandsVisable { get { return _devCommandsVisible; }  }
 
         /// <summary>
         /// Add a command to the registry; command list
@@ -71,7 +80,8 @@ namespace RyansLibrary.Console
             string[] args = splitString.Length > 1 ? splitString[1..] : Array.Empty<string>();      // All rest are arguments
 
             // Search command registry for command with the name specified
-            if (_commands.TryGetValue(commandName, out var command))
+            if (_commands.TryGetValue(commandName, out var command) 
+                && (_devCommandsVisible || !command.IsDevCommand))
             {
                 try         // Attempt to execute the command
                 {
@@ -98,11 +108,14 @@ namespace RyansLibrary.Console
             if (string.IsNullOrEmpty(prefix))
                 return results;
 
-            foreach (string key in _commands.Keys)
+            foreach (var kvp in _commands)
             {
-                if (key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                if (!_devCommandsVisible && kvp.Value.IsDevCommand)
+                    continue;
+
+                if (kvp.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    results.Add(key);
+                    results.Add(kvp.Key);
                     if (results.Count >= maxResults)
                         break;
                 }
@@ -113,11 +126,23 @@ namespace RyansLibrary.Console
         }
 
         // Parse all commands
-        public IEnumerable<ConsoleCommand> GetAllCommands() => _commands.Values;
+        public IEnumerable<ConsoleCommand> GetAllCommands() => _devCommandsVisible ? _commands.Values : _commands.Values.Where(c => !c.IsDevCommand);
 
         public int GetCommandCount()
         {
-            return _commands.Count;
+            return GetAllCommands().Count();
+        }
+
+        public bool ToggleDevCommands(string passcode)
+        {
+            if (passcode != DEV_MODE_PASSCODE) // Replace with your actual passcode
+            {
+                Debug.LogWarning("Incorrect passcode. Developer commands remain hidden.");
+                return _devCommandsVisible;
+            }
+
+            _devCommandsVisible = !_devCommandsVisible;
+            return _devCommandsVisible;
         }
     }
 }

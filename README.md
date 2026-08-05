@@ -320,7 +320,7 @@ $$D(x, y) = max( | x_2 - x_1 |, | y_2 - y_1 |, | z_2 - z_1 | )$$
 	
 $$D(x, y) = 0$$
 
-![Bowyer-Watson Algorithm in real time.](Docs/images/heuristic_showcase.gif)
+![Heuristic paths.](Docs/images/heuristic_showcase.gif)
 ## The Drunkard's Walk
 This was the first algorithm that gave birth to the Labyrinth. Simply put, a blueprint is placed randomly in one of six directions from a point in space. This continues until a pathway is generated with the desired number of rooms. Seems simple enough at first, but I ran into a problem: what if the point is already surrounded by other blueprints? Should the algorithm just stop generating and cut its losses?
 #### Backtracking

@@ -464,7 +464,7 @@ namespace RyansLibrary.Input
                         }
 
                         Debug.Log($"Input map was switched to {args[0]}.");
-                    }));
+                    }, true));
         }
     }
 }

@@ -327,6 +327,32 @@ public class ConsoleUI : UIBehaviour
             {
                 PrintInputMemory();
                 Debug.Log("Input Memory printed to console.");
+            }, true));
+
+        // Makes dev commands available to the console
+        CommandRegistry.RegisterCommand(new ConsoleCommand(
+            "devmode",
+            "Enables developer commands in the console.",
+            args =>
+            {
+                if (args.Length < 1)
+                {
+                    Debug.LogWarning("No argument given, please enter a passcode.");
+                    return;
+                }
+                else if (args[0] is not string)
+                {
+                    Debug.LogWarning("Invalid argument given, please enter a valid string input.");
+                    return;
+                }
+
+                string passcode = args[0].ToString();
+
+                bool result = CommandRegistry.ToggleDevCommands(passcode);
+                if (result)
+                    Debug.Log("Developer commands enabled.");
+                else
+                    Debug.Log("Developer commands disabled.");
             }));
     }
 }
