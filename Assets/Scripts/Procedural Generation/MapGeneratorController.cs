@@ -958,7 +958,7 @@ namespace RyansLibrary.Labyrinth
                     {
                         if (_context.BlueprintDictionary.TryGetValue(actualPosition + generatedRoom.AvailableCellData[i], out Blueprint blueprint))
                         {
-                            generatedRoom.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i, Vector3.zero);
+                            generatedRoom.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i);
                         }
                         else
                         {

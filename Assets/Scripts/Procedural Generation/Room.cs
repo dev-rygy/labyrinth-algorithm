@@ -31,6 +31,14 @@ namespace RyansLibrary.Labyrinth
         boss
     }
 
+    public enum RoomRotation
+    {
+        Deg0 = 0,
+        Deg90 = 1,
+        Deg180 = 2,
+        Deg270 = 3,
+    }
+
     /// <summary>
     /// Runtime component on every room prefab. Doesn't decide anything about layout itself - RoomGenerator decides
     /// where/what to spawn, then calls CopyBlueprintEntranceFlags per underlying blueprint cell and Initialize() to
@@ -82,9 +90,9 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="blueprintArray">The blueprint room's entranceway array (6 possible entrances)</param>
         /// <param name="unitIndex">A specific unit space of the room in question</param>
-        public void CopyBlueprintEntranceFlags(bool[] blueprintArray, int unitIndex, Vector3 rotation)
+        public void CopyBlueprintEntranceFlags(bool[] blueprintArray, int unitIndex, RoomRotation rotation = RoomRotation.Deg0)
         {
-            blueprintArray = HandleRotation(blueprintArray, rotation);
+            blueprintArray = RotateEntryFlag(blueprintArray, rotation);
 
             for (int i = 0; i < blueprintArray.Length; i++) // iterate through all six faces of the Blueprint's flag array
             {
@@ -93,14 +101,15 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
+        /// Apply a horizontal rotation to the blueprint entranceway flags so that they match the room's orientation in the world.
         /// Simply shift the values in the blueprint array around to handle a 90 degree rotation.
         /// </summary>
         /// <param name="entrypointFlagArray">The blueprint array</param>
         /// <param name="rotation">The angle of applied rotation</param>
         /// <returns></returns>
-        private bool[] HandleRotation(bool[] entrypointFlagArray, Vector3 rotation)
+        private bool[] RotateEntryFlag(bool[] entrypointFlagArray, RoomRotation rotation)
         {
-            if (rotation == Vector3.zero)        // If no rotation return original array
+            if (rotation == RoomRotation.Deg0)        // If no rotation return original array
             {
                 if (_debug) Debug.Log($"Room {gameObject.name} was not rotated.");
                 return entrypointFlagArray;
@@ -108,20 +117,31 @@ namespace RyansLibrary.Labyrinth
 
             // A 90-degree yaw swaps which physical wall each blueprint face flag now points at (e.g. the wall that
             // used to face +Z now faces +X), so the flags have to be permuted to match and not just copied.
-            bool[] rotatedArray = new bool[entrypointFlagArray.Length];
-            if (rotation.y == 90)      // If 90 degree rotation shift down
+            bool[] rotatedArray = entrypointFlagArray;
+
+            for (int i = 0; i < (int)rotation; i++)
             {
-                rotatedArray[0] = entrypointFlagArray[2];        // Positive X to Negative Z
-                rotatedArray[1] = entrypointFlagArray[3];        // Negative X to Positive z
-                rotatedArray[2] = entrypointFlagArray[1];        // Positive Z direction the same
-                rotatedArray[3] = entrypointFlagArray[0];        // Negative Z direction the same
-                rotatedArray[4] = entrypointFlagArray[4];        // Positive Y to Positive X
-                rotatedArray[5] = entrypointFlagArray[5];        // Negative Y to Negative X
-                if (_debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
+                rotatedArray = RotateEntryFlagHorizontal90(rotatedArray);
             }
-            else
-                Debug.LogError($"Room {gameObject.name} has been rotated incorrectly.");
+
+            if (_debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
             
+            return rotatedArray;
+        }
+
+        private bool[] RotateEntryFlagHorizontal90(bool[] entrypointFlagArray)
+        {
+            // A 90-degree yaw swaps which physical wall each blueprint face flag now points at (e.g. the wall that
+            // used to face +Z now faces +X), so the flags have to be permuted to match and not just copied.
+            bool[] rotatedArray = new bool[entrypointFlagArray.Length];
+            
+            rotatedArray[0] = entrypointFlagArray[2];        // Positive X to Negative Z
+            rotatedArray[1] = entrypointFlagArray[3];        // Negative X to Positive Z
+            rotatedArray[2] = entrypointFlagArray[1];        // Positive Z direction the same
+            rotatedArray[3] = entrypointFlagArray[0];        // Negative Z direction the same
+            rotatedArray[4] = entrypointFlagArray[4];        // Positive Y to Positive X
+            rotatedArray[5] = entrypointFlagArray[5];        // Negative Y to Negative X
+
             return rotatedArray;
         }
 
