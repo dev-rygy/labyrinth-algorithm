@@ -9,11 +9,12 @@
  *                  3.) Start State = { Idle }
  *                  4.) Final States = { Death }
 */
-using RyansLibrary.StateMachine;
-using RyansLibrary.Input;
 using RyansLibrary.Abilities;
-using UnityEngine;
+using RyansLibrary.Console;
+using RyansLibrary.Input;
+using RyansLibrary.StateMachine;
 using System;
+using UnityEngine;
 
 public enum PlayerStates
 {
@@ -30,6 +31,15 @@ public enum PlayerStates
     Impact,
     Death,
     Emote
+}
+
+public enum AutoMoveDirections
+{
+    Forward,
+    Backward,
+    Left,
+    Right,
+    None
 }
 
 /// <summary> Player Controls Manager that stores references and data for the different states to use. </summary>
@@ -114,6 +124,8 @@ public class PlayerStateMachine : StateMachine
     public AnimationTimestamps AnimationTimestamps { get; private set; }        // reference to player animator events
     public ForceReceiver ForceReciever { get; private set; }        // reference to player physics
     public EntityHealth Health { get; private set; }        // Reference to player health
+
+    public AutoMoveDirections AutoMoveDirection { get; private set; } = AutoMoveDirections.None;
     #endregion
 
     #region Mono
@@ -155,6 +167,8 @@ public class PlayerStateMachine : StateMachine
         // Input Singleton ref.
         Input = InputHandler.Instance;                              // An input handler must be in the player's scene
 
+        RegisterConsoleCommands();
+
         // Kick off the player's state machine
         // Transition to the first state
         TransitionStates(PlayerStates.Idle);
@@ -185,6 +199,8 @@ public class PlayerStateMachine : StateMachine
         if (Health == null)
             return;
 
+        UnregisterConsoleCommands();
+
         // Unsubscribe to State Events
         Health.OnTakeDamage -= HandleTakeDamage;
         Health.OnDeath -= HandleDeath;
@@ -197,6 +213,8 @@ public class PlayerStateMachine : StateMachine
 
         if (Health == null)
             return;
+
+        UnregisterConsoleCommands();
 
         // Unsubscribe to State Events
         Health.OnTakeDamage -= HandleTakeDamage;
@@ -445,6 +463,64 @@ public class PlayerStateMachine : StateMachine
         obj.transform.parent = attachpoint.transform;
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localRotation = Quaternion.identity;
+    }
+    #endregion
+
+    #region Console Commands
+    private void RegisterConsoleCommands()
+    {
+        // Map generator step command - Step the map generator by a desired amount of operations.
+        ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            "player.automove",
+            "Will auto move the player in a certain direction.",
+            args =>
+            {
+
+                if (args.Length < 1)        // No step amount given; default to stepping 1 operation
+                {
+                    Debug.LogWarning("No argument provided. Please specify a direction or 'none'.");
+                    return;
+                }
+                string direction = args[0].ToLower().ToString();         // Step amount given and is valid
+                
+                if (direction == "none")
+                {
+                    Debug.Log("Player auto-move disabled.");
+                    AutoMoveDirection = AutoMoveDirections.None;
+                    return;
+                }
+                else if (direction == "forward")
+                {
+                    // Move the player forward
+                    AutoMoveDirection = AutoMoveDirections.Forward;
+                }
+                else if (direction == "backward")
+                {
+                    // Move the player backward
+                    AutoMoveDirection = AutoMoveDirections.Backward;
+                }
+                else if (direction == "left")
+                {
+                    // Move the player left
+                    AutoMoveDirection = AutoMoveDirections.Left;
+                }
+                else if (direction == "right")
+                {
+                    // Move the player right
+                    AutoMoveDirection = AutoMoveDirections.Right;
+                }
+                else
+                {
+                    Debug.LogWarning($"Invalid argument '{args[0]}'. Please specify a direction or 'none'.");
+                    return;
+                }
+                Debug.Log($"Player auto move set to {direction}");
+            }, true));
+    }
+
+    private void UnregisterConsoleCommands()
+    {
+        ConsoleUI.CommandRegistry.UnregisterCommand("player.automove");
     }
     #endregion
 }

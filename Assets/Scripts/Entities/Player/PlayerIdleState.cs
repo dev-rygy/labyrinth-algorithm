@@ -57,10 +57,19 @@ public class PlayerIdleState : PlayerState
     {
         // Translate the movement input to the correct world plane and move the player 
         Vector3 moveInput = new Vector3(stateMachine.Input.MovementInput.x, 0, stateMachine.Input.MovementInput.y);
-        stateMachine.Move(moveInput * stateMachine.MovementSpeed, deltaTime);
+        float playerActualSpeed = 0f;
 
-        // The value that transitions the player to and from the idle/walking/running animations
-        float playerActualSpeed = moveInput.magnitude;
+        if (stateMachine.AutoMoveDirection != AutoMoveDirections.None)
+        {
+            Vector3 autoMoveInput = AutoMove(stateMachine.AutoMoveDirection, deltaTime);
+            playerActualSpeed = autoMoveInput.magnitude;
+        }
+        else
+        {
+            stateMachine.Move(moveInput * stateMachine.MovementSpeed, deltaTime);
+            // The value that transitions the player to and from the idle/walking/running animations
+            playerActualSpeed = moveInput.magnitude;
+        }
 
         // If the player has movement then play running animation 
         stateMachine.Animator.SetFloat(ANIM_IDLE_SPEED_HASH, playerActualSpeed, ANIMATOR_DAMP_TIME, deltaTime);    // Run Animation
@@ -160,5 +169,39 @@ public class PlayerIdleState : PlayerState
     private void OnEmote()
     {
         stateMachine.TransitionStates(PlayerStates.Emote);
+    }
+
+    private Vector3 AutoMove(AutoMoveDirections direction, float deltaTime)
+    {
+        Vector3 Direction = Vector3.zero;
+
+        switch (direction)
+        {
+            case AutoMoveDirections.None:
+                Direction = Vector3.zero;
+                stateMachine.Move(Direction, deltaTime);
+                break;
+            case AutoMoveDirections.Forward:
+                Direction = Vector3.forward;
+                stateMachine.Move(Direction * stateMachine.MovementSpeed, deltaTime);
+                break;
+            case AutoMoveDirections.Backward:
+                Direction = Vector3.back;
+                stateMachine.Move(Direction * stateMachine.MovementSpeed, deltaTime);
+                break;
+            case AutoMoveDirections.Left:
+                Direction = Vector3.left;
+                stateMachine.Move(Direction * stateMachine.MovementSpeed, deltaTime);
+                break;
+            case AutoMoveDirections.Right:
+                Direction = Vector3.right;
+                stateMachine.Move(Direction * stateMachine.MovementSpeed, deltaTime);
+                break;
+            default:
+                if (stateMachine.DebugStateMachine) Debug.Log("Auto Move Direction Not Found.");
+                break;
+        }
+
+        return Direction;
     }
 }

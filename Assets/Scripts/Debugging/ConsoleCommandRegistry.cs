@@ -62,6 +62,17 @@ namespace RyansLibrary.Console
             _commands.Add(command.CommandId, command);
         }
 
+        public void UnregisterCommand(string commandId)
+        {
+            if (!_commands.ContainsKey(commandId.ToLower()))     // Prevent unregistering a command that doesn't exist
+            {
+                Debug.LogWarning($"Command '{commandId}' is not registered.");
+                return;
+            }
+            // Remove command from registry
+            _commands.Remove(commandId.ToLower());
+        }
+
         /// <summary>
         /// Try to execute a command from a string input,
         /// commands will execute the function they are linked to.
