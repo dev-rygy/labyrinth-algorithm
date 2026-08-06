@@ -73,7 +73,10 @@ public class PlayerStateMachine : StateMachine
 
     [field: Header("Movement")]
     [field: Tooltip("Default speed of the player.")]
-    [field: SerializeField] public float MovementSpeed { get; private set; } = 5f;  // Default speed of the player
+
+    [field: SerializeField] private float _movementSpeed = 5f;        // Default speed of the player
+    public float MovementSpeed => _movementSpeed;  // Default speed of the player      
+    
     [field: Tooltip("Added time it takes for the player to rotate between frames.")] 
     [field: SerializeField] public float MoveRotationDampValue { get; private set; }    // Added time it takes for the player to turn between frames
     [field: Tooltip("The speed of the player when climbing up a climbable object.")]
@@ -469,7 +472,7 @@ public class PlayerStateMachine : StateMachine
     #region Console Commands
     private void RegisterConsoleCommands()
     {
-        // Map generator step command - Step the map generator by a desired amount of operations.
+        // Player Auto Move command - Will auto move the player in a certain direction.
         ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
             "player.automove",
             "Will auto move the player in a certain direction.",
@@ -516,11 +519,35 @@ public class PlayerStateMachine : StateMachine
                 }
                 Debug.Log($"Player auto move set to {direction}");
             }, true));
+
+        // Player speed command - Change the player's speed value.
+        ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            "player.speed",
+            "changes the player's speed value.",
+            args =>
+            {
+                float speed = _movementSpeed;        // Default to current speed if no argument is given
+
+                if (args.Length < 1)        // No step amount given; default to stepping 1 operation
+                {
+                    Debug.LogWarning("No argument provided. Please input a valid speed value.");
+                    return;
+                }
+                else if (!float.TryParse(args[0], out speed))
+                {
+                    Debug.LogWarning("Invalid argument given, please enter a valid speed value between " + float.MinValue + " and " + float.MaxValue + ".");
+                    return;
+                }
+
+                _movementSpeed = speed;
+                Debug.Log($"Player speed set to {speed}");
+            }));
     }
 
     private void UnregisterConsoleCommands()
     {
         ConsoleUI.CommandRegistry.UnregisterCommand("player.automove");
+        ConsoleUI.CommandRegistry.UnregisterCommand("player.speed");
     }
     #endregion
 }
