@@ -109,7 +109,7 @@ namespace RyansLibrary.Labyrinth
                 if (_context.BlueprintDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
-                    blueprint.Claimed = available;
+                    blueprint.Available = available;
                 }
                 else
                     availibleBlueprints.Add(BlueprintGenerator.GenerateBlueprint(_context, path, cellPosition, available));

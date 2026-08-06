@@ -52,7 +52,7 @@ namespace RyansLibrary.Labyrinth
 
         private List<Blueprint> GetAvailableBlueprints(List<Blueprint> list, bool availbility)
         {
-            return list.Where(bp => (bp.Claimed == availbility)).ToList();
+            return list.Where(bp => (bp.Available == availbility)).ToList();
         }
     }
 }

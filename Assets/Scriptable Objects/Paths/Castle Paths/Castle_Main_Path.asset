@@ -71,9 +71,14 @@ MonoBehaviour:
   - Prefab: {fileID: 1009674509223472008, guid: ce649a3a4abca8d4aa4eaf045ce9bc08,
       type: 3}
     Probability: 100
+  <rooms2x1x2l>k__BackingField:
+  - Prefab: {fileID: 6084430210939289353, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+      type: 3}
+    Probability: 100
   <endingRooms>k__BackingField: []
   <DrunkardWalkCanGoVertical>k__BackingField: 1
   <TallRoomSpawnChance>k__BackingField: 0.6
   <LongRoomSpawnChance>k__BackingField: 0.45
-  <BigRoomSpawnChance>k__BackingField: 1
+  <BigRoomSpawnChance>k__BackingField: 0.25
+  <LRoomSpawnChance>k__BackingField: 1
   PathGizmoColor: {r: 0.09019608, g: 0.99215686, b: 1, a: 0.29803923}

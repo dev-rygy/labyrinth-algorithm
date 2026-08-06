@@ -28,13 +28,13 @@ namespace RyansLibrary.Labyrinth
     {
         public readonly string CellID;
         public readonly Vector3Int Position;    // Position of blueprint coords on grid
-        public bool Claimed { get; set; }       // Prevents/allows parsing algorithm from using blueprint in algorithm
+        public bool Available { get; set; }       // Prevents/allows parsing algorithm from using blueprint in algorithm
         public bool[] EntryPointFlags { get; set; }
 
         // Constructor
         public Blueprint(Vector3Int postion, string cellID = "Blueprint")
         {
-            Claimed = true;
+            Available = true;
             CellID = cellID;
             Position = postion;
             EntryPointFlags = new bool[6];       // A flag to mark which entrances should be open for a room
@@ -81,7 +81,7 @@ namespace RyansLibrary.Labyrinth
 
             string blueprintName = $"BlueprintRoom ({context.BlueprintDictionary.Count()})";
             Blueprint newBlueprint = new Blueprint(origin, blueprintName);
-            newBlueprint.Claimed = available;
+            newBlueprint.Available = available;
 
             // Update paths and masters with new blueprint room
             path.Add(newBlueprint);
@@ -322,7 +322,7 @@ namespace RyansLibrary.Labyrinth
             Blueprint blueprint = path.BlueprintList[randomBlueprintListIndex];
 
             // TODO: Make a circular array handle this
-            if (!blueprint.Claimed)
+            if (!blueprint.Available)
             {
                 //Debug.LogWarning("Map Generator Warning: unavailable room choosen for path start. Choosing a new room...");
                 blueprint = ChooseRandomBlueprintInPath(path, startIndex, endIndex);
@@ -345,7 +345,7 @@ namespace RyansLibrary.Labyrinth
             float distance = Mathf.Infinity;
             foreach (Blueprint blueprint in path.BlueprintList)
             {
-                if (blueprint.Claimed)
+                if (blueprint.Available)
                 {
                     float currentDistance = Vector3Int.Distance(point, blueprint.Position);
                     if (currentDistance < distance)
@@ -361,12 +361,12 @@ namespace RyansLibrary.Labyrinth
 
         public static List<Blueprint> FindBlueprintsWithAvailibility(List<Blueprint> blueprintList, bool availibility)
         {
-            return new List<Blueprint>(blueprintList.Where(b => (b.Claimed == availibility)).ToList());
+            return new List<Blueprint>(blueprintList.Where(b => (b.Available == availibility)).ToList());
         }
 
         public static Blueprint FindFirstBlueprintWithAvailibility(List<Blueprint> blueprintList, bool availibility)
         {
-            return blueprintList.FirstOrDefault(b => (b.Claimed == availibility));
+            return blueprintList.FirstOrDefault(b => (b.Available == availibility));
         }
 
         public static BoundsInt CombineBounds(BoundsInt boundsA, BoundsInt boundsB)
@@ -501,7 +501,7 @@ namespace RyansLibrary.Labyrinth
                 if (context.BlueprintDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {
                     availibleBlueprints.Add(blueprint);
-                    blueprint.Claimed = available;
+                    blueprint.Available = available;
                 }
                 else
                     availibleBlueprints.Add(GenerateBlueprint(context, path, cellPosition, available));

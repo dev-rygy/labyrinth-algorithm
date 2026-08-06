@@ -75,7 +75,7 @@ namespace RyansLibrary.Labyrinth
                 path.Rooms.Add(GenerateRoom(RoomShape.smallRoom, RoomType.start, path, path.BlueprintList[0], 0));
 
                 // Mark room space as unavailable
-                path.BlueprintList[0].Claimed = false;
+                path.BlueprintList[0].Available = false;
                 indexOffset = 1;
             }
 
@@ -88,7 +88,7 @@ namespace RyansLibrary.Labyrinth
                 Room genRoom = null;
 
                 // Check if the indexed room is available; If not then skip iteration
-                if (!indexedBlueprint.Claimed)
+                if (!indexedBlueprint.Available)
                     continue;
 
                 RoomDirection rDir = RoomDirection.PosX;        // Default Room Case
@@ -121,6 +121,24 @@ namespace RyansLibrary.Labyrinth
 
                     if (_debugLogs)
                         Debug.Log($"Path {path.Name} Generated Big Room: {genRoom.name}");
+                }
+
+                // Check conditions to spawn a Big Room starting at the indexed room's position
+                else if (RoomShapeCondition(indexedBlueprint, RoomShape.lRoom, path, out rDir))
+                {
+                    // spawn L-Room
+                    // Hook up blueprintRoom.entrancewayflags to new room
+                    genRoom = GenerateRoom(RoomShape.lRoom, rType, path, indexedBlueprint, rDir);         // **** Spawn L-Room
+                    path.Add(genRoom);              // Add new room to paths
+
+                    if (genRoom == null)
+                    {
+                        Debug.LogError($"Path {path.Name} attempted to spawn a Small Room but failed.");
+                        return false;
+                    }
+
+                    if (_debugLogs)
+                        Debug.Log($"Path {path.Name} Generated L-Room: {genRoom.name}");
                 }
 
                 // Check conditions to spawn a Tall Room starting at the indexed room's position
@@ -160,7 +178,7 @@ namespace RyansLibrary.Labyrinth
                 else                                                                                        // **** Spawn S-Room
                 {
                     // Make current blueprint space unavailable for future checks
-                    path.BlueprintList[i].Claimed = false;
+                    path.BlueprintList[i].Available = false;
 
                     genRoom = GenerateRoom(RoomShape.smallRoom, rType, path, indexedBlueprint, 0); // Spawn S-Room
                     if (genRoom == null)
@@ -214,7 +232,8 @@ namespace RyansLibrary.Labyrinth
                         if (roomRoll > path.BigRoomSpawnChance)
                             return false;
 
-                        if (availBlueRooms[0] != null)      // 1.) If there is a room on the right
+                        // 1.) If there is a room on the right
+                        if (availBlueRooms[0] != null)
                         {
                             Blueprint[] availBlueprintsRight = CheckAvailableAdjacentBlueprints(availBlueRooms[0], path);
 
@@ -224,10 +243,10 @@ namespace RyansLibrary.Labyrinth
 
                                 if (availBlueprintsFwd[1] != null)       // I.) If there is a room on the left
                                 {
-                                    currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                                    availBlueRooms[0].Claimed = false;        // Lock room right so it's not used in other checks
-                                    availBlueprintsRight[2].Claimed = false;        // Lock room right so it's not used in other checks
-                                    availBlueprintsFwd[1].Claimed = false;        // Lock room right so it's not used in other checks
+                                    currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
+                                    availBlueRooms[0].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsRight[2].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsFwd[1].Available = false;        // Lock room right so it's not used in other checks
                                     rDir = RoomDirection.PosX;
                                     return true;
                                 }
@@ -238,17 +257,18 @@ namespace RyansLibrary.Labyrinth
 
                                 if (availBlueprintsBwd[1] != null)       // I.) If there is a room on the left
                                 {
-                                    currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                                    availBlueRooms[0].Claimed = false;        // Lock room right so it's not used in other checks
-                                    availBlueprintsRight[3].Claimed = false;        // Lock room right so it's not used in other checks
-                                    availBlueprintsBwd[1].Claimed = false;        // Lock room right so it's not used in other checks
+                                    currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
+                                    availBlueRooms[0].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsRight[3].Available = false;        // Lock room right so it's not used in other checks
+                                    availBlueprintsBwd[1].Available = false;        // Lock room right so it's not used in other checks
                                     rDir = RoomDirection.PosZ;
                                     return true;
                                 }
                             }
                         }
 
-                        if (availBlueRooms[1] != null)      // 2.) If there is a room on the left
+                        // 2.) If there is a room on the left
+                        if (availBlueRooms[1] != null)
                         {
                             Blueprint[] availBlueprintsLeft = CheckAvailableAdjacentBlueprints(availBlueRooms[1], path);
 
@@ -258,10 +278,10 @@ namespace RyansLibrary.Labyrinth
 
                                 if (availBlueprintsFwd[0] != null)       // I.) If there is a room on the right
                                 {
-                                    currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                                    availBlueRooms[1].Claimed = false;        // Lock room right so it's not used in other checks
-                                    availBlueprintsLeft[2].Claimed = false;        // Lock room right so it's not used in other checks
-                                    availBlueprintsFwd[0].Claimed = false;        // Lock room right so it's not used in other checks
+                                    currentBlueprint.Available = false;             // Lock the current room so it's not used in other checks
+                                    availBlueRooms[1].Available = false;            // Lock room right so it's not used in other checks
+                                    availBlueprintsLeft[2].Available = false;       // Lock room forward so it's not used in other checks
+                                    availBlueprintsFwd[0].Available = false;        // Lock room left so it's not used in other checks
                                     rDir = RoomDirection.NegX;
                                     return true;
                                 }
@@ -272,10 +292,10 @@ namespace RyansLibrary.Labyrinth
 
                                 if (availBlueprintsBwd[0] != null)       // I.) If there is a room on the right
                                 {
-                                    currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                                    availBlueRooms[1].Claimed = false;        // Lock room right so it's not used in other checks
-                                    availBlueprintsLeft[3].Claimed = false;        // Lock room right so it's not used in other checks
-                                    availBlueprintsBwd[0].Claimed = false;        // Lock room right so it's not used in other checks
+                                    currentBlueprint.Available = false;             // Lock the current room so it's not used in other checks
+                                    availBlueRooms[1].Available = false;            // Lock room right so it's not used in other checks
+                                    availBlueprintsLeft[3].Available = false;       // Lock room right so it's not used in other checks
+                                    availBlueprintsBwd[0].Available = false;        // Lock room right so it's not used in other checks
                                     rDir = RoomDirection.NegZ;
                                     return true;
                                 }
@@ -285,6 +305,56 @@ namespace RyansLibrary.Labyrinth
                         // If none of these conditions hold then return false
                         return false;
                     }
+
+                case RoomShape.lRoom:
+                    {
+                        // If the path holds no big room prefabs return false
+                        if (path.rooms2x1x2l.Count <= 0)
+                            return false;
+
+                        // Roll for room spawn probability 
+                        if (roomRoll > path.LRoomSpawnChance)
+                            return false;
+
+                        // 1.) If there is a room on the right
+                        if (availBlueRooms[0] != null)
+                        {
+                            Blueprint[] availBlueprintsRight = CheckAvailableAdjacentBlueprints(availBlueRooms[0], path);
+
+                            if (availBlueprintsRight[2] != null)     // a.) If there is a room forward
+                            {
+                                Blueprint[] availBlueprintsFwd = CheckAvailableAdjacentBlueprints(availBlueprintsRight[2], path);
+
+                                currentBlueprint.Available = false;               // Lock the current room so it's not used in other checks
+                                availBlueRooms[0].Available = false;              // Lock room right so it's not used in other checks
+                                availBlueprintsRight[2].Available = false;        // Lock room forward so it's not used in other checks
+                                rDir = RoomDirection.PosX;
+                                return true;
+                            }
+                        }
+                        /*
+                        // 2.) If there is a room on the left
+                        if (availBlueRooms[1] != null)
+                        {
+                            Blueprint[] availBlueprintsLeft = CheckAvailableAdjacentBlueprints(availBlueRooms[1], path);
+
+                            if (availBlueprintsLeft[3] != null)     // b.) If there is a room backward
+                            {
+                                Blueprint[] availBlueprintsBwd = CheckAvailableAdjacentBlueprints(availBlueprintsLeft[3], path);
+
+                                currentBlueprint.Claimed = false;             // Lock the current room so it's not used in other checks
+                                availBlueRooms[1].Claimed = false;            // Lock room right so it's not used in other checks
+                                availBlueprintsLeft[3].Claimed = false;       // Lock room right so it's not used in other checks
+                                availBlueprintsBwd[0].Claimed = false;        // Lock room right so it's not used in other checks
+                                rDir = RoomDirection.NegZ;
+                                return true;
+                            }
+                        }
+                        */
+                        // If none of these conditions hold then return false
+                        return false;
+                    }
+
                 // *********** Tall Room Conditions ***********
                 case RoomShape.tallRoom:
                     {
@@ -299,8 +369,8 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's above the current room
                         if (availBlueRooms[4] != null)
                         {
-                            currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                            availBlueRooms[4].Claimed = false;        // Lock room above so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
+                            availBlueRooms[4].Available = false;        // Lock room above so it's not used in other checks
                             rDir = RoomDirection.PosY;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
                         }
@@ -308,8 +378,8 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's below the current room
                         if (availBlueRooms[5] != null)
                         {
-                            currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                            availBlueRooms[5].Claimed = false;        // Lock room below so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
+                            availBlueRooms[5].Available = false;        // Lock room below so it's not used in other checks
                             rDir = RoomDirection.NegY;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
                         }
@@ -331,32 +401,32 @@ namespace RyansLibrary.Labyrinth
                         // A blueprint room exists that's right to the current room
                         if (availBlueRooms[0] != null)
                         {
-                            currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                            availBlueRooms[0].Claimed = false;        // Lock room right so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
+                            availBlueRooms[0].Available = false;        // Lock room right so it's not used in other checks
                             rDir = RoomDirection.PosX;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
                         }
                         // A blueprint room exists that's left to current room
                         if (availBlueRooms[1] != null)
                         {
-                            currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                            availBlueRooms[1].Claimed = false;        // Lock room left so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
+                            availBlueRooms[1].Available = false;        // Lock room left so it's not used in other checks
                             rDir = RoomDirection.NegX;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
                         }
                         // A blueprint room exists that's forward from the current room
                         if (availBlueRooms[2] != null)
                         {
-                            currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                            availBlueRooms[2].Claimed = false;        // Lock room forward so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
+                            availBlueRooms[2].Available = false;        // Lock room forward so it's not used in other checks
                             rDir = RoomDirection.PosZ;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
                         }
                         // A blueprint room exists that's backward from the current room
                         if (availBlueRooms[3] != null)
                         {
-                            currentBlueprint.Claimed = false;                 // Lock the current room so it's not used in other checks
-                            availBlueRooms[3].Claimed = false;        // Lock room backward so it's not used in other checks
+                            currentBlueprint.Available = false;                 // Lock the current room so it's not used in other checks
+                            availBlueRooms[3].Available = false;        // Lock room backward so it's not used in other checks
                             rDir = RoomDirection.NegZ;              // Room Case is used to specify the Room's rotation and movement on instantiation (Difference: origin - next)
                             return true;
                         }
@@ -405,7 +475,7 @@ namespace RyansLibrary.Labyrinth
             {
                 // If the room is not available due to it being used by another generated room
                 // OR if it is not a part of the path in question then remove it from the availBlueRooms list.
-                if (availableBlueprints[i] != null && (!availableBlueprints[i].Claimed || !path.BlueprintList.Contains(availableBlueprints[i])))
+                if (availableBlueprints[i] != null && (!availableBlueprints[i].Available || !path.BlueprintList.Contains(availableBlueprints[i])))
                     availableBlueprints[i] = null;
             }
 
@@ -532,6 +602,42 @@ namespace RyansLibrary.Labyrinth
                         generatedRoom.CopyBlueprintEntranceFlags(leftBlueprint.EntryPointFlags, 3, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 18 - 23)
                         generatedRoom.Initialize(rType);
                     }
+                    else
+                        Debug.LogError($"Roomcase does not match any valid Tall-Room Cases.");
+                    break;
+
+                // ********* Generate L Room (2x1x2) **************
+                case RoomShape.lRoom:
+                    if (path.rooms2x1x2l.Count <= 0)     // Check if the path's big room list is empty
+                        return null;
+
+                    // Generate L Room based on it's direction
+                    if (rDir == RoomDirection.PosX)     // Right, Forward
+                    {
+                        // TODO: Change these Blueprint positions to use a for loop 
+                        // TODO: _masterDictionaryReference[originBlueprint.Position + availableCellPosition];
+                        Blueprint rightBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.right];         // _>--
+                        Blueprint fwdBlueprint = _masterDictionaryReference[rightBlueprint.Position + Vector3Int.forward];          // __-^
+
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2l), ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);          // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(rightBlueprint.EntryPointFlags, 1, eulerRotation);             // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintEntranceFlags(fwdBlueprint.EntryPointFlags, 2, eulerRotation);               // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 12 - 17)
+                        generatedRoom.Initialize(rType);
+                    }
+                    /*
+                    else if (rDir == RoomDirection.NegZ)        // Left, Back
+                    {
+                        Blueprint leftBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.left];           // __<-
+                        Blueprint backBlueprint = _masterDictionaryReference[leftBlueprint.Position + Vector3Int.back];             // v_--
+
+                        generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.rooms2x1x2), ConvertToWorldCoords(backBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
+                        generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0, eulerRotation);            // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 0 - 5)
+                        generatedRoom.CopyBlueprintEntranceFlags(leftBlueprint.EntryPointFlags, 1, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (first 6 elements : 6 - 11)
+                        generatedRoom.CopyBlueprintEntranceFlags(backBlueprint.EntryPointFlags, 2, eulerRotation);              // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array (next 6 elements : 12 - 17)
+                        generatedRoom.Initialize(rType);
+                    }
+                    */
                     else
                         Debug.LogError($"Roomcase does not match any valid Tall-Room Cases.");
                     break;

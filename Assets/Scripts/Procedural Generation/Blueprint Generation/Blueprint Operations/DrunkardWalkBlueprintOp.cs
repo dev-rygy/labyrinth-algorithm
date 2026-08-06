@@ -109,7 +109,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
             Blueprint startBlueprint = branchedPath.BlueprintList[i];
             path.ClearBlueprints();
 
-            if (!startBlueprint.Claimed)       // Check if start room is available
+            if (!startBlueprint.Available)       // Check if start room is available
                 continue;
 
             pathPlaced = BlueprintDrunkardWalkRecursive(path, bounds, startBlueprint, canGoVertical);
