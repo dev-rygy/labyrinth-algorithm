@@ -21,6 +21,8 @@ public class Elevator : MovingPlatform
     [SerializeField] private float _spawnChainAtDistInterval = 5f;
     [SerializeField] private float _chainLinkLength = 10f;
     [SerializeField] private Vector3 _chainSpawnStartPoint;
+    [Header("Debug")]
+    [SerializeField] private bool _debug;
 
     private float _prevElevatorPositionY;
     private Stack<GameObject> _chainLinkObjects;
@@ -106,7 +108,7 @@ public class Elevator : MovingPlatform
 
     private void OnDrawGizmos()
     {
-        if (_useRaycast)
+        if (_useRaycast && _debug)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position + _raycastOffset, transform.position + _raycastOffset + Vector3.down * 100f);

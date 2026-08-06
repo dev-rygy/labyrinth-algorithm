@@ -25,6 +25,7 @@ public class ConsoleUI : UIBehaviour
     [Header("Console Settings")]
     [SerializeField] private bool _toggleInputMemory;       // Toggle input mem on and off
     [SerializeField] private int _inputMemoryCapacity;      // Holds prev commands
+    [SerializeField] private bool _enableDevCommands;       // Toggle dev commands on and off
 
     [Header("Autocomplete")]
     [SerializeField] private TMP_Text _suggestionText;      // A small text field under the input field
@@ -80,6 +81,7 @@ public class ConsoleUI : UIBehaviour
         Application.logMessageReceived += HandleUnityLog;
 
         AddBasicConsoleCommandsToRegistry();
+        CommandRegistry.ToggleDevCommands(_enableDevCommands);
     }
 
     private void OnDestroy()

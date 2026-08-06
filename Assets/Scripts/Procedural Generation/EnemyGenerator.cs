@@ -50,7 +50,6 @@ public class EnemyGenerator : MonoBehaviour
                     {
                         // Spawn enemy
                         spawnPad.SpawnObject();
-                        Debug.Log("Spawned Enemy");
                     }
                 }
             }
@@ -65,7 +64,6 @@ public class EnemyGenerator : MonoBehaviour
                             {
                                 // Spawn enemy
                                 spawnPad.SpawnObject();
-                                Debug.Log("Spawned Enemy");
                             }
                         }
                     }

@@ -155,5 +155,10 @@ namespace RyansLibrary.Console
             _devCommandsVisible = !_devCommandsVisible;
             return _devCommandsVisible;
         }
+
+        public void ToggleDevCommands(bool toggle)
+        {
+            _devCommandsVisible = toggle;
+        }
     }
 }

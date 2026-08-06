@@ -25,7 +25,7 @@ public class SpawnPad : MonoBehaviour
     [SerializeField] private List<ProbabilityEntry<GameObject>> _spawnEntries;
 
     [Header("Debug")]
-    [SerializeField] private bool _debug;
+    [SerializeField] private bool _debugGizmos = false;
     [SerializeField] private Vector3 _gizmoArea;
     [SerializeField] private Vector3 _gizmoOffset; 
     [SerializeField] private Color _gizmoColor;
@@ -68,7 +68,7 @@ public class SpawnPad : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!_debug)
+        if (!_debugGizmos)
             return;
 
         Gizmos.color = _gizmoColor;
