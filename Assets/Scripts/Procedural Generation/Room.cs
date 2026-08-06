@@ -17,6 +17,7 @@ namespace RyansLibrary.Labyrinth
         longRoom,
         tallRoom,
         bigRoom,
+        lRoom,
         unique
     }
 
