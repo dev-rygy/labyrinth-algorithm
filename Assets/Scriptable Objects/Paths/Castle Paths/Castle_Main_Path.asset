@@ -70,7 +70,10 @@ MonoBehaviour:
   <rooms2x1x2>k__BackingField:
   - Prefab: {fileID: 1009674509223472008, guid: ce649a3a4abca8d4aa4eaf045ce9bc08,
       type: 3}
-    Probability: 100
+    Probability: 50
+  - Prefab: {fileID: 2571759191402628205, guid: fd2dae29bec57ea4fadab2f7d4eb4831,
+      type: 3}
+    Probability: 50
   <rooms2x1x2l>k__BackingField:
   - Prefab: {fileID: 4277274321488255504, guid: b89bc14ff932b2a439854296babb64b8,
       type: 3}
@@ -82,6 +85,6 @@ MonoBehaviour:
   <DrunkardWalkCanGoVertical>k__BackingField: 1
   <TallRoomSpawnChance>k__BackingField: 0.6
   <LongRoomSpawnChance>k__BackingField: 0.6
-  <BigRoomSpawnChance>k__BackingField: 0.3
-  <LRoomSpawnChance>k__BackingField: 1
+  <BigRoomSpawnChance>k__BackingField: 0.4
+  <LRoomSpawnChance>k__BackingField: 0.75
   PathGizmoColor: {r: 0.09019608, g: 0.99215686, b: 1, a: 0.29803923}

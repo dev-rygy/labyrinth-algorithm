@@ -679,7 +679,6 @@ namespace RyansLibrary.Labyrinth
 
                     else if (rDir == RoomDirection.PosZ)        // Back, Right
                     {
-                        Debug.Log("Back Right Generated");
                         Blueprint backBlueprint = _masterDictionaryReference[originBlueprint.Position + Vector3Int.back];           // __<-
                         Blueprint rightBlueprint = _masterDictionaryReference[backBlueprint.Position + Vector3Int.right];             // v_--
 
