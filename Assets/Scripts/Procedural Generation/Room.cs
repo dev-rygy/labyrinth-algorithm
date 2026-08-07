@@ -31,12 +31,24 @@ namespace RyansLibrary.Labyrinth
         boss
     }
 
+    // Determines the rotation of the room in the world.
     public enum RoomRotation
     {
         Deg0 = 0,
         Deg90 = 1,
         Deg180 = 2,
         Deg270 = 3,
+    }
+
+    // Determines the offset of the room in the world.
+    public enum RoomShift
+    {
+        N = 0,
+        S = 1,
+        E = 2,
+        W = 3,
+        Up = 4,
+        Down = 5
     }
 
     /// <summary>
