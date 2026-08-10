@@ -247,7 +247,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="memoryID">The unique identifier for the memory entry to set. Cannot be null.</param>
         /// <param name="value">The value to associate with the specified memory identifier. Can be any object.</param>
-        public void Malloc(string memoryID, object value)
+        public void Set(string memoryID, object value)
         {
             if (_dataCache is null)
             {

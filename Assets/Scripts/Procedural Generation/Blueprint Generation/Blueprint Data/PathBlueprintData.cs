@@ -36,9 +36,9 @@ namespace RyansLibrary.Labyrinth
 
         public override void LoadIntoMemory()
         {
-            _context.Malloc(OutputPorts[0], _cache);
-            _context.Malloc(OutputPorts[1], _cache.BlueprintCount());
-            _context.Malloc(OutputPorts[2], _cache.BlueprintList);
+            _context.Set(OutputPorts[0], _cache);
+            _context.Set(OutputPorts[1], _cache.BlueprintCount());
+            _context.Set(OutputPorts[2], _cache.BlueprintList);
 
             if (_debugLogs) LogDataAllocation();
         }

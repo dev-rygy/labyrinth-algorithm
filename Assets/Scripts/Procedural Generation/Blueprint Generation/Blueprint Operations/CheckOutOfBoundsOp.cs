@@ -39,7 +39,7 @@ namespace RyansLibrary.Labyrinth
 
             BoundsInt intersectingBounds = CreateIntersectingBounds(boundsA, boundsB);
 
-            _context.Malloc(OutputPorts[0], intersectingBounds);
+            _context.Set(OutputPorts[0], intersectingBounds);
             if (DebugLogs) Debug.Log($"CheckOutOfBoundsOp: Intersecting bounds loaded into memory with ID {OutputPorts[0]}");
             return true;
         }

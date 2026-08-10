@@ -206,6 +206,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2070853789782704919, guid: a94b0fb41af01ad40a2cbf5ff585eba8,
+        type: 3}
+      propertyPath: RoomSpawners.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2070853789782704919, guid: a94b0fb41af01ad40a2cbf5ff585eba8,
+        type: 3}
+      propertyPath: 'RoomSpawners.Array.data[1]'
+      value: 
+      objectReference: {fileID: 5826756207708937021}
     - target: {fileID: 4662395438716837293, guid: a94b0fb41af01ad40a2cbf5ff585eba8,
         type: 3}
       propertyPath: m_LocalPosition.z
@@ -282,6 +292,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2965655246286627779}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5826756207708937021 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8787882271361939710, guid: a94b0fb41af01ad40a2cbf5ff585eba8,
+    type: 3}
+  m_PrefabInstance: {fileID: 2965655246286627779}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e42a3070d765134eb49bd361c9a1d7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8881009185291620518 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5915391761063736165, guid: a94b0fb41af01ad40a2cbf5ff585eba8,

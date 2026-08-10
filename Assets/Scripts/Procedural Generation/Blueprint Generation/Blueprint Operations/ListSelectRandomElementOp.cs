@@ -43,13 +43,13 @@ public class ListSelectRandomElementOp : BlueprintOperation
             if (list is List<Edge> edgeList)
             {
                 Edge resultListEdge = SelectRandomElementFromList(edgeList);
-                _context.Malloc(OutputPorts[0], resultListEdge);
+                _context.Set(OutputPorts[0], resultListEdge);
                 return true;
             }
             else if (list is List<Blueprint> blueprintList)
             {
                 Blueprint resultListBlueprint = SelectRandomElementFromList(blueprintList);
-                _context.Malloc(OutputPorts[0], resultListBlueprint);
+                _context.Set(OutputPorts[0], resultListBlueprint);
                 return true;
             }
             else

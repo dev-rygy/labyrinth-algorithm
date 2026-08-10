@@ -42,7 +42,7 @@ namespace RyansLibrary.Labyrinth
 
             int sum = intA + intB;
 
-            _context.Malloc(OutputPorts[0], sum);
+            _context.Set(OutputPorts[0], sum);
 
             return true;
         }

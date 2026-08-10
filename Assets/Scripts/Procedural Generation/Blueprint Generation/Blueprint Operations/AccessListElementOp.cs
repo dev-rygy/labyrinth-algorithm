@@ -39,13 +39,13 @@ namespace RyansLibrary.Labyrinth
             if (list is List<Edge> edgeList)
             {
                 Edge element = edgeList[index];
-                _context.Malloc(OutputPorts[0], element);
+                _context.Set(OutputPorts[0], element);
                 return true;
             }
             else if (list is List<Blueprint> blueprintList)
             {
                 Blueprint element = blueprintList[index];
-                _context.Malloc(OutputPorts[0], element);
+                _context.Set(OutputPorts[0], element);
                 return true;
             }
             else

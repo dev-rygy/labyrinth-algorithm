@@ -9,6 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4741713121294281782}
+  - component: {fileID: 1060667188495200287}
+  - component: {fileID: 3349908017206456714}
+  - component: {fileID: 3227957994131653054}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -32,6 +35,73 @@ Transform:
   - {fileID: 5924922533299725954}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!143 &1060667188495200287
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554249928025234302}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &3349908017206456714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554249928025234302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b3acb41ac72ec34c9f2bab650d60bcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RyansLibrary.Scripts::Skeleton
+  _canMove: 1
+  _moveSpeed: 0.5
+  _pauseIntervalMin: 1
+  _pauseIntervalMax: 3
+  _randomDirectionChangeInterval: 2
+  _characterModel: {fileID: 5924922533299725954}
+  _moveRotationDampValue: 10
+--- !u!114 &3227957994131653054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554249928025234302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8936a4630dadce45b262b569eeacae6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RyansLibrary.Scripts::ForceReceiver
+  <GravityMultiplier>k__BackingField: -9.81
+  <StaticVerticalVelocity>k__BackingField: -2
+  _terminalVelocity: 50
+  <HasGravity>k__BackingField: 1
+  EnableGroundCheck: 1
+  _groundRayFanAngleX: 45
+  _groundRayCount: 5
+  _groundFanCheckDistance: 0.1
+  _groundDownCheckDistance: 0.025
+  _debug: 0
+  _log: 0
 --- !u!1001 &5924922533300045738
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47,6 +117,14 @@ PrefabInstance:
     - target: {fileID: 142548, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
       propertyPath: m_Name
       value: Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 190186, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 196142, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 467240, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
       propertyPath: m_LocalScale.x
@@ -74,7 +152,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 467240, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 467240, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
       propertyPath: m_LocalRotation.x
@@ -82,7 +160,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 467240, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 467240, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
       propertyPath: m_LocalRotation.z
@@ -94,7 +172,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 467240, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 467240, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -104,6 +182,14 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: b9bae0a184f88f04bbfeaf021c008b06, type: 2}
+    - target: {fileID: 13750078, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ea24e01b03f54464eadda8d044dc3d2e, type: 2}
+    - target: {fileID: 13780204, guid: 659981ab97d9bb64990767ef5f931f7c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ea24e01b03f54464eadda8d044dc3d2e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -1155,6 +1155,16 @@ namespace RyansLibrary.Labyrinth
                 }
                 ));
 
+            // Register custom seed command - Sets the map generator to use a custom seed for generation.
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.seed",
+                "Displays the current seed value to the console.",
+                args =>
+                {
+                    Debug.Log($"Seed: {_seed}");
+                }
+                ));
+
             // Map generator restart command - Resets and restarts the map generator state.
             ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglerandomseed",

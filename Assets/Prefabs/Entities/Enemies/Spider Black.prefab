@@ -8,10 +8,45 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1060667188495200287, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
+        type: 3}
+      propertyPath: m_Height
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1060667188495200287, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
+        type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1060667188495200287, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1554249928025234302, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
         type: 3}
       propertyPath: m_Name
       value: Spider Black
+      objectReference: {fileID: 0}
+    - target: {fileID: 3349908017206456714, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
+        type: 3}
+      propertyPath: _characterModel
+      value: 
+      objectReference: {fileID: 23686775768837644}
+    - target: {fileID: 4741713121294281782, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4741713121294281782, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4741713121294281782, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4741713121294281782, guid: c0f6b2bca2057cb40b63ca2e82d1d320,
         type: 3}
@@ -95,17 +130,17 @@ PrefabInstance:
     - target: {fileID: 5505336437074420642, guid: e42dce10de392fb46b7cf553d7658cf4,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5505336437074420642, guid: e42dce10de392fb46b7cf553d7658cf4,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5505336437074420642, guid: e42dce10de392fb46b7cf553d7658cf4,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5505336437074420642, guid: e42dce10de392fb46b7cf553d7658cf4,
         type: 3}

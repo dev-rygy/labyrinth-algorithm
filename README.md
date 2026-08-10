@@ -5,20 +5,20 @@ Try the demo out [here](https://madcolors-entertainment.itch.io/labyrinth-demo)!
 ## Overview
 Highly adaptable procedural dungeon generation algorithm built in Unity/C# with the purpose of creating seamlessly connected, thematically distinct 3D areas without loading screens.
 
-| Feature                                                                     | Description                                                                                                           | Version                                                               |
-| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| [Blueprints](##blueprints)                                                  | Parsible marks on a grid that can eventually be used to spawn rooms.                                                  | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Blueprint Operations](##blueprint-operations)                              | Instruction-set style units of execution that make the algorithm step-able.                                           | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Blueprint Graph](#blueprint-graph)                                         | Combines blueprint operations into a model that can create a unique map generation style.                             | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Zones](#zones)                                                             | Areas of the map that can house it's own rooms, rules, loot, etc.                                                     | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Unique Blueprint Placement](#unique-blueprint-placement)                   | Places necessary rooms in a bounded zone.                                                                             | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Divergent Blueprint Placement](#divergent-blueprint-placement)             | Randomly places blueprints of varying size around the map for more variation.                                         | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Delaunay Triangulation (Bowyer Watson Algorithm)](#delaunay-triangulation) | Creates a mesh/graph from a list of blueprints that can later be used to connect them with A*.                        | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Pathfinding](##pathfinding)                                                | Connecting corridors with four with A* using four swappable heuristics to effect path style.                          | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [The Drunkard's Walk](##the-drunkards-walk)                                 | Places blueprints randomly in a connected path. Can diverge off other paths and has a recursive safety check feature. | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Room Parsing](#room-parsing)                                               | Blueprints are parsed and rooms are chosen to spawn based on their patterns.                                          | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Player State Machine](##player-state-machine)                              | An NFA is used to transition the player's states. Also made in a way to support a complex ability system.             | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
-| [Command Line Interface](##command-line-interface)                          | Custom CLI with global commands to help debugging.                                                                    | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) |
+| Feature                                         | Description                                                                                                           | Version                                                               | Status                                                                       |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Blueprints                                      | Parsable marks on a grid that can eventually be used to spawn rooms.                                                  | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| Blueprint Operations                            | Instruction-set style units of execution that make the algorithm step-able.                                           | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| Blueprint Graph                                 | Combines blueprint operations into a model that can create a unique map generation style.                             | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| Zones                                           | Areas of the map that can house it's own rooms, rules, loot, etc.                                                     | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| Unique Blueprint Placement                      | Places necessary rooms in a bounded zone.                                                                             | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| Divergent Blueprint Placement                   | Randomly places blueprints of varying size around the map for more variation.                                         | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| Delaunay Triangulation (Bowyer-Watson Algorithm | Creates a mesh/graph from a list of blueprints that can later be used to connect them with A*.                        | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| Pathfinding                                     | Connecting corridors with four with A* using four swappable heuristics to effect path style.                          | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| The Drunkard's Walk                             | Places blueprints randomly in a connected path. Can diverge off other paths and has a recursive safety check feature. | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
+| Room Parsing                                    | Blueprints are parsed and rooms are chosen to spawn based on their patterns.                                          | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Reworking-brown)<br><br> |
+| Player State Machine                            | An NFA is used to transition the player's states. Also made in a way to support a complex ability system.             | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Partial-hotpink)<br>     |
+| Command Line Interface                          | Custom CLI with global commands to help debugging.                                                                    | ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue) | ![Static Badge](https://img.shields.io/badge/Status-Active-Green)<br>        |
 
 ![Demo of map generation.](Docs/images/orbit_loop.gif)
 ## Backstory
@@ -33,6 +33,7 @@ I've always admired how games like _The Binding of Isaac_, _Enter the Gungeon_, 
 The algorithm was made in Unity 3D but can be rewritten to work in any game engine.
 ## Blueprints
 Blueprints are the backbone of the algorithm. They must exist in order for any rooms to generate. Blueprints are simply single-celled marks on a grid that tell the algorithm "a room can eventually spawn here". When the blueprints are done generating a second pass then parses the blueprints and generates rooms based on a set of rules. Think of how Rule-Tiles work in game engines.
+
 ![Blueprints being generated.](Docs/images/unique_blueprints.png)
 ```
 public class Blueprint
@@ -202,7 +203,9 @@ public sealed class MapGenerationContext
 ```
 ## Blueprint Graph
 Around the time I was implementing this feature, I started learning a bit of Unreal Engine and was impressed by its visual scripting graph, conveniently called "Blueprints." Conveniently I was able to draw a few parallels between Unreal's Blueprints and mine. Each operation is essentially a node with inputs, outputs, and an execution order. They can be executed in any order and support a wide range of use cases. For example, this implementation lets me require a key from a separate path to unlock a door to a new one, or pathfind to any given room using any heuristic of my choosing. This is great for hidden secrets, connecting zones, and countless other unique cases.
+
 ![Diagram of hard-coded blueprint graph.](Docs/images/blueprint_graph.png)
+
 The graph contains many intermediary operations that are also useful to the developer. Set operations like union, intersection, and difference can be applied to blueprints for interesting generations. There are random access operations for variation, and even branch and jump operations for loops.
 
 Right now, all nodes are hardcoded into a controller, though I'd like to move to Unity's graphing toolkit in a future implementation. Below is the controller used to both store and execute operations. Operations can be stepped through by a specified `stepLength`, given via the `Advance()` function.
@@ -277,9 +280,10 @@ public class MapGenerationController
 One of the most important problems I set out to solve was a way to generate themed areas and connect them together in a seamless fashion. As stated in the intro, alongside rogue-likes I'm also a huge fan of RPGs that can transport the player to different areas from multiple entry points on the map. The concept of "Zones" helped me accomplish this.
 
 Zones connect to one another through intermediary zones I call "Connection Zones." These zones simply intersect their bounds with others and connect them via their own blueprint operations.
-![Zone connection blueprints being generated](Docs/images/zone_connection_showcase.gif)
-As of now, Zones are purely containers that house unique rooms, branches, and bounds that contain their blueprints. A controller still determines zone generation, though in a future update, Zones will be able to house their own operations and blueprint graph for unique generation rules.
 
+![Zone connection blueprints being generated](Docs/images/zone_connection_showcase.gif)
+
+As of now, Zones are purely containers that house unique rooms, branches, and bounds that contain their blueprints. A controller still determines zone generation, though in a future update, Zones will be able to house their own operations and blueprint graph for unique generation rules.
 ## Unique Blueprint Placement
 Unique rooms are rooms determined by their zone before runtime; the blueprints generated in place of these rooms _are not_ to be included later in the room parsing procedure. These are most likely boss rooms, mini-boss rooms, large rooms, or any rooms whose blueprint shape would be difficult or impossible to parse later.
 
@@ -295,6 +299,7 @@ Delaunay uses a set of blueprint positions as points and creates edges connectin
 ![Bowyer-Watson Algorithm in real time.](Docs/images/triangulation.gif)
 #### Handling Coplanar Tetrahedra
 A major problem I faced was dealing with degenerate tetrahedra, which can occur when all four points are coplanar. I needed to ensure that at least one blueprint point used in a tetrahedron exists on a different floor than the other three, to prevent this from happening. When a zone is completely flat (one floor), I can just use 2D Delaunay to connect the blueprints instead.
+
 ![Zone connection blueprints being generated](Docs/images/coplanar.gif)
 #### Greedy Algorithms
 Delaunay ensures every point in the resultant graph is connected, which means no room is left out. However, this can still result in too many edges, leading to an excess of branches and rooms. To manage this, I use a greedy algorithm, Prim's Algorithm, to find the MST (minimum spanning tree) in the graph. From there, we can randomly select other edges in the graph if we want some loops in our dungeon.
@@ -305,7 +310,7 @@ A cost/heuristic function tells A\* how to path toward each blueprint. The heuri
 
 1. **Euclidean:** creates a fairly straight path to the target.
 	
-$$D(x, y) = \sqrt{((x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2)}$$
+$$D(x, y) = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}$$
 
 2. **Manhattan:** causes the path to stay parallel to the x, y, and z axes.
 	
@@ -318,6 +323,7 @@ $$D(x, y) = max( | x_2 - x_1 |, | y_2 - y_1 |, | z_2 - z_1 | )$$
 4. **Dijkstra:** guaranteed optimal path; cheapest route.
 	
 $$D(x, y) = 0$$
+
 ![Bowyer-Watson Algorithm in real time.](Docs/images/heuristic_showcase.gif)
 ## The Drunkard's Walk
 This was the first algorithm that gave birth to the Labyrinth. Simply put, a blueprint is placed randomly in one of six directions from a point in space. This continues until a pathway is generated with the desired number of rooms. Seems simple enough at first, but I ran into a problem: what if the point is already surrounded by other blueprints? Should the algorithm just stop generating and cut its losses?
@@ -359,6 +365,7 @@ As stated earlier, the Blueprint class contains an array called `EntryPointFlags
 - Index 3 — Back Face (0, 0, -1)
 - Index 4 — Top Face (0, 1, 0)
 - Index 5 — Bottom Face (0, -1, 0)
+
 ![Wall prefabs being stored in room script.](Docs/images/room_walls.png)
 #### Room Rotation
 Rooms can be made to rotate if suitable blueprints are found in different orientations. For instance, if two blueprints are found occupying a (1, 1, 2) space, we know a "Long" room can fit there, although how can we generate them when they are oriented (2, 1, 1) by default? Rotation handles this case by rotating not only the room prefab, but also the entry point array of each Blueprint associated with the room, so the entrances still correctly line up with adjacent rooms.
@@ -424,7 +431,6 @@ Each command is an object of type `ConsoleCommand`, tied to a unique ID and a de
 
 By decoupling commands from the registry, I ensured they could be created from anywhere in the project, reducing dependencies, mitigating subscription errors, and keeping the system adaptable to future updates.
 ```
-/// Class that holds the format and function of a command
 public class ConsoleCommand
 {
 	private string _commandId;
@@ -551,6 +557,7 @@ CommandRegistry.RegisterCommand(new ConsoleCommand(
 
 \[6] [(PRO) Enter the Gungeon](https://ondrejnepozitek.github.io/Edgar-Unity/docs/next/examples/enter-the-gungeon/)
 
+\[7] [Introduction to the Theory of Computation by Michael Sipser](https://math.mit.edu/~sipser/book.html)
 
 
 

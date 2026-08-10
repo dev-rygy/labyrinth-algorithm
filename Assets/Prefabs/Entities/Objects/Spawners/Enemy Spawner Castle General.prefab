@@ -16,7 +16,7 @@ PrefabInstance:
     - target: {fileID: 3366063573675213771, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
       propertyPath: _spawnEntries.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3366063573675213771, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
@@ -38,22 +38,33 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 3366063573675213771, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
+      propertyPath: _spawnEntries.Array.data[4].Object
+      value: 
+      objectReference: {fileID: 8898810741233896013, guid: ade5d5c5ec5af9e449640dd2691ef6b7,
+        type: 3}
+    - target: {fileID: 3366063573675213771, guid: 3816e80f7942f004c88906b668be565f,
+        type: 3}
       propertyPath: _spawnEntries.Array.data[0].Probability
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3366063573675213771, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
       propertyPath: _spawnEntries.Array.data[1].Probability
-      value: 35
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3366063573675213771, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
       propertyPath: _spawnEntries.Array.data[2].Probability
-      value: 35
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3366063573675213771, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
       propertyPath: _spawnEntries.Array.data[3].Probability
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366063573675213771, guid: 3816e80f7942f004c88906b668be565f,
+        type: 3}
+      propertyPath: _spawnEntries.Array.data[4].Probability
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7477701230790737276, guid: 3816e80f7942f004c88906b668be565f,
@@ -64,7 +75,7 @@ PrefabInstance:
     - target: {fileID: 8015100966450457934, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.9999999
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8015100966450457934, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
@@ -74,7 +85,7 @@ PrefabInstance:
     - target: {fileID: 8015100966450457934, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.0000007
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8015100966450457934, guid: 3816e80f7942f004c88906b668be565f,
         type: 3}

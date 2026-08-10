@@ -76,7 +76,7 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                _context.Malloc(OutputPorts[0], availableBlueprints);
+                _context.Set(OutputPorts[0], availableBlueprints);
                 return true;
             }
             Debug.LogError($"PlaceBoundedBlueprintsOp: {entry.Prefab.name} does not have a Room script!");

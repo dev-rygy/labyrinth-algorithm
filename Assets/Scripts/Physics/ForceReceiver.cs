@@ -20,7 +20,7 @@ public class ForceReceiver : MonoBehaviour
     [field: Header("Falling and Grounded")]
     [field: SerializeField] public float GravityMultiplier { get; private set; } = -9.81f;
     [field: SerializeField] public float StaticVerticalVelocity { get; private set; } = -2f;
-    [SerializeField] private float _terminalVelocity = -50f;       // Highest velocity the player can reach
+    [SerializeField] private float _terminalVelocity = 50f;       // Highest velocity the player can reach
     [field: SerializeField] public bool HasGravity { get; set; } = true;
 
     [field: Header("Grounded Check")]
@@ -72,7 +72,9 @@ public class ForceReceiver : MonoBehaviour
         else
         {
             if (VelocityY > -(_terminalVelocity))   // If terminal velocity has not been reached
+            {
                 VelocityY += GravityMultiplier * Time.deltaTime;        // Has gravity
+            }
             else
                 if (_log) Debug.Log("Terminal Velocity Reached");
         }

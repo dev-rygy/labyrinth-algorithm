@@ -102,6 +102,7 @@ namespace RyansLibrary.Console
                 catch (Exception e)     // Error executing command
                 {
                     Debug.LogError($"Error executing command '{commandName}': {e.Message}.");
+                    return false;
                 }
             }
             else    // Command keyword not recognized

@@ -29,8 +29,8 @@ namespace RyansLibrary.Labyrinth
 
         public override void LoadIntoMemory()       // Completely overridden to load 2 values, the RoomEntry and its bounds into memory.
         {
-            _context.Malloc(OutputPorts[0], _cache);
-            _context.Malloc(OutputPorts[1], _cache.Bounds);
+            _context.Set(OutputPorts[0], _cache);
+            _context.Set(OutputPorts[1], _cache.Bounds);
 
             if (_debugLogs) LogDataAllocation();
         }

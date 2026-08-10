@@ -770,6 +770,92 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2977152322084596032}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3025293413284752878
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5146687835316413785}
+    m_Modifications:
+    - target: {fileID: 6930887478014905376, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_Name
+      value: Enemy Spawner Mines General
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d3b684dfa5888d642a907a1379f5ba59, type: 3}
+--- !u!114 &46158043005706105 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2981378737620873879, guid: d3b684dfa5888d642a907a1379f5ba59,
+    type: 3}
+  m_PrefabInstance: {fileID: 3025293413284752878}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e42a3070d765134eb49bd361c9a1d7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &4696708359213134332 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+    type: 3}
+  m_PrefabInstance: {fileID: 3025293413284752878}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3339571970821599046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1229,6 +1315,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 804738612121881853, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
         type: 3}
+      propertyPath: RoomSpawners.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 804738612121881853, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
+        type: 3}
+      propertyPath: 'RoomSpawners.Array.data[1]'
+      value: 
+      objectReference: {fileID: 46158043005706105}
+    - target: {fileID: 804738612121881853, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
+        type: 3}
+      propertyPath: 'RoomSpawners.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8607899350996725440}
+    - target: {fileID: 804738612121881853, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
+        type: 3}
       propertyPath: <AvailableCellData>k__BackingField.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -1552,6 +1653,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 8774333642654278611}
+    - targetCorrespondingSourceObject: {fileID: 239906870691587893, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4696708359213134332}
+    - targetCorrespondingSourceObject: {fileID: 239906870691587893, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3961080777241378885}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 44a0a12cc0d08de46bce4404b5dc4d95, type: 3}
 --- !u!4 &300359122018239237 stripped
@@ -1575,6 +1684,12 @@ Transform:
 --- !u!4 &4695513912530156122 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 365132766131992630, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
+    type: 3}
+  m_PrefabInstance: {fileID: 4915933351965393516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5146687835316413785 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 239906870691587893, guid: 44a0a12cc0d08de46bce4404b5dc4d95,
     type: 3}
   m_PrefabInstance: {fileID: 4915933351965393516}
   m_PrefabAsset: {fileID: 0}
@@ -2502,6 +2617,92 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6568258509066465660}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6785406144483613783
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5146687835316413785}
+    m_Modifications:
+    - target: {fileID: 6930887478014905376, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_Name
+      value: Enemy Spawner Mines General (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d3b684dfa5888d642a907a1379f5ba59, type: 3}
+--- !u!4 &3961080777241378885 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7553116064916904978, guid: d3b684dfa5888d642a907a1379f5ba59,
+    type: 3}
+  m_PrefabInstance: {fileID: 6785406144483613783}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8607899350996725440 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2981378737620873879, guid: d3b684dfa5888d642a907a1379f5ba59,
+    type: 3}
+  m_PrefabInstance: {fileID: 6785406144483613783}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e42a3070d765134eb49bd361c9a1d7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6808213132183102133
 PrefabInstance:
   m_ObjectHideFlags: 0

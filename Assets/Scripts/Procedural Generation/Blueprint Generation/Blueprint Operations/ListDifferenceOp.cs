@@ -51,15 +51,15 @@ namespace RyansLibrary.Labyrinth
             if (listA is List<Edge> edgeListA && listB is List<Edge> edgeListB)
             {
                 List<Edge> resultEdgeList = TakeListDifference(edgeListA, edgeListB);
-                _context.Malloc(OutputPorts[0], resultEdgeList);
-                _context.Malloc(OutputPorts[1], resultEdgeList.Count);
+                _context.Set(OutputPorts[0], resultEdgeList);
+                _context.Set(OutputPorts[1], resultEdgeList.Count);
                 return true;
             }
             else if (listA is List<Blueprint> blueprintListA && listB is List<Blueprint> blueprintListB)
             {
                 List<Blueprint> resultBlueprintList = TakeListDifference(blueprintListA, blueprintListB);
-                _context.Malloc(OutputPorts[0], resultBlueprintList);
-                _context.Malloc(OutputPorts[1], resultBlueprintList.Count);
+                _context.Set(OutputPorts[0], resultBlueprintList);
+                _context.Set(OutputPorts[1], resultBlueprintList.Count);
                 return true;
             }
             else

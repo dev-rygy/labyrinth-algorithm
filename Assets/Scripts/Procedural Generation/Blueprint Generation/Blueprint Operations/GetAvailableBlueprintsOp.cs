@@ -45,7 +45,7 @@ namespace RyansLibrary.Labyrinth
 
             List<Blueprint> availableBlueprintList = GetAvailableBlueprints(list, availbility);
 
-            _context.Malloc(OutputPorts[0], availableBlueprintList);
+            _context.Set(OutputPorts[0], availableBlueprintList);
 
             return true;
         }

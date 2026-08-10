@@ -42,7 +42,7 @@ namespace RyansLibrary.Labyrinth
 
             List<Edge> mst = FindMinimumSpanningTree(edgeList);
 
-            _context.Malloc(OutputPorts[0], mst);
+            _context.Set(OutputPorts[0], mst);
             _context.InvokeNewMST(mst);
 
             return true;

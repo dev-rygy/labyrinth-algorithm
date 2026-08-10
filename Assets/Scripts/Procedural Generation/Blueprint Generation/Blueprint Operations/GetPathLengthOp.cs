@@ -31,7 +31,7 @@ public class GetPathLengthOp : BlueprintOperation
         if (!TryGetInput(0, out Path path))
             return false;
 
-        _context.Malloc(OutputPorts[0], path.BlueprintCount());
+        _context.Set(OutputPorts[0], path.BlueprintCount());
         return true;
     }
 }

@@ -50,7 +50,7 @@ namespace RyansLibrary.Labyrinth
 
         public virtual void LoadIntoMemory()
         {
-            _context.Malloc(OutputPorts[0], _cache);
+            _context.Set(OutputPorts[0], _cache);
         }
 
 
@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
         public void ModifyData(T newData)
         {
             _cache = newData;
-            _context.Malloc(OutputPorts[0], newData);
+            _context.Set(OutputPorts[0], newData);
         }
 
         protected void LogDataAllocation()

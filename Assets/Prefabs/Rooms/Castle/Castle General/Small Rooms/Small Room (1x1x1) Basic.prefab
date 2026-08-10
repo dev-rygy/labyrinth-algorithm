@@ -8,6 +8,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8911892519985252531}
     m_Modifications:
+    - target: {fileID: 2403285195473597909, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: _debugGizmos
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -628,6 +633,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
+      propertyPath: _debug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
       propertyPath: RoomSpawners.Array.size
       value: 3
       objectReference: {fileID: 0}
@@ -1032,6 +1042,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8911892519985252531}
     m_Modifications:
+    - target: {fileID: 2403285195473597909, guid: 66a902233db69144581740ae05238d84,
+        type: 3}
+      propertyPath: _debugGizmos
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6978288068013382480, guid: 66a902233db69144581740ae05238d84,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -532,6 +532,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Small Room (1x1x1) Basic 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8787882271361939710, guid: a94b0fb41af01ad40a2cbf5ff585eba8,
+        type: 3}
+      propertyPath: _spawnEntries.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787882271361939710, guid: a94b0fb41af01ad40a2cbf5ff585eba8,
+        type: 3}
+      propertyPath: _spawnEntries.Array.data[3].Object
+      value: 
+      objectReference: {fileID: 8898810741233896013, guid: ade5d5c5ec5af9e449640dd2691ef6b7,
+        type: 3}
+    - target: {fileID: 8787882271361939710, guid: a94b0fb41af01ad40a2cbf5ff585eba8,
+        type: 3}
+      propertyPath: _spawnEntries.Array.data[3].Probability
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
