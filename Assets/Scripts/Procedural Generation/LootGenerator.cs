@@ -5,6 +5,7 @@
  * Notes:           Loot Generator
  *                      Procedure starts after the Map Generation Procedure.
 */
+using RyansLibrary.Console;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,12 +29,14 @@ namespace RyansLibrary.Labyrinth
         {
             // Subscribe to "Done" event in map generator and spawn loot after
             MapGeneratorController.OnGenerationDone += SpawnLoot;
+            RegisterConsoleCommands();
         }
 
         private void OnDisable()
         {
             // Unsubscribe to "Done" event in map generator and spawn loot after
             MapGeneratorController.OnGenerationDone -= SpawnLoot;
+            UnregisterConsoleCommands();
         }
 
         private void SpawnLoot()
@@ -69,6 +72,41 @@ namespace RyansLibrary.Labyrinth
             }
 
             if (_debug) Debug.Log("Loot Spawn Procedure has ended.");
+        }
+
+        private void RegisterConsoleCommands()
+        {
+            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "lootgenerator.spawn",
+                "Toggles loot spawning. Enter 'true' for on and 'false' for off.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("No argument given, please enter 'true' or 'false'.");
+                        return;
+                    }
+
+                    if (args[0] == "true")
+                    {
+                        _enabled = true;
+                    }
+                    else if (args[0] == "false")
+                    {
+                        _enabled = false;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid argument {args[0]}. Please input either 'true' or 'false'.");
+                    }
+                    Debug.Log($"Loot Spawning set to {_enabled}.");
+                }
+                ));
+        }
+
+        private void UnregisterConsoleCommands()
+        {
+            ConsoleUI.CommandRegistry.UnregisterCommand("lootgenerator.spawn");
         }
     }
 }
