@@ -1,7 +1,7 @@
 ![Demo of map generation.](Docs/images/titlescreen_thin.png)
 ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue)
 
-Try the demo out [here](https://madcolors-entertainment.itch.io/labyrinth-demo)!
+Try the demo out [here](https://dev-rygy.itch.io/labyrinth-procedural-generator)!
 ## Overview
 Highly adaptable procedural dungeon generation algorithm built in Unity/C# with the purpose of creating seamlessly connected, thematically distinct 3D areas without loading screens.
 
