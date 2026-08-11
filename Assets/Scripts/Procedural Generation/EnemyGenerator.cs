@@ -13,14 +13,24 @@ namespace RyansLibrary.Labyrinth
 {
     public class EnemyGenerator : MonoBehaviour
     {
-        [SerializeField] private bool _enabled = true;
+        public static EnemyGenerator Instance { get; private set; }
 
+        [SerializeField] private bool _isEnabled;
+        public bool IsEnabled => _isEnabled;
 
         [Header("Debug")]
         [SerializeField] private bool _debug;
 
         private void OnEnable()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
+            Instance = this;
+
             // Subscribe to "Done" event in map generator and spawn enemies after
             MapGeneratorController.OnGenerationDone += SpawnEnemies;
             RegisterConsoleCommands();
@@ -36,7 +46,7 @@ namespace RyansLibrary.Labyrinth
         private void SpawnEnemies()
         {
             // Return if the Enemy Generator is not enabled
-            if (!_enabled)
+            if (!_isEnabled)
                 return;
 
             List<Zone> zones = MapGeneratorController.Instance.Zones;
@@ -94,17 +104,17 @@ namespace RyansLibrary.Labyrinth
 
                     if (args[0] == "true")
                     {
-                        _enabled = true;
+                        _isEnabled = true;
                     }
                     else if (args[0] == "false")
                     {
-                        _enabled = false;
+                        _isEnabled = false;
                     }
                     else
                     {
                         Debug.LogWarning($"Invalid argument {args[0]}. Please input either 'true' or 'false'.");
                     }
-                    Debug.Log($"Enemy Spawning set to {_enabled}.");
+                    Debug.Log($"Enemy Spawning set to {_isEnabled}.");
                 }
                 ));
         }
@@ -112,6 +122,12 @@ namespace RyansLibrary.Labyrinth
         private void UnregisterConsoleCommands()
         {
             ConsoleUI.CommandRegistry.UnregisterCommand("enemygenerator.spawn");
+        }
+
+        public void ToggleSpawn(bool toggle)
+        {
+            _isEnabled = toggle;
+            Debug.Log($"Enemy spawn is {toggle}.");
         }
     }
 }

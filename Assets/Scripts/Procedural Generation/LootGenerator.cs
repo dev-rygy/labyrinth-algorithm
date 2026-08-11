@@ -6,7 +6,6 @@
  *                      Procedure starts after the Map Generation Procedure.
 */
 using RyansLibrary.Console;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,13 +19,24 @@ namespace RyansLibrary.Labyrinth
     /// </summary>
     public class LootGenerator : MonoBehaviour
     {
-        [SerializeField] private bool _enabled = true;
+        public static LootGenerator Instance { get; private set; }
+
+        [SerializeField] private bool _isEnabled;
+        public bool IsEnabled => _isEnabled;
 
         [Header("Debug")]
         [SerializeField] private bool _debug;
 
         private void OnEnable()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
+            Instance = this;
+
             // Subscribe to "Done" event in map generator and spawn loot after
             MapGeneratorController.OnGenerationDone += SpawnLoot;
             RegisterConsoleCommands();
@@ -42,7 +52,7 @@ namespace RyansLibrary.Labyrinth
         private void SpawnLoot()
         {
             // Return if the Loot Generator is not enabled
-            if (!_enabled)
+            if (!_isEnabled)
                 return;
 
             List<Zone> zones = MapGeneratorController.Instance.Zones;
@@ -89,17 +99,17 @@ namespace RyansLibrary.Labyrinth
 
                     if (args[0] == "true")
                     {
-                        _enabled = true;
+                        _isEnabled = true;
                     }
                     else if (args[0] == "false")
                     {
-                        _enabled = false;
+                        _isEnabled = false;
                     }
                     else
                     {
                         Debug.LogWarning($"Invalid argument {args[0]}. Please input either 'true' or 'false'.");
                     }
-                    Debug.Log($"Loot Spawning set to {_enabled}.");
+                    Debug.Log($"Loot Spawning set to {_isEnabled}.");
                 }
                 ));
         }
@@ -107,6 +117,11 @@ namespace RyansLibrary.Labyrinth
         private void UnregisterConsoleCommands()
         {
             ConsoleUI.CommandRegistry.UnregisterCommand("lootgenerator.spawn");
+        }
+
+        public void ToggleSpawn(bool toggle)
+        {
+            _isEnabled = toggle;
         }
     }
 }

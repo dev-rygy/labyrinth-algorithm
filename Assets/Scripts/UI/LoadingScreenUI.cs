@@ -14,6 +14,8 @@ public class LoadingScreenUI : MonoBehaviour
         Done
     }
 
+    public static LoadingScreenUI Instance;
+
     [SerializeField] private GameObject _contentObject;
     [SerializeField] private Slider _loadingSlider;
     [SerializeField] private TMP_Text _loadingText;
@@ -24,6 +26,14 @@ public class LoadingScreenUI : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
         if (_loadingSlider is null)
         {
             Debug.LogError("Loading slider is not assigned");
@@ -68,7 +78,7 @@ public class LoadingScreenUI : MonoBehaviour
     {
         // Unsubscribe to Main Toggle Events
         MapGeneratorController.OnOperationsGetTotal -= GetOperationCount;
-        MapGeneratorController.OnGenerationStarted += InitLoadingSequence;
+        MapGeneratorController.OnGenerationStarted -= InitLoadingSequence;
         MapGeneratorController.OnGenerationDone -= EndLoadingSequence;
 
         // Unsubscribe to Loading Bar Events
