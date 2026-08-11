@@ -5,6 +5,7 @@
  * Notes:           
 */
 using RyansLibrary.Console;
+using RyansLibrary.Input;
 using UnityEngine;
 
 public enum CameraMode
@@ -92,6 +93,7 @@ public class CameraController : MonoBehaviour
             playerCamera.gameObject.SetActive(true);
         }
 
+        InputHandler.Instance.SetActionMap(InputMap.Player);
         currentCameraMode = CameraMode.Player;
         currentCamera = playerCamera.gameObject;
         isFreeCameraEnabled = false;
@@ -109,6 +111,7 @@ public class CameraController : MonoBehaviour
 
         // Set the free camera's position and rotation to match the current camera
         freeCameraObject.GetComponent<FreeCamera>().SetCameraTransform(currentCamera.transform);
+        InputHandler.Instance.SetActionMap(InputMap.FreeCam);
 
         currentCameraMode = CameraMode.Free;
         currentCamera = freeCameraObject;
@@ -134,7 +137,7 @@ public class CameraController : MonoBehaviour
     {
         ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
             "camera.mode",
-            "Toggles A Camera Mode",
+            "Toggles the camera's mode 'player', 'free', or 'main'",
             args =>
             {
                 if (args.Length != 1)

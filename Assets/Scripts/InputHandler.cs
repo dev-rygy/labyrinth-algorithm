@@ -237,7 +237,7 @@ namespace RyansLibrary.Input
         }
 
         #region Player Controls
-        public void SwitchActionMap(InputMap map)
+        public void SetActionMap(InputMap map)
         {
             _prevActionMap = _activeActionMap;
 
@@ -448,15 +448,15 @@ namespace RyansLibrary.Input
                         }
                         else if (args[0] == "player")
                         {
-                            SwitchActionMap(InputMap.Player);
+                            SetActionMap(InputMap.Player);
                         }
                         else if (args[0] == "freecam")
                         {
-                            SwitchActionMap(InputMap.FreeCam);
+                            SetActionMap(InputMap.FreeCam);
                         }
                         else if (args[0] == "console")
                         {
-                            SwitchActionMap(InputMap.Console);
+                            SetActionMap(InputMap.Console);
                         }
                         else
                         {
