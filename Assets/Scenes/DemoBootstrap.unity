@@ -1968,7 +1968,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: v1.0.0
+  m_text: v0.1.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c7cb0344b7aca8a4a94c529343d9a03f, type: 2}
   m_sharedMaterial: {fileID: -7060988978406862503, guid: c7cb0344b7aca8a4a94c529343d9a03f,
@@ -2294,27 +2294,27 @@ PrefabInstance:
     - target: {fileID: 5442115743234209061, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5442115743234209061, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5442115743234209061, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 640
       objectReference: {fileID: 0}
     - target: {fileID: 5442115743234209061, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -170
       objectReference: {fileID: 0}
     - target: {fileID: 5857282723738764633, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
       propertyPath: m_Spacing
-      value: 22.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7220604582963871182, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
@@ -2354,6 +2354,11 @@ PrefabInstance:
     - target: {fileID: 8507619863020583825, guid: 16039ec99c825dd4081ffaa7b00b9747,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8794647474553663633, guid: 16039ec99c825dd4081ffaa7b00b9747,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8948793589468174642, guid: 16039ec99c825dd4081ffaa7b00b9747,
