@@ -46,9 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 6288163642289274413, guid: 3a55df7c24309c74798865a78e36de5f,
     type: 3}
-  playerSpawnPoint: {x: 65, y: 0, z: 0}
+  playerSpawnPoint: {x: 65, y: 0, z: -78}
   _cameraController: {fileID: 0}
-  _setCameraToPlayerOnGameStart: 1
+  _startCameraMode: 1
   _hideCursorOnGameStart: 0
   _cursorLockMode: 0
-  _clearConsoleOnGameStart: 1
+  _clearConsoleOnGameStart: 0

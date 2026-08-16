@@ -1,19 +1,11 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    09/19/2025
- * Last Modified:   07/09/2025 (Ryan)
+ * Last Modified:   08/14/2025 (Ryan)
  * Notes:           Custom Menu used for demo
-*/
-/*
- * Created By:      Ryan Carpenter
- * Date Created:    11/23/2025
- * Last Modified:   8/10/2026 (Ryan)
- * Notes:           Holds all the paths in an zone and the 
- *                      bounds that they may spawn rooms in
 */
 
 using RyansLibrary.Labyrinth;
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -68,7 +60,6 @@ public class DemoMenuUI : MonoBehaviour
             _enemyGenerator.ToggleSpawn(isOn);
         }
     }
-
 
     public void StartNewGame()
     {

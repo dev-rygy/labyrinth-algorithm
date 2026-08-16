@@ -21,6 +21,8 @@ namespace RyansLibrary.Labyrinth
         [Header("Debug")]
         [SerializeField] private bool _debug;
 
+        private bool _firstRun = true;
+
         private void OnEnable()
         {
             if (Instance != null)
@@ -28,11 +30,20 @@ namespace RyansLibrary.Labyrinth
                 Destroy(gameObject);
                 return;
             }
-            
+
             Instance = this;
 
             // Subscribe to "Done" event in map generator and spawn enemies after
             MapGeneratorController.OnGenerationDone += SpawnEnemies;
+
+            // Do not register console commands on the first run to avoid duplicate registration
+            // and null reference errors when the console is not yet initialized.
+            if (_firstRun)
+            {
+                _firstRun = false;
+                return;
+            }
+
             RegisterConsoleCommands();
         }
 
@@ -41,6 +52,11 @@ namespace RyansLibrary.Labyrinth
             // Unsubscribe to "Done" event in map generator and spawn enemies after
             MapGeneratorController.OnGenerationDone -= SpawnEnemies;
             UnregisterConsoleCommands();
+        }
+
+        private void Start()
+        {
+            RegisterConsoleCommands();
         }
 
         private void SpawnEnemies()
@@ -127,7 +143,6 @@ namespace RyansLibrary.Labyrinth
         public void ToggleSpawn(bool toggle)
         {
             _isEnabled = toggle;
-            Debug.Log($"Enemy spawn is {toggle}.");
         }
     }
 }

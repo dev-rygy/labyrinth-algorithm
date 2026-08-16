@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4059851664085704924}
   - component: {fileID: 3025117295075328031}
+  - component: {fileID: 6774605234943897639}
   m_Layer: 0
   m_Name: Environment Controller
   m_TagString: Untagged
@@ -45,4 +46,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enableFogOnGameStart: 1
-  _ambientIntensityOnGameStart: 30
+  _ambientIntensityOnGameStart: 70
+--- !u!114 &6774605234943897639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4337104930559581194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 726b515f5171395408b308724aec5d1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RyansLibrary.Scripts::DontDestroyOnLoad

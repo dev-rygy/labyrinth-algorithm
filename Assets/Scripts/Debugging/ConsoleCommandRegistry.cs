@@ -44,7 +44,7 @@ namespace RyansLibrary.Console
         private Dictionary<string, ConsoleCommand> _commands = new();
         private bool _devCommandsVisible = false;
 
-        public bool DevCommandsVisable { get { return _devCommandsVisible; }  }
+        public bool DevCommandsVisable { get { return _devCommandsVisible; } }
 
         /// <summary>
         /// Add a command to the registry; command list
@@ -66,7 +66,7 @@ namespace RyansLibrary.Console
         {
             if (!_commands.ContainsKey(commandId.ToLower()))     // Prevent unregistering a command that doesn't exist
             {
-                Debug.LogWarning($"Command '{commandId}' is not registered.");
+                // Debug.LogWarning($"Command '{commandId}' is not registered.");
                 return;
             }
             // Remove command from registry
@@ -84,14 +84,14 @@ namespace RyansLibrary.Console
             // Split the string into individual parts
             var splitString = input.Split(' ');
 
-            if (splitString.Length == 0) 
+            if (splitString.Length == 0)
                 return false;
 
             string commandName = splitString[0].ToLower();      // First part of string is command keyword
             string[] args = splitString.Length > 1 ? splitString[1..] : Array.Empty<string>();      // All rest are arguments
 
             // Search command registry for command with the name specified
-            if (_commands.TryGetValue(commandName, out var command) 
+            if (_commands.TryGetValue(commandName, out var command)
                 && (_devCommandsVisible || !command.IsDevCommand))
             {
                 try         // Attempt to execute the command

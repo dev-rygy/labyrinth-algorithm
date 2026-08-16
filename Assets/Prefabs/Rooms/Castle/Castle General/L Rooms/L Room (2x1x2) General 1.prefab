@@ -6735,6 +6735,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 130684901221044123, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 130684901221044123, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 737427863448208156, guid: 65abc9bb463d6f14e88181798fe4fc9d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6785,6 +6795,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1502269331508133289, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2006564606746537277, guid: 65abc9bb463d6f14e88181798fe4fc9d,
         type: 3}
       propertyPath: m_IsActive
@@ -6804,6 +6819,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4662605281910873700, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4736383939086776203, guid: 65abc9bb463d6f14e88181798fe4fc9d,
         type: 3}
@@ -6830,6 +6850,11 @@ PrefabInstance:
       propertyPath: 'RoomSpawners.Array.data[3]'
       value: 
       objectReference: {fileID: 8359524610577478068}
+    - target: {fileID: 5870436175426076996, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5893889720832608617, guid: 65abc9bb463d6f14e88181798fe4fc9d,
         type: 3}
       propertyPath: m_IsActive
@@ -6875,10 +6900,25 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8821667616821906118, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821667616821906118, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9181335245767281394, guid: 65abc9bb463d6f14e88181798fe4fc9d,
         type: 3}
       propertyPath: m_LocalPosition.x
       value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9181335245767281394, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

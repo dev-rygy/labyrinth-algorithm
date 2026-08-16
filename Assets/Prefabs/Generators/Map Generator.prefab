@@ -48,13 +48,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlueprintGeneratorPipeline
   _enabled: 1
-  _customSeed: 0
-  generateRandomSeed: 1
+  _customSeed: -1239633932
+  _generateRandomSeed: 1
   _seed: 0
   _gridUnitSize: 13
   _roomContainer: {fileID: 4677348782100350861}
   _maxPlacementAttempts: 50
   _zones:
+  - {fileID: 11400000, guid: e3b0b60dc63ba6249a929d8916095167, type: 2}
   - {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c, type: 2}
   - {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691, type: 2}
   _zoneConnections:
@@ -65,14 +66,29 @@ MonoBehaviour:
     <ConnectionZone>k__BackingField: {fileID: 11400000, guid: 35e14e6a4236ba14b9a4a20c54539d10,
       type: 2}
     <ZoneSpawnBounds>k__BackingField:
-      m_Position: {x: 0, y: -4, z: 0}
-      m_Size: {x: 4, y: 5, z: 12}
-  _boundingBoxColor: {r: 1, g: 0.3137255, b: 0, a: 0.8}
-  _triangulationColor: {r: 1, g: 0.10980392, b: 0.32156864, a: 0.8}
-  _contiguousGraphColor: {r: 0, g: 0.9411765, b: 1, a: 0.8}
-  _randomCyclesColor: {r: 0.70980394, g: 0.28627452, b: 1, a: 0.8}
-  _currentEdgeColor: {r: 1, g: 0.9529412, b: 0, a: 0.8}
-  <DebugSequential>k__BackingField: 0
+      m_Position: {x: 0, y: -4, z: 1}
+      m_Size: {x: 12, y: 5, z: 9}
+  - <ZoneA>k__BackingField: {fileID: 11400000, guid: e3b0b60dc63ba6249a929d8916095167,
+      type: 2}
+    <ZoneB>k__BackingField: {fileID: 11400000, guid: 05dce8df831a7404a88a4620e53b489c,
+      type: 2}
+    <ConnectionZone>k__BackingField: {fileID: 11400000, guid: 7a2e63a93ad28c842b27affbfdf728df,
+      type: 2}
+    <ZoneSpawnBounds>k__BackingField:
+      m_Position: {x: 3, y: 0, z: -2}
+      m_Size: {x: 6, y: 1, z: 3}
+  - <ZoneA>k__BackingField: {fileID: 11400000, guid: e3b0b60dc63ba6249a929d8916095167,
+      type: 2}
+    <ZoneB>k__BackingField: {fileID: 11400000, guid: 28dc2470af1551e41864d7e9fed18691,
+      type: 2}
+    <ConnectionZone>k__BackingField: {fileID: 11400000, guid: 2452b6914fdb826468e1e0f1d4370eaf,
+      type: 2}
+    <ZoneSpawnBounds>k__BackingField:
+      m_Position: {x: 2, y: -4, z: -5}
+      m_Size: {x: 8, y: 5, z: 3}
+  _debugLogs: 0
+  _debugBlueprintLogs: 0
+  _debugRoomGeneratorLogs: 0
 --- !u!114 &402649731811173750
 MonoBehaviour:
   m_ObjectHideFlags: 0
