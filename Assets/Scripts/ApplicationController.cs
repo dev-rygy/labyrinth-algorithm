@@ -18,7 +18,8 @@ public class ApplicationController : MonoBehaviour
     const string MAIN_SCENE_NAME = "Main";
 
     public static event Action OnMenu;
-    public static ApplicationController Instance { get; private set; }
+    private static ApplicationController _instance;
+    public static ApplicationController Instance => _instance;
 
     [Header("Player")]
     [SerializeField] private GameObject playerPrefab;
@@ -44,7 +45,7 @@ public class ApplicationController : MonoBehaviour
             return;
         }
 
-        Instance = this;
+        _instance = this;
 
         gameObject.transform.parent = null;     // Parent must be cleared to be DNDOL
         DontDestroyOnLoad(gameObject);  // Have this gameObject persist

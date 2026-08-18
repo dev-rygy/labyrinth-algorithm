@@ -29,7 +29,8 @@ namespace RyansLibrary.AI
     {
         private class Node
         {
-            public Vector3Int Position { get; private set; }
+            private Vector3Int _position;
+            public Vector3Int Position => _position;
             public Node Parent { get; set; }
 
             // Node Scores
@@ -41,7 +42,7 @@ namespace RyansLibrary.AI
 
             public Node(Vector3Int position)
             {
-                Position = position;
+                _position = position;
                 Traversable = true;     // Default Traversable to true
             }
         }

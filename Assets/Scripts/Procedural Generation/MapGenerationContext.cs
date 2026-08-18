@@ -37,14 +37,18 @@ namespace RyansLibrary.Labyrinth
         private Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
         public Dictionary<Vector3Int, Blueprint> BlueprintDictionary => _blueprintDictionary;
 
-        public int OperationIDCounter { get; private set; } = 10000;
-        public int MemoryIDCounter { get; private set; } = 20000;
+        private int _operationIDCounter = 10000;
+        public int OperationIDCounter => _operationIDCounter;
+        private int _memoryIDCounter = 20000;
+        public int MemoryIDCounter => _memoryIDCounter;
 
         // Stores blueprint operations to be executed later
-        public LinkedList<BlueprintOperation> OperationQueue { get; private set; }
+        private LinkedList<BlueprintOperation> _operationQueue;
+        public LinkedList<BlueprintOperation> OperationQueue => _operationQueue;
 
         // UNIMPLEMENTED: Later this can be used for backtracking or undoing operations
-        public Stack<BlueprintOperation> OperationHistory { get; private set; }
+        private Stack<BlueprintOperation> _operationHistory;
+        public Stack<BlueprintOperation> OperationHistory => _operationHistory;
 
         // Debugging Lists - These lists are intended to store intermediate results for debugging and visualization purposes
 
@@ -60,8 +64,8 @@ namespace RyansLibrary.Labyrinth
             _blueprintDictionary = new();
 
             // Initialize operations
-            OperationQueue = new();
-            OperationHistory = new();
+            _operationQueue = new();
+            _operationHistory = new();
         }
 
         /// <summary>
@@ -342,7 +346,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>The current operation identifier before incrementing. Each call returns a unique integer value.</returns>
         public int ConsumeOperationID()
         {
-            return OperationIDCounter++;
+            return _operationIDCounter++;
         }
 
         /// <summary>
@@ -353,7 +357,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns>The next integer value representing a unique memory identifier.</returns>
         public int ConsumeMemoryID()
         {
-            return MemoryIDCounter++;
+            return _memoryIDCounter++;
         }
 
         /// <summary>

@@ -38,7 +38,8 @@ namespace RyansLibrary.Abilities
         [SerializeField] public Sprite abilityIcon;
         [SerializeField] public float cooldown;
 
-        public bool OnCooldown { get; private set; } = false;
+        private bool _onCooldown = false;
+        public bool OnCooldown => _onCooldown;
 
         private Coroutine coroutine;
 
@@ -66,14 +67,14 @@ namespace RyansLibrary.Abilities
         /// </summary>
         public void ResetCooldown()
         {
-            OnCooldown = false;
+            _onCooldown = false;
             if (coroutine != null)
                 stateMachine.StopCoroutine(coroutine);
         }
 
         private IEnumerator CooldownCo()
         {
-            OnCooldown = true;
+            _onCooldown = true;
             float timeLeft = cooldown;
 
             while (timeLeft > 0)
@@ -87,7 +88,7 @@ namespace RyansLibrary.Abilities
 
             OnAbilityCooldown?.Invoke(0, cooldown);       // Invoke one last time at 0 to ensure 0 was reached
 
-            OnCooldown = false;
+            _onCooldown = false;
         }
     }
 }

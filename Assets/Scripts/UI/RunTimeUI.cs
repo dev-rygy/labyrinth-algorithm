@@ -21,7 +21,7 @@ public class RunTimeUI : MonoBehaviour
         _mapGeneratorInstance = MapGeneratorController.Instance;
         _applicationControllerInstance = ApplicationController.Instance;
 
-        if (_mapGeneratorInstance.DebugSequential)
+        if (_mapGeneratorInstance.IsDebuggingSequential)
         {
             ShowDebuggingOptions();
         }
@@ -84,7 +84,7 @@ public class RunTimeUI : MonoBehaviour
         _seedContentObject.SetActive(true);
         _interactionContentObject.SetActive(true);
 
-        if (_mapGeneratorInstance.IsGenerating && _mapGeneratorInstance.DebugSequential)
+        if (_mapGeneratorInstance.IsGenerating && _mapGeneratorInstance.IsDebuggingSequential)
         {
             ShowDebuggingOptions();
         }
@@ -115,7 +115,7 @@ public class RunTimeUI : MonoBehaviour
     {
         if (_mapGeneratorInstance.IsGenerating)
         {
-            if (_mapGeneratorInstance.DebugSequential)
+            if (_mapGeneratorInstance.IsDebuggingSequential)
                 _helpText.text = _debuggingTextDescription;
             else
                 _helpText.text = string.Empty;

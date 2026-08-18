@@ -17,13 +17,14 @@ namespace RyansLibrary.Graphs
     /// </summary>
     public class Vertex : IEquatable<Vertex>
     {
-        public Vector3 Position { get; private set; }
+        private Vector3 _position;
+        public Vector3 Position => _position;
 
         public Vertex() { }
 
         public Vertex(Vector3 position)
         {
-            Position = position;
+            _position = position;
         }
 
         // If vertices are almost on top of each other
@@ -59,16 +60,17 @@ namespace RyansLibrary.Graphs
     /// <typeparam name="T">Data to store in vertex</typeparam>
     public class Vertex<T> : Vertex
     {
-        public T Data { get; private set; }
+        private T _data;
+        public T Data => _data;
 
         public Vertex(T data)
         {
-            Data = data;
+            _data = data;
         }
 
         public Vertex(Vector3 position, T data) : base(position)
         {
-            Data = data;
+            _data = data;
         }
     }
 
@@ -77,7 +79,8 @@ namespace RyansLibrary.Graphs
     /// </summary>
     public class Edge : IEquatable<Edge>
     {
-        public float Distance { get; private set; }     // Distance represents an edges weight
+        private float _distance;
+        public float Distance => _distance;     // Distance represents an edges weight
 
         public Vertex U { get; set; }
         public Vertex V { get; set; }
@@ -88,7 +91,7 @@ namespace RyansLibrary.Graphs
         {
             U = u;
             V = v;
-            Distance = Vector3.Distance(u.Position, v.Position);
+            _distance = Vector3.Distance(u.Position, v.Position);
         }
 
         // Edges are equal if they are right on top of each other

@@ -14,7 +14,8 @@ namespace RyansLibrary.Debugging
 {
     public class Console
     {
-        public static ConsoleCommandRegistry CommandRegistry { get; private set; }        // Console Command Registry
+        private static ConsoleCommandRegistry _commandRegistry;        // Console Command Registry
+        public static ConsoleCommandRegistry CommandRegistry => _commandRegistry;
 
         public event Action<string> OnConsoleOutput;        // Event for console output
 
@@ -46,7 +47,7 @@ namespace RyansLibrary.Debugging
 
         public Console(int inputMemoryCapacity = 10, int maxSuggestions = 5, bool enableDevCommands = false)
         {
-            CommandRegistry = new ConsoleCommandRegistry();          // Init. registry
+            _commandRegistry = new ConsoleCommandRegistry();          // Init. registry
             _inputMemory = new string[_inputMemoryCapacity];        // Init. command memory
             _maxSuggestions = maxSuggestions;
 
@@ -61,7 +62,7 @@ namespace RyansLibrary.Debugging
         ~Console()
         {
             Application.logMessageReceived -= CreateLogOutput;
-            CommandRegistry = null;
+            _commandRegistry = null;
         }
 
         public void AddInputToMemory(string input)

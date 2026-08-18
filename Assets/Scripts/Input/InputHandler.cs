@@ -18,7 +18,8 @@ namespace RyansLibrary.Input
 {
     public class InputHandler : MonoBehaviour
     {
-        public static InputHandler Instance { get; private set; }
+        private static InputHandler _instance;
+        public static InputHandler Instance => _instance;
 
         // Player Input Events
         public static event System.Action OnAny;
@@ -58,19 +59,28 @@ namespace RyansLibrary.Input
         [SerializeField] private bool _debug = false;
 
         // The player's Unnormalized Input
-        public Vector2 MovementInput { get; private set; }
+        private Vector2 _movementInput;
+        public Vector2 MovementInput => _movementInput;
         // The player's Normalized Input
-        public Vector2 MoveDirectionNormalized { get; private set; }
+        private Vector2 _moveDirectionNormalized;
+        public Vector2 MoveDirectionNormalized => _moveDirectionNormalized;
         // public Vector2 LookInput { get; private set; }   DEPRICATED
         // public bool JumpKeyPressed { get; private set; } DEPRICATED
-        public bool IsHoldingPrimaryCombo { get; private set; }
-        public bool IsHoldingSecondaryCombo { get; private set; }
-        public bool IsHoldingPrimaryPower { get; private set; }
-        public bool IsHoldingSecondaryPower { get; private set; }
+        private bool _isHoldingPrimaryCombo;
+        public bool IsHoldingPrimaryCombo => _isHoldingPrimaryCombo;
+        private bool _isHoldingSecondaryCombo;
+        public bool IsHoldingSecondaryCombo => _isHoldingSecondaryCombo;
+        private bool _isHoldingPrimaryPower;
+        public bool IsHoldingPrimaryPower => _isHoldingPrimaryPower;
+        private bool _isHoldingSecondaryPower;
+        public bool IsHoldingSecondaryPower => _isHoldingSecondaryPower;
 
-        public Vector2 FreeCamMoveInput { get; private set; }
-        public Vector2 FreeCamMoveInputNormalized { get; private set; }
-        public Vector2 FreeCamLookInput { get; private set; }
+        private Vector2 _freeCamMoveInput;
+        public Vector2 FreeCamMoveInput => _freeCamMoveInput;
+        private Vector2 _freeCamMoveInputNormalized;
+        public Vector2 FreeCamMoveInputNormalized => _freeCamMoveInputNormalized;
+        private Vector2 _freeCamLookInput;
+        public Vector2 FreeCamLookInput => _freeCamLookInput;
         private PlayerControls _playerControls;
 
         private InputActionMap _playerInputActionMap;
@@ -90,7 +100,7 @@ namespace RyansLibrary.Input
                 return;
             }
 
-            Instance = this;
+            _instance = this;
 
             // Initialize
             if (_playerControls == null)
@@ -338,9 +348,9 @@ namespace RyansLibrary.Input
         private void OnMovementInput(InputAction.CallbackContext context)
         {
             // Read value from input and set the movementInput Vector to it
-            MovementInput = context.ReadValue<Vector2>();       // This is an unnormalized Input
+            _movementInput = context.ReadValue<Vector2>();       // This is an unnormalized Input
             if (context.performed)
-                MoveDirectionNormalized = (context.ReadValue<Vector2>()).normalized;
+                _moveDirectionNormalized = (context.ReadValue<Vector2>()).normalized;
 
             OnMove?.Invoke();
 
@@ -351,9 +361,9 @@ namespace RyansLibrary.Input
         private void OnFreeCamMovementInput(InputAction.CallbackContext context)
         {
             // Read value from input and set the movementInput Vector to it
-            FreeCamMoveInput = context.ReadValue<Vector2>();       // This is an unnormalized Input
+            _freeCamMoveInput = context.ReadValue<Vector2>();       // This is an unnormalized Input
             if (context.performed)
-                FreeCamMoveInputNormalized = (context.ReadValue<Vector2>()).normalized;
+                _freeCamMoveInputNormalized = (context.ReadValue<Vector2>()).normalized;
 
             OnFreeCamMove?.Invoke();
 
@@ -364,7 +374,7 @@ namespace RyansLibrary.Input
         private void OnFreeCamLookInput(InputAction.CallbackContext context)
         {
             // Read value from input and set the movementInput Vector to it
-            FreeCamLookInput = context.ReadValue<Vector2>();
+            _freeCamLookInput = context.ReadValue<Vector2>();
             OnFreeCamLook?.Invoke();
 
             if (_debug) Debug.Log("The Free Cam Look Input read was = " + FreeCamLookInput);
@@ -375,10 +385,10 @@ namespace RyansLibrary.Input
             if (context.performed)
             {
                 OnComboPrimary?.Invoke();
-                IsHoldingPrimaryCombo = true;
+                _isHoldingPrimaryCombo = true;
             }
             if (context.canceled)
-                IsHoldingPrimaryCombo = false;
+                _isHoldingPrimaryCombo = false;
         }
 
         private void OnSecondaryComboInput(InputAction.CallbackContext context)
@@ -386,10 +396,10 @@ namespace RyansLibrary.Input
             if (context.performed)
             {
                 OnComboSecondary?.Invoke();
-                IsHoldingSecondaryCombo = true;
+                _isHoldingSecondaryCombo = true;
             }
             if (context.canceled)
-                IsHoldingSecondaryCombo = false;
+                _isHoldingSecondaryCombo = false;
         }
 
         private void OnPrimaryPowerInput(InputAction.CallbackContext context)
@@ -397,10 +407,10 @@ namespace RyansLibrary.Input
             if (context.performed)
             {
                 OnPowerPrimary?.Invoke();
-                IsHoldingPrimaryPower = true;
+                _isHoldingPrimaryPower = true;
             }
             if (context.canceled)
-                IsHoldingPrimaryPower = false;
+                _isHoldingPrimaryPower = false;
         }
 
         private void OnSecondaryPowerInput(InputAction.CallbackContext context)
@@ -408,10 +418,10 @@ namespace RyansLibrary.Input
             if (context.performed)
             {
                 OnPowerSecondary?.Invoke();
-                IsHoldingSecondaryPower = true;
+                _isHoldingSecondaryPower = true;
             }
             if (context.canceled)
-                IsHoldingSecondaryPower = false;
+                _isHoldingSecondaryPower = false;
         }
 
         private void OnConsoleOpenInput()

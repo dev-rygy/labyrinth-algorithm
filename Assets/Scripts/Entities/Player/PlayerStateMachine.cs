@@ -51,7 +51,8 @@ public class PlayerStateMachine : StateMachine
     public static event Action<PlayerStateMachine> OnPlayerSpawned;
     public event Action<Ability> OnAbilityChanged;      // Invokes when a new ability is slotted
 
-    public static PlayerStateMachine Instance { get; private set; }     // WARNING: This singleton may need to be removed later for networking purposes
+    private static PlayerStateMachine _instance;
+    public static PlayerStateMachine Instance => _instance;     // WARNING: This singleton may need to be removed later for networking purposes
 
     // Static states to save on memory
     private PlayerIdleState _idleState;
@@ -122,14 +123,21 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public Hitbox hitbox { get; private set; }
 
     // References Assigned In Code
-    public InputHandler Input { get; private set; } // reference to the input handler
-    public CharacterController Controller { get; private set; } // reference to the player's controller
-    public Animator Animator { get; private set; }  // reference to the player's animator
-    public AnimationTimestamps AnimationTimestamps { get; private set; }        // reference to player animator events
-    public ForceReceiver ForceReciever { get; private set; }        // reference to player physics
-    public EntityHealth Health { get; private set; }        // Reference to player health
+    private InputHandler _input;
+    public InputHandler Input => _input; // reference to the input handler
+    private CharacterController _controller;
+    public CharacterController Controller => _controller; // reference to the player's controller
+    private Animator _animator;
+    public Animator Animator => _animator;  // reference to the player's animator
+    private AnimationTimestamps _animationTimestamps;
+    public AnimationTimestamps AnimationTimestamps => _animationTimestamps;        // reference to player animator events
+    private ForceReceiver _forceReciever;
+    public ForceReceiver ForceReciever => _forceReciever;        // reference to player physics
+    private EntityHealth _health;
+    public EntityHealth Health => _health;        // Reference to player health
 
-    public AutoMoveDirections AutoMoveDirection { get; private set; } = AutoMoveDirections.None;
+    private AutoMoveDirections _autoMoveDirection = AutoMoveDirections.None;
+    public AutoMoveDirections AutoMoveDirection => _autoMoveDirection;
     #endregion
 
     #region Mono
@@ -143,14 +151,14 @@ public class PlayerStateMachine : StateMachine
             return;
         }
 
-        Instance = this;
+        _instance = this;
 
         // Assign references on object
-        Controller = GetComponent<CharacterController>();           // The player must have a character controller
-        Animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
-        AnimationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
-        ForceReciever = GetComponent<ForceReceiver>();              // The player must have a force reciever to interact with gravity
-        Health = GetComponent<EntityHealth>();                      // Player's health behavior is shared with all entities
+        _controller = GetComponent<CharacterController>();           // The player must have a character controller
+        _animator = PlayerCharacter.GetComponent<Animator>();        // The animator is on the "Player Character" child object
+        _animationTimestamps = PlayerCharacter.GetComponent<AnimationTimestamps>();      // The timestamp events for the player abilities
+        _forceReciever = GetComponent<ForceReceiver>();              // The player must have a force reciever to interact with gravity
+        _health = GetComponent<EntityHealth>();                      // Player's health behavior is shared with all entities
 
         OnPlayerSpawned?.Invoke(this);
     }
@@ -169,7 +177,7 @@ public class PlayerStateMachine : StateMachine
         }
 
         // Input Singleton ref.
-        Input = InputHandler.Instance;                              // An input handler must be in the player's scene
+        _input = InputHandler.Instance;                              // An input handler must be in the player's scene
 
         RegisterConsoleCommands();
 
@@ -490,28 +498,28 @@ public class PlayerStateMachine : StateMachine
                 if (direction == "none")
                 {
                     Debug.Log("Player auto-move disabled.");
-                    AutoMoveDirection = AutoMoveDirections.None;
+                    _autoMoveDirection = AutoMoveDirections.None;
                     return;
                 }
                 else if (direction == "forward")
                 {
                     // Move the player forward
-                    AutoMoveDirection = AutoMoveDirections.Forward;
+                    _autoMoveDirection = AutoMoveDirections.Forward;
                 }
                 else if (direction == "backward")
                 {
                     // Move the player backward
-                    AutoMoveDirection = AutoMoveDirections.Backward;
+                    _autoMoveDirection = AutoMoveDirections.Backward;
                 }
                 else if (direction == "left")
                 {
                     // Move the player left
-                    AutoMoveDirection = AutoMoveDirections.Left;
+                    _autoMoveDirection = AutoMoveDirections.Left;
                 }
                 else if (direction == "right")
                 {
                     // Move the player right
-                    AutoMoveDirection = AutoMoveDirections.Right;
+                    _autoMoveDirection = AutoMoveDirections.Right;
                 }
                 else
                 {

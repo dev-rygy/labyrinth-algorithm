@@ -47,9 +47,12 @@ namespace RyansLibrary.Labyrinth
         private readonly IGizmoDrawer _runtimeDrawer = new RuntimeGizmoDrawer();
 
         // Debugging Lists - These lists are intended to store intermediate results for debugging and visualization purposes
-        public List<List<Edge>> Triangulations { get; private set; }
-        public List<List<Edge>> MinimumSpanningTrees { get; private set; }
-        public List<List<Edge>> RandomCycles { get; private set; }
+        private List<List<Edge>> _triangulations;
+        public List<List<Edge>> Triangulations => _triangulations;
+        private List<List<Edge>> _minimumSpanningTrees;
+        public List<List<Edge>> MinimumSpanningTrees => _minimumSpanningTrees;
+        private List<List<Edge>> _randomCycles;
+        public List<List<Edge>> RandomCycles => _randomCycles;
 
         #region Mono
         private void Awake()
@@ -57,9 +60,9 @@ namespace RyansLibrary.Labyrinth
             _controller = GetComponent<MapGeneratorController>();
 
             // Initialize Debugging Lists
-            Triangulations = new();
-            MinimumSpanningTrees = new();
-            RandomCycles = new();
+            _triangulations = new();
+            _minimumSpanningTrees = new();
+            _randomCycles = new();
         }
 
         private void Start()

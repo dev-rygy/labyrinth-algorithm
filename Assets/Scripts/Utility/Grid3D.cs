@@ -20,18 +20,20 @@ namespace RyansLibrary
     /// </summary>
     public class Grid3D<T>
     {
-        public Vector3Int Size { get; private set; }
+        private Vector3Int _size;
+        public Vector3Int Size => _size;
 
-        public BoundsInt Bounds { get; private set; }
+        private BoundsInt _bounds;
+        public BoundsInt Bounds => _bounds;
 
         private T[] data;
 
         public Grid3D(BoundsInt bounds)
         {
-            Size = bounds.size;
+            _size = bounds.size;
 
             data = new T[Size.x * Size.y * Size.z];
-            Bounds = bounds;
+            _bounds = bounds;
         }
 
         // Flattens a 3D local coordinate into the 1D backing array (row-major, X fastest-varying then Y then Z).

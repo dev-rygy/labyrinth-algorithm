@@ -17,7 +17,8 @@ public enum CameraMode
 
 public class CameraController : MonoBehaviour
 {
-    public static CameraController Instance { get; private set; }
+    private static CameraController _instance;
+    public static CameraController Instance => _instance;
 
     [SerializeField] private GameObject mainCameraObject;
     [SerializeField] private GameObject freeCameraObject;
@@ -48,7 +49,7 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        Instance = this;
+        _instance = this;
     }
 
     private void Start()

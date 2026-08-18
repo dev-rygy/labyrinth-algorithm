@@ -57,16 +57,18 @@ namespace RyansLibrary.Labyrinth
         [Tooltip("The percent chance for a room with a long shape to spawn when the conditions are met.")]
         [field: SerializeField][field: Range(0, 1)] public float LongRoomSpawnChance { get; private set; } = 0;          // The spawn chance of long rooms
         [Tooltip("The percent chance for a room with a big shape to spawn when the conditions are met.")]
-        [field: SerializeField][field: Range(0, 1)] public float BigRoomSpawnChance { get; private set; } = 0;           // The spawn chance of big rooms 
+        [field: SerializeField][field: Range(0, 1)] public float BigRoomSpawnChance { get; private set; } = 0;           // The spawn chance of big rooms
         [Tooltip("The percent chance for a room with an l-shape to spawn when the conditions are met.")]
         [field: SerializeField][field: Range(0, 1)] public float LRoomSpawnChance { get; private set; } = 0;           // The spawn chance of l rooms
 
         [field: Header("Debug")]
         [field: SerializeField] public Color PathGizmoColor;
 
-        // Data Storage 
-        public List<Blueprint> BlueprintList { get; private set; }
-        public List<Room> Rooms { get; private set; }
+        // Data Storage
+        private List<Blueprint> _blueprintList;
+        public List<Blueprint> BlueprintList => _blueprintList;
+        private List<Room> _rooms;
+        public List<Room> Rooms => _rooms;
         
         // UNUSED
         // public int startMasterIdx { get; set; }  // Start index in master path
@@ -77,8 +79,8 @@ namespace RyansLibrary.Labyrinth
         // Constructor for path; gets it's start and end index in the master path
         public void Initialize()
         {
-            BlueprintList = new List<Blueprint>();
-            Rooms = new List<Room>();
+            _blueprintList = new List<Blueprint>();
+            _rooms = new List<Room>();
 
             // startMasterIdx = startIdx;
             // endMasterIdx = endIdx;

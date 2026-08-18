@@ -13,7 +13,8 @@ namespace RyansLibrary.Labyrinth
 {
     public class EnemyGenerator : MonoBehaviour
     {
-        public static EnemyGenerator Instance { get; private set; }
+        private static EnemyGenerator _instance;
+        public static EnemyGenerator Instance => _instance;
 
         [SerializeField] private bool _isEnabled;
         public bool IsEnabled => _isEnabled;
@@ -31,7 +32,7 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
-            Instance = this;
+            _instance = this;
 
             // Subscribe to "Done" event in map generator and spawn enemies after
             MapGeneratorController.OnGenerationDone += SpawnEnemies;

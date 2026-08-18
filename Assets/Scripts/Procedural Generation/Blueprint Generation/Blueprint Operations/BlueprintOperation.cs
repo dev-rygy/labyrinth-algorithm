@@ -37,7 +37,8 @@ namespace RyansLibrary.Labyrinth
     public abstract class BlueprintOperation
     {
         // Global toggle for debug logs in all blueprint operation classes
-        public static bool DebugLogs { get; private set; }
+        private static bool _debugLogs;
+        public static bool DebugLogs => _debugLogs;
 
         // DataID for is used strictly for debugging purposes.
         public string OperationID { get; protected set; }
@@ -60,7 +61,7 @@ namespace RyansLibrary.Labyrinth
 
         public static void ToggleDebugLogs(bool toggle)
         {
-            DebugLogs = toggle;
+            _debugLogs = toggle;
         }
 
         // Every operation must be able to execute when it is loaded into the operation queue.

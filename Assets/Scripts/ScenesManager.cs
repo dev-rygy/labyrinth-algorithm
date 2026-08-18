@@ -15,7 +15,8 @@ using UnityEngine.SceneManagement;
 public class ScenesManager : MonoBehaviour
 {
     // TODO: Just make the class static?
-    public static ScenesManager Instance { get; private set; }
+    private static ScenesManager _instance;
+    public static ScenesManager Instance => _instance;
 
     public static event Action OnSceneLoaded;
 
@@ -29,7 +30,7 @@ public class ScenesManager : MonoBehaviour
             return;
         }
         
-        Instance = this;
+        _instance = this;
 
         gameObject.transform.parent = null;     // Parent must be cleared to be DNDOL
         DontDestroyOnLoad(gameObject);

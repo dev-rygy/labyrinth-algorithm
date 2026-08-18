@@ -48,7 +48,8 @@ namespace RyansLibrary.Labyrinth
         #region Variables
 
         // ***** Singleton Reference *****
-        public static MapGeneratorController Instance { get; private set; }
+        private static MapGeneratorController _instance;
+        public static MapGeneratorController Instance => _instance;
 
         // ***** Events *****
         // General Events
@@ -68,10 +69,6 @@ namespace RyansLibrary.Labyrinth
         // Room Events
         public static event Action OnRoomParseStarted;
         public static event Action OnRoomParseDone;
-
-        // Public Flags
-        public bool IsGenerating { get; private set; }
-        public bool DebugSequential { get; private set; }
 
         // ***** Inspector Values *****
         [Tooltip("Enables map generation.")]
@@ -102,23 +99,28 @@ namespace RyansLibrary.Labyrinth
 
         // Entries to connect zones together
         [Header("Zone Connection")]
-        [SerializeField]
-        private List<ZoneConnectionEntry> _zoneConnections;
+        [SerializeField] private List<ZoneConnectionEntry> _zoneConnections;
         public List<ZoneConnectionEntry> ZoneConnections => _zoneConnections;
-
-        // ***** Private Variables *****
-        private Coroutine _mapGeneratorCoroutine;
-        private RoomGenerator _roomGenerator;
-
-        // Storage for blueprints and blueprint operations
-        private MapGenerationContext _context;
-        public MapGenerationContext Context => _context;
 
         // Debugging
         [Header("Debug")]
         [SerializeField] private bool _debugLogs = false;
         [SerializeField] private bool _debugBlueprintLogs = false;
         [SerializeField] private bool _debugRoomGeneratorLogs = false;
+
+        // Flags
+        private bool _isGenerating;
+        public bool IsGenerating => _isGenerating;
+        private bool _isDubuggingSequential;
+        public bool IsDebuggingSequential => _isDubuggingSequential;
+
+        private Coroutine _mapGeneratorCoroutine;
+
+        // Storage for blueprints and blueprint operations
+        private MapGenerationContext _context;
+        public MapGenerationContext Context => _context;
+
+        private RoomGenerator _roomGenerator;
 
         // Stepwise procedure
         private int _stepBudget = 0;
@@ -129,14 +131,14 @@ namespace RyansLibrary.Labyrinth
         private void Awake()
         {
             // Handle Singleton
-            if (Instance != null)
+            if (_instance != null)
             {
-                // Debug.LogWarning("Another instance of MapGeneratorController already exists. Deleting Object...");
+                Debug.LogWarning("Another instance of MapGeneratorController already exists. Deleting Object...");
                 Destroy(gameObject);
                 return;
             }
 
-            Instance = this;
+            _instance = this;
         }
 
         private void Start()
@@ -222,7 +224,7 @@ namespace RyansLibrary.Labyrinth
             if (IsGenerating)
                 yield break;
 
-            IsGenerating = true;
+            _isGenerating = true;
 
             // Event to signal when map generation has begun
             OnGenerationStarted?.Invoke();
@@ -245,7 +247,7 @@ namespace RyansLibrary.Labyrinth
 
             // Labyrinth Generation Success
             // Event to signal when map generation is complete
-            IsGenerating = false;
+            _isGenerating = false;
             OnGenerationDone?.Invoke();
         }
 
@@ -370,7 +372,7 @@ namespace RyansLibrary.Labyrinth
             // Execute operations and generate blueprints
             while (_context.OperationQueue.Count > 0)
             {
-                if (DebugSequential)
+                if (_isDubuggingSequential)
                 {
                     // Halt the execution of operations
                     while (!_runToEnd && _stepBudget <= 0)
@@ -452,7 +454,7 @@ namespace RyansLibrary.Labyrinth
             if (!Application.isPlaying)     // Only run code when game is executing
                 return;
 
-            IsGenerating = false;
+            _isGenerating = false;
 
             StopCoroutine(_mapGeneratorCoroutine);
             _mapGeneratorCoroutine = null;
@@ -472,7 +474,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         private void GenerationFailed()
         {
-            IsGenerating = false;
+            _isGenerating = false;
 
             StopCoroutine(_mapGeneratorCoroutine);
 
@@ -1072,7 +1074,7 @@ namespace RyansLibrary.Labyrinth
         // Stepwise Function Toggles
         public void ToggleStepwiseDebugging(bool toggle)
         {
-            DebugSequential = toggle;
+            _isDubuggingSequential = toggle;
         }
         #endregion
 

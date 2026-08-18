@@ -22,7 +22,8 @@ namespace RyansLibrary.Labyrinth
     public abstract class BlueprintData<T>
     {
         // Global toggle for debug logs in all blueprint data classes; does not currently work atm.
-        protected static bool _debugLogs { get; private set; }
+        private static bool _debugLogsValue;
+        protected static bool _debugLogs => _debugLogsValue;
 
 
         // DataID for is used strictly for debugging purposes.
@@ -45,7 +46,7 @@ namespace RyansLibrary.Labyrinth
 
         public static void ToggleDebugLogs(bool toggle)
         {
-            _debugLogs = toggle;
+            _debugLogsValue = toggle;
         }
 
         public virtual void LoadIntoMemory()

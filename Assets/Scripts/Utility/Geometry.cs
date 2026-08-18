@@ -27,8 +27,10 @@ namespace RyansLibrary.Geometry
         public Vertex C { get; set; }       // Custom vertex class
         public Vertex D { get; set; }       // Custom vertex class
 
-        public Vector3 Circumcenter { get; private set; }
-        public float CircumradiusSquared { get; private set; }
+        private Vector3 _circumcenter;
+        public Vector3 Circumcenter => _circumcenter;
+        private float _circumradiusSquared;
+        public float CircumradiusSquared => _circumradiusSquared;
 
         public Tetrahedron(Vertex a, Vertex b, Vertex c, Vertex d)
         {
@@ -92,14 +94,14 @@ namespace RyansLibrary.Geometry
             ).determinant;
 
             // Find the center of the circumsphere from everything else above
-            Circumcenter = new Vector3(
+            _circumcenter = new Vector3(
                 Dx / (2 * a),
                 Dy / (2 * a),
                 Dz / (2 * a)
             );
 
             // Circumradius
-            CircumradiusSquared = ((Dx * Dx) + (Dy * Dy) + (Dz * Dz) - (4 * a * c)) / (4 * a * a);
+            _circumradiusSquared = ((Dx * Dx) + (Dy * Dy) + (Dz * Dz) - (4 * a * c)) / (4 * a * a);
         }
 
         public bool ContainsVertex(Vertex v, float precision)

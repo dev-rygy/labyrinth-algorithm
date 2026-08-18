@@ -35,9 +35,12 @@ public class ForceReceiver : MonoBehaviour
     [SerializeField] private bool _log = false;
 
     // Individual velocities of the object
-    public float VelocityX { get; private set; }
-    public float VelocityY { get; private set; }
-    public float VelocityZ { get; private set; }
+    private float _velocityX;
+    public float VelocityX => _velocityX;
+    private float _velocityY;
+    public float VelocityY => _velocityY;
+    private float _velocityZ;
+    public float VelocityZ => _velocityZ;
 
     private Vector3 _impact;
     private Vector3 dampingVelocity;
@@ -62,18 +65,18 @@ public class ForceReceiver : MonoBehaviour
         // Handle gravity below
         if (!HasGravity)
         {
-            VelocityY = 0;
+            _velocityY = 0;
             return;
         }
 
         // Conditionally Handle Gravity; IsGrounded is unique to humanoid entities with a CharacterController
         if (IsGrounded() && VelocityY < 0.0f)
-            VelocityY = StaticVerticalVelocity;                         // Does not have gravity
+            _velocityY = StaticVerticalVelocity;                         // Does not have gravity
         else
         {
             if (VelocityY > -(_terminalVelocity))   // If terminal velocity has not been reached
             {
-                VelocityY += GravityMultiplier * Time.deltaTime;        // Has gravity
+                _velocityY += GravityMultiplier * Time.deltaTime;        // Has gravity
             }
             else
                 if (_log) Debug.Log("Terminal Velocity Reached");

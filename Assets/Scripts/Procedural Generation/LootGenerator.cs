@@ -19,7 +19,8 @@ namespace RyansLibrary.Labyrinth
     /// </summary>
     public class LootGenerator : MonoBehaviour
     {
-        public static LootGenerator Instance { get; private set; }
+        private static LootGenerator _instance;
+        public static LootGenerator Instance => _instance;
 
         [SerializeField] private bool _isEnabled;
         public bool IsEnabled => _isEnabled;
@@ -37,7 +38,7 @@ namespace RyansLibrary.Labyrinth
                 return;
             }
 
-            Instance = this;
+            _instance = this;
 
             // Subscribe to "Done" event in map generator and spawn loot after
             MapGeneratorController.OnGenerationDone += SpawnLoot;
