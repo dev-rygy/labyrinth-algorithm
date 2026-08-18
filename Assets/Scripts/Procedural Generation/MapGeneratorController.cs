@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/28/2025
- * Last Modified:   07/23/2026 (Ryan)
+ * Last Modified:   08/18/2026 (Ryan)
  * Notes:           
 */
 using RyansLibrary.Debugging;
@@ -111,6 +111,8 @@ namespace RyansLibrary.Labyrinth
         // Flags
         private bool _isGenerating;
         public bool IsGenerating => _isGenerating;
+        private bool _hasGenerated;
+        public bool HasGenerated => _hasGenerated;
         private bool _isDubuggingSequential;
         public bool IsDebuggingSequential => _isDubuggingSequential;
 
@@ -144,6 +146,9 @@ namespace RyansLibrary.Labyrinth
         private void Start()
         {
             RegisterConsoleCommands();
+
+            _isGenerating = false;
+            _hasGenerated = false;
         }
 
         public IEnumerator StartGeneration()
@@ -152,8 +157,7 @@ namespace RyansLibrary.Labyrinth
             if (!_enabled)
                 yield break;
 
-            _mapGeneratorCoroutine = StartCoroutine(GenerateLabyrinth());
-            yield return _mapGeneratorCoroutine;
+            yield return StartCoroutine(GenerateLabyrinth());
         }
         #endregion
 
@@ -221,7 +225,7 @@ namespace RyansLibrary.Labyrinth
         private IEnumerator GenerateLabyrinth()
         {
             // Do not Generate a labyrinth if one is already generating
-            if (IsGenerating)
+            if (_isGenerating && !_hasGenerated)
                 yield break;
 
             _isGenerating = true;
@@ -233,7 +237,7 @@ namespace RyansLibrary.Labyrinth
             InitializeLabyrinth();
 
             // Spawn connection zones in random positions.
-            // TODO: Later make all zones slightly random.
+            // TODO: Later place all zones randomly using techniques like voronoi diagrams or bsp
             SpawnZones();
 
             // Load all blueprint data and operations into memory
@@ -248,6 +252,7 @@ namespace RyansLibrary.Labyrinth
             // Labyrinth Generation Success
             // Event to signal when map generation is complete
             _isGenerating = false;
+            _hasGenerated = true;
             OnGenerationDone?.Invoke();
         }
 
@@ -332,9 +337,11 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
+        #region Operation Execution
         private void ConsumeStep()
         {
-            if (!IsGenerating)
+            // Make sure the algorithm is still running
+            if (!_isGenerating || _hasGenerated)
                 return;
 
             if (_runToEnd)
@@ -346,7 +353,8 @@ namespace RyansLibrary.Labyrinth
 
         public void Advance(int stepLength)
         {
-            if (!IsGenerating)
+            // Make sure the algorithm is still running
+            if (!_isGenerating || _hasGenerated)
                 return;
 
             if (stepLength <= 0)
@@ -358,7 +366,8 @@ namespace RyansLibrary.Labyrinth
 
         public void AdvanceAll()
         {
-            if (!IsGenerating)
+            // Make sure the algorithm is still running
+            if (!_isGenerating || _hasGenerated)
                 return;
 
             _runToEnd = true;
@@ -417,6 +426,7 @@ namespace RyansLibrary.Labyrinth
 
             if (_debugBlueprintLogs) Debug.Log("End of operation execution.");
         }
+        #endregion
 
         private void GenerateRooms()
         {
@@ -454,19 +464,23 @@ namespace RyansLibrary.Labyrinth
             if (!Application.isPlaying)     // Only run code when game is executing
                 return;
 
+            // Reset generation flags
             _isGenerating = false;
+            _hasGenerated = false;
 
-            StopCoroutine(_mapGeneratorCoroutine);
+            // Stop the entire generation coroutine chain
+            StopAllCoroutines();
             _mapGeneratorCoroutine = null;
             _context.ClearAll();
 
+            // Reset stepwise procedure values
             _stepBudget = 0;
             _runToEnd = false;
 
+            DestroyAllRooms();      // Destroy all rooms from last generation
+
             OnGenerationReset?.Invoke();
             if (_debugLogs) Debug.Log("Map generator restarting.");
-
-            DestroyAllRooms();      // Destroy all rooms from last generation
         }
 
         /// <summary>
@@ -475,8 +489,10 @@ namespace RyansLibrary.Labyrinth
         private void GenerationFailed()
         {
             _isGenerating = false;
+            _hasGenerated = false;
 
-            StopCoroutine(_mapGeneratorCoroutine);
+            // Stop the entire generation coroutine chain
+            StopAllCoroutines();
 
             Debug.LogError("Map generation failed.");
 
@@ -764,7 +780,7 @@ namespace RyansLibrary.Labyrinth
         // zone.
         public void LoadConnectionZoneOperations(Zone connectionZone, Zone zoneA, Zone zoneB)
         {
-            // *** Error Handleing ***
+            // *** Error Handling ***
             if (connectionZone == null)
             {
                 Debug.LogError("Connection Zone of zone connection was null.");
@@ -1020,12 +1036,6 @@ namespace RyansLibrary.Labyrinth
             return true;        // The zone's cell requirements are met with the bounded volume
         }
 
-        public void DestroyAllRooms()
-        {
-            foreach (Transform child in _roomContainer.transform)
-                Destroy(child.gameObject);
-        }
-
         public int GetOperationCount()
         {
             if (_context == null)
@@ -1043,6 +1053,12 @@ namespace RyansLibrary.Labyrinth
             _seed = seed;
             Random.InitState(_seed);
             return _seed;
+        }
+
+        public void DestroyAllRooms()
+        {
+            foreach (Transform child in _roomContainer.transform)
+                Destroy(child.gameObject);
         }
         #endregion
 
@@ -1123,12 +1139,21 @@ namespace RyansLibrary.Labyrinth
 
             // Map generator reset command - Resets and restarts the map generator state.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.start",
+                "Begins generating a new map. Cannot be used while generating or when a map is already generated.",
+                args =>
+                {
+                    StartCoroutine(GenerateLabyrinth());
+                    Debug.Log("All data deleted. Map Generator restarted.");
+                }));
+
+            // Map generator reset command - Resets and restarts the map generator state.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.reset",
                 "When debugging, will reset the map generator and start a new generation.",
                 args =>
                 {
                     ResetLabyrinth();
-                    // ApplicationController.Instance.StartNewGame();      // DELETE AFTER DEMO
                     Debug.Log("All data deleted. Map Generator restarted.");
                 }));
 

@@ -4,11 +4,10 @@
  * Last Modified:   11/08/2025 (Ryan)
  * Notes:           Controls the execution order of application
 */
-using System.Collections;
-using UnityEngine;
-
 using RyansLibrary.Labyrinth;
 using System;
+using System.Collections;
+using UnityEngine;
 
 /// <summary>
 /// Controls the execution order and game states.
@@ -58,7 +57,7 @@ public class ApplicationController : MonoBehaviour
 
     public void StartNewGame()
     {
-        if (_clearConsoleOnGameStart) 
+        if (_clearConsoleOnGameStart)
             Debug.ClearDeveloperConsole();
 
         if (_player != null)
@@ -90,6 +89,18 @@ public class ApplicationController : MonoBehaviour
 
         Cursor.visible = _hideCursorOnGameStart ? false : true;
         Cursor.lockState = _cursorLockMode;
+    }
+
+    public IEnumerator ResetLabyrinth()
+    {
+        // Clear Labyrinth
+        MapGeneratorController.Instance.ResetLabyrinth();
+
+        // Restart Map Generation
+        yield return MapGeneratorController.Instance.StartGeneration();
+
+        // Spawn player
+        _player = Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
     }
 
     public void EndGame()

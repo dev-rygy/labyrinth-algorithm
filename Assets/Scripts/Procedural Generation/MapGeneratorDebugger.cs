@@ -74,7 +74,6 @@ namespace RyansLibrary.Labyrinth
         {
             MapGeneratorController.OnGenerationStarted += () => _debugGizmos = true;
             MapGeneratorController.OnGenerationDone += () => _debugGizmos = false;
-            // ApplicationController.OnMenu += () => _debugGizmos = false;
 
             MapGenerationContext.OnNewTriangulation += (triangulation) => Triangulations.Add(triangulation);
             MapGenerationContext.OnNewMST += (mst) => MinimumSpanningTrees.Add(mst);
@@ -87,7 +86,6 @@ namespace RyansLibrary.Labyrinth
         {
             MapGeneratorController.OnGenerationStarted -= () => _debugGizmos = true;
             MapGeneratorController.OnGenerationDone -= () => _debugGizmos = false;
-            // ApplicationController.OnMenu -= () => _debugGizmos = false;
 
             MapGenerationContext.OnNewTriangulation -= (triangulation) => Triangulations.Add(triangulation);
             MapGenerationContext.OnNewMST -= (mst) => Triangulations.Add(mst);
