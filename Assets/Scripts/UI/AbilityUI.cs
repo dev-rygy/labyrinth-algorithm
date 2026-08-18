@@ -4,10 +4,11 @@
  * Last Modified:   09/18/2025 (Ryan)
  * Notes:           
 */
+
 using RyansLibrary.Abilities;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class AbilityUI : MonoBehaviour
 {

@@ -5,7 +5,7 @@
  * Notes:           Enemy Generator
  *                  Procedure begins after map generation is complete.
 */
-using RyansLibrary.Console;
+using RyansLibrary.Debugging;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -107,7 +107,7 @@ namespace RyansLibrary.Labyrinth
 
         private void RegisterConsoleCommands()
         {
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "enemygenerator.spawn",
                 "Toggles enemy spawning. Enter 'true' for on and 'false' for off.",
                 args =>
@@ -137,7 +137,7 @@ namespace RyansLibrary.Labyrinth
 
         private void UnregisterConsoleCommands()
         {
-            ConsoleUI.CommandRegistry.UnregisterCommand("enemygenerator.spawn");
+            Console.CommandRegistry.UnregisterCommand("enemygenerator.spawn");
         }
 
         public void ToggleSpawn(bool toggle)

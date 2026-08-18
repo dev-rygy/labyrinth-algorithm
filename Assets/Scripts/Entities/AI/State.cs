@@ -5,11 +5,7 @@
  * Notes:           Abstract interface for states that entities
  *                  can utalize with a state machine
 */
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace RyansLibrary.StateMachine
+namespace RyansLibrary.StateMachines
 {
     public abstract class State
     {

@@ -4,11 +4,7 @@
  * Last Modified:   01/04/2025 (Ryan)
  * Notes:           Player Base State, to be inherited by all player states
 */
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using RyansLibrary.StateMachine;
-using UnityEngine.EventSystems;
+using RyansLibrary.StateMachines;
 
 /// <summary>
 /// The base overall state class that all player states will inherit from.

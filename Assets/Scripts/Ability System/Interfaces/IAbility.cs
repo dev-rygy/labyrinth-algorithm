@@ -5,10 +5,6 @@
  * Notes:           Interface that is used by the player's state machine,
  *                      contains a universal execute method to fire the ability
 */
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using RyansLibrary.StateMachine;
 
 namespace RyansLibrary.Abilities
 {

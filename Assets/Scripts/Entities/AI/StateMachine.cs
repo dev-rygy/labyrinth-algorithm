@@ -5,11 +5,9 @@
  * Notes:           State machine class is instatiated on any
  *                      entity that utalizes a statemachine
 */
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace RyansLibrary.StateMachine
+namespace RyansLibrary.StateMachines
 {
     /// <summary>
     /// Keeps track of the currentState; updates all state's tick method; handles state

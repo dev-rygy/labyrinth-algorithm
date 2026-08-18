@@ -4,12 +4,13 @@
  * Last Modified:   07/23/2026 (Ryan)
  * Notes:           
 */
-using RyansLibrary.Console;
+using RyansLibrary.Debugging;
 using RyansLibrary.UnityEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Console = RyansLibrary.Debugging.Console;
 using Random = UnityEngine.Random;      // Using Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
@@ -74,7 +75,7 @@ namespace RyansLibrary.Labyrinth
 
         // ***** Inspector Values *****
         [Tooltip("Enables map generation.")]
-        [SerializeField] 
+        [SerializeField]
         private bool _enabled = true;
 
         [Header("Seed")]
@@ -86,7 +87,7 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Global Settings")]
         [Tooltip("The size of a room unit or how large a 1x1 room is in Unity units.")]
-        [SerializeField] 
+        [SerializeField]
         private int _gridUnitSize = 13;                         // The unit size of a single grid cell
         public int GridUnitSize => _gridUnitSize;
         [SerializeField] private Transform _roomContainer;      // Parent transform that will contain all the spawned rooms
@@ -95,13 +96,13 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private int _maxPlacementAttempts = 50;        // Prevents infinate loops with divergent room placement.
 
         [Header("Zones")]
-        [SerializeField] 
+        [SerializeField]
         private List<Zone> _zones;
         public List<Zone> Zones => _zones;
 
         // Entries to connect zones together
         [Header("Zone Connection")]
-        [SerializeField] 
+        [SerializeField]
         private List<ZoneConnectionEntry> _zoneConnections;
         public List<ZoneConnectionEntry> ZoneConnections => _zoneConnections;
 
@@ -326,7 +327,7 @@ namespace RyansLibrary.Labyrinth
 
                 // Generate Alternative paths (prize, trial, etc.)
                 LoadAltPathOperations(zone);
-            }           
+            }
         }
 
         private void ConsumeStep()
@@ -398,7 +399,7 @@ namespace RyansLibrary.Labyrinth
 
                 if (_debugBlueprintLogs)
                 {
-                    Debug.Log(result ? $"{operation.OperationID} - Execution success!" : 
+                    Debug.Log(result ? $"{operation.OperationID} - Execution success!" :
                         $"{operation.OperationID} - Execution Failure.");
                 }
 
@@ -429,7 +430,7 @@ namespace RyansLibrary.Labyrinth
                     return;     // Room Generation failed for zone connection; stop algorithm
                 }
             }
-            
+
 
             foreach (Zone zone in _zones)
             {
@@ -492,7 +493,7 @@ namespace RyansLibrary.Labyrinth
         public void LoadMainPathOperations(Zone zone)
         {
             if (zone.MainPath == null)      // Throw error if MainPath for zone does not exist
-            {   
+            {
                 Debug.LogError($"The Main Path for zone {zone.Name} is not assigned.");
                 return;
             }
@@ -613,7 +614,7 @@ namespace RyansLibrary.Labyrinth
             IntBlueprintData setSize = new IntBlueprintData(_context, zone.RandomCyclesInGraph);
             setSize.LoadIntoMemory();
 
-            GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, mainPathBlueprintData.OutputPorts[2], 
+            GetAvailableBlueprintsOp availibleBlueprintsOp = new GetAvailableBlueprintsOp(_context, mainPathBlueprintData.OutputPorts[2],
                 availableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(availibleBlueprintsOp);
 
@@ -648,7 +649,7 @@ namespace RyansLibrary.Labyrinth
                 _context.OperationQueueEnqueue(listDiffOp);
             }
 
-            ListSelectRandomSetOp randomCyclesListOp = new ListSelectRandomSetOp(_context, listDiffOp.OutputPorts[0], 
+            ListSelectRandomSetOp randomCyclesListOp = new ListSelectRandomSetOp(_context, listDiffOp.OutputPorts[0],
                 setSize.OutputPorts[0]);
             _context.OperationQueueEnqueue(randomCyclesListOp);
 
@@ -688,16 +689,16 @@ namespace RyansLibrary.Labyrinth
             FindBlueprintFromPositionOp blueprintEnd = new FindBlueprintFromPositionOp(_context, verticiesFromEdgeOp.OutputPorts[3]);
             _context.OperationQueueEnqueue(blueprintEnd);
 
-            GetAvailableBlueprintsOp findObstructionsOp = new GetAvailableBlueprintsOp(_context, mainPathBlueprintData.OutputPorts[2], 
+            GetAvailableBlueprintsOp findObstructionsOp = new GetAvailableBlueprintsOp(_context, mainPathBlueprintData.OutputPorts[2],
                 unavailableBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(findObstructionsOp);
 
-            PathfindingBlueprintOp pathFindingOp = new PathfindingBlueprintOp(_context, mainPathBlueprintData.OutputPorts[0], blueprintStart.OutputPorts[0], 
+            PathfindingBlueprintOp pathFindingOp = new PathfindingBlueprintOp(_context, mainPathBlueprintData.OutputPorts[0], blueprintStart.OutputPorts[0],
                 blueprintEnd.OutputPorts[0], zoneBoundsBlueprintData.OutputPorts[0], findObstructionsOp.OutputPorts[0], pathfindingHeuristicData.OutputPorts[0]);
             _context.OperationQueueEnqueue(pathFindingOp);
             // End of Pathfinding logic
 
-            AddIntOp incrementOp = new AddIntOp(_context, currentIndexBlueprintData.OutputPorts[0], intOneBlueprintData.OutputPorts[0], 
+            AddIntOp incrementOp = new AddIntOp(_context, currentIndexBlueprintData.OutputPorts[0], intOneBlueprintData.OutputPorts[0],
                 currentIndexBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(incrementOp);
 
@@ -820,7 +821,7 @@ namespace RyansLibrary.Labyrinth
 
             // **** Room A Placement Operations ***
             // Find the bounds area intersection of the two zones to find where the connection can be placed; this will be used for placing the room and path of the zone connection
-            BoundsIntersectOp zoneConnectzoneAIntersectOp = new BoundsIntersectOp(_context, zoneABoundsBlueprintData.OutputPorts[0], 
+            BoundsIntersectOp zoneConnectzoneAIntersectOp = new BoundsIntersectOp(_context, zoneABoundsBlueprintData.OutputPorts[0],
                 zoneConnectionBoundsBlueprintData.OutputPorts[0]);
             _context.OperationQueueEnqueue(zoneConnectzoneAIntersectOp);
             // Place Room A in Zone A
@@ -1079,7 +1080,7 @@ namespace RyansLibrary.Labyrinth
         private void RegisterConsoleCommands()
         {
             // Map generator step command - Step the map generator by a desired amount of operations.
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.step",
                 "When debugging will advance the map generator operation queue by a desired amount of operations.",
                 args =>
@@ -1109,7 +1110,7 @@ namespace RyansLibrary.Labyrinth
                 }));
 
             // Map generator step all command - Execute all of the remaining map generator operations.
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.stepall",
                 "When debugging, will execute all the remaining operations in the operation queue.",
                 args =>
@@ -1119,18 +1120,18 @@ namespace RyansLibrary.Labyrinth
                 }));
 
             // Map generator reset command - Resets and restarts the map generator state.
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.reset",
                 "When debugging, will reset the map generator and start a new generation.",
                 args =>
                 {
                     ResetLabyrinth();
-                    ApplicationController.Instance.StartNewGame();      // DELETE AFTER DEMO
+                    // ApplicationController.Instance.StartNewGame();      // DELETE AFTER DEMO
                     Debug.Log("All data deleted. Map Generator restarted.");
                 }));
 
             // Register custom seed command - Sets the map generator to use a custom seed for generation.
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.setseed",
                 "Sets the map generator to use a custom seed for generation.",
                 args =>
@@ -1156,7 +1157,7 @@ namespace RyansLibrary.Labyrinth
                 ));
 
             // Register custom seed command - Sets the map generator to use a custom seed for generation.
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.seed",
                 "Displays the current seed value to the console.",
                 args =>
@@ -1166,7 +1167,7 @@ namespace RyansLibrary.Labyrinth
                 ));
 
             // Map generator restart command - Resets and restarts the map generator state.
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglerandomseed",
                 "Toggles the use of a random seed for map generation.",
                 args =>
@@ -1194,7 +1195,7 @@ namespace RyansLibrary.Labyrinth
                 }));
 
             // Map generator restart command - Resets and restarts the map generator state.
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.toggleblueprintstacktrace",
                 "Displays blueprint operation log to the console.",
                 args =>

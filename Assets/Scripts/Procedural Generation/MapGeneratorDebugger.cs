@@ -4,7 +4,7 @@
  * Last Modified:   06/30/2026 (Ryan)
  * Notes:           
 */
-using RyansLibrary.Console;
+using RyansLibrary.Debugging;
 using RyansLibrary.Graphs;
 using System.Collections.Generic;
 using UnityEngine;
@@ -71,7 +71,7 @@ namespace RyansLibrary.Labyrinth
         {
             MapGeneratorController.OnGenerationStarted += () => _debugGizmos = true;
             MapGeneratorController.OnGenerationDone += () => _debugGizmos = false;
-            ApplicationController.OnMenu += () => _debugGizmos = false;
+            // ApplicationController.OnMenu += () => _debugGizmos = false;
 
             MapGenerationContext.OnNewTriangulation += (triangulation) => Triangulations.Add(triangulation);
             MapGenerationContext.OnNewMST += (mst) => MinimumSpanningTrees.Add(mst);
@@ -84,7 +84,7 @@ namespace RyansLibrary.Labyrinth
         {
             MapGeneratorController.OnGenerationStarted -= () => _debugGizmos = true;
             MapGeneratorController.OnGenerationDone -= () => _debugGizmos = false;
-            ApplicationController.OnMenu -= () => _debugGizmos = false;
+            // ApplicationController.OnMenu -= () => _debugGizmos = false;
 
             MapGenerationContext.OnNewTriangulation -= (triangulation) => Triangulations.Add(triangulation);
             MapGenerationContext.OnNewMST -= (mst) => Triangulations.Add(mst);
@@ -273,7 +273,7 @@ namespace RyansLibrary.Labyrinth
         #region Console Commands
         private void RegisterConsoleCommands()
         {
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglegizmos",
                 "Toggles map generator gizmos. Enter 'true' for on and 'false' for off.",
                 args =>
@@ -300,7 +300,7 @@ namespace RyansLibrary.Labyrinth
                 }
                 ));
 
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglegizmos.blueprintgizmos",
                 "Toggles blueprint gizmos. \"mapgenerator.togglegizmos\" must be enabled first.",
                 args =>
@@ -309,7 +309,7 @@ namespace RyansLibrary.Labyrinth
                     Debug.Log($"Blueprint Gizmos set to '{_debugBlueprintGizmos}'.");
                 }, true));
 
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglegizmos.triangulationgizmos",
                 "Toggles triangulation gizmos. \"mapgenerator.togglegizmos\" must be enabled first.",
                 args =>
@@ -318,7 +318,7 @@ namespace RyansLibrary.Labyrinth
                     Debug.Log($"Triangulation Gizmos set to '{_debugTriangulationGizmos}'.");
                 }, true));
 
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglegizmos.boundsgizmos",
                 "Toggles zone bound gizmos. \"mapgenerator.togglegizmos\" must be enabled first.",
                 args =>

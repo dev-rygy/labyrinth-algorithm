@@ -1,4 +1,3 @@
-using RyansLibrary.Console;
 using RyansLibrary.Input;
 using UnityEngine;
 

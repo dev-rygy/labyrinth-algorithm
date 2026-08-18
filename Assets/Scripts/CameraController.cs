@@ -4,7 +4,7 @@
  * Last Modified:   06/30/2026 (Ryan)
  * Notes:           
 */
-using RyansLibrary.Console;
+using RyansLibrary.Debugging;
 using RyansLibrary.Input;
 using UnityEngine;
 
@@ -78,7 +78,7 @@ public class CameraController : MonoBehaviour
                 EnableMainCamera();
                 break;
             default:
-                Debug.LogError("Invalid camera mode: " + mode);  
+                Debug.LogError("Invalid camera mode: " + mode);
                 break;
         }
     }
@@ -135,7 +135,7 @@ public class CameraController : MonoBehaviour
 
     private void RegisterConsoleCommand()
     {
-        ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+        Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
             "camera.mode",
             "Toggles the camera's mode 'player', 'free', or 'main'",
             args =>

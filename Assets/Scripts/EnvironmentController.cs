@@ -1,6 +1,5 @@
-using RyansLibrary.Console;
+using RyansLibrary.Debugging;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class EnvironmentController : MonoBehaviour
 {
@@ -27,7 +26,7 @@ public class EnvironmentController : MonoBehaviour
 
     private void RegisterConsoleCommands()
     {
-        ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+        Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
             "environment.fog",
             "Toggles global fog.",
             args =>
@@ -50,7 +49,7 @@ public class EnvironmentController : MonoBehaviour
                 }
             }));
 
-        ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+        Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
             "environment.setambientintensity",
             "Sets the ambient light intensity",
             args =>

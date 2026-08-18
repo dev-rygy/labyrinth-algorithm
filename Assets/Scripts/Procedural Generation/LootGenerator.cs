@@ -5,7 +5,7 @@
  * Notes:           Loot Generator
  *                      Procedure starts after the Map Generation Procedure.
 */
-using RyansLibrary.Console;
+using RyansLibrary.Debugging;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -102,7 +102,7 @@ namespace RyansLibrary.Labyrinth
 
         private void RegisterConsoleCommands()
         {
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "lootgenerator.spawn",
                 "Toggles loot spawning. Enter 'true' for on and 'false' for off.",
                 args =>
@@ -132,7 +132,7 @@ namespace RyansLibrary.Labyrinth
 
         private void UnregisterConsoleCommands()
         {
-            ConsoleUI.CommandRegistry.UnregisterCommand("lootgenerator.spawn");
+            Console.CommandRegistry.UnregisterCommand("lootgenerator.spawn");
         }
 
         public void ToggleSpawn(bool toggle)

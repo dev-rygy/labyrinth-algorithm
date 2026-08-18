@@ -13,7 +13,7 @@ public class HUDUI : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         Instance = this;
 
         console.InitConsole();

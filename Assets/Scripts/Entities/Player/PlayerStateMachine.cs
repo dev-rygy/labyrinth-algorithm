@@ -10,11 +10,12 @@
  *                  4.) Final States = { Death }
 */
 using RyansLibrary.Abilities;
-using RyansLibrary.Console;
+using RyansLibrary.Debugging;
 using RyansLibrary.Input;
-using RyansLibrary.StateMachine;
+using RyansLibrary.StateMachines;
 using System;
 using UnityEngine;
+using Console = RyansLibrary.Debugging.Console;
 
 public enum PlayerStates
 {
@@ -65,7 +66,7 @@ public class PlayerStateMachine : StateMachine
     // private static PlayerChargeState _chargeState;
     // private static PlayerCastState _castState;
     private PlayerEmoteState _emoteState;
-    
+
     // Inspector Variables
     [field: Header("Required References")]
     [field: SerializeField] public Transform PlayerCharacter { get; private set; }      // The player model with the bones
@@ -76,17 +77,17 @@ public class PlayerStateMachine : StateMachine
 
     [field: SerializeField] private float _movementSpeed = 5f;        // Default speed of the player
     public float MovementSpeed => _movementSpeed;  // Default speed of the player      
-    
-    [field: Tooltip("Added time it takes for the player to rotate between frames.")] 
+
+    [field: Tooltip("Added time it takes for the player to rotate between frames.")]
     [field: SerializeField] public float MoveRotationDampValue { get; private set; }    // Added time it takes for the player to turn between frames
     [field: Tooltip("The speed of the player when climbing up a climbable object.")]
-    [field: SerializeField] public float ClimbSpeed { get; private set; } = 3f; 
+    [field: SerializeField] public float ClimbSpeed { get; private set; } = 3f;
     [field: Tooltip("Offset origin of the raycast that detects climbable objects")]
     [field: SerializeField] public float ClimbTriggerOffset { get; private set; } = 0.1f;   // Offset origin of the raycast that detects climbable object
     [field: Tooltip("Max detection distance of the raycast that detects climbable objects")]
     [field: SerializeField] public float ClimbInteractDistance { get; private set; } = 0.4f;    // Max detection distance of the raycast that detects climbable objects
     [field: Tooltip("The acceptable angle between the player's forward vector and the climbable object's forward vector (should not need to go above 90 deg)")]
-    [field: SerializeField] [Range(0, 1)] private float _climbInteractionAngle = 0.85f;
+    [field: SerializeField][Range(0, 1)] private float _climbInteractionAngle = 0.85f;
 
     [field: Header("Equipped")]
     [field: Tooltip("Player's primary weapon slot")]
@@ -141,7 +142,7 @@ public class PlayerStateMachine : StateMachine
             Destroy(gameObject);
             return;
         }
-        
+
         Instance = this;
 
         // Assign references on object
@@ -237,7 +238,7 @@ public class PlayerStateMachine : StateMachine
 
     private PlayerState GetState(PlayerStates state)
     {
-        switch(state)
+        switch (state)
         {
             case PlayerStates.Idle: return _idleState ??= new PlayerIdleState(this);
             case PlayerStates.ComboPrim: return _comboPrimState ??= new PlayerComboPrimaryState(this);
@@ -473,7 +474,7 @@ public class PlayerStateMachine : StateMachine
     private void RegisterConsoleCommands()
     {
         // Player Auto Move command - Will auto move the player in a certain direction.
-        ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+        Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
             "player.automove",
             "Will auto move the player in a certain direction.",
             args =>
@@ -485,7 +486,7 @@ public class PlayerStateMachine : StateMachine
                     return;
                 }
                 string direction = args[0].ToLower().ToString();         // Step amount given and is valid
-                
+
                 if (direction == "none")
                 {
                     Debug.Log("Player auto-move disabled.");
@@ -521,7 +522,7 @@ public class PlayerStateMachine : StateMachine
             }, true));
 
         // Player speed command - Change the player's speed value.
-        ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+        Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
             "player.speed",
             "changes the player's speed value.",
             args =>
@@ -546,8 +547,8 @@ public class PlayerStateMachine : StateMachine
 
     private void UnregisterConsoleCommands()
     {
-        ConsoleUI.CommandRegistry.UnregisterCommand("player.automove");
-        ConsoleUI.CommandRegistry.UnregisterCommand("player.speed");
+        Console.CommandRegistry.UnregisterCommand("player.automove");
+        Console.CommandRegistry.UnregisterCommand("player.speed");
     }
     #endregion
 }

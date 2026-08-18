@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace RyansLibrary.Console
+namespace RyansLibrary.Debugging
 {
     /// <summary>
     /// Class that holds the format and function of a command

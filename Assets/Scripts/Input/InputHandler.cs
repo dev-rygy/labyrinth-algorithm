@@ -4,9 +4,9 @@
  * Last Modified:   06/12/2025 (Ryan)
  * Notes:           Input Handler
 */
+using RyansLibrary.Debugging;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using RyansLibrary.Console;
 public enum InputMap
 {
     Player,
@@ -331,7 +331,7 @@ namespace RyansLibrary.Input
 
             if (toggle)
                 _playerControls.UI.Enable();
-            else 
+            else
                 _playerControls.UI.Disable();
         }
 
@@ -436,7 +436,7 @@ namespace RyansLibrary.Input
         private void RegisterConsoleCommands()
         {
             // Map generator restart command - Resets and restarts the map generator state.
-            ConsoleUI.CommandRegistry.RegisterCommand(new ConsoleCommand(
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                     "input.map",
                     "switches input to a specific action map.",
                 args =>
