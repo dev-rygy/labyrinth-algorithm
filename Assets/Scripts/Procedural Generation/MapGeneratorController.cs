@@ -116,7 +116,6 @@ namespace RyansLibrary.Labyrinth
         private bool _isDubuggingSequential;
         public bool IsDebuggingSequential => _isDubuggingSequential;
 
-        private Coroutine _mapGeneratorCoroutine;
 
         // Storage for blueprints and blueprint operations
         private MapGenerationContext _context;
@@ -470,7 +469,6 @@ namespace RyansLibrary.Labyrinth
 
             // Stop the entire generation coroutine chain
             StopAllCoroutines();
-            _mapGeneratorCoroutine = null;
             _context.ClearAll();
 
             // Reset stepwise procedure values

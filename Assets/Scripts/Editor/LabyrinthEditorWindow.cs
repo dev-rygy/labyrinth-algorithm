@@ -18,21 +18,9 @@ namespace RyansLibrary.UnityEditor
             // Each editor window contains a root VisualElement object
             VisualElement root = rootVisualElement;
 
-            // VisualElements objects can contain other VisualElement following a tree hierarchy
-            Label label = new Label("Hello World!");
+            // Coming soon label
+            Label label = new Label("Coming Soon!");
             root.Add(label);
-
-            // Create button
-            Button button = new Button();
-            button.name = "button";
-            button.text = "Button";
-            root.Add(button);
-
-            // Create toggle
-            Toggle toggle = new Toggle();
-            toggle.name = "toggle";
-            toggle.label = "Toggle";
-            root.Add(toggle);
         }
     }
 }
