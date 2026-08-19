@@ -52,10 +52,10 @@ namespace RyansLibrary.Labyrinth
     public static class BlueprintGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
-        const int STANDARD_FACE_COUNT = 6;
+        const int k_standardFaceCount = 6;
 
         private static bool _debugLogs = false;
-        
+
         #region Blueprint Room Generation
         /// <summary>
         /// Generate a new blueprint room at the desired location. Add it to the master path and
@@ -174,7 +174,7 @@ namespace RyansLibrary.Labyrinth
         public static Blueprint PlaceBlueprintInRandomDirection(MapGenerationContext context, Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
         {
             // If path can be placed in a vertical direction then all 6 faces are available, otherwise only 4 horizontal faces are available
-            int availableDirections = canGoVertical ? STANDARD_FACE_COUNT : STANDARD_FACE_COUNT - 2;
+            int availableDirections = canGoVertical ? k_standardFaceCount : k_standardFaceCount - 2;
 
             // Chose a position in a random cardinal direction and check for collisions
             bool[] attempts = new bool[availableDirections];
@@ -489,14 +489,17 @@ namespace RyansLibrary.Labyrinth
             return context.BlueprintDictionary.ContainsKey(position);
         }
 
-        public static List<Blueprint> ToggleAvailableCellsInUniqueRoom(MapGenerationContext context, Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)
+        public static List<Blueprint> ToggleAvailableBlueprintsInRoom(MapGenerationContext context, Path path, List<RoomCell> roomCells, Vector3Int roomOrigin, bool available = true)
         {
             List<Blueprint> availibleBlueprints = new List<Blueprint>();
 
             // Set cells that are supposed to be available to available
-            foreach (Vector3Int cell in availableCells)
+            foreach (RoomCell cell in roomCells)
             {
-                Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
+                if (!cell.IsAvilable)   // Make sure cell is available
+                    continue;
+
+                Vector3Int cellPosition = roomOrigin + cell.Position;      // Find the actual position in room space of the cell
 
                 if (context.BlueprintDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
                 {

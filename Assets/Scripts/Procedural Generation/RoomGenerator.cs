@@ -22,7 +22,7 @@ namespace RyansLibrary.Labyrinth
     public class RoomGenerator
     {
         // Amount of faces on a blueprint room; This should never be changed unless unique shaped rooms are made in the future
-        const int STANDARD_FACE_COUNT = 6;
+        const int k_standardFaceCount = 6;
 
         // ***** Master References *****
         // Dictionary used for quick access like checking locations for conflicts and checking locations for room shape conditions
@@ -466,7 +466,7 @@ namespace RyansLibrary.Labyrinth
         private Blueprint[] CheckAvailableAdjacentBlueprints(Blueprint blueprint, Path path)
         {
             // Store availRooms here and return. All possible avail rooms are up to the face count (F0 - F5)
-            Blueprint[] availableBlueprints = new Blueprint[STANDARD_FACE_COUNT];
+            Blueprint[] availableBlueprints = new Blueprint[k_standardFaceCount];
 
             // Get the positions of potential adjacent rooms to the room
             Vector3Int rightRoomPos = blueprint.Position + Vector3Int.right;     // F0: Right

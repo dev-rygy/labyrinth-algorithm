@@ -917,7 +917,7 @@ namespace RyansLibrary.Labyrinth
                     actualPosition += zone.Bounds.position;
 
                 if (entry.Prefab.TryGetComponent(out Room room))
-                    BlueprintGenerator.ToggleAvailableCellsInUniqueRoom(_context, zone.MainPath, room.AvailableCellData, actualPosition, false);
+                    BlueprintGenerator.ToggleAvailableBlueprintsInRoom(_context, zone.MainPath, room.RoomCells, actualPosition, false);
                 else
                     Debug.LogError($"Failed to get Room component from prefab {entry.Prefab}.");
 
@@ -966,14 +966,16 @@ namespace RyansLibrary.Labyrinth
 
                 Room generatedRoom = _roomGenerator.GenerateRoom(entry.Prefab, actualPosition, zone.MainPath);
 
-                // TODO: Make this into a new function in the room generator. Make the function check for all rooms inside
+                // TODO: Make this into a new function in the room generator. Make the function check for all cells inside
                 // the unique room.
-                // Unique rooms with available cells
-                if (generatedRoom.AvailableCellData != null)
+                if (generatedRoom.RoomCells != null)
                 {
-                    for (int i = 0; i < generatedRoom.AvailableCellData.Count; i++)
+                    for (int i = 0; i < generatedRoom.RoomCells.Count; i++)
                     {
-                        if (_context.BlueprintDictionary.TryGetValue(actualPosition + generatedRoom.AvailableCellData[i], out Blueprint blueprint))
+                        if (!generatedRoom.RoomCells[i].IsAvilable)     // Make sure cell is available
+                            continue;
+
+                        if (_context.BlueprintDictionary.TryGetValue(actualPosition + generatedRoom.RoomCells[i].Position, out Blueprint blueprint))
                         {
                             generatedRoom.CopyBlueprintEntranceFlags(blueprint.EntryPointFlags, i);
                         }

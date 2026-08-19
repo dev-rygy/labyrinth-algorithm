@@ -3028,6 +3028,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Small Room (1x1x1) Forest To Mines
       objectReference: {fileID: 0}
+    - target: {fileID: 2326604940617281110, guid: f548dc291fb92c54ca8d207fb07f8a29,
+        type: 3}
+      propertyPath: _roomCells.Array.data[0].Walls.Array.data[4].IsExemptFromAutoReset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2326604940617281110, guid: f548dc291fb92c54ca8d207fb07f8a29,
+        type: 3}
+      propertyPath: _roomCells.Array.data[0].Walls.Array.data[5].IsExemptFromAutoReset
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3528767446986291804, guid: f548dc291fb92c54ca8d207fb07f8a29,
         type: 3}
       propertyPath: m_LocalScale.x

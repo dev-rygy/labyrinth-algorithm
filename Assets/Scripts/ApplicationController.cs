@@ -14,7 +14,7 @@ using UnityEngine;
 /// </summary>
 public class ApplicationController : MonoBehaviour
 {
-    const string MAIN_SCENE_NAME = "Main";
+    const string k_mainSceneName = "Main";
 
     public static event Action OnMenu;
     private static ApplicationController _instance;
@@ -71,10 +71,10 @@ public class ApplicationController : MonoBehaviour
 
     public IEnumerator LoadNewGame()
     {
-        if (ScenesManager.Instance.GetCurrentSceneName() != MAIN_SCENE_NAME)
+        if (ScenesManager.Instance.GetCurrentSceneName() != k_mainSceneName)
         {
             // Load Scene
-            yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(MAIN_SCENE_NAME));
+            yield return StartCoroutine(ScenesManager.Instance.LoadSceneAsync(k_mainSceneName));
         }
 
         _cameraController.SetCameraMode(CameraMode.Main);

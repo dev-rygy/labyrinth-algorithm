@@ -1777,15 +1777,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 6138844018635324543}
-  - {fileID: 8040494675782624779}
-  - {fileID: 7240882881692141689}
-  - {fileID: 3589251409462801424}
-  - {fileID: 28283106189774960}
-  - {fileID: 2589053743234407418}
-  <AvailableCellData>k__BackingField:
-  - {x: 2, y: 0, z: -1}
+  _roomCells:
+  - Position: {x: 2, y: 0, z: -1}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 6138844018635324543}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 8040494675782624779}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 7240882881692141689}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 3589251409462801424}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 28283106189774960}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 2589053743234407418}
+      IsExemptFromMutation: 0
   RoomSpawners:
   - {fileID: 3120719067651131617}
   - {fileID: 2180309345728973955}
@@ -1798,6 +1805,7 @@ MonoBehaviour:
   _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
+  _unavailableCellColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &3981911965936898000
 GameObject:
   m_ObjectHideFlags: 0

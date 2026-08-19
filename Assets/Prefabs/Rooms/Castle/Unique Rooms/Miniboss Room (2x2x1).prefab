@@ -11586,7 +11586,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8604239860095743016}
-  - component: {fileID: 4230179867105742045}
   m_Layer: 0
   m_Name: Entrance Room
   m_TagString: Untagged
@@ -11613,34 +11612,6 @@ Transform:
   - {fileID: 4858323198328195233}
   m_Father: {fileID: 2342625201097018484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4230179867105742045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 796803525251485967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 9147161314434237529}
-  - {fileID: 832838419723993210}
-  - {fileID: 3315845209212507651}
-  - {fileID: 2365557088439813178}
-  - {fileID: 6921781403236624531}
-  - {fileID: 2492236617280264105}
-  <AvailableCellData>k__BackingField: []
-  RoomSpawners:
-  - {fileID: 0}
-  roomShape: 0
-  <RoomDimensions>k__BackingField: {x: 1, y: 1, z: 1}
-  <RoomType>k__BackingField: 0
-  _debug: 0
-  _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
-  _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &898387620408944054
 GameObject:
   m_ObjectHideFlags: 0
@@ -54409,15 +54380,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 9147161314434237529}
-  - {fileID: 832838419723993210}
-  - {fileID: 3315845209212507651}
-  - {fileID: 2365557088439813178}
-  - {fileID: 6921781403236624531}
-  - {fileID: 2492236617280264105}
-  <AvailableCellData>k__BackingField:
-  - {x: 1, y: 0, z: -1}
+  _roomCells:
+  - Position: {x: 1, y: 0, z: -1}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 9147161314434237529}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 832838419723993210}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 3315845209212507651}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 2365557088439813178}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 6921781403236624531}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 2492236617280264105}
+      IsExemptFromMutation: 0
   RoomSpawners:
   - {fileID: 934395820962531051}
   - {fileID: 3003554171954825031}
@@ -54433,6 +54411,7 @@ MonoBehaviour:
   _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
+  _unavailableCellColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &4026626390387260874
 GameObject:
   m_ObjectHideFlags: 0

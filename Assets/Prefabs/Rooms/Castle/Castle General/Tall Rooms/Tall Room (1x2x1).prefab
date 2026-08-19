@@ -1180,22 +1180,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 8793840047984561186}
-  - {fileID: 1943623105059785250}
-  - {fileID: 4237291409046237394}
-  - {fileID: 7048459489205740338}
-  - {fileID: 8819396391089661676}
-  - {fileID: 1041124736290005962}
-  - {fileID: 2847190317846091548}
-  - {fileID: 8801187019202537336}
-  - {fileID: 5749276496328291588}
-  - {fileID: 2939017002934740317}
-  - {fileID: 2913394571373281199}
-  - {fileID: 7102305469595693251}
-  <AvailableCellData>k__BackingField:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 1, z: 0}
+  _roomCells:
+  - Position: {x: 0, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 8793840047984561186}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 1943623105059785250}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 4237291409046237394}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 7048459489205740338}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 8819396391089661676}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 1041124736290005962}
+      IsExemptFromMutation: 0
+  - Position: {x: 0, y: 1, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 2847190317846091548}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 8801187019202537336}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 5749276496328291588}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 2939017002934740317}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 2913394571373281199}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 7102305469595693251}
+      IsExemptFromMutation: 1
   RoomSpawners:
   - {fileID: 4239867646458560157}
   roomShape: 2
@@ -1204,6 +1219,7 @@ MonoBehaviour:
   _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
+  _unavailableCellColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &5999011936321256522
 GameObject:
   m_ObjectHideFlags: 0

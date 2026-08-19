@@ -1712,36 +1712,91 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 7979696769949998112}
-  - {fileID: 5704950896980505174}
-  - {fileID: 3531551755394726268}
-  - {fileID: 680581744486883195}
-  - {fileID: 2717991668175530799}
-  - {fileID: 8285092576005564876}
-  - {fileID: 2346081768235817881}
-  - {fileID: 5126740894271266271}
-  - {fileID: 9028714185039674984}
-  - {fileID: 1158310104313174627}
-  - {fileID: 5108618565727455029}
-  - {fileID: 5545711304394944543}
-  - {fileID: 7309254899479230453}
-  - {fileID: 4888277254642289600}
-  - {fileID: 9138707803540967832}
-  - {fileID: 1011039278177390570}
-  - {fileID: 1314538085867066351}
-  - {fileID: 3322616570000080731}
-  - {fileID: 7622437023166375274}
-  - {fileID: 7104660216271790132}
-  - {fileID: 6582743606974166887}
-  - {fileID: 5274441837642453193}
-  - {fileID: 3002778343289000456}
-  - {fileID: 889484633805497812}
-  <AvailableCellData>k__BackingField:
-  - {x: 0, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 1, y: 0, z: 1}
-  - {x: 0, y: 0, z: 1}
+  _roomCells:
+  - Position: {x: 0, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 7979696769949998112, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 5704950896980505174, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 3531551755394726268, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 680581744486883195, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 2717991668175530799, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 8285092576005564876, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+  - Position: {x: 1, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 2346081768235817881, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 5126740894271266271, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 9028714185039674984, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 1158310104313174627, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 5108618565727455029, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 5545711304394944543, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+  - Position: {x: 1, y: 0, z: 1}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 7309254899479230453, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 4888277254642289600, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 9138707803540967832, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 1011039278177390570, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 1314538085867066351, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 3322616570000080731, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+  - Position: {x: 0, y: 0, z: 1}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 7622437023166375274, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 7104660216271790132, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 6582743606974166887, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 5274441837642453193, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 3002778343289000456, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 889484633805497812, guid: c2bdeb7d38f60144b82dc5edd6d065c7,
+        type: 3}
+      IsExemptFromMutation: 0
   RoomSpawners:
   - {fileID: 815116897398417672}
   - {fileID: 8240035768978268465}
@@ -1755,6 +1810,7 @@ MonoBehaviour:
   _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
+  _unavailableCellColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &6704691472357370452
 GameObject:
   m_ObjectHideFlags: 0

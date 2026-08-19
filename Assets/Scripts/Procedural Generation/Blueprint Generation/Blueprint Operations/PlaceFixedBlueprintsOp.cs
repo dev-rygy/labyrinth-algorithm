@@ -83,7 +83,7 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                List<Blueprint> availableBlueprints = ToggleAvailableCellsInUniqueRoom(path, room.AvailableCellData, roomOrigin);
+                List<Blueprint> availableBlueprints = BlueprintGenerator.ToggleAvailableBlueprintsInRoom(_context, path, room.RoomCells, roomOrigin);
                 if (availableBlueprints == null)
                 {
                     Debug.LogError($"PlaceFixedBlueprintsOp: Unique Room \"{room.name}\" has no available blueprint cells.");
@@ -95,27 +95,6 @@ namespace RyansLibrary.Labyrinth
             }
             Debug.LogError($"PlaceFixedBlueprintsOp: {entry.Prefab.name} does not have a Room script!");
             return false;
-        }
-
-        private List<Blueprint> ToggleAvailableCellsInUniqueRoom(Path path, List<Vector3Int> availableCells, Vector3Int roomOrigin, bool available = true)
-        {
-            List<Blueprint> availibleBlueprints = new List<Blueprint>();
-
-            // Set cells that are supposed to be available to available
-            foreach (Vector3Int cell in availableCells)
-            {
-                Vector3Int cellPosition = roomOrigin + cell;      // Find the actual position in room space of the cell
-
-                if (_context.BlueprintDictionary.TryGetValue(cellPosition, out Blueprint blueprint))
-                {
-                    availibleBlueprints.Add(blueprint);
-                    blueprint.Available = available;
-                }
-                else
-                    availibleBlueprints.Add(BlueprintGenerator.GenerateBlueprint(_context, path, cellPosition, available));
-            }
-
-            return availibleBlueprints;
         }
     }
 }

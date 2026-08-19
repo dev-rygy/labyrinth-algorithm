@@ -25,7 +25,7 @@ namespace RyansLibrary
     public class DelaunayTriangulation2D
     {
         // Precision required for checking if a piece of geometry is nearly the same
-        private const float TRIANGULATION_PRECISION = 0.01f;
+        private const float k_triangulationPrecision = 0.01f;
 
         public List<Vertex> Vertices;
         public List<Edge> Edges;
@@ -132,9 +132,9 @@ namespace RyansLibrary
 
             // Remove triangles connected to super triangle
             Triangles.RemoveAll(t =>
-                t.ContainsVertex(p1, TRIANGULATION_PRECISION) ||
-                t.ContainsVertex(p2, TRIANGULATION_PRECISION) ||
-                t.ContainsVertex(p3, TRIANGULATION_PRECISION));
+                t.ContainsVertex(p1, k_triangulationPrecision) ||
+                t.ContainsVertex(p2, k_triangulationPrecision) ||
+                t.ContainsVertex(p3, k_triangulationPrecision));
 
             HashSet<Edge> edgeSet = new HashSet<Edge>();
 

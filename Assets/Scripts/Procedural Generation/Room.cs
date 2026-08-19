@@ -56,7 +56,7 @@ namespace RyansLibrary.Labyrinth
     public struct RoomWall
     {
         [SerializeField] public Transform WallTransform;
-        [SerializeField] public bool IsExemptFromAutoReset;
+        [SerializeField] public bool IsExemptFromMutation;
     }
 
     [Serializable]
@@ -74,11 +74,13 @@ namespace RyansLibrary.Labyrinth
     /// </summary>
     public class Room : MonoBehaviour
     {
-        [Header("Room Components")]
+        private const int k_wallCount = 6;
 
+        [Header("Room Components")]
         [SerializeField] private List<RoomCell> _roomCells;
-        [SerializeField] private List<Transform> _roomWalls;
-        [field: SerializeField] public List<Vector3Int> AvailableCellData { get; private set; }
+        public List<RoomCell> RoomCells => _roomCells;
+        //[SerializeField] private List<Transform> _roomWalls;
+        //[field: SerializeField] public List<Vector3Int> AvailableCellData { get; private set; }
         [SerializeField] public List<SpawnPad> RoomSpawners;
 
         [Header("Room Properties")]
@@ -88,8 +90,9 @@ namespace RyansLibrary.Labyrinth
 
         [Header("Debug")]
         [SerializeField] private bool _debug = false;
-        [SerializeField] private Color _roomBoundsColor = Color.red;
+        [SerializeField] private Color _roomBoundsColor = Color.orange;
         [SerializeField] private Color _availableCellColor = Color.green;
+        [SerializeField] private Color _unavailableCellColor = Color.red;
 
         // [unit, face]: a merged room prefab (see RoomGenerator's bigRoom/tallRoom/longRoom shapes) can represent
         // up to 4 of the original 1x1x1 blueprint cells, each with its own 6 faces/walls - this is where those get
@@ -103,12 +106,12 @@ namespace RyansLibrary.Labyrinth
             // Index 2 = Bot-Right Unit
             // Index 3 = Top-Right Unit
             // Index 4 = Top-Left Unit
-            openEntranceways = new bool[4, 6];
+            openEntranceways = new bool[RoomCells.Count, k_wallCount];
 
             RoomType = RoomType.general;
 
             // TODO: Make some walls exempt to this for unique rooms especially
-            // ResetEntranceways();
+            ResetEntranceways();
         }
 
         // Initialize the Room's entrances and loot
@@ -143,10 +146,7 @@ namespace RyansLibrary.Labyrinth
         private bool[] RotateEntryFlag(bool[] entrypointFlagArray, RoomRotation rotation)
         {
             if (rotation == RoomRotation.Deg0)        // If no rotation return original array
-            {
-                if (_debug) Debug.Log($"Room {gameObject.name} was not rotated.");
                 return entrypointFlagArray;
-            }
 
             // A 90-degree yaw swaps which physical wall each blueprint face flag now points at (e.g. the wall that
             // used to face +Z now faces +X), so the flags have to be permuted to match and not just copied.
@@ -156,8 +156,6 @@ namespace RyansLibrary.Labyrinth
             {
                 rotatedArray = RotateEntryFlagHorizontal90(rotatedArray);
             }
-
-            if (_debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
 
             return rotatedArray;
         }
@@ -178,49 +176,54 @@ namespace RyansLibrary.Labyrinth
             return rotatedArray;
         }
 
+
         /// <summary>
         /// When called will activate all entranceways that have been flagged as open in the openEntranceways array
         /// </summary>
         private void AcivateEntranceways()
         {
-            int enListIdx = 0;              // iterator for activeEntranceway List
-            for (int i = 0; i < 4; i++)     // iterate through 4 possible unit spaces
+            for (int i = 0; i < _roomCells.Count; i++)     // iterate through all room cells
             {
-                for (int j = 0; j < 6; j++)     // iterate through the faces of each unit
+                if (_roomCells[i].IsAvilable)
                 {
-                    enListIdx = (i * 6) + j;
-                    if (openEntranceways[i, j] == true)   // Activate entrance if true in activeEntranceway List
-                        ActivateEntranceway(enListIdx);
+                    for (int j = 0; j < k_wallCount; j++)     // iterate through the walls/faces of each unit
+                    {
+                        // Activate entrance if true in activeEntranceway List
+                        if (openEntranceways[i, j] == true && !_roomCells[i].Walls[j].IsExemptFromMutation)
+                        {
+                            ActivateEntranceway(_roomCells[i].Walls[j]);
+                        }
+                    }
                 }
             }
         }
 
+
         private void ResetEntranceways()
         {
-            for (int i = 0; i < _roomWalls.Count; i++)
+            foreach (RoomCell cell in _roomCells)
             {
-                DeactivateEntranceway(i);
+                if (cell.IsAvilable)
+                {
+                    foreach (RoomWall wall in cell.Walls)
+                    {
+                        if (!wall.IsExemptFromMutation)
+                            DeactivateEntranceway(wall);
+                    }
+                }
             }
         }
 
-        /// <summary>
-        /// Activate an Entranceway in the entranceway list
-        /// </summary>
-        /// <param name="entranceNum"></param>
-        // _roomWalls is expected to be laid out in the prefab in the same flattened [unit*6 + face] order as
-        // openEntranceways, and each wall transform's child 0/1 are expected to be the open-doorway
-        // mesh/collider and the solid-wall mesh/collider respectively - swapping which one is active is how a
-        // face becomes a walkable doorway instead of a solid wall.
-        private void ActivateEntranceway(int entranceNum)
+        private void ActivateEntranceway(RoomWall wall)
         {
-            _roomWalls[entranceNum].GetChild(0).gameObject.SetActive(true);   // Activate Entranceway
-            _roomWalls[entranceNum].GetChild(1).gameObject.SetActive(false);  // Deactivate Wall
+            wall.WallTransform.GetChild(0).gameObject.SetActive(true);   // Activate Entranceway
+            wall.WallTransform.GetChild(1).gameObject.SetActive(false);  // Deactivate Wall
         }
 
-        private void DeactivateEntranceway(int entranceNum)
+        private void DeactivateEntranceway(RoomWall wall)
         {
-            _roomWalls[entranceNum].GetChild(0).gameObject.SetActive(false);  // Deactivate Entranceway
-            _roomWalls[entranceNum].GetChild(1).gameObject.SetActive(true);   // Activate Wall
+            wall.WallTransform.GetChild(0).gameObject.SetActive(false);  // Deactivate Entranceway
+            wall.WallTransform.GetChild(1).gameObject.SetActive(true);   // Activate Wall
         }
 
         public float GetRoomOccupancy()
@@ -251,10 +254,14 @@ namespace RyansLibrary.Labyrinth
 
         private void DrawAvailableCells()
         {
-            foreach (Vector3Int cell in AvailableCellData)
+            foreach (RoomCell cell in _roomCells)
             {
-                Vector3 cellWorldPos = transform.position + (13f * 0.5f) * Vector3.up + (Vector3)cell * 13; // Assuming each cell is 13 units apart
-                Gizmos.color = _availableCellColor;
+                Vector3 cellWorldPos = transform.position + (13f * 0.5f) * Vector3.up + (Vector3)cell.Position * 13; // Assuming each cell is 13 units apart
+
+                if (cell.IsAvilable)
+                    Gizmos.color = _availableCellColor;
+                else
+                    Gizmos.color = _unavailableCellColor;
                 Gizmos.DrawWireCube(cellWorldPos, Vector3.one * 13);
             }
         }

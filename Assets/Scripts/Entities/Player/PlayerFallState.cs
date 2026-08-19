@@ -10,8 +10,8 @@ using UnityEngine;
 public class PlayerFallState : PlayerState
 {
     // Animator Hash Codes
-    private readonly int ANIM_FALLING_HASH = Animator.StringToHash("Falling");
-    private readonly int ANIM_LANDING_HASH = Animator.StringToHash("Landing");
+    private readonly int k_animFallingHash = Animator.StringToHash("Falling");
+    private readonly int k_animLandingHash = Animator.StringToHash("Landing");
 
     public PlayerFallState(PlayerStateMachine stateMachine) : base(stateMachine) { }
 
@@ -22,7 +22,7 @@ public class PlayerFallState : PlayerState
         _isLanding = false;     // reset flag
 
         // Play the Falling animation
-        stateMachine.Animator.CrossFadeInFixedTime(ANIM_FALLING_HASH, 0.1f);
+        stateMachine.Animator.CrossFadeInFixedTime(k_animFallingHash, 0.1f);
     }
 
     public override void Tick(float deltaTime)
@@ -60,10 +60,10 @@ public class PlayerFallState : PlayerState
         stateMachine.ForceReciever.EnableGroundCheck = false;
 
         // Start the landing animation
-        stateMachine.Animator.CrossFadeInFixedTime(ANIM_LANDING_HASH, 0.1f);
+        stateMachine.Animator.CrossFadeInFixedTime(k_animLandingHash, 0.1f);
 
         // Wait until the animator is fully in the landing animation state
-        yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).shortNameHash == ANIM_LANDING_HASH);
+        yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).shortNameHash == k_animLandingHash);
 
         // Now wait until this specific animation has finished. normalizedTime increases monotonically past 1
         // once the clip completes (it does not wrap on its own), so this can't be missed the way a narrow

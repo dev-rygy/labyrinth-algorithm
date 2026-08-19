@@ -26,7 +26,7 @@ namespace RyansLibrary
     public class DelaunayTriangulation3D
     {
         // Precision required for checking if a piece of geometry is nearly the same
-        private const float TRIANGULATION_PRECISION = 0.01f;
+        private const float k_triangulationPrecision = 0.01f;
 
         public List<Vertex> Verticies;
         public List<Edge> Edges;
@@ -133,7 +133,7 @@ namespace RyansLibrary
                 {
                     for (int j = i + 1; j < Triangles.Count; j++)       // Select second triangle
                     {
-                        if (Triangle.AlmostEqual(Triangles[i], Triangles[j], TRIANGULATION_PRECISION))       // If both of the triangles are nearly on top of each other
+                        if (Triangle.AlmostEqual(Triangles[i], Triangles[j], k_triangulationPrecision))       // If both of the triangles are nearly on top of each other
                         {
                             _badTriangles.Add(Triangles[i]);
                             _badTriangles.Add(Triangles[j]);
@@ -157,8 +157,8 @@ namespace RyansLibrary
 
             // Remove all tetrahedron that have the points of the original tetrahedron
             Tetrahedra.RemoveAll((Tetrahedron t) => 
-                t.ContainsVertex(p1, TRIANGULATION_PRECISION) || t.ContainsVertex(p2, TRIANGULATION_PRECISION) || 
-                t.ContainsVertex(p3, TRIANGULATION_PRECISION) || t.ContainsVertex(p4, TRIANGULATION_PRECISION));
+                t.ContainsVertex(p1, k_triangulationPrecision) || t.ContainsVertex(p2, k_triangulationPrecision) ||
+                t.ContainsVertex(p3, k_triangulationPrecision) || t.ContainsVertex(p4, k_triangulationPrecision));
 
             HashSet<Triangle> triangleSet = new HashSet<Triangle>();
             HashSet<Edge> edgeSet = new HashSet<Edge>();

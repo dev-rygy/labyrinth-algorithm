@@ -164591,29 +164591,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 5625699203892657926}
-  - {fileID: 6403232984827697511}
-  - {fileID: 3557747422560515465}
-  - {fileID: 3618348602762485407}
-  - {fileID: 3365259422456375973}
-  - {fileID: 5048679813476095870}
-  - {fileID: 8295844952765732993}
-  - {fileID: 8370520171076504953}
-  - {fileID: 5914272646722302349}
-  - {fileID: 891824667997750946}
-  - {fileID: 2694054426564169563}
-  - {fileID: 6432919719411638705}
-  - {fileID: 6807949129066314323}
-  - {fileID: 5035472972651736215}
-  - {fileID: 8797626318333247661}
-  - {fileID: 3872139196710359583}
-  - {fileID: 5273789847541822640}
-  - {fileID: 7474012986868223827}
-  <AvailableCellData>k__BackingField:
-  - {x: 0, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 1, y: 0, z: 1}
+  _roomCells:
+  - Position: {x: 0, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 5625699203892657926}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 6403232984827697511}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 3557747422560515465}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 3618348602762485407}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 3365259422456375973}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 5048679813476095870}
+      IsExemptFromMutation: 0
+  - Position: {x: 1, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 8295844952765732993}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 8370520171076504953}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 5914272646722302349}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 891824667997750946}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 2694054426564169563}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 6432919719411638705}
+      IsExemptFromMutation: 0
+  - Position: {x: 1, y: 0, z: 1}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 6807949129066314323}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 5035472972651736215}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 8797626318333247661}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 3872139196710359583}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 5273789847541822640}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 7474012986868223827}
+      IsExemptFromMutation: 0
   RoomSpawners:
   - {fileID: 9213949468650897366}
   roomShape: 4
@@ -164622,6 +164645,7 @@ MonoBehaviour:
   _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
+  _unavailableCellColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &6087819696180912826
 GameObject:
   m_ObjectHideFlags: 0

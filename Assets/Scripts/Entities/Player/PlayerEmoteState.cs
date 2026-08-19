@@ -13,9 +13,9 @@ using UnityEngine;
 public class PlayerEmoteState : PlayerState
 {
     // Animator Hash Codes
-    private readonly int ANIM_EMOTE_HASH = Animator.StringToHash("Dance");
+    private readonly int k_animEmoteHash = Animator.StringToHash("Dance");
     // Time to transition between animtions
-    private const float ANIMATOR_TRANSITION_DURATION = 0.1f;
+    private const float k_animatorTransitionDuration = 0.1f;
 
     public PlayerEmoteState(PlayerStateMachine stateMachine) : base(stateMachine) { }
 
@@ -28,7 +28,7 @@ public class PlayerEmoteState : PlayerState
         stateMachine.SheatheWeapons();
 
         // Play selected emote animation
-        stateMachine.Animator.CrossFadeInFixedTime(ANIM_EMOTE_HASH, ANIMATOR_TRANSITION_DURATION);
+        stateMachine.Animator.CrossFadeInFixedTime(k_animEmoteHash, k_animatorTransitionDuration);
     }
 
     public override void Tick(float deltaTime)

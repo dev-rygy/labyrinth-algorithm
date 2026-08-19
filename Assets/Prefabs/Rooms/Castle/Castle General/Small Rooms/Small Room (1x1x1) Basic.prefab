@@ -673,12 +673,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
+      propertyPath: _roomCells.Array.data[1].IsAvilable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[1].Position.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
       propertyPath: _walls.Array.data[0].Walls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
       propertyPath: _roomCells.Array.data[0].Walls.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[1].Walls.Array.size
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
@@ -711,6 +726,41 @@ PrefabInstance:
       propertyPath: _roomCells.Array.data[0].Walls.Array.data[5].WallTransform
       value: 
       objectReference: {fileID: 8131936874170519796}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[1].Walls.Array.data[0].WallTransform
+      value: 
+      objectReference: {fileID: 573208813071569762}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[1].Walls.Array.data[1].WallTransform
+      value: 
+      objectReference: {fileID: 2289032375242716121}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[1].Walls.Array.data[2].WallTransform
+      value: 
+      objectReference: {fileID: 3983596272153248631}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[1].Walls.Array.data[3].WallTransform
+      value: 
+      objectReference: {fileID: 8722419530424172985}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[1].Walls.Array.data[4].WallTransform
+      value: 
+      objectReference: {fileID: 6003334021250177918}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[1].Walls.Array.data[5].WallTransform
+      value: 
+      objectReference: {fileID: 8131936874170519796}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      propertyPath: _roomCells.Array.data[0].Walls.Array.data[0].IsExemptFromAutoReset
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6944168403148575479, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
       propertyPath: m_Name

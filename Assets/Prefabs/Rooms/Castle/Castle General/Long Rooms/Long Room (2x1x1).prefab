@@ -81,22 +81,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 2861351103683256343}
-  - {fileID: 4452998856241452516}
-  - {fileID: 2896764527669332920}
-  - {fileID: 5883187432787276054}
-  - {fileID: 7364169407984874962}
-  - {fileID: 6932299345983128183}
-  - {fileID: 6692945627857320680}
-  - {fileID: 8720098261104221144}
-  - {fileID: 3598794311492679693}
-  - {fileID: 2117204737378767533}
-  - {fileID: 8106598454716475484}
-  - {fileID: 6324714464439185019}
-  <AvailableCellData>k__BackingField:
-  - {x: 0, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
+  _roomCells:
+  - Position: {x: 0, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 2861351103683256343}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 4452998856241452516}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 2896764527669332920}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 5883187432787276054}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 7364169407984874962}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 6932299345983128183}
+      IsExemptFromMutation: 0
+  - Position: {x: 1, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 6692945627857320680}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 8720098261104221144}
+      IsExemptFromMutation: 1
+    - WallTransform: {fileID: 3598794311492679693}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 2117204737378767533}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 8106598454716475484}
+      IsExemptFromMutation: 0
+    - WallTransform: {fileID: 6324714464439185019}
+      IsExemptFromMutation: 0
   RoomSpawners:
   - {fileID: 5684848421729336118}
   roomShape: 1
@@ -105,6 +120,7 @@ MonoBehaviour:
   _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
+  _unavailableCellColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &279986192555571845
 GameObject:
   m_ObjectHideFlags: 0

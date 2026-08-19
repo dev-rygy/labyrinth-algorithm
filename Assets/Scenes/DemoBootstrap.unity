@@ -444,8 +444,13 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3025117295075328031, guid: e5e269a7e5f91f044be5193fb55263bc,
         type: 3}
+      propertyPath: _enableFogOnGameStart
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3025117295075328031, guid: e5e269a7e5f91f044be5193fb55263bc,
+        type: 3}
       propertyPath: _ambientIntensityOnGameStart
-      value: 75
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4059851664085704924, guid: e5e269a7e5f91f044be5193fb55263bc,
         type: 3}

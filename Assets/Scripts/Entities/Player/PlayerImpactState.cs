@@ -10,10 +10,10 @@ using UnityEngine;
 
 public class PlayerImpactState : PlayerState
 {
-    private readonly int ANIM_IMPACT_HASH = Animator.StringToHash("Impact");
+    private readonly int k_animImpactHash = Animator.StringToHash("Impact");
 
     // Time to transition between animations
-    private const float ANIMATOR_CROSSFADE_DURATION = 0.1f;
+    private const float k_animatorCrossfadeDuration = 0.1f;
 
     private float duration = 1f;
 
@@ -21,7 +21,7 @@ public class PlayerImpactState : PlayerState
     public override void Enter()
     {
         // Play the impact animation
-        stateMachine.Animator.CrossFadeInFixedTime(ANIM_IMPACT_HASH, ANIMATOR_CROSSFADE_DURATION);
+        stateMachine.Animator.CrossFadeInFixedTime(k_animImpactHash, k_animatorCrossfadeDuration);
     }
 
     public override void Tick(float deltaTime)

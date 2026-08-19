@@ -38,7 +38,7 @@ namespace RyansLibrary.Debugging
 
     public class ConsoleCommandRegistry
     {
-        private const string DEV_MODE_PASSCODE = "notpasscode";
+        private const string k_devModePasscode = "notpasscode";
 
         // List to hold all commands
         private Dictionary<string, ConsoleCommand> _commands = new();
@@ -147,7 +147,7 @@ namespace RyansLibrary.Debugging
 
         public bool ToggleDevCommands(string passcode)
         {
-            if (passcode != DEV_MODE_PASSCODE) // Replace with your actual passcode
+            if (passcode != k_devModePasscode) // Replace with your actual passcode
             {
                 Debug.LogWarning("Incorrect passcode. Developer commands remain hidden.");
                 return _devCommandsVisible;

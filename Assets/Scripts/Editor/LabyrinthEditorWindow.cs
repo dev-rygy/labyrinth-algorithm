@@ -1,3 +1,9 @@
+/*
+ * Created By:      Ryan Carpenter
+ * Date Created:    08/18/2026
+ * Last Modified:   08/18/2026 (Ryan)
+ * Notes:           
+*/
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;

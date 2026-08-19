@@ -303,36 +303,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd443a73ec8bb404e873b1c8f930c411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roomWalls:
-  - {fileID: 3038501148729290528}
-  - {fileID: 6631064117415263077}
-  - {fileID: 2222692995090276592}
-  - {fileID: 6967312771036684882}
-  - {fileID: 3886939346552534402}
-  - {fileID: 8281206486055862674}
-  - {fileID: 2723312565224517786}
-  - {fileID: 1704309470828274356}
-  - {fileID: 4618864583963505359}
-  - {fileID: 8295636500774996380}
-  - {fileID: 4172152355745189899}
-  - {fileID: 7989993695955496240}
-  - {fileID: 5186933160760775130}
-  - {fileID: 8601054959107930010}
-  - {fileID: 939435374438494850}
-  - {fileID: 6961921043685663398}
-  - {fileID: 1347267865241985771}
-  - {fileID: 3139974788090698381}
-  - {fileID: 6555309377189846533}
-  - {fileID: 6146481507180830695}
-  - {fileID: 6477391610250268090}
-  - {fileID: 2998118915923092936}
-  - {fileID: 7965650943472737455}
-  - {fileID: 5966220374814567616}
-  <AvailableCellData>k__BackingField:
-  - {x: 0, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 1, y: 0, z: 1}
-  - {x: 0, y: 0, z: 1}
+  _roomCells:
+  - Position: {x: 0, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 3038501148729290528}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 6631064117415263077}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 2222692995090276592}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 6967312771036684882}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 3886939346552534402}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 8281206486055862674}
+      IsExemptFromAutoReset: 0
+  - Position: {x: 1, y: 0, z: 0}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 2723312565224517786}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 1704309470828274356}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 4618864583963505359}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 8295636500774996380}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 4172152355745189899}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 7989993695955496240}
+      IsExemptFromAutoReset: 0
+  - Position: {x: 1, y: 0, z: 1}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 5186933160760775130}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 8601054959107930010}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 939435374438494850}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 6961921043685663398}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 1347267865241985771}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 3139974788090698381}
+      IsExemptFromAutoReset: 0
+  - Position: {x: 0, y: 0, z: 1}
+    IsAvilable: 1
+    Walls:
+    - WallTransform: {fileID: 6555309377189846533}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 6146481507180830695}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 6477391610250268090}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 2998118915923092936}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 7965650943472737455}
+      IsExemptFromAutoReset: 0
+    - WallTransform: {fileID: 5966220374814567616}
+      IsExemptFromAutoReset: 0
   RoomSpawners:
   - {fileID: 2395352504492881911}
   roomShape: 3
@@ -341,6 +372,7 @@ MonoBehaviour:
   _debug: 0
   _roomBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   _availableCellColor: {r: 0, g: 1, b: 0, a: 1}
+  _unavailableCellColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &3052693398724328894
 GameObject:
   m_ObjectHideFlags: 0
