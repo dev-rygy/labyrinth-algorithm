@@ -5,6 +5,7 @@
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,6 +52,21 @@ namespace RyansLibrary.Labyrinth
         Down = 5
     }
 
+    [Serializable]
+    public struct RoomWall
+    {
+        [SerializeField] public Transform WallTransform;
+        [SerializeField] public bool IsExemptFromAutoReset;
+    }
+
+    [Serializable]
+    public struct RoomCell
+    {
+        [SerializeField] public Vector3Int Position;
+        [SerializeField] public bool IsAvilable;
+        [SerializeField] public List<RoomWall> Walls;
+    }
+
     /// <summary>
     /// Runtime component on every room prefab. Doesn't decide anything about layout itself - RoomGenerator decides
     /// where/what to spawn, then calls CopyBlueprintEntranceFlags per underlying blueprint cell and Initialize() to
@@ -59,6 +75,8 @@ namespace RyansLibrary.Labyrinth
     public class Room : MonoBehaviour
     {
         [Header("Room Components")]
+
+        [SerializeField] private List<RoomCell> _roomCells;
         [SerializeField] private List<Transform> _roomWalls;
         [field: SerializeField] public List<Vector3Int> AvailableCellData { get; private set; }
         [SerializeField] public List<SpawnPad> RoomSpawners;
@@ -88,6 +106,9 @@ namespace RyansLibrary.Labyrinth
             openEntranceways = new bool[4, 6];
 
             RoomType = RoomType.general;
+
+            // TODO: Make some walls exempt to this for unique rooms especially
+            // ResetEntranceways();
         }
 
         // Initialize the Room's entrances and loot
@@ -137,7 +158,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             if (_debug) Debug.Log($"Room {gameObject.name} has been rotated by 90 degrees.");
-            
+
             return rotatedArray;
         }
 
@@ -146,7 +167,7 @@ namespace RyansLibrary.Labyrinth
             // A 90-degree yaw swaps which physical wall each blueprint face flag now points at (e.g. the wall that
             // used to face +Z now faces +X), so the flags have to be permuted to match and not just copied.
             bool[] rotatedArray = new bool[entrypointFlagArray.Length];
-            
+
             rotatedArray[0] = entrypointFlagArray[2];        // Positive X to Negative Z
             rotatedArray[1] = entrypointFlagArray[3];        // Negative X to Positive Z
             rotatedArray[2] = entrypointFlagArray[1];        // Positive Z direction the same
@@ -174,6 +195,14 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
+        private void ResetEntranceways()
+        {
+            for (int i = 0; i < _roomWalls.Count; i++)
+            {
+                DeactivateEntranceway(i);
+            }
+        }
+
         /// <summary>
         /// Activate an Entranceway in the entranceway list
         /// </summary>
@@ -188,6 +217,12 @@ namespace RyansLibrary.Labyrinth
             _roomWalls[entranceNum].GetChild(1).gameObject.SetActive(false);  // Deactivate Wall
         }
 
+        private void DeactivateEntranceway(int entranceNum)
+        {
+            _roomWalls[entranceNum].GetChild(0).gameObject.SetActive(false);  // Deactivate Entranceway
+            _roomWalls[entranceNum].GetChild(1).gameObject.SetActive(true);   // Activate Wall
+        }
+
         public float GetRoomOccupancy()
         {
             return Math.RectangularVolume(RoomDimensions);
@@ -195,7 +230,7 @@ namespace RyansLibrary.Labyrinth
 
         private void OnDrawGizmos()
         {
-            if (!_debug) 
+            if (!_debug)
                 return;
 
             DrawDimensions();
