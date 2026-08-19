@@ -109,11 +109,11 @@ namespace RyansLibrary.UnityEditor
         private void DrawCells(ShapeData shapeData)
         {
             float cubeScale = k_cellSize - k_cellGap;
-            foreach (ShapeCell cell in shapeData.RoomCells)
+            foreach (KeyValuePair<Vector3Int, CellState> cell in shapeData.RoomCells)
             {
-                Matrix4x4 matrix = Matrix4x4.TRS((Vector3)cell.Position * k_cellSize, Quaternion.identity, Vector3.one * cubeScale);
-                _previewUtility.DrawMesh(_cubeMesh, matrix, GetMaterial(cell.State, _stateMaterials), 0);
-                _previewUtility.DrawMesh(_cubeOutlineMesh, matrix, GetMaterial(cell.State, _stateOutlineMaterials), 0);
+                Matrix4x4 matrix = Matrix4x4.TRS((Vector3)cell.Key * k_cellSize, Quaternion.identity, Vector3.one * cubeScale);
+                _previewUtility.DrawMesh(_cubeMesh, matrix, GetMaterial(cell.Value, _stateMaterials), 0);
+                _previewUtility.DrawMesh(_cubeOutlineMesh, matrix, GetMaterial(cell.Value, _stateOutlineMaterials), 0);
             }
         }
 
@@ -196,9 +196,22 @@ namespace RyansLibrary.UnityEditor
 
         private static Bounds ComputeBounds(ShapeData shapeData)
         {
-            Bounds bounds = new Bounds((Vector3)shapeData.RoomCells[0].Position * k_cellSize, Vector3.one * k_cellSize);
-            foreach (ShapeCell cell in shapeData.RoomCells)
-                bounds.Encapsulate(new Bounds((Vector3)cell.Position * k_cellSize, Vector3.one * k_cellSize));
+            Bounds bounds = default;
+            bool first = true;
+
+            foreach (Vector3Int position in shapeData.RoomCells.Keys)
+            {
+                Bounds cellBounds = new Bounds((Vector3)position * k_cellSize, Vector3.one * k_cellSize);
+                if (first)
+                {
+                    bounds = cellBounds;
+                    first = false;
+                }
+                else
+                {
+                    bounds.Encapsulate(cellBounds);
+                }
+            }
 
             return bounds;
         }
