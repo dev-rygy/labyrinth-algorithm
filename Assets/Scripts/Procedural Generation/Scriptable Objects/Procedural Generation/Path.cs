@@ -21,7 +21,15 @@ namespace RyansLibrary.Labyrinth
     public struct PathEntry
     {
         [SerializeField] public GameObject Prefab;
-        [SerializeField] [Range(0, 100)] public int Probability;
+        [SerializeField][Range(0, 100)] public int Probability;
+    }
+
+    [System.Serializable]
+    public struct RoomShapeEntry
+    {
+        [SerializeField] public ShapeData RoomShape;
+        [SerializeField][Range(0, 1)] public float SpawnChance;
+        [SerializeField] public List<PathEntry> Rooms;
     }
 
     /// <summary>
@@ -40,16 +48,15 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public string Name { get; set; }
         [field: SerializeField] public PathType Type { get; private set; }
         [field: SerializeField] public int DesiredPathLength { get; private set; }
-        [field: SerializeField] public List<PathEntry> startingRooms { get; private set; }
+        [field: SerializeField] public List<RoomShapeEntry> RoomShapes { get; private set; }
+
         [field: SerializeField] public List<PathEntry> rooms1x1x1 { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms2x1x1 { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms1x2x1 { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms2x1x2 { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms2x1x2l { get; private set; }
-        [field: SerializeField] public List<PathEntry> endingRooms { get; private set; }
 
         [field: SerializeField] public bool DrunkardWalkCanGoVertical { get; private set; } = true;
-
 
         [field: Header("Room Generation Chance")]
         [Tooltip("The percent chance for a room with a tall shape to spawn when the conditions are met.")]
@@ -59,7 +66,7 @@ namespace RyansLibrary.Labyrinth
         [Tooltip("The percent chance for a room with a big shape to spawn when the conditions are met.")]
         [field: SerializeField][field: Range(0, 1)] public float BigRoomSpawnChance { get; private set; } = 0;           // The spawn chance of big rooms
         [Tooltip("The percent chance for a room with an l-shape to spawn when the conditions are met.")]
-        [field: SerializeField][field: Range(0, 1)] public float LRoomSpawnChance { get; private set; } = 0;           // The spawn chance of l rooms
+        [field: SerializeField][field: Range(0, 1)] public float LRoomSpawnChance { get; private set; } = 0;           // The spawn chanc
 
         [field: Header("Debug")]
         [field: SerializeField] public Color PathGizmoColor;
@@ -69,7 +76,7 @@ namespace RyansLibrary.Labyrinth
         public List<Blueprint> BlueprintList => _blueprintList;
         private List<Room> _rooms;
         public List<Room> Rooms => _rooms;
-        
+
         // UNUSED
         // public int startMasterIdx { get; set; }  // Start index in master path
         // ublic int endMasterIdx { get; set; }    // End index in master path

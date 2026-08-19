@@ -15,7 +15,37 @@ MonoBehaviour:
   <Name>k__BackingField: Castle Main Path
   <Type>k__BackingField: 0
   <DesiredPathLength>k__BackingField: 30
-  <startingRooms>k__BackingField: []
+  <RoomShapes>k__BackingField:
+  - RoomShape: {fileID: 11400000, guid: 00af0b301a9c113458071458467806af, type: 2}
+    SpawnChance: 1
+    Rooms:
+    - Prefab: {fileID: 3555212718981034981, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
+      Probability: 100
+  - RoomShape: {fileID: 11400000, guid: 83bfb3ca6b8435d40ac75a2ff65c963d, type: 2}
+    SpawnChance: 0.6
+    Rooms:
+    - Prefab: {fileID: 5986294591766773533, guid: 66fa60f0bde56fb4a9b03c2086aabf30,
+        type: 3}
+      Probability: 100
+  - RoomShape: {fileID: 11400000, guid: 36c33d77310ff1f43a6b1191d07c3ef2, type: 2}
+    SpawnChance: 0.6
+    Rooms:
+    - Prefab: {fileID: 197979799327637701, guid: 302187ca606e5f5419cd4d080240de14,
+        type: 3}
+      Probability: 100
+  - RoomShape: {fileID: 11400000, guid: 243ff4aee144c1b428e56ae7235133a5, type: 2}
+    SpawnChance: 0.4
+    Rooms:
+    - Prefab: {fileID: 2479775355766125897, guid: 5a78b852af992604daf765df5782b318,
+        type: 3}
+      Probability: 100
+  - RoomShape: {fileID: 11400000, guid: 36953db41c8a1fe47b1ccc1c76fef170, type: 2}
+    SpawnChance: 0.8
+    Rooms:
+    - Prefab: {fileID: 6084430210939289353, guid: 65abc9bb463d6f14e88181798fe4fc9d,
+        type: 3}
+      Probability: 100
   <rooms1x1x1>k__BackingField:
   - Prefab: {fileID: 1513492154249093621, guid: ab73d55c92fa4184586372ced429a1a9,
       type: 3}
@@ -81,7 +111,6 @@ MonoBehaviour:
   - Prefab: {fileID: 4277274321488255504, guid: 8b9d7cbe0da5ce848825702d9977c5e3,
       type: 3}
     Probability: 50
-  <endingRooms>k__BackingField: []
   <DrunkardWalkCanGoVertical>k__BackingField: 1
   <TallRoomSpawnChance>k__BackingField: 0.6
   <LongRoomSpawnChance>k__BackingField: 0.6

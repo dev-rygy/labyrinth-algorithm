@@ -58,6 +58,8 @@ namespace RyansLibrary.Labyrinth
             }
 
             int indexOffset = 0;
+
+            /* REMOVED
             // If the path has starting room(s) then spawn the start room
             if (path.startingRooms.Count > 0)
             {
@@ -67,7 +69,7 @@ namespace RyansLibrary.Labyrinth
                 path.BlueprintList[0].Available = false;
                 indexOffset = 1;
             }
-
+            */
             PathType pathType = path.Type;
             // *** Loop through all blueprint rooms ***
             for (int i = 0 + indexOffset; i < path.BlueprintCount(); i++)
@@ -142,7 +144,7 @@ namespace RyansLibrary.Labyrinth
                         return false;
                     }
 
-                    if (_debugLogs) 
+                    if (_debugLogs)
                         Debug.Log($"Path {path.Name} Generated Tall Room: {genRoom.name}");
                 }
 
@@ -159,7 +161,7 @@ namespace RyansLibrary.Labyrinth
 
                     path.Add(genRoom);              // Add new room to paths
 
-                    if (_debugLogs) 
+                    if (_debugLogs)
                         Debug.Log($"Path {path.Name} Generated Long Room: {genRoom.name}");
                 }
 
@@ -178,7 +180,7 @@ namespace RyansLibrary.Labyrinth
 
                     path.Add(genRoom);              // Add new room to paths
 
-                    if (_debugLogs) 
+                    if (_debugLogs)
                         Debug.Log($"Path {path.Name} Generated Small Room: {genRoom.name}");
                 }
             }
@@ -541,19 +543,20 @@ namespace RyansLibrary.Labyrinth
             Quaternion rotation = Quaternion.identity;      // Take the rotation of the room into account
             Vector3 eulerRotation = Vector3.zero;
 
+            /* REMOVED
             // If starting room then spawn starting room and return
             if (rType == RoomType.start)
             {
                 // Generate Small Room; no direction condition needed
                 // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
-                generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.startingRooms), 
+                generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.startingRooms),
                     ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
                 // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
                 generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0);
                 generatedRoom.Initialize(rType);
                 return generatedRoom;
             }
-
+            */
             switch (shape)
             {
                 // ********* Generate Big Room (2x1x2) **************
