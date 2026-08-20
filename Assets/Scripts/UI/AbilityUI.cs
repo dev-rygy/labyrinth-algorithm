@@ -70,7 +70,7 @@ public class AbilityUI : MonoBehaviour
     }
 
     // Ability Assignment
-    public void AssignAbility(Ability ability)
+    public void AssignAbility(Ability<PlayerStateMachine> ability)
     {
         switch (ability.Type)
         {
@@ -116,7 +116,7 @@ public class AbilityUI : MonoBehaviour
     }
 
     // Ability Removal
-    public void RemoveAbility(Ability ability)
+    public void RemoveAbility(Ability<PlayerStateMachine> ability)
     {
         switch (ability.Type)
         {

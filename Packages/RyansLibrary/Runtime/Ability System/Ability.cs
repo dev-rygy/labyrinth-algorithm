@@ -5,6 +5,7 @@
  * Notes:           Every active ability is required to inherit this
  *                      parent class in order to inherent the interface
 */
+using RyansLibrary.StateMachines;
 using System.Collections;
 using UnityEngine;
 using System;
@@ -25,14 +26,15 @@ namespace RyansLibrary.Abilities
         CastAttack
     }
 
-    public abstract class Ability : ScriptableObject, IAbility
+    public abstract class Ability<TStateMachine> : ScriptableObject, IAbility
+        where TStateMachine : StateMachine
     {
         public static float cooldownUpdateRate = 0.1f;      // cooldown update rate for all abilities
 
         // Event for UI
         public event Action<float, float> OnAbilityCooldown;
 
-        protected PlayerStateMachine stateMachine;
+        protected TStateMachine stateMachine;
 
         [SerializeField] public AbilityType Type;
         [SerializeField] public Sprite abilityIcon;

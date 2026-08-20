@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuckerPowerSecondaryAbility", menuName = "Scriptable Objects/Ability/Weapons/Bucker/BuckerPowerSecondaryAbility", order = 1)]
-public class BuckerPowerSecondary : Ability
+public class BuckerPowerSecondary : Ability<PlayerStateMachine>
 {
     [SerializeField] private string animHash;
 

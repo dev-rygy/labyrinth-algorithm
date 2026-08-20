@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "UnarmedPowerSecondaryAbility", menuName = "Scriptable Objects/Ability/Weapons/Unarmed/UnarmedPowerSecondaryAbility", order = 3)]
-public class UnarmedPowerSecondary : Ability
+public class UnarmedPowerSecondary : Ability<PlayerStateMachine>
 {
     [SerializeField] private string animHash;
     [SerializeField] private float attackForce;

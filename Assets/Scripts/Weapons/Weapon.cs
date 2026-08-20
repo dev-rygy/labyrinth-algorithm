@@ -22,11 +22,11 @@ public class Weapon : MonoBehaviour
     [field: SerializeField] public WeaponType Type { get; private set; }
     [field: SerializeField] public GameObject WeaponHitbox { get; private set; }
 
-    [field: SerializeField] protected Ability primaryComboAbility;
-    [field: SerializeField] protected Ability primaryPowerAbility;
-    [field: SerializeField] protected Ability secondaryComboAbility;
-    [field: SerializeField] protected Ability secondaryPowerAbility;
-    [field: SerializeField] protected Ability dashAbility;
+    [field: SerializeField] protected Ability<PlayerStateMachine> primaryComboAbility;
+    [field: SerializeField] protected Ability<PlayerStateMachine> primaryPowerAbility;
+    [field: SerializeField] protected Ability<PlayerStateMachine> secondaryComboAbility;
+    [field: SerializeField] protected Ability<PlayerStateMachine> secondaryPowerAbility;
+    [field: SerializeField] protected Ability<PlayerStateMachine> dashAbility;
 
     /// <summary>
     /// Equip an ability from the weapon. If the ability does not exist then return null to
@@ -34,7 +34,7 @@ public class Weapon : MonoBehaviour
     /// </summary>
     /// <param name="type">The ability key/category</param>
     /// <returns>A new instance of the ability</returns>
-    public Ability GetAbility(AbilityType type)
+    public Ability<PlayerStateMachine> GetAbility(AbilityType type)
     {
         switch (type)
         {
