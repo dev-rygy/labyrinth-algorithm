@@ -6,11 +6,13 @@
 */
 using RyansLibrary.Debugging;
 using RyansLibrary.UnityEditor;
+using RyansLibrary.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Console = RyansLibrary.Debugging.Console;
+using Math = RyansLibrary.Utilities.Math;
 using Random = UnityEngine.Random;      // Using Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth

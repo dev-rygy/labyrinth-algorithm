@@ -24,9 +24,6 @@ namespace RyansLibrary.Input
         // Player Input Events
         public static event System.Action OnAny;
         public static event System.Action OnMove;
-        // public static event System.Action OnLook;        DEPRICATED
-        // public static event System.Action OnLookRight;   DEPRICATED
-        // public static event System.Action OnLookLeft;    DEPRICATED
         public static event System.Action OnJump;
         public static event System.Action OnInteract1;
         public static event System.Action OnInteract2;
@@ -64,8 +61,6 @@ namespace RyansLibrary.Input
         // The player's Normalized Input
         private Vector2 _moveDirectionNormalized;
         public Vector2 MoveDirectionNormalized => _moveDirectionNormalized;
-        // public Vector2 LookInput { get; private set; }   DEPRICATED
-        // public bool JumpKeyPressed { get; private set; } DEPRICATED
         private bool _isHoldingPrimaryCombo;
         public bool IsHoldingPrimaryCombo => _isHoldingPrimaryCombo;
         private bool _isHoldingSecondaryCombo;

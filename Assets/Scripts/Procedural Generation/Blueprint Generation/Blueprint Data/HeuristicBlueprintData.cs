@@ -4,7 +4,7 @@
  * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
-using RyansLibrary.AI;
+using RyansLibrary.Utilities;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
