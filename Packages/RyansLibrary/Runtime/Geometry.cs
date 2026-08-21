@@ -39,16 +39,16 @@ namespace RyansLibrary.Utilities
             D = d;
 
             // TODO: solve case where Tetrahedron is coplanar
-            CalculateCircumsphere();
+            CalculateCircumSphere();
         }
 
         // Creates a circumsphere from a tetrahedron
-        //http://mathworld.wolfram.com/Circumsphere.html
-        void CalculateCircumsphere()
+        // http://mathworld.wolfram.com/Circumsphere.html
+        bool CalculateCircumSphere()
         {
-
+            // 1) Find center of circumsphere
             // Signed volume inside tetrahedron
-            float a = new Matrix4x4(
+            float v = new Matrix4x4(
                 new Vector4(A.Position.x, B.Position.x, C.Position.x, D.Position.x),        // Col0
                 new Vector4(A.Position.y, B.Position.y, C.Position.y, D.Position.y),        // Col1
                 new Vector4(A.Position.z, B.Position.z, C.Position.z, D.Position.z),        // Col2
@@ -61,6 +61,7 @@ namespace RyansLibrary.Utilities
             float cPosSqr = C.Position.sqrMagnitude;
             float dPosSqr = D.Position.sqrMagnitude;
 
+            // *** Cramer's Rule ***
             // D_x
             float Dx = new Matrix4x4(
                 new Vector4(aPosSqr, bPosSqr, cPosSqr, dPosSqr),
@@ -92,15 +93,21 @@ namespace RyansLibrary.Utilities
                 new Vector4(A.Position.z, B.Position.z, C.Position.z, D.Position.z)
             ).determinant;
 
+            // WARNING: Divide by zero error if tetrahedron is coplanar
+            if (v == 0)
+                return false;
+
             // Find the center of the circumsphere from everything else above
             _circumcenter = new Vector3(
-                Dx / (2 * a),
-                Dy / (2 * a),
-                Dz / (2 * a)
+                Dx / (2 * v),
+                Dy / (2 * v),
+                Dz / (2 * v)
             );
 
             // Circumradius
-            _circumradiusSquared = ((Dx * Dx) + (Dy * Dy) + (Dz * Dz) - (4 * a * c)) / (4 * a * a);
+            _circumradiusSquared = (Math.Squared(Dx) + Math.Squared(Dy) + Math.Squared(Dz) - (4 * v * c)) / (4 * v * v);
+
+            return true;
         }
 
         public bool ContainsVertex(Vertex v, float precision)
@@ -112,7 +119,7 @@ namespace RyansLibrary.Utilities
         }
 
         // Check if the vertex lies within the circumsphere by checking it's difference from the circumcurcle radius
-        public bool CircumCircleContains(Vector3 v)
+        public bool CircumSphereContains(Vector3 v)
         {
             Vector3 dist = v - Circumcenter;
             return dist.sqrMagnitude <= CircumradiusSquared;

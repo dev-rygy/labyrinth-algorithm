@@ -369,6 +369,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _debugGizmos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _zoneSpawnBoundsColor.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _uniqueRoomBoundsColor.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _debugTriangulationGizmos
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6343358480617124855, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: m_Name

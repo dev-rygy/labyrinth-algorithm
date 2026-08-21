@@ -112,7 +112,7 @@ namespace RyansLibrary.Utilities
                 // If the tetrahedra contains a vertex in it's circumcircle then it is a bad tetrahedra
                 foreach (Tetrahedron t in Tetrahedra)
                 {
-                    if (t.CircumCircleContains(vertex.Position))       // Check if vertex lies within circumcicle
+                    if (t.CircumSphereContains(vertex.Position))       // Check if vertex lies within circumcicle
                     {
                         _badTetrahedra.Add(t);
                         Triangles.Add(new Triangle(t.A, t.B, t.C));     // Make triangles out of each side of the tetrahedron
