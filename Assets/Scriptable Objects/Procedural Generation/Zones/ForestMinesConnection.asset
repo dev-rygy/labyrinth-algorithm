@@ -12,28 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6555cbf84284dd4191d7f41b0e3675c, type: 3}
   m_Name: ForestMinesConnection
   m_EditorClassIdentifier: Assembly-CSharp::RyansLibrary.Labyrinth.Zone
-  <Name>k__BackingField: Castle Mines Connection
+  <Name>k__BackingField: Forest Mines Connection
   <DefaultPathfindingHeuristic>k__BackingField: 1
   <Bounds>k__BackingField:
-    m_Position: {x: 5, y: -4, z: -3}
+    m_Position: {x: 7, y: -4, z: -3}
     m_Size: {x: 1, y: 5, z: 1}
   <MainPath>k__BackingField: {fileID: 11400000, guid: 790b058cc6213dc489c512e552fa7852,
     type: 2}
   <UniqueRooms>k__BackingField:
-  - <Prefab>k__BackingField: {fileID: 5026692554932010961, guid: 6a0f84ddf2b175f42ab7e461acdc32e8,
+  - Prefab: {fileID: 5026692554932010961, guid: 6a0f84ddf2b175f42ab7e461acdc32e8,
       type: 3}
-    <PlacementType>k__BackingField: 1
-    <SpawnPosition>k__BackingField: {x: 5, y: 0, z: -3}
-    <Bounds>k__BackingField:
-      m_Position: {x: 6, y: -3, z: 1}
-      m_Size: {x: 5, y: 3, z: 2}
-  - <Prefab>k__BackingField: {fileID: 5738533610704310278, guid: 9f1b32e83771b584bb1767471466670e,
+    PlacementType: 1
+    SpawnPosition: {x: 0, y: 0, z: 0}
+    Bounds:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 5738533610704310278, guid: 9f1b32e83771b584bb1767471466670e,
       type: 3}
-    <PlacementType>k__BackingField: 1
-    <SpawnPosition>k__BackingField: {x: 5, y: -4, z: -3}
-    <Bounds>k__BackingField:
-      m_Position: {x: 6, y: -3, z: 1}
-      m_Size: {x: 5, y: 3, z: 2}
+    PlacementType: 1
+    SpawnPosition: {x: 0, y: 0, z: 0}
+    Bounds:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 0, y: 0, z: 0}
   <DivergentRoomsCellOccupancy>k__BackingField: 0
   <RandomCyclesInGraph>k__BackingField: 0
   <Paths>k__BackingField: []

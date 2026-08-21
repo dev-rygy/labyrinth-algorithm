@@ -149,7 +149,7 @@ namespace RyansLibrary.Labyrinth
                     // Draw unique room bounds
                     foreach (RoomEntry room in zone.UniqueRooms)
                     {
-                        if (room == null)
+                        if (room.Prefab == null)
                             continue;
 
                         if (room.PlacementType != RoomPlacementType.Constrained)

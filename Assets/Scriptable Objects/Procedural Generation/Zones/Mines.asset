@@ -20,18 +20,18 @@ MonoBehaviour:
   <MainPath>k__BackingField: {fileID: 11400000, guid: b3f0384528eb58345898e91ccf890656,
     type: 2}
   <UniqueRooms>k__BackingField:
-  - <Prefab>k__BackingField: {fileID: 6639078268214740932, guid: 24e880f3fd50d0749a78ceb92b8118d2,
+  - Prefab: {fileID: 6639078268214740932, guid: 24e880f3fd50d0749a78ceb92b8118d2,
       type: 3}
-    <PlacementType>k__BackingField: 1
-    <SpawnPosition>k__BackingField: {x: 1, y: -8, z: -1}
-    <Bounds>k__BackingField:
+    PlacementType: 1
+    SpawnPosition: {x: 0, y: 0, z: 0}
+    Bounds:
       m_Position: {x: 1, y: 0, z: 1}
       m_Size: {x: 10, y: 2, z: 13}
-  - <Prefab>k__BackingField: {fileID: 6639078268214740932, guid: fd5cb23eb9945e14db62ca89310ad235,
+  - Prefab: {fileID: 6639078268214740932, guid: fd5cb23eb9945e14db62ca89310ad235,
       type: 3}
-    <PlacementType>k__BackingField: 1
-    <SpawnPosition>k__BackingField: {x: 6, y: -7, z: 7}
-    <Bounds>k__BackingField:
+    PlacementType: 1
+    SpawnPosition: {x: 0, y: 0, z: 0}
+    Bounds:
       m_Position: {x: 1, y: 0, z: 9}
       m_Size: {x: 10, y: 5, z: 5}
   <DivergentRoomsCellOccupancy>k__BackingField: 12

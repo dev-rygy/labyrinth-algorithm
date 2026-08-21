@@ -5,10 +5,9 @@
  * Notes:           Holds all the paths in an zone and the 
  *                      bounds that they may spawn rooms in
 */
+using RyansLibrary.Utilities;
 using System.Collections.Generic;
 using UnityEngine;
-
-using RyansLibrary.Utilities;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -30,15 +29,16 @@ namespace RyansLibrary.Labyrinth
     public class RoomEntry
     {
         [field: Header("General Room Parameters")]
-        [field: SerializeField] public GameObject Prefab { get; set; }
-        [field: SerializeField] public RoomPlacementType PlacementType { get; set; }
+        [SerializeField] public GameObject Prefab;
+
+        [SerializeField] public RoomPlacementType PlacementType;
 
         [field: Header("Fixed Room Parameters")]
-        [field: SerializeField] public Vector3Int SpawnPosition { get; set; }               // For use with fixed rooms; all other rooms will ignore this
+        [SerializeField] public Vector3Int SpawnPosition;           // For use with fixed rooms; all other rooms will ignore this
         // [field: SerializeField] public List<Vector3Int> AvailableCells { get; set; }        // List of cells the room gen algorithm can pathfind to; null = all rooms
 
-        [field: Header("Constrained Room Parameters")]
-        [field: SerializeField] public BoundsInt Bounds { get; set; }                       // For use with constrained rooms; all other rooms will ignore these bounds
+        [Header("Constrained Room Parameters")]
+        [SerializeField] public BoundsInt Bounds;                      // For use with constrained rooms; all other rooms will ignore these bounds
     }
 
     /// <summary>

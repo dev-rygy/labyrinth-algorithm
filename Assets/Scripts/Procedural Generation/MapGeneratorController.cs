@@ -914,7 +914,7 @@ namespace RyansLibrary.Labyrinth
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
                 // If room is Fixed then actual position needs to be calculated
-                Vector3Int actualPosition = entry.SpawnPosition;
+                Vector3Int actualPosition = Vector3Int.zero;
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                     actualPosition += zone.Bounds.position;
 
