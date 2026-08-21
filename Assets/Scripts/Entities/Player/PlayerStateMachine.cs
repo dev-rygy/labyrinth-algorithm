@@ -49,7 +49,7 @@ public class PlayerStateMachine : StateMachine
     #region Variables
     // Events
     public static event Action<PlayerStateMachine> OnPlayerSpawned;
-    public event Action<Ability> OnAbilityChanged;      // Invokes when a new ability is slotted
+    public event Action<Ability<PlayerStateMachine>> OnAbilityChanged;      // Invokes when a new ability is slotted
 
     private static PlayerStateMachine _instance;
     public static PlayerStateMachine Instance => _instance;     // WARNING: This singleton may need to be removed later for networking purposes
@@ -99,15 +99,15 @@ public class PlayerStateMachine : StateMachine
     // Equipped Abilities
     [field: Header("Equipped Abilities")]
     [field: Tooltip("Ability equipped in the Combo Attack Primary Slot")]
-    [field: SerializeField] public Ability ComboAttackPrimaryAbility { get; private set; }
+    [field: SerializeField] public Ability<PlayerStateMachine> ComboAttackPrimaryAbility { get; private set; }
     [field: Tooltip("Ability equipped in the Power Attack Primary Slot")]
-    [field: SerializeField] public Ability PowerAttackPrimaryAbility { get; private set; }
+    [field: SerializeField] public Ability<PlayerStateMachine> PowerAttackPrimaryAbility { get; private set; }
     [field: Tooltip("Ability equipped in the Combo Attack Secondary Slot")]
-    [field: SerializeField] public Ability ComboAttackSecondaryAbility { get; private set; }
+    [field: SerializeField] public Ability<PlayerStateMachine> ComboAttackSecondaryAbility { get; private set; }
     [field: Tooltip("Ability equipped in the Power Attack Secondary Slot")]
-    [field: SerializeField] public Ability PowerAttackSecondaryAbility { get; private set; }
+    [field: SerializeField] public Ability<PlayerStateMachine> PowerAttackSecondaryAbility { get; private set; }
     [field: Tooltip("Ability equipped in the Dash Slot")]
-    [field: SerializeField] public Ability DashAbility { get; set; }
+    [field: SerializeField] public Ability<PlayerStateMachine> DashAbility { get; set; }
 
     [field: Header("Attach Points")]                                                                // Attach points for objects that move with the player's rig
     [field: Tooltip("Primary weapon parent transform when equipped")]
@@ -340,7 +340,7 @@ public class PlayerStateMachine : StateMachine
             weapon = UnarmedWeapon;
 
         PrimaryWeapon = weapon;
-        Ability ability = null;
+        Ability<PlayerStateMachine> ability = null;
 
         // Set Combo Attack Primary
         ability = weapon.GetAbility(AbilityType.ComboAttackPrimary);
@@ -375,7 +375,7 @@ public class PlayerStateMachine : StateMachine
             weapon = UnarmedWeapon;
 
         SecondaryWeapon = weapon;
-        Ability ability = null;
+        Ability<PlayerStateMachine> ability = null;
 
         // Set Combo Attack Secondary
         ability = weapon.GetAbility(AbilityType.ComboAttackSecondary);
@@ -389,7 +389,7 @@ public class PlayerStateMachine : StateMachine
     /// <summary> Sets up an ability and assigns it to a slot.</summary>
     /// <param name="ability">Ability reference</param>
     /// <param name="type">Ability slot</param>
-    public void SetAbility(Ability ability)
+    public void SetAbility(Ability<PlayerStateMachine> ability)
     {
         if (ability == null)
         {

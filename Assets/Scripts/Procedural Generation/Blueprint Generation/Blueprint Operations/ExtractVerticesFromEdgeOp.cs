@@ -4,7 +4,7 @@
  * Last Modified:   10/28/2025 (Ryan)
  * Notes:           
 */
-using RyansLibrary.Graphs;
+using RyansLibrary.Utilities;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth

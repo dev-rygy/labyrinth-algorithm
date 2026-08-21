@@ -9,7 +9,7 @@ using RyansLibrary.Input;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BroadswordComboPrimaryAbility", menuName = "Scriptable Objects/Ability/Weapons/Broadsword/BroadswordComboPrimaryAbility", order = 0)]
-public class BroadswordComboPrimary : Ability
+public class BroadswordComboPrimary : Ability<PlayerStateMachine>
 {
     [Header("Attack")]
     [SerializeField] private int attackDamage;

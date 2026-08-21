@@ -8,7 +8,7 @@ using RyansLibrary.Abilities;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NakedDashAbility", menuName = "Scriptable Objects/Ability/Armor/Naked/NakedDashAbility", order = 0)]
-public class QuickDash : Ability
+public class QuickDash : Ability<PlayerStateMachine>
 {
     [Header("Properties")]
     [SerializeField] private float dodgeDuration;
@@ -17,7 +17,7 @@ public class QuickDash : Ability
     [Header("Animation")]
     [SerializeField] private string animHash;
     [SerializeField] private float crossfadeDuration = 0.1f;
-  
+
 
     private Vector3 movement;
     private float _remainingDodgeTime;

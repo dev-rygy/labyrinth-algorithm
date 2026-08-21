@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Math = RyansLibrary.Utilities.Math;
 
 namespace RyansLibrary.Labyrinth
 {

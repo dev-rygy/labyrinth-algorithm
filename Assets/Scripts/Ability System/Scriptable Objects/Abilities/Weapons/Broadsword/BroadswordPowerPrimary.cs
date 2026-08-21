@@ -8,7 +8,7 @@ using RyansLibrary.Abilities;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BroadswordPowerPrimaryAbility", menuName = "Scriptable Objects/Ability/Weapons/Broadsword/BroadswordPowerPrimaryAbility", order = 1)]
-public class BroadswordPowerPrimary : Ability
+public class BroadswordPowerPrimary : Ability<PlayerStateMachine>
 {
     [Header("Attack")]
     [SerializeField] private int attackDamage;

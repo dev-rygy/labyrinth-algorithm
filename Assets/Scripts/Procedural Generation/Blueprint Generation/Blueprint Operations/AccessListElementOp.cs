@@ -5,7 +5,7 @@
  * Notes:           
 */
 using System.Collections.Generic;
-using RyansLibrary.Graphs;
+using RyansLibrary.Utilities;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth

@@ -6,6 +6,7 @@
  *                      and entities.
 */
 using RyansLibrary;
+using RyansLibrary.Utilities;
 using System.Collections.Generic;
 using UnityEngine;
 

@@ -9,7 +9,7 @@ using RyansLibrary.Input;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "UnarmedComboPrimaryAbility", menuName = "Scriptable Objects/Ability/Weapons/Unarmed/UnarmedComboPrimaryAbility", order = 0)]
-public class UnarmedComboPrimary : Ability
+public class UnarmedComboPrimary : Ability<PlayerStateMachine>
 {
     [SerializeField] private string animHash;
     [SerializeField] private float attackForce;
