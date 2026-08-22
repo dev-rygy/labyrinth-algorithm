@@ -6,6 +6,7 @@
  *                  It is not meant to be a full AI system, just eye candy for demo.
 */
 
+using RyansLibrary;
 using System.Collections;
 using UnityEngine;
 
