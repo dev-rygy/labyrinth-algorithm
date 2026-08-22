@@ -95,6 +95,7 @@ public class ApplicationController : MonoBehaviour
     {
         // Clear Labyrinth
         MapGeneratorController.Instance.ResetLabyrinth();
+        yield return null;
 
         // Restart Map Generation
         yield return MapGeneratorController.Instance.StartGeneration();

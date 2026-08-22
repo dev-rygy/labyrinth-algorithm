@@ -530,33 +530,12 @@ namespace RyansLibrary.Labyrinth
         /// <param name="rDir">The direction code of the room.</param>
         /// <param name="prefabIndex">The prefab index in the room array; set to -1 to spawn a random room.</param>
         /// <returns></returns>
-        // Every branch below follows the same pattern: look up the blueprint cell(s) this merged room is replacing
-        // (relative to originBlueprint, in the direction rDir), instantiate the multi-cell prefab at the correct
-        // corner, then call CopyBlueprintEntranceFlags once per replaced cell so the single prefab ends up with a
-        // doorway wherever *any* of the individual cells it absorbed had one flagged open. The index passed to
-        // CopyBlueprintEntranceFlags (0,1,2,3) is the room's own "which cell within me is this door data for" slot,
-        // not the world direction - it has to be reassigned per rDir since the same prefab can be approached from
-        // multiple directions along the path.
         public Room GenerateRoom(RoomShape shape, RoomType rType, Path path, Blueprint originBlueprint, RoomShift rDir = 0, int prefabIndex = -1)      // prefabIndex = -1 means spawn random room
         {
             Room generatedRoom = null;
             Quaternion rotation = Quaternion.identity;      // Take the rotation of the room into account
             Vector3 eulerRotation = Vector3.zero;
 
-            /* REMOVED
-            // If starting room then spawn starting room and return
-            if (rType == RoomType.start)
-            {
-                // Generate Small Room; no direction condition needed
-                // Instantiate 1x1x1-Room at position of indexed blueprint room; use a random room in the 1x1x1-Room list
-                generatedRoom = Object.Instantiate(ChooseRandomRoomFromWeights(path.startingRooms),
-                    ConvertToWorldCoords(originBlueprint.Position), rotation, _roomContainer).GetComponent<Room>();
-                // Copy array of blueprint's entrencewayFlags to the newly generated room's entrancewayFlags array
-                generatedRoom.CopyBlueprintEntranceFlags(originBlueprint.EntryPointFlags, 0);
-                generatedRoom.Initialize(rType);
-                return generatedRoom;
-            }
-            */
             switch (shape)
             {
                 // ********* Generate Big Room (2x1x2) **************

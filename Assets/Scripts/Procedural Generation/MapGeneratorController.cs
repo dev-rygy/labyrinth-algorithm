@@ -913,8 +913,9 @@ namespace RyansLibrary.Labyrinth
             // Turn off blueprint availability for unique rooms; we do not want to parse and spawn new rooms in these spots
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                // If room is Fixed then actual position needs to be calculated
                 Vector3Int actualPosition = entry.SpawnPosition;
+
+                // If room is Fixed then actual position needs to be calculated relative to the bounded zone
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                     actualPosition += zone.Bounds.position;
 

@@ -372,7 +372,7 @@ PrefabInstance:
     - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
       propertyPath: _debugGizmos
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
@@ -396,7 +396,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
         type: 3}
+      propertyPath: _enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
       propertyPath: _customSeed
+      value: 897817920
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c,
+        type: 3}
+      propertyPath: _generateRandomSeed
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7192508511762545472, guid: fef5e2b2458183a43a04374132d05a5c,
