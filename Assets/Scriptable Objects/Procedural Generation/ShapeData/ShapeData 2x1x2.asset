@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd9a8f92374c8645893e0e8ca877f9f, type: 3}
   m_Name: ShapeData 2x1x2
   m_EditorClassIdentifier: RyansLibrary.Labyrinth::RyansLibrary.Labyrinth.ShapeData
-  <RoomCells>k__BackingField:
-    _keys:
-    - {x: 0, y: 0, z: 0}
-    - {x: 1, y: 0, z: 0}
-    - {x: 1, y: 0, z: 1}
-    - {x: 0, y: 0, z: 1}
-    _values: 00000000000000000000000000000000
+  RoomCells:
+    _serializedList:
+    - Key: {x: 0, y: 0, z: 0}
+      Value: 0
+    - Key: {x: 1, y: 0, z: 0}
+      Value: 0
+    - Key: {x: 1, y: 0, z: 1}
+      Value: 0
+    - Key: {x: 0, y: 0, z: 1}
+      Value: 0
