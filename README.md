@@ -2,6 +2,9 @@
 ![Static Badge](https://img.shields.io/badge/Version-1.0.0-lightblue)
 
 Try the demo out [here](https://dev-rygy.itch.io/labyrinth-procedural-generator)!
+
+From now on you will need [this package](https://github.com/dev-rygy/ryans-library) to get the algorithm to work.
+
 ## Overview
 Highly adaptable procedural dungeon generation algorithm built in Unity/C# with the purpose of creating seamlessly connected, thematically distinct 3D areas without loading screens.
 
