@@ -52,13 +52,13 @@ public class PlayerFallState : PlayerState
         }
     }
 
-    public override void Exit() { }
+    public override void Exit()
+    {
+        Debug.Log("Fall state exited.");
+    }
 
     private IEnumerator LandCo()
     {
-        // Disable the ground check to reset to the ground properly
-        stateMachine.ForceReciever.EnableGroundCheck = false;
-
         // Start the landing animation
         stateMachine.Animator.CrossFadeInFixedTime(k_animLandingHash, 0.1f);
 
@@ -69,8 +69,6 @@ public class PlayerFallState : PlayerState
         // once the clip completes (it does not wrap on its own), so this can't be missed the way a narrow
         // "% 1.0f < 0.01f" window could if a frame landed just past the wrap point.
         yield return new WaitUntil(() => stateMachine.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f && !stateMachine.Animator.IsInTransition(0));
-
-        stateMachine.ForceReciever.EnableGroundCheck = true;
 
         stateMachine.TransitionStates(PlayerStates.Idle);
     }
