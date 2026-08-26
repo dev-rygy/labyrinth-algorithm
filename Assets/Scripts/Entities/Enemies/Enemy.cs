@@ -5,8 +5,7 @@
  *                  This script is simply just controls the animator and movement of a simple enemy. 
  *                  It is not meant to be a full AI system, just eye candy for demo.
 */
-
-using RyansLibrary;
+using RyansLibrary.Physics;
 using System.Collections;
 using UnityEngine;
 

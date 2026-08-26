@@ -13,6 +13,7 @@ using RyansLibrary;
 using RyansLibrary.Abilities;
 using RyansLibrary.Debugging;
 using RyansLibrary.Input;
+using RyansLibrary.Physics;
 using RyansLibrary.StateMachines;
 using System;
 using UnityEngine;
