@@ -81,7 +81,7 @@ public class PlayerIdleState : PlayerState
         }
 
         // Falling state if the player is not grounded
-        if (!stateMachine.ForceReciever.IsGrounded())
+        if (!stateMachine.ForceReciever.IsGrounded)
             stateMachine.TransitionStates(PlayerStates.Fall);
     }
 

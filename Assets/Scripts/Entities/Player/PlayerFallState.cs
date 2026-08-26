@@ -45,7 +45,7 @@ public class PlayerFallState : PlayerState
         }
 
         // Falling state if the player is not grounded
-        if (stateMachine.ForceReciever.IsGrounded())
+        if (stateMachine.ForceReciever.IsGrounded)
         {
             _isLanding = true;
             stateMachine.StartCoroutine(LandCo());
