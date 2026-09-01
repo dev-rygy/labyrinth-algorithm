@@ -39,7 +39,7 @@ namespace RyansLibrary.UnityEditor
 
         public override void OnPreviewSettings()
         {
-            GUILayout.Label($"{((ShapeData)target).RoomCells?.Count ?? 0} cells", EditorStyles.whiteLabel);
+            GUILayout.Label($"{((ShapeData)target).Cells?.Count ?? 0} cells", EditorStyles.whiteLabel);
         }
 
         public override void OnInteractivePreviewGUI(Rect r, GUIStyle background)
@@ -52,7 +52,7 @@ namespace RyansLibrary.UnityEditor
             InitPreviewUtility();
 
             ShapeData shapeData = (ShapeData)target;
-            if (shapeData.RoomCells == null || shapeData.RoomCells.Count == 0)
+            if (shapeData.Cells == null || shapeData.Cells.Count == 0)
             {
                 EditorGUI.DropShadowLabel(r, "No RoomCells to preview");
                 return;
@@ -76,7 +76,7 @@ namespace RyansLibrary.UnityEditor
         public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)
         {
             ShapeData shapeData = target as ShapeData;
-            if (shapeData == null || shapeData.RoomCells == null || shapeData.RoomCells.Count == 0)
+            if (shapeData == null || shapeData.Cells == null || shapeData.Cells.Count == 0)
                 return null;
 
             InitPreviewUtility();
@@ -109,7 +109,7 @@ namespace RyansLibrary.UnityEditor
         private void DrawCells(ShapeData shapeData)
         {
             float cubeScale = k_cellSize - k_cellGap;
-            foreach (KeyValuePair<Vector3Int, CellState> cell in shapeData.RoomCells)
+            foreach (KeyValuePair<Vector3Int, CellState> cell in shapeData.Cells)
             {
                 Matrix4x4 matrix = Matrix4x4.TRS((Vector3)cell.Key * k_cellSize, Quaternion.identity, Vector3.one * cubeScale);
                 _previewUtility.DrawMesh(_cubeMesh, matrix, GetMaterial(cell.Value, _stateMaterials), 0);
@@ -199,7 +199,7 @@ namespace RyansLibrary.UnityEditor
             Bounds bounds = default;
             bool first = true;
 
-            foreach (Vector3Int position in shapeData.RoomCells.Keys)
+            foreach (Vector3Int position in shapeData.Cells.Keys)
             {
                 Bounds cellBounds = new Bounds((Vector3)position * k_cellSize, Vector3.one * k_cellSize);
                 if (first)

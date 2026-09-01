@@ -26,6 +26,6 @@ namespace RyansLibrary.Labyrinth
     public class ShapeData : ScriptableObject
     {
         [SerializedDictionary("Cell Position", "Cell State")]
-        public SerializedDictionary<Vector3Int, CellState> RoomCells;
+        public SerializedDictionary<Vector3Int, CellState> Cells;
     }
 }
