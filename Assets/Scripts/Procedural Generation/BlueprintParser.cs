@@ -9,44 +9,231 @@ using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
 {
-    public class BlueprintParser
+    public class ShapeCandidate
     {
-        private struct ShapeContext
+        private ShapeData _shape;
+        public ShapeData Shape => _shape;
+        private Vector3Int _cell;
+        public Vector3Int Cell => _cell;
+        private int _passedCells;
+        public int PassedCells => _passedCells;
+
+        public ShapeCandidate(ShapeData shape, Vector3Int cell)
         {
-            public ShapeData Shape;
-            public List<Vector3Int> Origins;
+            _shape = shape;
+            _cell = cell;
+            _passedCells = 0;
         }
 
-        Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
+        public bool CheckFilled()
+        {
+            if (_passedCells >= _shape.CellCount)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void CellPassed()
+        {
+            _passedCells++;
+        }
+    }
+
+    // Lexgen
+    public class BlueprintParser
+    {
+        private Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
+        private Dictionary<Vector3Int, Blueprint> _checkedBlueprintDictionary;
+        private Stack<ShapeCandidate> _acceptedShapes;
+        private Blueprint _baseBlueprint;
 
         public BlueprintParser(Dictionary<Vector3Int, Blueprint> blueprintDictionary)
         {
             _blueprintDictionary = blueprintDictionary;
         }
 
-        /// <summary>
-        /// Checks all cells in each shape in the list against the current blueprint.
-        /// If a cell matches the configs of the blueprint, then the cell is valid as an origin
-        /// and shape passes test.
-        /// </summary>
-        /// <param name="shapeList">List of viable shapes</param>
-        /// <param name="blueprint">The current blueprint being parsed</param>
-        private void CheckAllOrigins(List<ShapeData> shapeList, Blueprint blueprint)
+        public Stack<ShapeCandidate> CheckValidShapes(Blueprint baseBlueprint, List<ShapeData> possibleShapes)
         {
-            List<ShapeContext> passedShapes = new List<ShapeContext>();
-
-            foreach (var shape in shapeList)
+            if (possibleShapes.Count <= 0)
             {
-                if (CheckForValidOrigins(shape, blueprint, out List<Vector3Int> validOrigins))
+                Debug.LogError("No shapes to parse.");
+                return null;
+            }
+
+            _checkedBlueprintDictionary = new();
+            _acceptedShapes = new();
+            List<ShapeCandidate> candidates = new();
+            _baseBlueprint = baseBlueprint;
+
+            // Check all shapes for valid origins
+            foreach (var shape in possibleShapes)
+            {
+                var validCells = CheckForValidCells(baseBlueprint, shape);
+
+                if (validCells.Count <= 0)      // Shape does not have any blueprint cells
+                    continue;
+
+                // Turn cells into candidates
+                foreach (var cell in validCells)
                 {
-                    passedShapes.Add(new ShapeContext { Shape = shape, Origins = validOrigins });
+                    ShapeCandidate newCandidate = new ShapeCandidate(shape, cell);
+                    candidates.Add(newCandidate);
+                }
+            }
+
+            if (candidates.Count <= 0)
+            {
+                Debug.LogError($"No viable origins found in any shape that can parse blueprint {baseBlueprint}");
+                return null;
+            }
+
+            // Recursive Descent Based Parsing
+            ParseBlueprints(baseBlueprint, candidates);
+
+            return _acceptedShapes;
+        }
+
+        public void ParseBlueprints(Blueprint currentBlueprint, List<ShapeCandidate> candidates)
+        {
+            // We can only parse blueprints that are still available; not claimed
+            if (!currentBlueprint.Available)
+            {
+                Debug.LogError("Tried to parse unavailable blueprint.");
+                return;
+            }
+
+            // Base case; no viable shapes to check for next blueprint
+            if (candidates.Count <= 0)
+                return;
+
+            // Shapes that pass this iteration have atleast one vaiable origin; Copy candidate list and 
+            // then we just remove candidates one by one.
+            List<ShapeCandidate> nextRoundCandidates = new List<ShapeCandidate>(candidates);
+
+            // Local position from base blueprint
+            Vector3Int localPosition = currentBlueprint.Position - _baseBlueprint.Position;
+
+            foreach (var candidate in candidates)
+            {
+                Vector3Int localPosFromCell = candidate.Cell - localPosition;
+
+                // If candidate passes 
+                if (CheckConfigs(localPosFromCell, candidate.Shape, currentBlueprint))
+                {
+                    candidate.CellPassed();
+
+                    // If all cells of shape are satisfied
+                    if (candidate.CheckFilled())
+                    {
+                        // Remove any candidates with same shape from the next round
+                        RemoveShapeFromCandidateList(candidate, nextRoundCandidates);
+                        _acceptedShapes.Push(candidate);
+                    }
+                }
+                else  // Candidate did not pass
+                {
+                    nextRoundCandidates.Remove(candidate);
+                }
+            }
+            _checkedBlueprintDictionary.Add(currentBlueprint.Position, currentBlueprint);
+
+            Blueprint found;
+
+            // Try peeking left
+            if (ParserPeek(currentBlueprint, Vector3Int.left, out found))
+            {
+                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
+                {
+                    // Parse left blueprint with remaining viable shapes that are not already filled
+                    ParseBlueprints(found, nextRoundCandidates);
+                }
+            }
+
+            // Try peeking right
+            if (ParserPeek(currentBlueprint, Vector3Int.right, out found))
+            {
+                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
+                {
+                    // Parse right blueprint with remaining viable shapes that are not already filled
+                    ParseBlueprints(found, nextRoundCandidates);
+                }
+            }
+
+            // Try peeking forward
+            if (ParserPeek(currentBlueprint, Vector3Int.forward, out found))
+            {
+                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
+                {
+                    // Parse forward blueprint with remaining viable shapes that are not already filled
+                    ParseBlueprints(found, nextRoundCandidates);
+                }
+            }
+
+            // Try peeking back
+            if (ParserPeek(currentBlueprint, Vector3Int.back, out found))
+            {
+                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
+                {
+                    // Parse back blueprint with remaining viable shapes that are not already filled
+                    ParseBlueprints(found, nextRoundCandidates);
+                }
+            }
+
+            // Try peeking up
+            if (ParserPeek(currentBlueprint, Vector3Int.up, out found))
+            {
+                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
+                {
+                    // Parse up blueprint with remaining viable shapes that are not already filled
+                    ParseBlueprints(found, nextRoundCandidates);
+                }
+            }
+
+            // Try peeking down
+            if (ParserPeek(currentBlueprint, Vector3Int.down, out found))
+            {
+                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
+                {
+                    // Parse down blueprint with remaining viable shapes that are not already filled
+                    ParseBlueprints(found, nextRoundCandidates);
                 }
             }
         }
 
-        public bool CheckForValidOrigins(ShapeData shape, Blueprint blueprint, out List<Vector3Int> validOrigins)
+        /// <summary>
+        /// Strips every candidate sharing a shape with the given candidate out of the list, retiring
+        /// that shape from the parse. The passed candidate is removed too, since it matches its own shape.
+        /// </summary>
+        private void RemoveShapeFromCandidateList(ShapeCandidate candidate, List<ShapeCandidate> candidates)
         {
-            validOrigins = new();
+            if (candidates == null || candidate == null)
+                return;
+
+            candidates.RemoveAll(c => c.Shape == candidate.Shape);
+        }
+
+        /// <summary>
+        /// Peek anywhere in the blueprint dictionary and return the blueprint at a position if
+        /// found.
+        /// </summary>
+        /// <param name="blueprint">Base blueprint to peek from.</param>
+        /// <param name="position">Where to peek in the dictionary</param>
+        /// <param name="found">Blueprint that was found with peek; otherwise null</param>
+        /// <returns></returns>
+        private bool ParserPeek(Blueprint blueprint, Vector3Int position, out Blueprint found)
+        {
+            if (_blueprintDictionary.TryGetValue(blueprint.Position + position, out found))
+            {
+                if (found.Available)        // Blueprint needs to be available to parse
+                    return true;
+            }
+            return false;
+        }
+
+        public List<Vector3Int> CheckForValidOrigins(Blueprint blueprint, ShapeData shape)
+        {
+            List<Vector3Int> validCells = new();
 
             foreach (var cell in shape.Cells)
             {
@@ -59,35 +246,54 @@ namespace RyansLibrary.Labyrinth
                 // Check if the cell is valid as an origin point
                 // If one cell passes as an origin then add shape to list
                 if (CheckConfigs(cell.Key, shape, blueprint))
-                    validOrigins.Add(cell.Key);
+                    validCells.Add(cell.Key);
             }
 
             // If at least one origin was found then shape also passes
-            if (validOrigins.Count > 0)
+            if (validCells.Count > 0)
             {
-                return true;
+                return validCells;
             }
 
-            return false;
+            return null;
+        }
+
+        public List<Vector3Int> CheckForValidCells(Blueprint blueprint, ShapeData shape)
+        {
+            List<Vector3Int> validCells = new();
+
+            foreach (var cell in shape.Cells)
+            {
+                // Skip cells that are not marked as blueprint cells, since they cannot be origins
+                if (cell.Value == CellState.Blueprint)
+                {
+                    // DEPRICATED: We don't need to do this here
+                    // Check if the cell is valid as an origin point
+                    // If one cell passes as an origin then add shape to list
+                    // if (CheckConfigs(cell.Key, shape, blueprint))
+                    //     validCells.Add(cell.Key);
+
+                    validCells.Add(cell.Key);
+                }
+            }
+
+            return validCells;
         }
 
         #region Check Configs
-        public bool CheckConfigs(Vector3Int posRelativeToOrigin, ShapeData shapeData, Blueprint blueprint)
+        public bool CheckConfigs(Vector3Int localPosition, ShapeData shapeData, Blueprint blueprint)
         {
             // Shape does not contain a cell at position, so it's an illegal check
-            if (!shapeData.Cells.ContainsKey(posRelativeToOrigin))
-            {
-                Debug.LogError($"Attempted illegal check on {shapeData} at relative position {posRelativeToOrigin}");
+            if (!shapeData.Cells.ContainsKey(localPosition))
                 return false;
-            }
 
             CellState[] ShapeDataConfigs = new CellState[6];
-            ShapeDataConfigs[0] = CheckSide(shapeData, posRelativeToOrigin, Vector3Int.right);
-            ShapeDataConfigs[1] = CheckSide(shapeData, posRelativeToOrigin, Vector3Int.left);
-            ShapeDataConfigs[2] = CheckSide(shapeData, posRelativeToOrigin, Vector3Int.forward);
-            ShapeDataConfigs[3] = CheckSide(shapeData, posRelativeToOrigin, Vector3Int.back);
-            ShapeDataConfigs[4] = CheckSide(shapeData, posRelativeToOrigin, Vector3Int.up);
-            ShapeDataConfigs[5] = CheckSide(shapeData, posRelativeToOrigin, Vector3Int.down);
+            ShapeDataConfigs[0] = CheckSide(shapeData, localPosition, Vector3Int.right);
+            ShapeDataConfigs[1] = CheckSide(shapeData, localPosition, Vector3Int.left);
+            ShapeDataConfigs[2] = CheckSide(shapeData, localPosition, Vector3Int.forward);
+            ShapeDataConfigs[3] = CheckSide(shapeData, localPosition, Vector3Int.back);
+            ShapeDataConfigs[4] = CheckSide(shapeData, localPosition, Vector3Int.up);
+            ShapeDataConfigs[5] = CheckSide(shapeData, localPosition, Vector3Int.down);
 
             CellState[] BlueprintConfigs = new CellState[6];
             BlueprintConfigs[0] = CheckSide(blueprint, Vector3Int.right);

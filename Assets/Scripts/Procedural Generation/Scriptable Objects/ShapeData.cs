@@ -27,5 +27,6 @@ namespace RyansLibrary.Labyrinth
     {
         [SerializedDictionary("Cell Position", "Cell State")]
         public SerializedDictionary<Vector3Int, CellState> Cells;
+        public int CellCount => Cells.Count;
     }
 }

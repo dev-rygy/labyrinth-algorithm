@@ -47,10 +47,9 @@ namespace RyansLibrary
             _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);
 
             // Act      (Execute the code you're testing)
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert   (Make sure results are what you expect)
-            Assert.IsTrue(result);      // Shape passed
             Assert.AreEqual(1, validOrigins.Count);  // Only one valid origin
             Assert.AreEqual(Vector3Int.zero, validOrigins[0]);  // The only valid origin is at (0,0,0)
 
@@ -73,11 +72,10 @@ namespace RyansLibrary
             _shape.Cells.Add(Vector3Int.right, CellState.Blueprint);
 
             // Act
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert
-            Assert.IsFalse(result);      // Shape failed
-            Assert.AreEqual(0, validOrigins.Count);  // No valid origins
+            Assert.IsNull(validOrigins);  // No valid origins
 
         }
 
@@ -99,10 +97,9 @@ namespace RyansLibrary
             _shape.Cells.Add(Vector3Int.right, CellState.Blueprint);
 
             // Act
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert
-            Assert.IsTrue(result);      // Shape passed
             Assert.AreEqual(1, validOrigins.Count);  // One valid origin
             Assert.AreEqual(Vector3Int.zero, validOrigins[0]);  // The valid origin is at (0,0,0)
 
@@ -128,10 +125,9 @@ namespace RyansLibrary
             // Act
             // Even with NoBlueprint set on one of the shape cells the first cell should still pass the check
             // when b2 is the blueprint being checked.
-            bool result = _parser.CheckForValidOrigins(_shape, b2, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b2, _shape);
 
             // Assert
-            Assert.IsTrue(result);      // Shape passed
             Assert.AreEqual(1, validOrigins.Count);  // One valid origin
             Assert.AreEqual(Vector3Int.zero, validOrigins[0]);  // The valid origin is at (0,0,0)
 
@@ -156,11 +152,10 @@ namespace RyansLibrary
 
             // Act
             // This shape requires there to not be a blueprint at (1, 0, 0) but b2 is present at that location,
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert
-            Assert.IsFalse(result);      // Shape failed
-            Assert.AreEqual(0, validOrigins.Count);  // No valid origins
+            Assert.IsNull(validOrigins);  // No valid origins
         }
 
         /// <summary>
@@ -181,11 +176,10 @@ namespace RyansLibrary
             _shape.Cells.Add(Vector3Int.right, CellState.Blueprint);        // No Blueprint exists at this cell's location
 
             // Act
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert
-            Assert.IsFalse(result);      // Shape failed
-            Assert.AreEqual(0, validOrigins.Count);  // No valid origins
+            Assert.IsNull(validOrigins);  // No valid origins
 
         }
 
@@ -213,10 +207,9 @@ namespace RyansLibrary
             _shape.Cells.Add(Vector3Int.right + Vector3Int.forward, CellState.Blueprint);
 
             // Act
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert
-            Assert.IsTrue(result);      // Shape passed
             Assert.AreEqual(1, validOrigins.Count);  // Only 2 valid origins
             Assert.AreEqual(Vector3Int.zero, validOrigins[0]);  // A valid origin is at (0,0,0)
         }
@@ -247,10 +240,9 @@ namespace RyansLibrary
             _shape.Cells.Add(Vector3Int.right + Vector3Int.forward, CellState.Blueprint);
 
             // Act
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert
-            Assert.IsTrue(result);      // Shape passed
             Assert.AreEqual(2, validOrigins.Count);  // Only 2 valid origins
             Assert.AreEqual(Vector3Int.zero, validOrigins[0]);  // A valid origin is at (0,0,0)
             Assert.AreEqual(Vector3Int.right, validOrigins[1]);  // A valid origin is at (1,0,0)
@@ -283,11 +275,10 @@ namespace RyansLibrary
             _shape.Cells.Add(Vector3Int.right + Vector3Int.forward, CellState.Blueprint);
 
             // Act
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert
-            Assert.IsFalse(result);      // Shape passed
-            Assert.AreEqual(0, validOrigins.Count);  // Only 2 valid origins
+            Assert.IsNull(validOrigins);  // Only 2 valid origins
         }
 
         /// <summary>
@@ -320,10 +311,9 @@ namespace RyansLibrary
 
             // Act
             // Starting at right blueprint only 
-            bool result = _parser.CheckForValidOrigins(_shape, b2, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b2, _shape);
 
             // Assert
-            Assert.IsTrue(result);      // Shape passed
             Assert.AreEqual(1, validOrigins.Count);  // Only 2 valid origins
             Assert.AreEqual(Vector3Int.right, validOrigins[0]);  // Only valid origin is at (1,0,0)
         }
@@ -368,10 +358,9 @@ namespace RyansLibrary
 
             // Act
             // Starting at right blueprint only 
-            bool result = _parser.CheckForValidOrigins(_shape, b1, out validOrigins);
+            validOrigins = _parser.CheckForValidOrigins(b1, _shape);
 
             // Assert
-            Assert.IsTrue(result);      // Shape passed
             Assert.AreEqual(2, validOrigins.Count);  // Only 2 valid origins
             Assert.AreEqual(Vector3Int.right, validOrigins[0]);  // Valid origin is at (1,0,0)
             Assert.AreEqual(Vector3Int.left, validOrigins[1]);  // Valid origin is at (-1,0,0)
