@@ -17,15 +17,43 @@ namespace RyansLibrary
         private Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
         BlueprintParser _parser;
         ShapeData _shape;
+        List<ShapeData> _shapes;
 
+        #region Test SetUp/TearDown
         [SetUp]
         public void SetUp()
         {
-            _blueprintDictionary = new Dictionary<Vector3Int, Blueprint>();
+            _blueprintDictionary = new();
             _parser = new BlueprintParser(_blueprintDictionary);
+            _shapes = new();
 
             _shape = ScriptableObject.CreateInstance<ShapeData>();
             _shape.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+
+            ShapeData shape1x1x1 = ScriptableObject.CreateInstance<ShapeData>();
+            shape1x1x1.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            shape1x1x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
+            _shapes.Add(shape1x1x1);
+
+            ShapeData shape2x1x1 = ScriptableObject.CreateInstance<ShapeData>();
+            shape2x1x1.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            shape2x1x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
+            shape2x1x1.Cells.Add(new Vector3Int(1, 0, 0), CellState.Blueprint);
+            _shapes.Add(shape2x1x1);
+
+            ShapeData shape1x2x1 = ScriptableObject.CreateInstance<ShapeData>();
+            shape1x2x1.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            shape1x2x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
+            shape1x2x1.Cells.Add(new Vector3Int(0, 1, 0), CellState.Blueprint);
+            _shapes.Add(shape1x2x1);
+
+            ShapeData shape2x1x2 = ScriptableObject.CreateInstance<ShapeData>();
+            shape2x1x2.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            shape2x1x2.Cells.Add(Vector3Int.zero, CellState.Blueprint);
+            shape2x1x2.Cells.Add(new Vector3Int(1, 0, 0), CellState.Blueprint);
+            shape2x1x2.Cells.Add(new Vector3Int(1, 0, 1), CellState.Blueprint);
+            shape2x1x2.Cells.Add(new Vector3Int(0, 0, 1), CellState.Blueprint);
+            _shapes.Add(shape2x1x2);
         }
 
         [TearDown]
@@ -33,9 +61,84 @@ namespace RyansLibrary
         {
             // Clean up any resources used in the test
             _shape = null;
+            _shapes = null;
+        }
+        #endregion
+
+        #region Parser Tests
+        [Test]
+        public void TestParserOnebyOneBlueprint()
+        {
+            // Arrage
+            Vector3Int bpPosition = RandomVector();
+            Stack<ShapeCandidate> validShapes;
+            Blueprint b1 = new Blueprint(bpPosition);
+            _blueprintDictionary.Add(b1.Position, b1);
+
+            // Act
+            validShapes = _parser.CheckValidShapes(b1, _shapes);
+
+            // Assert
+            Assert.AreEqual(1, validShapes.Count);
+            Assert.AreEqual(validShapes.Pop().Shape, _shapes[0]);   // Candidate of 1x1x1
         }
 
-        #region Test Origins
+        [Test]
+        public void TestParserNoPossibleShapes()
+        {
+            // Arrage
+            Vector3Int bpPosition = RandomVector();
+            Stack<ShapeCandidate> validShapes;
+            Blueprint b1 = new Blueprint(bpPosition);
+            _blueprintDictionary.Add(b1.Position, b1);
+
+            _shapes = new();
+
+            // Act
+            validShapes = _parser.CheckValidShapes(b1, _shapes);
+
+            // Assert
+            LogAssert.Expect(LogType.Error, "No possible shapes to parse.");
+        }
+
+        [Test]
+        public void TestParserPlusBlueprints()
+        {
+            // Arrage
+            Vector3Int bpPosition = RandomVector();
+            Stack<ShapeCandidate> validShapes;
+            Blueprint b1 = new Blueprint(bpPosition);
+            _blueprintDictionary.Add(b1.Position, b1);
+            Blueprint b2 = new Blueprint(bpPosition + Vector3Int.left);
+            _blueprintDictionary.Add(b2.Position, b2);
+            Blueprint b3 = new Blueprint(bpPosition + Vector3Int.right);
+            _blueprintDictionary.Add(b3.Position, b3);
+            Blueprint b4 = new Blueprint(bpPosition + Vector3Int.forward);
+            _blueprintDictionary.Add(b4.Position, b4);
+            Blueprint b5 = new Blueprint(bpPosition + Vector3Int.back);
+            _blueprintDictionary.Add(b5.Position, b5);
+
+            // Act
+            validShapes = _parser.CheckValidShapes(b1, _shapes);
+
+            // Assert
+            Assert.AreEqual(3, validShapes.Count);
+            // Candidate c2 at top
+            ShapeCandidate c2 = validShapes.Pop();
+            Assert.AreEqual(c2.Shape, _shapes[1]);          // c2 = Candidate of 2x1x1
+            Assert.AreEqual(c2.Cell, Vector3Int.zero);      // c2 = Base cell of (0, 0, 0)
+            // Candidate c3 next
+            ShapeCandidate c3 = validShapes.Pop();
+            Assert.AreEqual(c3.Shape, _shapes[1]);          // c3 = Candidate of 2x1x1
+            Assert.AreEqual(c3.Cell, Vector3Int.right);     // c3 = Base cell of (1, 0, 0)
+            // Candidate c1 at bottom
+            ShapeCandidate c1 = validShapes.Pop();
+            Assert.AreEqual(c1.Shape, _shapes[0]);          // c1 = Candidate of 1x1x1
+            Assert.AreEqual(c1.Cell, Vector3Int.zero);      // c1 = Base cell of (0, 0, 0)
+        }
+        #endregion
+
+        #region Cell Tests
         [Test]
         public void TestOriginPass()
         {
@@ -367,7 +470,7 @@ namespace RyansLibrary
         }
         #endregion
 
-        #region Test Config Check
+        #region Config Check Tests
         /// <summary>
         /// Takes one blueprint and a shape with one cell marked with the state 'Blueprint'.
         /// The test will pass since a blueprint is present at the origin and the shape is 
@@ -586,7 +689,7 @@ namespace RyansLibrary
             bool result = _parser.CheckConfigs(Vector3Int.right, _shape, b2);
 
             // Assert
-            LogAssert.Expect(LogType.Error, $"Attempted illegal check on {_shape} at relative position {Vector3Int.right}");
+            Assert.IsFalse(result);
         }
         #endregion
 

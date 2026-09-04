@@ -43,21 +43,32 @@ namespace RyansLibrary.Labyrinth
     // Lexgen
     public class BlueprintParser
     {
-        private Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
+        private readonly Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
         private Dictionary<Vector3Int, Blueprint> _checkedBlueprintDictionary;
         private Stack<ShapeCandidate> _acceptedShapes;
         private Blueprint _baseBlueprint;
+
+        private bool _debug = true;
 
         public BlueprintParser(Dictionary<Vector3Int, Blueprint> blueprintDictionary)
         {
             _blueprintDictionary = blueprintDictionary;
         }
 
+        /// <summary>
+        /// Recursion-based parsing algorithm that eliminates shapes one by one until a final candidate list is found that
+        /// fits a set of adjacent blueprints. Basically fitting shapes in holes like that toddler game.
+        /// Top Level Function: Primes parser for new token check. Initilizes all needed data structures, and creates
+        /// candidate entries from shapes.
+        /// </summary>
+        /// <param name="baseBlueprint">Starting point for token parsing.</param>
+        /// <param name="possibleShapes">Possible tokens; should be all possible shapes in zone.</param>
+        /// <returns>All possible candidates found that can fit a range of available blueprints.</returns>
         public Stack<ShapeCandidate> CheckValidShapes(Blueprint baseBlueprint, List<ShapeData> possibleShapes)
         {
             if (possibleShapes.Count <= 0)
             {
-                Debug.LogError("No shapes to parse.");
+                Debug.LogError("No possible shapes to parse.");
                 return null;
             }
 
@@ -94,6 +105,12 @@ namespace RyansLibrary.Labyrinth
             return _acceptedShapes;
         }
 
+        /// <summary>
+        /// Recursion-based parsing algorithm that eliminates shapes one by one until a final candidate list is found that
+        /// fits a set of adjacent blueprints. Basically fitting shapes in holes like that toddler game.
+        /// </summary>
+        /// <param name="currentBlueprint">Current blueprint being parsed</param>
+        /// <param name="candidates">Candidate shapes are the tokens.</param>
         public void ParseBlueprints(Blueprint currentBlueprint, List<ShapeCandidate> candidates)
         {
             // We can only parse blueprints that are still available; not claimed
@@ -116,7 +133,7 @@ namespace RyansLibrary.Labyrinth
 
             foreach (var candidate in candidates)
             {
-                Vector3Int localPosFromCell = candidate.Cell - localPosition;
+                Vector3Int localPosFromCell = candidate.Cell + localPosition;
 
                 // If candidate passes 
                 if (CheckConfigs(localPosFromCell, candidate.Shape, currentBlueprint))
