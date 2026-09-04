@@ -25,6 +25,15 @@ namespace RyansLibrary.Labyrinth
             _passedCells = 0;
         }
 
+        public ShapeCandidate(ShapeCandidate original)  // Copy Constructor
+        {
+            _shape = original._shape;
+            _cell = original._cell;
+            _passedCells = original._passedCells;
+        }
+
+        public ShapeCandidate Clone() => new ShapeCandidate(this);
+
         public bool CheckFilled()
         {
             if (_passedCells >= _shape.CellCount)
@@ -126,12 +135,14 @@ namespace RyansLibrary.Labyrinth
 
             // Shapes that pass this iteration have atleast one vaiable origin; Copy candidate list and 
             // then we just remove candidates one by one.
-            List<ShapeCandidate> nextRoundCandidates = new List<ShapeCandidate>(candidates);
+            List<ShapeCandidate> nextRoundCandidates = new List<ShapeCandidate>(candidates.Count);
+            foreach (var candidate in candidates)       // Make identical copies of candidates
+                nextRoundCandidates.Add(candidate.Clone());
 
             // Local position from base blueprint
             Vector3Int localPosition = currentBlueprint.Position - _baseBlueprint.Position;
 
-            foreach (var candidate in candidates)
+            foreach (var candidate in nextRoundCandidates.ToArray())
             {
                 Vector3Int localPosFromCell = candidate.Cell + localPosition;
 
