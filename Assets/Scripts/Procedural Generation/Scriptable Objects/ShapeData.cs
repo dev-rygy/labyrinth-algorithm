@@ -27,6 +27,19 @@ namespace RyansLibrary.Labyrinth
     {
         [SerializedDictionary("Cell Position", "Cell State")]
         public SerializedDictionary<Vector3Int, CellState> Cells;
-        public int CellCount => Cells.Count;
+        public int CellCount        // Only count cells marked as 'Blueprint'
+        {
+            get
+            {
+                int count = 0;
+                foreach (var cell in Cells)
+                {
+                    if (cell.Value == CellState.Blueprint)
+                        count++;
+                }
+                return count;
+            }
+        }
+
     }
 }
