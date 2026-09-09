@@ -15,49 +15,52 @@ namespace RyansLibrary.Labyrinth
         public ShapeData Shape => _shape;
         private Vector3Int _cell;
         public Vector3Int Cell => _cell;
-        private int _passedCells;
-        public int PassedCells => _passedCells;
+
+        private readonly HashSet<Vector3Int> _coveredCells;
+        public HashSet<Vector3Int> CoveredCells => _coveredCells;
+        public int PassedCells => _coveredCells.Count;
 
         public ShapeCandidate(ShapeData shape, Vector3Int cell)
         {
             _shape = shape;
             _cell = cell;
-            _passedCells = 0;
+            _coveredCells = new();
         }
-
-        public ShapeCandidate(ShapeCandidate original)  // Copy Constructor
-        {
-            _shape = original._shape;
-            _cell = original._cell;
-            _passedCells = original._passedCells;
-        }
-
-        public ShapeCandidate Clone() => new ShapeCandidate(this);
 
         public bool CheckFilled()
         {
-            if (_passedCells >= _shape.CellCount)
+            if (_coveredCells.Count >= _shape.CellCount)
             {
                 return true;
             }
             return false;
         }
 
-        public void CellPassed()
+        public void CellCovered(Vector3Int shapeCell)
         {
-            _passedCells++;
+            _coveredCells.Add(shapeCell);
         }
     }
 
     // Lexgen
     public class BlueprintParser
     {
+        // 3D Parser Directions
+        // Modify this for 2D parser if nessessary
+        private static readonly Vector3Int[] k_directions =
+        {
+            Vector3Int.left,
+            Vector3Int.right,
+            Vector3Int.forward,
+            Vector3Int.back,
+            Vector3Int.up,
+            Vector3Int.down,
+        };
+
         private readonly Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
-        private Dictionary<Vector3Int, Blueprint> _checkedBlueprintDictionary;
+        private Dictionary<Vector3Int, Blueprint> _visitedBlueprintDictionary;
         private Stack<ShapeCandidate> _acceptedShapes;
         private Blueprint _baseBlueprint;
-
-        private bool _debug = true;
 
         public BlueprintParser(Dictionary<Vector3Int, Blueprint> blueprintDictionary)
         {
@@ -81,7 +84,7 @@ namespace RyansLibrary.Labyrinth
                 return null;
             }
 
-            _checkedBlueprintDictionary = new();
+            _visitedBlueprintDictionary = new();
             _acceptedShapes = new();
             List<ShapeCandidate> candidates = new();
             _baseBlueprint = baseBlueprint;
@@ -133,11 +136,8 @@ namespace RyansLibrary.Labyrinth
             if (candidates.Count <= 0)
                 return;
 
-            // Shapes that pass this iteration have atleast one vaiable origin; Copy candidate list and 
-            // then we just remove candidates one by one.
-            List<ShapeCandidate> nextRoundCandidates = new List<ShapeCandidate>(candidates.Count);
-            foreach (var candidate in candidates)       // Make identical copies of candidates
-                nextRoundCandidates.Add(candidate.Clone());
+            // Shapes that pass this iteration have atleast one vaiable origin
+            List<ShapeCandidate> nextRoundCandidates = new List<ShapeCandidate>(candidates);
 
             // Local position from base blueprint
             Vector3Int localPosition = currentBlueprint.Position - _baseBlueprint.Position;
@@ -149,13 +149,13 @@ namespace RyansLibrary.Labyrinth
                 // If candidate passes 
                 if (CheckConfigs(localPosFromCell, candidate.Shape, currentBlueprint))
                 {
-                    candidate.CellPassed();
+                    //candidate.CellPassed();
+                    candidate.CellCovered(localPosFromCell);
 
                     // If all cells of shape are satisfied
                     if (candidate.CheckFilled())
                     {
-                        // Remove any candidates with same shape from the next round
-                        RemoveShapeFromCandidateList(candidate, nextRoundCandidates);
+                        RemoveCandidateFromCandidateList(candidate, nextRoundCandidates);
                         _acceptedShapes.Push(candidate);
                     }
                 }
@@ -164,68 +164,22 @@ namespace RyansLibrary.Labyrinth
                     nextRoundCandidates.Remove(candidate);
                 }
             }
-            _checkedBlueprintDictionary.Add(currentBlueprint.Position, currentBlueprint);
+            _visitedBlueprintDictionary.Add(currentBlueprint.Position, currentBlueprint);
 
-            Blueprint found;
+            // Blueprint found;
 
-            // Try peeking left
-            if (ParserPeek(currentBlueprint, Vector3Int.left, out found))
+            foreach (var direction in k_directions)
             {
-                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
-                {
-                    // Parse left blueprint with remaining viable shapes that are not already filled
-                    ParseBlueprints(found, nextRoundCandidates);
-                }
-            }
+                // Blueprint needs to exist and be available to walk into
+                if (!ParserPeek(currentBlueprint, direction, out Blueprint found))
+                    continue;
 
-            // Try peeking right
-            if (ParserPeek(currentBlueprint, Vector3Int.right, out found))
-            {
-                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
-                {
-                    // Parse right blueprint with remaining viable shapes that are not already filled
-                    ParseBlueprints(found, nextRoundCandidates);
-                }
-            }
+                // Already checked blueprint in this direction so don't parse
+                if (_visitedBlueprintDictionary.ContainsKey(found.Position))
+                    continue;
 
-            // Try peeking forward
-            if (ParserPeek(currentBlueprint, Vector3Int.forward, out found))
-            {
-                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
-                {
-                    // Parse forward blueprint with remaining viable shapes that are not already filled
-                    ParseBlueprints(found, nextRoundCandidates);
-                }
-            }
-
-            // Try peeking back
-            if (ParserPeek(currentBlueprint, Vector3Int.back, out found))
-            {
-                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
-                {
-                    // Parse back blueprint with remaining viable shapes that are not already filled
-                    ParseBlueprints(found, nextRoundCandidates);
-                }
-            }
-
-            // Try peeking up
-            if (ParserPeek(currentBlueprint, Vector3Int.up, out found))
-            {
-                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
-                {
-                    // Parse up blueprint with remaining viable shapes that are not already filled
-                    ParseBlueprints(found, nextRoundCandidates);
-                }
-            }
-
-            // Try peeking down
-            if (ParserPeek(currentBlueprint, Vector3Int.down, out found))
-            {
-                if (!_checkedBlueprintDictionary.ContainsKey(found.Position))
-                {
-                    // Parse down blueprint with remaining viable shapes that are not already filled
-                    ParseBlueprints(found, nextRoundCandidates);
-                }
+                // Parse the neighbour with the shapes that are still viable
+                ParseBlueprints(found, nextRoundCandidates);
             }
         }
 
@@ -239,6 +193,14 @@ namespace RyansLibrary.Labyrinth
                 return;
 
             candidates.RemoveAll(c => c.Shape == candidate.Shape);
+        }
+
+        private void RemoveCandidateFromCandidateList(ShapeCandidate candidate, List<ShapeCandidate> candidates)
+        {
+            if (candidates == null || candidate == null)
+                return;
+
+            candidates.Remove(candidate);
         }
 
         /// <summary>
@@ -295,12 +257,6 @@ namespace RyansLibrary.Labyrinth
                 // Skip cells that are not marked as blueprint cells, since they cannot be origins
                 if (cell.Value == CellState.Blueprint)
                 {
-                    // DEPRICATED: We don't need to do this here
-                    // Check if the cell is valid as an origin point
-                    // If one cell passes as an origin then add shape to list
-                    // if (CheckConfigs(cell.Key, shape, blueprint))
-                    //     validCells.Add(cell.Key);
-
                     validCells.Add(cell.Key);
                 }
             }

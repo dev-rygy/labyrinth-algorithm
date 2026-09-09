@@ -643,7 +643,7 @@ namespace RyansLibrary
 
             // Assert
             Assert.IsNotNull(validShapes);
-            Assert.AreEqual(0, validShapes.Count);      // the bar fits perfectly, but is never found
+            Assert.AreEqual(1, validShapes.Count);      // the bar fits perfectly, but is never found
         }
 
         /// <summary>
@@ -674,7 +674,8 @@ namespace RyansLibrary
             ShapeData lTromino = MakeShape(
                 Vector3Int.zero,
                 new Vector3Int(1, 0, 0),
-                new Vector3Int(1, 0, 1));
+                new Vector3Int(1, 0, 1)
+                );
 
             // Act
             Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(armA, new List<ShapeData> { lTromino });
@@ -722,7 +723,118 @@ namespace RyansLibrary
 
             // Assert
             Assert.IsNotNull(validShapes);
-            Assert.AreEqual(0, validShapes.Count);      // the L is the blob exactly, and is still never found
+            Assert.AreEqual(1, validShapes.Count);      // the L is the blob exactly, and is still never found
+        }
+
+        /// <summary>
+        /// ROBUSTNESS - one shape, several valid placements, all of them overlapping the base.
+        /// A 1x5 corridor parsed from its middle cell, matched against a 1x3 bar:
+        ///
+        ///     c0 - c1 - [c2] - c3 - c4        [c2] is the base blueprint
+        ///
+        /// Three placements cover c2 and every one of them is a legitimate fit, so three candidates
+        /// should come back - anchor (2,0,0) over c0c1c2, anchor (1,0,0) over c1c2c3, and anchor
+        /// (0,0,0) over c2c3c4. They overlap each other; resolving that is the caller's job.
+        ///
+        /// This is the test that guards shape retirement. All three candidates share one ShapeData
+        /// asset, so when the (1,0,0) placement completes at c3, RemoveShapeFromCandidateList runs
+        /// RemoveAll(c =&gt; c.Shape == candidate.Shape) and deletes the (0,0,0) placement along with
+        /// it - while that one is sitting at 2 of 3 cells, one step from completing. Emptying the
+        /// list then trips the 'candidates.Count &lt;= 0' guard, so c4 is never visited either.
+        ///
+        /// Retirement only ever looked safe because the deep clones meant it was deleting copies.
+        /// Sharing the candidates makes it delete live progress instead.
+        /// </summary>
+        [Test]
+        public void TestParserFindsEveryBarPlacementCoveringTheBase()
+        {
+            // Arrange
+            Vector3Int o = RandomVector();
+            AddBlueprint(o);                                            // b0
+            AddBlueprint(o + Vector3Int.right);                         // b1
+            Blueprint middle = AddBlueprint(o + Vector3Int.right * 2);  // b2, the base blueprint
+            AddBlueprint(o + Vector3Int.right * 3);                     // b3
+            AddBlueprint(o + Vector3Int.right * 4);                     // b4
+
+            // Bar shape 3x1x1
+            ShapeData bar = MakeShape(Vector3Int.zero, new Vector3Int(1, 0, 0), new Vector3Int(2, 0, 0));
+
+            // Act
+            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, new List<ShapeData> { bar });
+
+            // Assert
+            Assert.AreEqual(3, validShapes.Count);
+
+            // Membership rather than pop order - what matters is which placements were found
+            List<Vector3Int> anchors = new List<Vector3Int>();
+            foreach (var candidate in validShapes)       // enumerating a Stack does not pop it
+            {
+                Assert.AreEqual(bar, candidate.Shape);
+                anchors.Add(candidate.Cell);
+            }
+
+            Assert.Contains(new Vector3Int(2, 0, 0), anchors);      // covers c0 c1 c2
+            Assert.Contains(new Vector3Int(1, 0, 0), anchors);      // covers c1 c2 c3
+            Assert.Contains(Vector3Int.zero, anchors);              // covers c2 c3 c4
+        }
+
+        /// <summary>
+        /// ROBUSTNESS - a candidate must survive the walk stepping off its own footprint.
+        /// Blob is a flat 3 wide by 2 deep pocket, parsed from the bottom middle cell:
+        ///
+        ///     D(0,0,1)   E(1,0,1)   F(2,0,1)
+        ///     A(0,0,0)  [B(1,0,0)]  C(2,0,0)        [B] is the base blueprint
+        ///
+        /// The 2x1x2 square fits over B two different ways - the left half {A,B,D,E} at anchor
+        /// (1,0,0), and the right half {B,C,E,F} at anchor (0,0,0). Both are valid cell for cell,
+        /// so two candidates should come back.
+        ///
+        /// Only one does. k_directions peeks left first, so the walk runs B -> A -> D -> E -> F.
+        /// At A the right-half candidate maps to shape cell (-1,0,0), which the shape has no cell
+        /// for, so CheckConfigs returns false and the candidate is dropped from that entire branch.
+        /// The branch then goes on to consume E and F - two of that candidate's own four cells -
+        /// and marks them in the visited dictionary, which is global. When the walk returns to B
+        /// and heads right, the candidate picks up C for 2 of 4 and then finds E and F already
+        /// visited. It starves one cell short of a placement that is perfectly legal.
+        ///
+        /// The cause is that CheckConfigs conflates two different answers: "the shape has no cell
+        /// here" and "the shape has a cell here and the layout contradicts it". The first is not a
+        /// failure - the blueprint simply belongs to some other room - and should skip the
+        /// candidate rather than eliminate it. Only the second should drop it from the branch.
+        ///
+        /// Note this bites ordinary contiguous shapes, not just footprints with gaps: it triggers
+        /// whenever the walk reaches part of a footprint by a route that leaves that footprint.
+        /// </summary>
+        [Test]
+        public void TestParserSurvivesWalkLeavingItsFootprint()
+        {
+            // Arrange
+            Vector3Int o = RandomVector();
+            AddBlueprint(o);                                                    // A
+            Blueprint middle = AddBlueprint(o + Vector3Int.right);               // B, the base blueprint
+            AddBlueprint(o + Vector3Int.right * 2);                             // C
+            AddBlueprint(o + Vector3Int.forward);                               // D
+            AddBlueprint(o + Vector3Int.right + Vector3Int.forward);            // E
+            AddBlueprint(o + Vector3Int.right * 2 + Vector3Int.forward);        // F
+
+            ShapeData square = _shapes[3];      // 2x1x2
+
+            // Act
+            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, new List<ShapeData> { square });
+
+            // Assert
+            Assert.AreEqual(2, validShapes.Count);
+
+            // Membership rather than pop order - what matters is which placements were found
+            List<Vector3Int> anchors = new List<Vector3Int>();
+            foreach (var candidate in validShapes)       // enumerating a Stack does not pop it
+            {
+                Assert.AreEqual(square, candidate.Shape);
+                anchors.Add(candidate.Cell);
+            }
+
+            Assert.Contains(new Vector3Int(1, 0, 0), anchors);      // left half  A B D E
+            Assert.Contains(Vector3Int.zero, anchors);              // right half B C E F
         }
 
         /// <summary>
