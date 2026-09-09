@@ -20,6 +20,9 @@ namespace RyansLibrary.Labyrinth
         public HashSet<Vector3Int> CoveredCells => _coveredCells;
         public int PassedCells => _coveredCells.Count;
 
+        private bool _isFilled;
+        public bool IsFilled => _isFilled;
+
         public ShapeCandidate(ShapeData shape, Vector3Int cell)
         {
             _shape = shape;
@@ -34,6 +37,11 @@ namespace RyansLibrary.Labyrinth
                 return true;
             }
             return false;
+        }
+
+        public void MarkFilled()
+        {
+            _isFilled = true;
         }
 
         public void CellCovered(Vector3Int shapeCell)
@@ -58,7 +66,6 @@ namespace RyansLibrary.Labyrinth
         };
 
         private readonly Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
-        private Dictionary<Vector3Int, Blueprint> _visitedBlueprintDictionary;
         private Stack<ShapeCandidate> _acceptedShapes;
         private Blueprint _baseBlueprint;
 
@@ -84,9 +91,9 @@ namespace RyansLibrary.Labyrinth
                 return null;
             }
 
-            _visitedBlueprintDictionary = new();
-            _acceptedShapes = new();
+            HashSet<Blueprint> emptyVisitedSet = new();
             List<ShapeCandidate> candidates = new();
+            _acceptedShapes = new();
             _baseBlueprint = baseBlueprint;
 
             // Check all shapes for valid origins
@@ -112,7 +119,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Recursive Descent Based Parsing
-            ParseBlueprints(baseBlueprint, candidates);
+            ParseBlueprints(baseBlueprint, candidates, emptyVisitedSet);
 
             return _acceptedShapes;
         }
@@ -123,7 +130,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="currentBlueprint">Current blueprint being parsed</param>
         /// <param name="candidates">Candidate shapes are the tokens.</param>
-        public void ParseBlueprints(Blueprint currentBlueprint, List<ShapeCandidate> candidates)
+        public void ParseBlueprints(Blueprint currentBlueprint, List<ShapeCandidate> candidates, HashSet<Blueprint> visited)
         {
             // We can only parse blueprints that are still available; not claimed
             if (!currentBlueprint.Available)
@@ -136,8 +143,11 @@ namespace RyansLibrary.Labyrinth
             if (candidates.Count <= 0)
                 return;
 
-            // Shapes that pass this iteration have atleast one vaiable origin
+            // Shapes that pass this iteration have atleast one vaiable anchor
             List<ShapeCandidate> nextRoundCandidates = new List<ShapeCandidate>(candidates);
+
+            // Make sure we don't visit a blueprint twice in a recursive branch
+            HashSet<Blueprint> visitedBlueprintDictionary = new HashSet<Blueprint>(visited);
 
             // Local position from base blueprint
             Vector3Int localPosition = currentBlueprint.Position - _baseBlueprint.Position;
@@ -149,25 +159,29 @@ namespace RyansLibrary.Labyrinth
                 // If candidate passes 
                 if (CheckConfigs(localPosFromCell, candidate.Shape, currentBlueprint))
                 {
-                    //candidate.CellPassed();
+                    // Add passed cell to candidate
                     candidate.CellCovered(localPosFromCell);
 
-                    // If all cells of shape are satisfied
-                    if (candidate.CheckFilled())
+                    // If all cells of shape are satisfied; first time satisfaction
+                    if (candidate.CheckFilled() && !candidate.IsFilled)
                     {
-                        RemoveCandidateFromCandidateList(candidate, nextRoundCandidates);
+                        candidate.MarkFilled();     // Prevents duplicate candidates from being pushed into the accepted list
                         _acceptedShapes.Push(candidate);
                     }
+
+                    // Removed if already filled; prevents algorithm from checking multiple valid paths for one candidate
+                    if (candidate.IsFilled)
+                        nextRoundCandidates.Remove(candidate);
+
                 }
                 else  // Candidate did not pass
                 {
                     nextRoundCandidates.Remove(candidate);
                 }
             }
-            _visitedBlueprintDictionary.Add(currentBlueprint.Position, currentBlueprint);
+            visitedBlueprintDictionary.Add(currentBlueprint);
 
-            // Blueprint found;
-
+            // Parse new blueprint
             foreach (var direction in k_directions)
             {
                 // Blueprint needs to exist and be available to walk into
@@ -175,32 +189,12 @@ namespace RyansLibrary.Labyrinth
                     continue;
 
                 // Already checked blueprint in this direction so don't parse
-                if (_visitedBlueprintDictionary.ContainsKey(found.Position))
+                if (visitedBlueprintDictionary.Contains(found))
                     continue;
 
                 // Parse the neighbour with the shapes that are still viable
-                ParseBlueprints(found, nextRoundCandidates);
+                ParseBlueprints(found, nextRoundCandidates, visitedBlueprintDictionary);
             }
-        }
-
-        /// <summary>
-        /// Strips every candidate sharing a shape with the given candidate out of the list, retiring
-        /// that shape from the parse. The passed candidate is removed too, since it matches its own shape.
-        /// </summary>
-        private void RemoveShapeFromCandidateList(ShapeCandidate candidate, List<ShapeCandidate> candidates)
-        {
-            if (candidates == null || candidate == null)
-                return;
-
-            candidates.RemoveAll(c => c.Shape == candidate.Shape);
-        }
-
-        private void RemoveCandidateFromCandidateList(ShapeCandidate candidate, List<ShapeCandidate> candidates)
-        {
-            if (candidates == null || candidate == null)
-                return;
-
-            candidates.Remove(candidate);
         }
 
         /// <summary>
@@ -221,31 +215,17 @@ namespace RyansLibrary.Labyrinth
             return false;
         }
 
-        public List<Vector3Int> CheckForValidOrigins(Blueprint blueprint, ShapeData shape)
+        /// <summary>
+        /// TODO: May want to add later to save on performance.
+        /// Strips every candidate sharing a shape with the given candidate out of the list, retiring
+        /// that shape from the parse. The passed candidate is removed too, since it matches its own shape.
+        /// </summary>
+        private void RemoveShapeFromCandidateList(ShapeCandidate candidate, List<ShapeCandidate> candidates)
         {
-            List<Vector3Int> validCells = new();
+            if (candidates == null || candidate == null)
+                return;
 
-            foreach (var cell in shape.Cells)
-            {
-                // Skip cells that are not marked as blueprint cells, since they cannot be origins
-                if (cell.Value != CellState.Blueprint)
-                {
-                    continue;
-                }
-
-                // Check if the cell is valid as an origin point
-                // If one cell passes as an origin then add shape to list
-                if (CheckConfigs(cell.Key, shape, blueprint))
-                    validCells.Add(cell.Key);
-            }
-
-            // If at least one origin was found then shape also passes
-            if (validCells.Count > 0)
-            {
-                return validCells;
-            }
-
-            return null;
+            candidates.RemoveAll(c => c.Shape == candidate.Shape);
         }
 
         public List<Vector3Int> CheckForValidCells(Blueprint blueprint, ShapeData shape)
