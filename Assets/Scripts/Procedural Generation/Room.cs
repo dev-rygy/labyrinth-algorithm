@@ -138,6 +138,31 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
+        /// Simply copy the bluePrint room's entranceway flags into the room's open entraceways.
+        /// </summary>
+        /// <param name="blueprintArray">The blueprint room's entranceway array (6 possible entrances)</param>
+        /// <param name="unitIndex">A specific unit space of the room in question</param>
+        public void CopyBlueprintEntranceFlags(Blueprint blueprint, RoomCell cell)
+        {
+            // TODO: Handle rotation with new parsing algorithm
+            // blueprintArray = RotateEntryFlag(blueprintArray, rotation);
+
+            if (!cell.IsAvilable)
+                return;
+
+            for (int i = 0; i < blueprint.EntryPointFlags.Length; i++) // iterate through all six faces of the Blueprint's flag array
+            {
+                if (cell.Walls[i].IsExemptFromMutation)
+                    continue;
+
+                if (blueprint.EntryPointFlags[i])
+                    ActivateEntranceway(cell.Walls[i]);
+                else
+                    DeactivateEntranceway(cell.Walls[i]);
+            }
+        }
+
+        /// <summary>
         /// Apply a horizontal rotation to the blueprint entranceway flags so that they match the room's orientation in the world.
         /// Simply shift the values in the blueprint array around to handle a 90 degree rotation.
         /// </summary>

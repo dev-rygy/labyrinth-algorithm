@@ -781,7 +781,7 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="pathEntries">The path entry list of a particular room shape in the path object.</param>
         /// <returns></returns>
-        private GameObject ChooseRandomRoomFromWeights(List<PathEntry> pathEntries)
+        private GameObject ChooseRandomRoomFromWeights(List<RoomEntry> pathEntries)
         {
             // If the path's room entry list contains no room return null
             if (pathEntries.Count == 0)
@@ -796,7 +796,7 @@ namespace RyansLibrary.Labyrinth
 
             // Choose a random room prefab based on probability
             int totalWeight = 0;
-            foreach (PathEntry pathEntry in pathEntries)
+            foreach (RoomEntry pathEntry in pathEntries)
             {
                 totalWeight += pathEntry.Probability;
             }

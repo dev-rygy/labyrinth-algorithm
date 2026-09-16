@@ -18,7 +18,7 @@ namespace RyansLibrary.Labyrinth
     }
 
     [System.Serializable]
-    public struct PathEntry
+    public struct RoomEntry
     {
         [SerializeField] public GameObject Prefab;
         [SerializeField][Range(0, 100)] public int Probability;
@@ -28,8 +28,8 @@ namespace RyansLibrary.Labyrinth
     public struct RoomShapeEntry
     {
         [SerializeField] public ShapeData RoomShape;
-        [SerializeField][Range(0, 1)] public float Probability;
-        [SerializeField] public List<PathEntry> Rooms;
+        [SerializeField][Range(0, 100)] public int Probability;
+        [SerializeField] public List<RoomEntry> Rooms;
     }
 
     /// <summary>
@@ -51,11 +51,11 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public List<RoomShapeEntry> RoomShapes { get; private set; }
 
         // TODO: Old required lists, remove after new MapGenerator is implemented
-        [field: SerializeField] public List<PathEntry> rooms1x1x1 { get; private set; }
-        [field: SerializeField] public List<PathEntry> rooms2x1x1 { get; private set; }
-        [field: SerializeField] public List<PathEntry> rooms1x2x1 { get; private set; }
-        [field: SerializeField] public List<PathEntry> rooms2x1x2 { get; private set; }
-        [field: SerializeField] public List<PathEntry> rooms2x1x2l { get; private set; }
+        [field: SerializeField] public List<RoomEntry> rooms1x1x1 { get; private set; }
+        [field: SerializeField] public List<RoomEntry> rooms2x1x1 { get; private set; }
+        [field: SerializeField] public List<RoomEntry> rooms1x2x1 { get; private set; }
+        [field: SerializeField] public List<RoomEntry> rooms2x1x2 { get; private set; }
+        [field: SerializeField] public List<RoomEntry> rooms2x1x2l { get; private set; }
 
         [field: SerializeField] public bool DrunkardWalkCanGoVertical { get; private set; } = true;
 

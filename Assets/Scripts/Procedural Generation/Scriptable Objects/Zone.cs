@@ -26,7 +26,7 @@ namespace RyansLibrary.Labyrinth
     // bounds instead (also PlaceBoundedBlueprintsOp, just with the zone's bounds passed in) - see
     // MapGeneratorController.LoadUniqueRoomOperations for how each PlacementType maps to an operation.
     [System.Serializable]
-    public class RoomEntry
+    public class UniqueRoomEntry
     {
         [field: Header("General Room Parameters")]
         [SerializeField] public GameObject Prefab;
@@ -62,7 +62,7 @@ namespace RyansLibrary.Labyrinth
 
         [field: Header("Main Path")]
         [field: SerializeField] public Path MainPath { get; set; }
-        [field: SerializeField] public List<RoomEntry> UniqueRooms { get; private set; }        // Must be spawned no matter what
+        [field: SerializeField] public List<UniqueRoomEntry> UniqueRooms { get; private set; }        // Must be spawned no matter what
         [field: SerializeField] public int DivergentRoomsCellOccupancy { get; private set; }
         [field: SerializeField] public int RandomCyclesInGraph { get; private set; }
 

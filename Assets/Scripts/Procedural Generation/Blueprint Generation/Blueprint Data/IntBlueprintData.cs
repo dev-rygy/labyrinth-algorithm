@@ -20,7 +20,7 @@ namespace RyansLibrary.Labyrinth
             DataID = $"IntData:{memoryID}";
 
             // Output Ports
-            OutputPorts.Add(memoryID);      // RoomEntry object
+            OutputPorts.Add(memoryID);      // UniqueRoomEntry object
         }
 
         public override void LoadIntoMemory()

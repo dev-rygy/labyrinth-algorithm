@@ -2,7 +2,7 @@
  * Created By:      Ryan Carpenter
  * Date Created:    08/21/2026
  * Last Modified:   08/21/2026 (Ryan)
- * Notes:           Shows only the fields relevant to RoomEntry's PlacementType - Fixed shows
+ * Notes:           Shows only the fields relevant to UniqueRoomEntry's PlacementType - Fixed shows
  *                  SpawnPosition, Constrained shows Bounds, Free shows neither. Prefab and
  *                  PlacementType itself are always shown.
 */
@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace RyansLibrary.UnityEditor
 {
-    [CustomPropertyDrawer(typeof(RoomEntry))]
+    [CustomPropertyDrawer(typeof(UniqueRoomEntry))]
     public class RoomEntryDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

@@ -541,7 +541,7 @@ namespace RyansLibrary.Labyrinth
             zoneBoundsBlueprintData.LoadIntoMemory();
 
             // 1.) Spawn Fixed Rooms (Rooms that have a set spawn destination)
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
@@ -555,7 +555,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // 2.) Spawn Bounded Rooms (Rooms that have a unique spawn area)
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
@@ -574,7 +574,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // 3.) Spawn Free Rooms (Rooms that can spawn in any point inside the zone bounds)
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Free)
                 {
@@ -911,7 +911,7 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Turn off blueprint availability for unique rooms; we do not want to parse and spawn new rooms in these spots
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 Vector3Int actualPosition = entry.SpawnPosition;
 
@@ -949,12 +949,12 @@ namespace RyansLibrary.Labyrinth
         }
 
         // Unlike ParsePathAndGenerateRooms (which picks a room shape/prefab based on the path's blueprint layout),
-        // unique rooms already know their exact prefab from RoomEntry, so this just instantiates it directly at its
+        // unique rooms already know their exact prefab from UniqueRoomEntry, so this just instantiates it directly at its
         // resolved position and copies over whichever entranceway flags were set on the blueprint grid during
         // generation (so doors line up with whatever corridor was pathfound into this room).
         public bool GenerateUniqueRooms(Zone zone)
         {
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (_context.BlueprintDictionary == null)
                 {
@@ -1007,7 +1007,7 @@ namespace RyansLibrary.Labyrinth
             float totalCellOccupancy = 0;
 
             // Add Unique Room volume
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.Prefab.TryGetComponent(out Room room))
                 {
