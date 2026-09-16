@@ -66,7 +66,7 @@ namespace RyansLibrary.Labyrinth
         };
 
         private readonly Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
-        private Stack<ShapeCandidate> _acceptedShapes;
+        private List<ShapeCandidate> _acceptedShapes;
         private Blueprint _baseBlueprint;
 
         public BlueprintParser(Dictionary<Vector3Int, Blueprint> blueprintDictionary)
@@ -83,7 +83,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="baseBlueprint">Starting point for token parsing.</param>
         /// <param name="possibleShapes">Possible tokens; should be all possible shapes in zone.</param>
         /// <returns>All possible candidates found that can fit a range of available blueprints.</returns>
-        public Stack<ShapeCandidate> CheckValidShapes(Blueprint baseBlueprint, List<ShapeData> possibleShapes)
+        public List<ShapeCandidate> CheckValidShapes(Blueprint baseBlueprint, List<ShapeData> possibleShapes)
         {
             if (possibleShapes.Count <= 0)
             {
@@ -91,15 +91,21 @@ namespace RyansLibrary.Labyrinth
                 return null;
             }
 
+            if (!baseBlueprint.Available)
+            {
+                Debug.LogError("Base blueprint is not available to parse");
+            }
+
             HashSet<Blueprint> emptyVisitedSet = new();
             List<ShapeCandidate> candidates = new();
             _acceptedShapes = new();
             _baseBlueprint = baseBlueprint;
 
-            // Check all shapes for valid origins
+            // Create full list of candidates for each shape
             foreach (var shape in possibleShapes)
             {
-                var validCells = CheckForValidCells(baseBlueprint, shape);
+                // Find all 'Blueprint' marked cells in shape
+                var validCells = FindValidCells(baseBlueprint, shape);
 
                 if (validCells.Count <= 0)      // Shape does not have any blueprint cells
                     continue;
@@ -166,7 +172,7 @@ namespace RyansLibrary.Labyrinth
                     if (candidate.CheckFilled() && !candidate.IsFilled)
                     {
                         candidate.MarkFilled();     // Prevents duplicate candidates from being pushed into the accepted list
-                        _acceptedShapes.Push(candidate);
+                        _acceptedShapes.Add(candidate);
                     }
 
                     // Removed if already filled; prevents algorithm from checking multiple valid paths for one candidate
@@ -228,7 +234,7 @@ namespace RyansLibrary.Labyrinth
             candidates.RemoveAll(c => c.Shape == candidate.Shape);
         }
 
-        public List<Vector3Int> CheckForValidCells(Blueprint blueprint, ShapeData shape)
+        public List<Vector3Int> FindValidCells(Blueprint blueprint, ShapeData shape)
         {
             List<Vector3Int> validCells = new();
 

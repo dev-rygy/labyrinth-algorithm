@@ -73,7 +73,7 @@ namespace RyansLibrary
         {
             // Arrage
             Vector3Int bpPosition = RandomVector();
-            Stack<ShapeCandidate> validShapes;
+            List<ShapeCandidate> validShapes;
             Blueprint b1 = new Blueprint(bpPosition);
             _blueprintDictionary.Add(b1.Position, b1);
 
@@ -82,7 +82,7 @@ namespace RyansLibrary
 
             // Assert
             Assert.AreEqual(1, validShapes.Count);
-            Assert.AreEqual(validShapes.Pop().Shape, _shapes[0]);   // Candidate of 1x1x1
+            Assert.AreEqual(validShapes[0].Shape, _shapes[0]);      // Candidate of 1x1x1
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace RyansLibrary
         {
             // Arrage
             Vector3Int bpPosition = RandomVector();
-            Stack<ShapeCandidate> validShapes;
+            List<ShapeCandidate> validShapes;
             Blueprint b1 = new Blueprint(bpPosition);
             _blueprintDictionary.Add(b1.Position, b1);
 
@@ -108,7 +108,7 @@ namespace RyansLibrary
         {
             // Arrage
             Vector3Int bpPosition = RandomVector();
-            Stack<ShapeCandidate> validShapes;
+            List<ShapeCandidate> validShapes;
             Blueprint b1 = new Blueprint(bpPosition);
             _blueprintDictionary.Add(b1.Position, b1);
             Blueprint b2 = new Blueprint(bpPosition + Vector3Int.left);
@@ -125,16 +125,16 @@ namespace RyansLibrary
 
             // Assert
             Assert.AreEqual(3, validShapes.Count);
-            // Candidate c2 at top
-            ShapeCandidate c2 = validShapes.Pop();
+            // Candidate c2 accepted last
+            ShapeCandidate c2 = validShapes[2];
             Assert.AreEqual(c2.Shape, _shapes[1]);          // c2 = Candidate of 2x1x1
             Assert.AreEqual(c2.Cell, Vector3Int.zero);      // c2 = Base cell of (0, 0, 0)
-            // Candidate c3 next
-            ShapeCandidate c3 = validShapes.Pop();
+            // Candidate c3 accepted second
+            ShapeCandidate c3 = validShapes[1];
             Assert.AreEqual(c3.Shape, _shapes[1]);          // c3 = Candidate of 2x1x1
             Assert.AreEqual(c3.Cell, Vector3Int.right);     // c3 = Base cell of (1, 0, 0)
-            // Candidate c1 at bottom
-            ShapeCandidate c1 = validShapes.Pop();
+            // Candidate c1 accepted first
+            ShapeCandidate c1 = validShapes[0];
             Assert.AreEqual(c1.Shape, _shapes[0]);          // c1 = Candidate of 1x1x1
             Assert.AreEqual(c1.Cell, Vector3Int.zero);      // c1 = Base cell of (0, 0, 0)
         }
@@ -159,20 +159,20 @@ namespace RyansLibrary
             AddBlueprint(o + Vector3Int.right);
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, _shapes);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, _shapes);
 
             // Assert
             Assert.AreEqual(3, validShapes.Count);
 
-            ShapeCandidate c2 = validShapes.Pop();
+            ShapeCandidate c2 = validShapes[2];
             Assert.AreEqual(_shapes[1], c2.Shape);              // c2 = Candidate of 2x1x1 covering middle + right
             Assert.AreEqual(Vector3Int.zero, c2.Cell);
 
-            ShapeCandidate c3 = validShapes.Pop();
+            ShapeCandidate c3 = validShapes[1];
             Assert.AreEqual(_shapes[1], c3.Shape);              // c3 = Candidate of 2x1x1 covering left + middle
             Assert.AreEqual(Vector3Int.right, c3.Cell);
 
-            ShapeCandidate c1 = validShapes.Pop();
+            ShapeCandidate c1 = validShapes[0];
             Assert.AreEqual(_shapes[0], c1.Shape);              // c1 = Candidate of 1x1x1 on the middle cell
             Assert.AreEqual(Vector3Int.zero, c1.Cell);
         }
@@ -194,20 +194,20 @@ namespace RyansLibrary
             AddBlueprint(o + Vector3Int.right + Vector3Int.forward);
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
 
             // Assert
             Assert.AreEqual(3, validShapes.Count);
 
-            ShapeCandidate c6 = validShapes.Pop();
+            ShapeCandidate c6 = validShapes[2];
             Assert.AreEqual(_shapes[3], c6.Shape);             // c6 = Candidate of 2x1x2, the perfect fit
             Assert.AreEqual(Vector3Int.zero, c6.Cell);
 
-            ShapeCandidate mid = validShapes.Pop();
+            ShapeCandidate mid = validShapes[1];
             Assert.AreEqual(_shapes[1], mid.Shape);             // c2 = Candidate of 2x1x1 across the near edge
             Assert.AreEqual(Vector3Int.zero, mid.Cell);
 
-            ShapeCandidate bottom = validShapes.Pop();
+            ShapeCandidate bottom = validShapes[0];
             Assert.AreEqual(_shapes[0], bottom.Shape);          // c1 = Candidate of 1x1x1
             Assert.AreEqual(Vector3Int.zero, bottom.Cell);
         }
@@ -226,16 +226,16 @@ namespace RyansLibrary
             AddBlueprint(o + Vector3Int.up);
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(bottomBp, _shapes);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(bottomBp, _shapes);
 
             // Assert
             Assert.AreEqual(2, validShapes.Count);
 
-            ShapeCandidate c8 = validShapes.Pop();
+            ShapeCandidate c8 = validShapes[1];
             Assert.AreEqual(_shapes[2], c8.Shape);             // c8 = Candidate of 1x2x1 spanning both floors
             Assert.AreEqual(Vector3Int.zero, c8.Cell);
 
-            ShapeCandidate c1 = validShapes.Pop();
+            ShapeCandidate c1 = validShapes[0];
             Assert.AreEqual(_shapes[0], c1.Shape);          // c1 = Candidate of 1x1x1
             Assert.AreEqual(Vector3Int.zero, c1.Cell);
         }
@@ -254,16 +254,16 @@ namespace RyansLibrary
             AddBlueprint(o + Vector3Int.down);
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(topBp, _shapes);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(topBp, _shapes);
 
             // Assert
             Assert.AreEqual(2, validShapes.Count);
 
-            ShapeCandidate c9 = validShapes.Pop();
+            ShapeCandidate c9 = validShapes[1];
             Assert.AreEqual(_shapes[2], c9.Shape);             // c8 = Candidate of 1x2x1 spanning both floors
             Assert.AreEqual(Vector3Int.up, c9.Cell);
 
-            ShapeCandidate c1 = validShapes.Pop();
+            ShapeCandidate c1 = validShapes[0];
             Assert.AreEqual(_shapes[0], c1.Shape);          // c1 = Candidate of 1x1x1
             Assert.AreEqual(Vector3Int.zero, c1.Cell);
         }
@@ -287,13 +287,13 @@ namespace RyansLibrary
             AddBlueprint(o + Vector3Int.right * 2);             // tail, not part of any shape
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
 
             // Assert
             Assert.AreEqual(3, validShapes.Count);
-            Assert.AreEqual(_shapes[3], validShapes.Pop().Shape);   // c6 = Candidate of 2x1x2 still fills
-            Assert.AreEqual(_shapes[1], validShapes.Pop().Shape);   // c2 = Candidate of 2x1x1
-            Assert.AreEqual(_shapes[0], validShapes.Pop().Shape);   // c1 = Candidate of 1x1x1
+            Assert.AreEqual(_shapes[3], validShapes[2].Shape);      // c6 = Candidate of 2x1x2 still fills
+            Assert.AreEqual(_shapes[1], validShapes[1].Shape);      // c2 = Candidate of 2x1x1
+            Assert.AreEqual(_shapes[0], validShapes[0].Shape);      // c1 = Candidate of 1x1x1
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace RyansLibrary
             List<ShapeData> only2x1x2Shape = new List<ShapeData> { _shapes[3] };
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, only2x1x2Shape);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, only2x1x2Shape);
 
             // Assert
             Assert.IsNotNull(validShapes);
@@ -345,13 +345,13 @@ namespace RyansLibrary
                 }
 
                 // Act
-                Stack<ShapeCandidate> validShapes = parser.CheckValidShapes(center, _shapes);
+                List<ShapeCandidate> validShapes = parser.CheckValidShapes(center, _shapes);
 
                 // Assert
                 Assert.AreEqual(3, validShapes.Count, $"Plus blob at {o} produced a different result.");
-                Assert.AreEqual(_shapes[1], validShapes.Pop().Shape);
-                Assert.AreEqual(_shapes[1], validShapes.Pop().Shape);
-                Assert.AreEqual(_shapes[0], validShapes.Pop().Shape);
+                Assert.AreEqual(_shapes[1], validShapes[2].Shape);
+                Assert.AreEqual(_shapes[1], validShapes[1].Shape);
+                Assert.AreEqual(_shapes[0], validShapes[0].Shape);
             }
         }
         #endregion
@@ -371,11 +371,11 @@ namespace RyansLibrary
             AddBlueprint(o + Vector3Int.right * 5);             // separate blob, not adjacent
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
 
             // Assert
             Assert.AreEqual(1, validShapes.Count);
-            Assert.AreEqual(_shapes[0], validShapes.Pop().Shape);
+            Assert.AreEqual(_shapes[0], validShapes[0].Shape);
         }
 
         /// <summary>
@@ -397,11 +397,11 @@ namespace RyansLibrary
             AddBlueprint(o + Vector3Int.right, available: false);
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
 
             // Assert
             Assert.AreEqual(1, validShapes.Count);
-            Assert.AreEqual(_shapes[0], validShapes.Pop().Shape);
+            Assert.AreEqual(_shapes[0], validShapes[0].Shape);
         }
 
         /// <summary>
@@ -418,10 +418,10 @@ namespace RyansLibrary
             Blueprint start = AddBlueprint(o, available: false);
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
 
             // Assert
-            LogAssert.Expect(LogType.Error, "Tried to parse unavailable blueprint.");
+            LogAssert.Expect(LogType.Error, "Base blueprint is not available to parse");
             Assert.IsNotNull(validShapes);
             Assert.AreEqual(0, validShapes.Count);
         }
@@ -445,7 +445,7 @@ namespace RyansLibrary
                 (Vector3Int.right, CellState.NoBlueprint));
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, new List<ShapeData> { negativeSpaceOnly });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, new List<ShapeData> { negativeSpaceOnly });
 
             // Assert
             LogAssert.Expect(LogType.Error, new Regex("No viable origins found"));
@@ -468,7 +468,7 @@ namespace RyansLibrary
             ShapeData emptyShape = MakeShape();     // zero cells
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, new List<ShapeData> { emptyShape });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, new List<ShapeData> { emptyShape });
 
             // Assert
             LogAssert.Expect(LogType.Error, new Regex("No viable origins found"));
@@ -516,11 +516,11 @@ namespace RyansLibrary
             List<ShapeData> onlyLong = new List<ShapeData> { _shapes[1] };      // 2x1x1
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, onlyLong);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, onlyLong);
 
             // Assert
             Assert.AreEqual(1, validShapes.Count);
-            ShapeCandidate only = validShapes.Pop();
+            ShapeCandidate only = validShapes[0];
             Assert.AreEqual(_shapes[1], only.Shape);
             Assert.AreEqual(Vector3Int.zero, only.Cell);        // covers cells 1 and 2 only
         }
@@ -542,11 +542,11 @@ namespace RyansLibrary
             List<ShapeData> onlyTall = new List<ShapeData> { _shapes[2] };      // 1x2x1
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, onlyTall);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, onlyTall);
 
             // Assert
             Assert.AreEqual(1, validShapes.Count);
-            Assert.AreEqual(Vector3Int.zero, validShapes.Pop().Cell);
+            Assert.AreEqual(Vector3Int.zero, validShapes[0].Cell);
         }
 
         /// <summary>
@@ -570,16 +570,16 @@ namespace RyansLibrary
             List<ShapeData> onlyLong = new List<ShapeData> { _shapes[1] };      // 2x1x1
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, onlyLong);
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, onlyLong);
 
             // Assert
             Assert.AreEqual(2, validShapes.Count);
 
-            ShapeCandidate fromRightBranch = validShapes.Pop();
+            ShapeCandidate fromRightBranch = validShapes[1];
             Assert.AreEqual(_shapes[1], fromRightBranch.Shape);
             Assert.AreEqual(Vector3Int.zero, fromRightBranch.Cell);     // covers middle + right
 
-            ShapeCandidate fromLeftBranch = validShapes.Pop();
+            ShapeCandidate fromLeftBranch = validShapes[0];
             Assert.AreEqual(_shapes[1], fromLeftBranch.Shape);
             Assert.AreEqual(Vector3Int.right, fromLeftBranch.Cell);     // covers left + middle
         }
@@ -603,11 +603,11 @@ namespace RyansLibrary
             ShapeData bar = MakeShape(Vector3Int.zero, new Vector3Int(1, 0, 0), new Vector3Int(2, 0, 0));
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(end, new List<ShapeData> { bar });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(end, new List<ShapeData> { bar });
 
             // Assert
             Assert.AreEqual(1, validShapes.Count);
-            ShapeCandidate only = validShapes.Pop();
+            ShapeCandidate only = validShapes[0];
             Assert.AreEqual(bar, only.Shape);
             Assert.AreEqual(Vector3Int.zero, only.Cell);
         }
@@ -639,7 +639,7 @@ namespace RyansLibrary
             ShapeData bar = MakeShape(Vector3Int.zero, new Vector3Int(1, 0, 0), new Vector3Int(2, 0, 0));
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(junction, new List<ShapeData> { bar });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(junction, new List<ShapeData> { bar });
 
             // Assert
             Assert.IsNotNull(validShapes);
@@ -678,11 +678,11 @@ namespace RyansLibrary
                 );
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(armA, new List<ShapeData> { lTromino });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(armA, new List<ShapeData> { lTromino });
 
             // Assert
             Assert.AreEqual(1, validShapes.Count);
-            ShapeCandidate only = validShapes.Pop();
+            ShapeCandidate only = validShapes[0];
             Assert.AreEqual(lTromino, only.Shape);
             Assert.AreEqual(Vector3Int.zero, only.Cell);        // anchored on the arm we started from
         }
@@ -719,7 +719,7 @@ namespace RyansLibrary
                 new Vector3Int(1, 0, 1));
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(corner, new List<ShapeData> { lTromino });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(corner, new List<ShapeData> { lTromino });
 
             // Assert
             Assert.IsNotNull(validShapes);
@@ -760,14 +760,14 @@ namespace RyansLibrary
             ShapeData bar = MakeShape(Vector3Int.zero, new Vector3Int(1, 0, 0), new Vector3Int(2, 0, 0));
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, new List<ShapeData> { bar });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, new List<ShapeData> { bar });
 
             // Assert
             Assert.AreEqual(3, validShapes.Count);
 
-            // Membership rather than pop order - what matters is which placements were found
+            // Membership rather than list order - what matters is which placements were found
             List<Vector3Int> anchors = new List<Vector3Int>();
-            foreach (var candidate in validShapes)       // enumerating a Stack does not pop it
+            foreach (var candidate in validShapes)
             {
                 Assert.AreEqual(bar, candidate.Shape);
                 anchors.Add(candidate.Cell);
@@ -820,14 +820,14 @@ namespace RyansLibrary
             ShapeData square = _shapes[3];      // 2x1x2
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, new List<ShapeData> { square });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(middle, new List<ShapeData> { square });
 
             // Assert
             Assert.AreEqual(2, validShapes.Count);
 
-            // Membership rather than pop order - what matters is which placements were found
+            // Membership rather than list order - what matters is which placements were found
             List<Vector3Int> anchors = new List<Vector3Int>();
-            foreach (var candidate in validShapes)       // enumerating a Stack does not pop it
+            foreach (var candidate in validShapes)
             {
                 Assert.AreEqual(square, candidate.Shape);
                 anchors.Add(candidate.Cell);
@@ -862,7 +862,7 @@ namespace RyansLibrary
                 (Vector3Int.right, CellState.NoBlueprint));
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, new List<ShapeData> { isolatedSingle });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, new List<ShapeData> { isolatedSingle });
 
             // Assert
             Assert.IsNotNull(validShapes);
@@ -891,7 +891,7 @@ namespace RyansLibrary
             ShapeData disjoint = MakeShape(Vector3Int.zero, new Vector3Int(2, 0, 0));
 
             // Act
-            Stack<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, new List<ShapeData> { disjoint });
+            List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, new List<ShapeData> { disjoint });
 
             // Assert
             Assert.IsNotNull(validShapes);

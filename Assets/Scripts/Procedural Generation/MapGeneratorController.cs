@@ -122,7 +122,7 @@ namespace RyansLibrary.Labyrinth
         private MapGenerationContext _context;
         public MapGenerationContext Context => _context;
 
-        private RoomGenerator _roomGenerator;
+        private OldRoomGenerator _roomGenerator;
 
         // Stepwise procedure
         private int _stepBudget = 0;
@@ -188,8 +188,9 @@ namespace RyansLibrary.Labyrinth
             // Create new context - Proc gen state and storage manager
             _context = new();
 
+            // TODO: Replace with new Map Generator
             // Initialize Room Generator
-            _roomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
+            _roomGenerator = new OldRoomGenerator(_context, _gridUnitSize, _roomContainer);
 
             // Initialize the main path in each zone
             foreach (Zone zone in _zones)

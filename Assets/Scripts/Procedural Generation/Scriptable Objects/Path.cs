@@ -28,7 +28,7 @@ namespace RyansLibrary.Labyrinth
     public struct RoomShapeEntry
     {
         [SerializeField] public ShapeData RoomShape;
-        [SerializeField][Range(0, 1)] public float SpawnChance;
+        [SerializeField][Range(0, 1)] public float Probability;
         [SerializeField] public List<PathEntry> Rooms;
     }
 
@@ -50,6 +50,7 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public int DesiredPathLength { get; private set; }
         [field: SerializeField] public List<RoomShapeEntry> RoomShapes { get; private set; }
 
+        // TODO: Old required lists, remove after new MapGenerator is implemented
         [field: SerializeField] public List<PathEntry> rooms1x1x1 { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms2x1x1 { get; private set; }
         [field: SerializeField] public List<PathEntry> rooms1x2x1 { get; private set; }
@@ -58,6 +59,7 @@ namespace RyansLibrary.Labyrinth
 
         [field: SerializeField] public bool DrunkardWalkCanGoVertical { get; private set; } = true;
 
+        // TODO: Old required variables, remove after new MapGenerator is implemented
         [field: Header("Room Generation Chance")]
         [Tooltip("The percent chance for a room with a tall shape to spawn when the conditions are met.")]
         [field: SerializeField][field: Range(0, 1)] public float TallRoomSpawnChance { get; private set; } = 0;          // The spawn chance of tall rooms

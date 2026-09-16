@@ -2,7 +2,7 @@
  * Created By:      Ryan Carpenter
  * Date Created:    08/19/2026
  * Last Modified:   08/19/2026 (Ryan)
- * Notes:           Boilerplate - draws a small shape preview thumbnail next to RoomShape/SpawnChance,
+ * Notes:           Boilerplate - draws a small shape preview thumbnail next to RoomShape/Probability,
  *                  with the Rooms list unrolled below. Thumbnail uses AssetPreview, which only shows
  *                  real cube geometry once ShapeDataEditor implements RenderStaticPreview; until then
  *                  it falls back to the generic asset icon.
@@ -25,7 +25,7 @@ namespace RyansLibrary.UnityEditor
             EditorGUI.BeginProperty(position, label, property);
 
             SerializedProperty roomShapeProp = property.FindPropertyRelative("RoomShape");
-            SerializedProperty spawnChanceProp = property.FindPropertyRelative("SpawnChance");
+            SerializedProperty spawnChanceProp = property.FindPropertyRelative("Probability");
             SerializedProperty roomsProp = property.FindPropertyRelative("Rooms");
 
             float lineHeight = EditorGUIUtility.singleLineHeight;
