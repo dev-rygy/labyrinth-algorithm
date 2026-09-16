@@ -5,7 +5,6 @@
  * Notes:           
 */
 using RyansLibrary.Debugging;
-using RyansLibrary.UnityEditor;
 using RyansLibrary.Utilities;
 using System;
 using System.Collections;
@@ -123,7 +122,7 @@ namespace RyansLibrary.Labyrinth
         private MapGenerationContext _context;
         public MapGenerationContext Context => _context;
 
-        private RoomGenerator _roomGenerator;
+        private OldRoomGenerator _roomGenerator;
 
         // Stepwise procedure
         private int _stepBudget = 0;
@@ -189,8 +188,9 @@ namespace RyansLibrary.Labyrinth
             // Create new context - Proc gen state and storage manager
             _context = new();
 
+            // TODO: Replace with new Map Generator
             // Initialize Room Generator
-            _roomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
+            _roomGenerator = new OldRoomGenerator(_context, _gridUnitSize, _roomContainer);
 
             // Initialize the main path in each zone
             foreach (Zone zone in _zones)
@@ -913,8 +913,9 @@ namespace RyansLibrary.Labyrinth
             // Turn off blueprint availability for unique rooms; we do not want to parse and spawn new rooms in these spots
             foreach (RoomEntry entry in zone.UniqueRooms)
             {
-                // If room is Fixed then actual position needs to be calculated
                 Vector3Int actualPosition = entry.SpawnPosition;
+
+                // If room is Fixed then actual position needs to be calculated relative to the bounded zone
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                     actualPosition += zone.Bounds.position;
 

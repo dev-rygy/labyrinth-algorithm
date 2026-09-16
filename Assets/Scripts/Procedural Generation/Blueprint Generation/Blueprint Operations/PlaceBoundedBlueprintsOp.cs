@@ -39,7 +39,7 @@ namespace RyansLibrary.Labyrinth
             if (!TryGetInput(2, out BoundsInt bounds))
                 return false;
 
-            if (path is null || entry is null)
+            if (path is null || entry.Prefab is null)
             {
                 LogNullError();
                 return false;
