@@ -70,13 +70,19 @@ namespace RyansLibrary.Labyrinth
 
         public void ParsePathAndGenerateRooms(Path path)
         {
-            foreach (Blueprint bp in path.BlueprintList)
+            if (path == null || path.BlueprintList.Count <= 0)
             {
-                if (!bp.Available)
+                Debug.LogError("Path was null or has no blueprints to parse");
+                return;
+            }
+
+            foreach (Blueprint currrentBlueprint in path.BlueprintList)
+            {
+                if (!currrentBlueprint.Available)
                     continue;
 
                 // Parse blueprints and return all candidates
-                List<ShapeCandidate> candidates = _parser.CheckValidShapes(bp, path.RoomShapes.Select(e => e.RoomShape).ToList());
+                List<ShapeCandidate> candidates = _parser.CheckValidShapes(currrentBlueprint, path.RoomShapes.Select(e => e.RoomShape).ToList());
 
                 // Sort candidates into buckets based on ShapeData
                 BucketCollection<ShapeData, ShapeCandidate> buckets = BucketAllCandidates(candidates);
@@ -92,7 +98,7 @@ namespace RyansLibrary.Labyrinth
                 if (pathEntry.Prefab == null)
                     continue;
 
-                Vector3Int placementPosition = bp.Position - candidate.Cell;
+                Vector3Int placementPosition = currrentBlueprint.Position - candidate.Cell;
                 Room room = GenerateRoom(path, pathEntry.Prefab, placementPosition);
             }
         }

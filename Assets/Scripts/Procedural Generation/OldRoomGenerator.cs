@@ -72,7 +72,7 @@ namespace RyansLibrary.Labyrinth
             */
             PathType pathType = path.Type;
             // *** Loop through all blueprint rooms ***
-            for (int i = 0 + indexOffset; i < path.BlueprintCount(); i++)
+            for (int i = 0 + indexOffset; i < path.BlueprintCount; i++)
             {
                 // Initialize current room and blueprint room at start of each iteration
                 Blueprint indexedBlueprint = path.BlueprintList[i];
@@ -89,7 +89,7 @@ namespace RyansLibrary.Labyrinth
                 switch (pathType)
                 {
                     case PathType.prize:
-                        if (i == path.BlueprintCount() - 1)     // Final room in prize path is marked as prize
+                        if (i == path.BlueprintCount - 1)     // Final room in prize path is marked as prize
                         {
                             rType = RoomType.prize;
                         }

@@ -525,7 +525,7 @@ namespace RyansLibrary.Labyrinth
             // Generate Delauney Triangulation
             LoadMainPathConnectionsOperations(zone);
 
-            if (_debugLogs) Debug.Log($"{zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
+            if (_debugLogs) Debug.Log($"{zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount} rooms.");
         }
 
         /// <summary>

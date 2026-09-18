@@ -299,17 +299,17 @@ namespace RyansLibrary.Labyrinth
         {
             // Default the endIndex to the path's end index
             if (endIndex == -1)
-                endIndex = path.BlueprintCount() - 1;
+                endIndex = path.BlueprintCount - 1;
 
             // Check if range is valid
-            if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (path.BlueprintCount() - 1)))
+            if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (path.BlueprintCount - 1)))
             {
                 Debug.LogError("Path index out of range or set incorrectly.");
                 return null;
             }
 
             // Check if path to choose from is valid
-            if (path.BlueprintCount() <= 0)
+            if (path.BlueprintCount <= 0)
             {
                 Debug.LogError($"A starting room could not be choosen because {path.Name} has no rooms.");
                 return null;

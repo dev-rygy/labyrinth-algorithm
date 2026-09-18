@@ -85,6 +85,11 @@ namespace RyansLibrary.Labyrinth
 
         public bool IsInitialized => CheckInitialize();
 
+        // Return the number of blueprint rooms along this path.
+        public int BlueprintCount => _blueprintList.Count;
+        // Return the number of rooms along this path.
+        public int RoomCount => _rooms.Count;
+
         // Constructor for path; gets it's start and end index in the master path
         public void Initialize()
         {
@@ -101,22 +106,6 @@ namespace RyansLibrary.Labyrinth
                 return true;
 
             return false;
-        }
-
-        /// <summary>
-        /// Return the number of blueprint rooms along this path.
-        /// </summary>
-        public int BlueprintCount()
-        {
-            return BlueprintList.Count;
-        }
-
-        /// <summary>
-        /// Return the number of rooms along this path.
-        /// </summary>
-        public int RoomCount()
-        {
-            return Rooms.Count;
         }
 
         /// <summary>
