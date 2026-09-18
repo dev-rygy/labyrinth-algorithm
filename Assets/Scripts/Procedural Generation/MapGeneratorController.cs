@@ -123,6 +123,7 @@ namespace RyansLibrary.Labyrinth
         public MapGenerationContext Context => _context;
 
         private OldRoomGenerator _roomGenerator;
+        private RoomGenerator _newRoomGenerator;
 
         // Stepwise procedure
         private int _stepBudget = 0;
@@ -191,6 +192,7 @@ namespace RyansLibrary.Labyrinth
             // TODO: Replace with new Map Generator
             // Initialize Room Generator
             _roomGenerator = new OldRoomGenerator(_context, _gridUnitSize, _roomContainer);
+            _newRoomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
 
             // Initialize the main path in each zone
             foreach (Zone zone in _zones)
@@ -928,7 +930,8 @@ namespace RyansLibrary.Labyrinth
             }
 
             // Generate _rooms along main path
-            result = _roomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
+            // result = _roomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
+            result = _newRoomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
             if (!result)
             {
                 Debug.LogError($"Path Room Generation for path {zone.MainPath} in zone {zone} failed.");
@@ -938,7 +941,8 @@ namespace RyansLibrary.Labyrinth
             // Generate _rooms along alt. paths
             foreach (Path path in zone.Paths)
             {
-                result = _roomGenerator.ParsePathAndGenerateRooms(path);
+                // result = _roomGenerator.ParsePathAndGenerateRooms(path);
+                result = _newRoomGenerator.ParsePathAndGenerateRooms(path);
                 if (!result)
                 {
                     Debug.LogError($"Path Room Generation for path {path} in zone {zone} failed.");
