@@ -71,7 +71,7 @@ namespace RyansLibrary.UnityEditor
             GUI.DrawTexture(r, resultRender, ScaleMode.StretchToFill, false);
         }
 
-        // Thumbnail used by AssetPreview wherever ShapeData is referenced (e.g. RoomShapeEntryDrawer's
+        // Thumbnail used by AssetPreview wherever ShapeData is referenced (e.g. ShapeEntryDrawer's
         // inline preview) - same cube geometry as the interactive pane, just from a fixed angle.
         public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)
         {

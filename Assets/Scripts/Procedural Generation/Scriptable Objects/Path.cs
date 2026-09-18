@@ -20,28 +20,29 @@ namespace RyansLibrary.Labyrinth
     [System.Serializable]
     public struct RoomEntry : IWeighted
     {
-        [SerializeField] public GameObject Prefab;
-        [SerializeField][Range(0, 100)] public int Probability;
-
-        public int Weight => Probability;
+        [SerializeField] private GameObject _prefab;
+        public GameObject Prefab => _prefab;
+        [SerializeField] private int _weight;
+        public int Weight => _weight;
     }
 
     [System.Serializable]
-    public struct RoomShapeEntry : IWeighted
+    public struct ShapeEntry : IWeighted
     {
-        [SerializeField] public ShapeData RoomShape;
-        [SerializeField][Range(0, 100)] public int Probability;
-        [SerializeField] public List<RoomEntry> Rooms;
-
-        public int Weight => Probability;
+        [SerializeField] private ShapeData _roomShape;
+        public ShapeData RoomShape => _roomShape;
+        [SerializeField] private int _weight;
+        public int Weight => _weight;
+        [SerializeField] private List<RoomEntry> _rooms;
+        public List<RoomEntry> Rooms => _rooms;
     }
 
     /// <summary>
     /// Designer-facing configuration + runtime storage for one corridor of the labyrinth (the zone's main path, or
     /// one of its side/alt paths). Doubles as both: the SerializeField settings above (room-shape prefab pools,
     /// spawn chances, desired length) are read while the BlueprintOperation graph is being built, while
-    /// BlueprintList/Rooms are populated during Execute() as generation actually runs (see DrunkardWalkBlueprintOp,
-    /// which appends to BlueprintList, and RoomGenerator.ParsePathAndGenerateRooms, which appends to Rooms).
+    /// BlueprintList/_rooms are populated during Execute() as generation actually runs (see DrunkardWalkBlueprintOp,
+    /// which appends to BlueprintList, and RoomGenerator.ParsePathAndGenerateRooms, which appends to _rooms).
     /// Must have Initialize() called before generation starts and IsInitialized checked before use, since a Path
     /// asset can be shared/reused across multiple generation runs.
     /// </summary>
@@ -52,7 +53,7 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public string Name { get; set; }
         [field: SerializeField] public PathType Type { get; private set; }
         [field: SerializeField] public int DesiredPathLength { get; private set; }
-        [field: SerializeField] public List<RoomShapeEntry> RoomShapes { get; private set; }
+        [field: SerializeField] public List<ShapeEntry> RoomShapes { get; private set; }
 
         // TODO: Old required lists, remove after new MapGenerator is implemented
         [field: SerializeField] public List<RoomEntry> rooms1x1x1 { get; private set; }

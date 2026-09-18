@@ -220,7 +220,7 @@ namespace RyansLibrary.Labyrinth
         /// 1. Initialization
         /// 2. Zone Spawning
         /// 3. Load and Execute Blueprint Operations
-        /// 4. Generate Rooms
+        /// 4. Generate _rooms
         /// </summary>
         /// <returns></returns>
         private IEnumerator GenerateLabyrinth()
@@ -433,7 +433,7 @@ namespace RyansLibrary.Labyrinth
         {
             OnRoomParseStarted?.Invoke();
 
-            // Generate Zone Connection Rooms
+            // Generate Zone Connection _rooms
             // Since the connection zones are just a zone generate rooms normally
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
@@ -449,7 +449,7 @@ namespace RyansLibrary.Labyrinth
             {
                 if (!GenerateZoneRooms(zone))
                 {
-                    Debug.LogError("Rooms failed to generate.");
+                    Debug.LogError("_rooms failed to generate.");
                     GenerationFailed();
                     return;
                 }
@@ -529,7 +529,7 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
-        /// Places all Unique Rooms specified in zone.
+        /// Places all Unique _rooms specified in zone.
         /// </summary>
         /// <param name="zone">Zone to place unique rooms in</param>
         /// <returns>Placement success or failure</returns>
@@ -540,7 +540,7 @@ namespace RyansLibrary.Labyrinth
             BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
             zoneBoundsBlueprintData.LoadIntoMemory();
 
-            // 1.) Spawn Fixed Rooms (Rooms that have a set spawn destination)
+            // 1.) Spawn Fixed _rooms (_rooms that have a set spawn destination)
             foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
@@ -554,7 +554,7 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            // 2.) Spawn Bounded Rooms (Rooms that have a unique spawn area)
+            // 2.) Spawn Bounded _rooms (_rooms that have a unique spawn area)
             foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Constrained)
@@ -573,7 +573,7 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            // 3.) Spawn Free Rooms (Rooms that can spawn in any point inside the zone bounds)
+            // 3.) Spawn Free _rooms (_rooms that can spawn in any point inside the zone bounds)
             foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Free)
@@ -901,7 +901,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            // Generate Unique Rooms
+            // Generate Unique _rooms
             bool result;
             result = GenerateUniqueRooms(zone);
             if (!result)
@@ -927,7 +927,7 @@ namespace RyansLibrary.Labyrinth
                 if (_debugRoomGeneratorLogs) Debug.Log("Blueprint Room: " + actualPosition + "has available cells disabled.");
             }
 
-            // Generate Rooms along main path
+            // Generate _rooms along main path
             result = _roomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
             if (!result)
             {
@@ -935,7 +935,7 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            // Generate Rooms along alt. paths
+            // Generate _rooms along alt. paths
             foreach (Path path in zone.Paths)
             {
                 result = _roomGenerator.ParsePathAndGenerateRooms(path);

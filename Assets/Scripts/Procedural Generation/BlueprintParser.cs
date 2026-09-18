@@ -2,7 +2,7 @@
  * Created By:      Ryan Carpenter
  * Date Created:    09/01/2026
  * Last Modified:   09/01/2026 (Ryan)
- * Notes:           Data-only definition of a parsible RoomShape's footprint
+ * Notes:           Data-only definition of a parsible _roomShape's footprint
 */
 using System.Collections.Generic;
 using UnityEngine;

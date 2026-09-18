@@ -26,16 +26,16 @@ namespace RyansLibrary.Labyrinth
     /// </remarks>
     public class Blueprint
     {
-        public readonly string CellID;
+        public readonly string BlueprintID;
         public readonly Vector3Int Position;    // Position of blueprint coords on grid
         public bool Available { get; set; }       // Prevents/allows parsing algorithm from using blueprint in algorithm
         public bool[] EntryPointFlags { get; set; }
 
         // Constructor
-        public Blueprint(Vector3Int postion, string cellID = "Blueprint")
+        public Blueprint(Vector3Int postion, string blueprintID = "Blueprint")
         {
             Available = true;
-            CellID = cellID;
+            BlueprintID = blueprintID;
             Position = postion;
             EntryPointFlags = new bool[6];       // A flag to mark which entrances should be open for a room
         }
@@ -116,7 +116,7 @@ namespace RyansLibrary.Labyrinth
                         if (CheckCollision(context, blueprintroomPos, out Blueprint collidedBlueprint))
                         {
                             if (_debugLogs)
-                                Debug.LogWarning($"Failed to generate blueprint room due to collision with {collidedBlueprint.CellID}");
+                                Debug.LogWarning($"Failed to generate blueprint room due to collision with {collidedBlueprint.BlueprintID}");
                             return null;
                         }
 

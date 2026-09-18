@@ -15,7 +15,7 @@ namespace RyansLibrary.Labyrinth
     /// BlueprintOperation graph) into actual room GameObjects. Where the blueprint pass only knows about single
     /// grid cells and simple adjacency, this pass optionally *merges* several adjacent, still-available cells into
     /// one larger room prefab (e.g. a 2x1x2 "big room" spanning 4 cells) when the path's room-shape settings and a
-    /// random roll allow it - see RoomShapeCondition for the shape-matching rules and GenerateRoom(RoomShape, ...)
+    /// random roll allow it - see RoomShapeCondition for the shape-matching rules and GenerateRoom(_roomShape, ...)
     /// for how a merged room's single set of doorway flags is stitched together from each of the individual cells
     /// it replaces.
     /// </summary>
@@ -63,7 +63,7 @@ namespace RyansLibrary.Labyrinth
             // If the path has starting room(s) then spawn the start room
             if (path.startingRooms.Count > 0)
             {
-                path.Rooms.Add(GenerateRoom(RoomShape.smallRoom, RoomType.start, path, path.BlueprintList[0], 0));
+                path._rooms.Add(GenerateRoom(_roomShape.smallRoom, RoomType.start, path, path.BlueprintList[0], 0));
 
                 // Mark room space as unavailable
                 path.BlueprintList[0].Available = false;
@@ -786,7 +786,7 @@ namespace RyansLibrary.Labyrinth
             // If the path's room entry list contains no room return null
             if (pathEntries.Count == 0)
             {
-                Debug.LogError("Probability of room weights failed, room list empty.");
+                Debug.LogError("_weight of room weights failed, room list empty.");
                 return null;
             }
 
@@ -798,19 +798,19 @@ namespace RyansLibrary.Labyrinth
             int totalWeight = 0;
             foreach (RoomEntry pathEntry in pathEntries)
             {
-                totalWeight += pathEntry.Probability;
+                totalWeight += pathEntry.Weight;
             }
 
             int roll = Random.Range(0, totalWeight + 1);        // roll 1 - 101; max exclusive
             int runningTotal = 0;
             for (int i = 0; i < pathEntries.Count; i++)
             {
-                runningTotal += pathEntries[i].Probability;
+                runningTotal += pathEntries[i].Weight;
                 if (roll <= runningTotal)
                     return pathEntries[i].Prefab;
             }
 
-            Debug.LogError("Probability of room weights failed, unknown error.");
+            Debug.LogError("_weight of room weights failed, unknown error.");
             return null;
         }
         #endregion

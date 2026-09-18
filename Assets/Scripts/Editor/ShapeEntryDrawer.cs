@@ -2,7 +2,7 @@
  * Created By:      Ryan Carpenter
  * Date Created:    08/19/2026
  * Last Modified:   08/19/2026 (Ryan)
- * Notes:           Boilerplate - draws a small shape preview thumbnail next to RoomShape/Probability,
+ * Notes:           Boilerplate - draws a small shape preview thumbnail next to oomShape/Probability,
  *                  with the Rooms list unrolled below. Thumbnail uses AssetPreview, which only shows
  *                  real cube geometry once ShapeDataEditor implements RenderStaticPreview; until then
  *                  it falls back to the generic asset icon.
@@ -14,8 +14,8 @@ using UnityEngine;
 
 namespace RyansLibrary.UnityEditor
 {
-    [CustomPropertyDrawer(typeof(RoomShapeEntry))]
-    public class RoomShapeEntryDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(ShapeEntry))]
+    public class ShapeEntryDrawer : PropertyDrawer
     {
         private const float k_previewSize = 64f;
         private const float k_previewPadding = 4f;
@@ -24,9 +24,9 @@ namespace RyansLibrary.UnityEditor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            SerializedProperty roomShapeProp = property.FindPropertyRelative("RoomShape");
-            SerializedProperty spawnChanceProp = property.FindPropertyRelative("Probability");
-            SerializedProperty roomsProp = property.FindPropertyRelative("Rooms");
+            SerializedProperty roomShapeProp = property.FindPropertyRelative("_roomShape");
+            SerializedProperty spawnChanceProp = property.FindPropertyRelative("_weight");
+            SerializedProperty roomsProp = property.FindPropertyRelative("_rooms");
 
             float lineHeight = EditorGUIUtility.singleLineHeight;
             float spacing = EditorGUIUtility.standardVerticalSpacing;
@@ -75,7 +75,7 @@ namespace RyansLibrary.UnityEditor
             float spacing = EditorGUIUtility.standardVerticalSpacing;
             float headerHeight = Mathf.Max((lineHeight * 2) + spacing, k_previewSize);
 
-            SerializedProperty roomsProp = property.FindPropertyRelative("Rooms");
+            SerializedProperty roomsProp = property.FindPropertyRelative("_rooms");
             float roomsHeight = EditorGUI.GetPropertyHeight(roomsProp, true);
 
             return headerHeight + spacing + roomsHeight;
