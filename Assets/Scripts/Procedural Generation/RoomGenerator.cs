@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    09/14/2026
- * Last Modified:   09/14/2026 (Ryan)
+ * Last Modified:   09/17/2026 (Ryan)
  * Notes:           Room Generator
 */
 
@@ -15,11 +15,13 @@ namespace RyansLibrary.Labyrinth
     /// <summary>
     /// A simple hash map with buckets.
     /// </summary>
-    /// <typeparam name="L">Key</typeparam>
-    /// <typeparam name="B">BucketCollection Object</typeparam>
+    /// <typeparam name="L">Bucket Key</typeparam>
+    /// <typeparam name="B">Bucket Collection Object</typeparam>
     public class BucketCollection<L, B>
     {
         private Dictionary<L, List<B>> _bucketDict;
+
+        public int BucketCount => _bucketDict.Count;
 
         public BucketCollection()
         {
@@ -50,6 +52,32 @@ namespace RyansLibrary.Labyrinth
             bucket = null;
             return false;
         }
+
+        public int GetCountInBucket(L bucketKey)
+        {
+            if (TryGetBucket(bucketKey, out var bucket))
+            {
+                return bucket.Count;
+            }
+            else
+            {
+                Debug.LogWarning($"Bucket with key {bucketKey} does not exist.");
+                return 0;
+            }
+        }
+
+        public bool IsBucketEmpty(L bucketKey)
+        {
+            if (TryGetBucket(bucketKey, out var bucket))
+            {
+                return bucket.Count <= 0;
+            }
+            else
+            {
+                Debug.LogWarning($"Bucket with key {bucketKey} does not exist.");
+                return false;
+            }
+        }
     }
 
     public class RoomGenerator
@@ -68,12 +96,12 @@ namespace RyansLibrary.Labyrinth
             _roomContainer = roomContainer;
         }
 
-        public void ParsePathAndGenerateRooms(Path path)
+        public bool ParsePathAndGenerateRooms(Path path)
         {
             if (path == null || path.BlueprintList.Count <= 0)
             {
                 Debug.LogError("Path was null or has no blueprints to parse");
-                return;
+                return false;
             }
 
             foreach (Blueprint currrentBlueprint in path.BlueprintList)
@@ -84,30 +112,47 @@ namespace RyansLibrary.Labyrinth
                 // Parse blueprints and return all candidates
                 List<ShapeCandidate> candidates = _parser.CheckValidShapes(currrentBlueprint, path.RoomShapes.Select(e => e.RoomShape).ToList());
 
+                if (candidates == null || candidates.Count <= 0)
+                    return false;
+
                 // Sort candidates into buckets based on ShapeData
                 BucketCollection<ShapeData, ShapeCandidate> buckets = BucketAllCandidates(candidates);
+
+                if (buckets == null || buckets.BucketCount < 0)
+                    return false;
 
                 // Choose a random candidate from a weighted selection
                 ShapeCandidate candidate = PickWeightedCandidate(path.RoomShapes, buckets);
 
                 if (candidate == null)
-                    continue;
+                    return false;
 
-                // Choose a random room from a ShapeData and spawn
-                RoomEntry pathEntry = RandomRoomSelection(path.RoomShapes, candidate.Shape);
+                // Choose a random room from a ShapeData
+                RoomEntry pathEntry = SelectRandomRoomFromShape(path.RoomShapes, candidate.Shape);
+
                 if (pathEntry.Prefab == null)
-                    continue;
+                    return false;
 
+                // Spawn room and make all overlapping blueprints unavailable
                 Vector3Int placementPosition = currrentBlueprint.Position - candidate.Cell;
                 Room room = GenerateRoom(path, pathEntry.Prefab, placementPosition);
+
+                if (room == null)
+                    return false;
             }
+
+            return true;
         }
 
         private BucketCollection<ShapeData, ShapeCandidate> BucketAllCandidates(List<ShapeCandidate> candidates)
         {
             if (candidates == null)
+            {
+                Debug.LogError("Candidate list was null or empty.");
                 return null;
+            }
 
+            // Bucket all candidates by shape
             BucketCollection<ShapeData, ShapeCandidate> buckets = new();
             foreach (var candidate in candidates)
             {
@@ -117,78 +162,119 @@ namespace RyansLibrary.Labyrinth
             return buckets;
         }
 
-        // TODO: Chage the probability code in Probability.cs to use an Interface instead of a ProbabilityEntry
+        /// <summary>
+        /// Picks a shape weighted by its RoomShapeEntry.Probability, then a random candidate of that shape.
+        /// </summary>
         private ShapeCandidate PickWeightedCandidate(List<RoomShapeEntry> entries, BucketCollection<ShapeData, ShapeCandidate> buckets)
         {
             if (buckets == null)
-                return null;
-
-            // Only shapes that actually produced candidates get an entry
-            List<ProbabilityEntry<List<ShapeCandidate>>> weightedBuckets = new();
-            foreach (var entry in entries)
             {
-                if (!buckets.TryGetBucket(entry.RoomShape, out var bucket))
-                    continue;
-
-                weightedBuckets.Add(new ProbabilityEntry<List<ShapeCandidate>>
-                {
-                    Probability = entry.Probability,
-                    Object = bucket
-                });
+                Debug.LogError("Bucket collection was null.");
+                return null;
+            }
+            if (entries == null || entries.Count <= 0)
+            {
+                Debug.LogError("Room shape entries was null or empty.");
             }
 
-            if (weightedBuckets.Count <= 0)
-                return null;
+            // Shapes that passed parse go on to next process; only shapes that actually produced candidates are eligible
+            List<RoomShapeEntry> eligibleShapes = new();
+            foreach (RoomShapeEntry entry in entries)
+            {
+                if (buckets.TryGetBucket(entry.RoomShape, out _))    // Bucket exists
+                {
+                    if (!buckets.IsBucketEmpty(entry.RoomShape))     // Bucket has at least one candidate
+                        eligibleShapes.Add(entry);
+                    else
+                    {
+                        Debug.LogError("Bucket has no items.");
+                        return null;
+                    }
+                }
+            }
 
-            // Choose a random bucket with weights
-            List<ShapeCandidate> chosenBucket = Probability<List<ShapeCandidate>>.ChooseRandomFromWeights(weightedBuckets).Object;
+            // No shapes eligable due to bucket being empty or no buckets existing for all shapes
+            if (eligibleShapes.Count <= 0)
+            {
+                Debug.LogError("No shapes are eligible for picking. Were buckets empty? Did all shapes have an existing bucket?");
+                return null;
+            }
+
+            // Choose a random shape with weights
+            if (!WeightedRandom.TryPick(eligibleShapes, out RoomShapeEntry chosenShape))
+            {
+                Debug.LogError("No shape choosen for generation. Were all their probabilities 0?");
+                return null;
+            }
 
             // Choose a random candidate w/o weights
-            return chosenBucket[Random.Range(0, chosenBucket.Count)];
+            if (buckets.TryGetBucket(chosenShape.RoomShape, out List<ShapeCandidate> chosenBucket))
+            {
+                ShapeCandidate choosenCandidate = chosenBucket[Random.Range(0, chosenBucket.Count)];
+
+                if (choosenCandidate == null)
+                {
+                    Debug.LogError("Choosen candidate was null.");
+                    return null;
+                }
+
+                return choosenCandidate;
+            }
+            else
+            {
+                Debug.LogError("Bucket does not exist for choosen shape.");
+                return null;
+            }
         }
 
         /// <summary>
         /// Picks one pathEntry for the given shape, weighted by each RoomEntry's Probability.
         /// </summary>
-        private RoomEntry RandomRoomSelection(List<RoomShapeEntry> entries, ShapeData shape)
+        /// <param name="entries">Room-shape entries from a path</param>
+        /// <param name="shape">Shape to </param>
+        /// <returns></returns>
+        private RoomEntry SelectRandomRoomFromShape(List<RoomShapeEntry> entries, ShapeData shape)
         {
-            if (shape == null)
-                return new RoomEntry();
-
-            // Gather every pathEntry that can be built with this shape
-            List<ProbabilityEntry<RoomEntry>> weightedRooms = new();
-            foreach (var entry in entries)
+            if (entries == null || entries.Count <= 0 || shape == null)
             {
+                Debug.LogError("Shape entry list was null or empty.");
+                return new RoomEntry();
+            }
+            if (shape == null)
+            {
+                Debug.LogError("ShapeData was null");
+                return new RoomEntry();
+            }
+
+            // Only the rooms that match with the ShapeData can advance to next process
+            List<RoomEntry> rooms = new();
+            foreach (RoomShapeEntry entry in entries)
+            {
+                // Skip entry if shapes don't match; skip entry if it has no rooms
                 if (entry.RoomShape != shape || entry.Rooms == null)
                     continue;
 
-                foreach (var room in entry.Rooms)
+                foreach (RoomEntry room in entry.Rooms)
                 {
-                    // Skip rooms that can never spawn or have no prefab to spawn
-                    if (room.Probability <= 0 || room.Prefab == null)
-                        continue;
-
-                    weightedRooms.Add(new ProbabilityEntry<RoomEntry>
-                    {
-                        Probability = room.Probability,
-                        Object = room
-                    });
+                    // Skip rooms with no prefab to spawn; TryPick already skips zero weights
+                    if (room.Prefab != null)
+                        rooms.Add(room);
                 }
             }
 
-            // ChooseRandomFromWeights reads entries[0] on an empty list
-            if (weightedRooms.Count <= 0)
+            // Choose a random room with shapes
+            if (!WeightedRandom.TryPick(rooms, out RoomEntry pickedRoom))
             {
                 Debug.LogError($"No spawnable rooms found for shape {shape.name}.");
                 return new RoomEntry();
             }
 
-            return Probability<RoomEntry>.ChooseRandomFromWeights(weightedRooms).Object;
+            return pickedRoom;
         }
 
         private Room GenerateRoom(Path path, GameObject prefab, Vector3Int placementPosition)
         {
-            Quaternion rotation = Quaternion.identity;      // TODO: set rotation
+            Quaternion rotation = Quaternion.identity;
             Room generatedRoom = Object.Instantiate(prefab, ConvertToWorldCoords(placementPosition), rotation, _roomContainer).GetComponent<Room>();
 
             // Scan all room cells and disable overlapping blueprint availability
@@ -202,7 +288,10 @@ namespace RyansLibrary.Labyrinth
                     generatedRoom.CopyBlueprintEntranceFlags(blueprint, cell);
                 }
                 else
-                    Debug.LogError("No blueprint exists at this room's cell.");
+                {
+                    Debug.LogError($"No blueprint exists at this room's cell's postion in world {positionInWorld}");
+                    return null;
+                }
             }
 
             generatedRoom.Initialize();

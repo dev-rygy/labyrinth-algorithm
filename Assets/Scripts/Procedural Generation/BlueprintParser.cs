@@ -85,15 +85,16 @@ namespace RyansLibrary.Labyrinth
         /// <returns>All possible candidates found that can fit a range of available blueprints.</returns>
         public List<ShapeCandidate> CheckValidShapes(Blueprint baseBlueprint, List<ShapeData> possibleShapes)
         {
-            if (possibleShapes.Count <= 0)
+            if (possibleShapes == null || possibleShapes.Count <= 0)
             {
-                Debug.LogError("No possible shapes to parse.");
+                Debug.LogError("Parsing Falied - No possible shapes to parse.");
                 return null;
             }
 
             if (!baseBlueprint.Available)
             {
-                Debug.LogError("Base blueprint is not available to parse");
+                Debug.LogError("Parsing Failed - Base blueprint is not available to parse");
+                return null;
             }
 
             HashSet<Blueprint> emptyVisitedSet = new();

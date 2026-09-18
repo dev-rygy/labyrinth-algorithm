@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    01/20/2025
- * Last Modified:   10/23/2025 (Ryan)
+ * Last Modified:   09/17/2026 (Ryan)
  * Notes:           Path in a scriptable object
 */
 using System;
@@ -18,18 +18,22 @@ namespace RyansLibrary.Labyrinth
     }
 
     [System.Serializable]
-    public struct RoomEntry
+    public struct RoomEntry : IWeighted
     {
         [SerializeField] public GameObject Prefab;
         [SerializeField][Range(0, 100)] public int Probability;
+
+        public int Weight => Probability;
     }
 
     [System.Serializable]
-    public struct RoomShapeEntry
+    public struct RoomShapeEntry : IWeighted
     {
         [SerializeField] public ShapeData RoomShape;
         [SerializeField][Range(0, 100)] public int Probability;
         [SerializeField] public List<RoomEntry> Rooms;
+
+        public int Weight => Probability;
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    12/26/2024
- * Last Modified:   12/26/2024 
+ * Last Modified:   09/17/2026 (Ryan)
  * Notes:           Spawn Pad Used for spawning a variety of different objects 
  *                      and entities.
 */
@@ -31,25 +31,18 @@ public class SpawnPad : MonoBehaviour
     [SerializeField] private Vector3 _gizmoOffset; 
     [SerializeField] private Color _gizmoColor;
 
-    private void Start()
-    {
-        _spawnEntries = new List<ProbabilityEntry<GameObject>>();
-    }
-
     /// <summary>
     /// Spawn the object from the inspector. If no object is in the inspector then do not spawn anything.
     /// </summary>
     public void SpawnObject()
     {
-        if (_spawnEntries.Count <= 0)
+        if (!WeightedRandom.TryPick(_spawnEntries, out ProbabilityEntry<GameObject> chosenEntry) || chosenEntry.Object == null)
         {
             Debug.LogWarning("Spawn Pad has no valid object to spawn.");
             return;
         }
 
-        ProbabilityEntry<GameObject> choosenObject = Probability<GameObject>.ChooseRandomFromWeights(_spawnEntries);
-
-        Instantiate(choosenObject.Object, transform.position, Quaternion.identity, transform);
+        Instantiate(chosenEntry.Object, transform.position, Quaternion.identity, transform);
     }
 
     /// <summary>
