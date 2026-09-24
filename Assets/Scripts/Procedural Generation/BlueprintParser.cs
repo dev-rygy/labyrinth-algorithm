@@ -6,6 +6,7 @@
 */
 using System.Collections.Generic;
 using UnityEngine;
+using static RyansLibrary.Utilities.Math;
 
 namespace RyansLibrary.Labyrinth
 {
@@ -13,9 +14,10 @@ namespace RyansLibrary.Labyrinth
     {
         private ShapeData _shape;
         public ShapeData Shape => _shape;
-        private Vector3Int _cell;
-        public Vector3Int Cell => _cell;
-
+        private Vector3Int _anchor;
+        public Vector3Int Anchor => _anchor;
+        private RoomRotation _rotation;
+        public RoomRotation Rotation => _rotation;
         private readonly HashSet<Vector3Int> _coveredCells;
         public HashSet<Vector3Int> CoveredCells => _coveredCells;
         public int PassedCells => _coveredCells.Count;
@@ -23,11 +25,12 @@ namespace RyansLibrary.Labyrinth
         private bool _isFilled;
         public bool IsFilled => _isFilled;
 
-        public ShapeCandidate(ShapeData shape, Vector3Int cell)
+        public ShapeCandidate(ShapeData shape, Vector3Int cell, RoomRotation rotation = RoomRotation.Deg0)
         {
             _shape = shape;
-            _cell = cell;
+            _anchor = cell;
             _coveredCells = new();
+            _rotation = rotation;
         }
 
         public bool CheckFilled()
@@ -53,7 +56,7 @@ namespace RyansLibrary.Labyrinth
     // Lexgen
     public class BlueprintParser
     {
-        // 3D Parser Directions
+        // Parser Directions
         // Modify this for 2D parser if nessessary
         private static readonly Vector3Int[] k_directions =
         {
@@ -61,8 +64,8 @@ namespace RyansLibrary.Labyrinth
             Vector3Int.right,
             Vector3Int.forward,
             Vector3Int.back,
-            Vector3Int.up,
-            Vector3Int.down,
+            Vector3Int.up,      // OMITTED FOR NOW
+            Vector3Int.down,    // OMMITED FOR NOW
         };
 
         private readonly Dictionary<Vector3Int, Blueprint> _blueprintDictionary;
@@ -112,10 +115,14 @@ namespace RyansLibrary.Labyrinth
                     continue;
 
                 // Turn cells into candidates
-                foreach (var cell in validCells)
+                foreach (var cell in validCells)        // Add all 'Blueprint' cells
                 {
-                    ShapeCandidate newCandidate = new ShapeCandidate(shape, cell);
-                    candidates.Add(newCandidate);
+                    for (int i = 0; i < 4; i++)         // Add all rotation factors
+                    {
+                        RoomRotation r = (RoomRotation)i;
+                        ShapeCandidate newCandidate = new ShapeCandidate(shape, cell, r);
+                        candidates.Add(newCandidate);
+                    }
                 }
             }
 
@@ -159,9 +166,19 @@ namespace RyansLibrary.Labyrinth
             // Local position from base blueprint
             Vector3Int localPosition = currentBlueprint.Position - _baseBlueprint.Position;
 
+            // Check all candidates
             foreach (var candidate in nextRoundCandidates.ToArray())
             {
-                Vector3Int localPosFromCell = candidate.Cell + localPosition;
+                Vector3Int localPosFromCell = candidate.Anchor + localPosition;
+
+                Matrix2x2Int rotation = candidate.Rotation switch
+                {
+                    RoomRotation.Deg0 => Matrix2x2Int.Identity,
+                    RoomRotation.Deg90 => Matrix2x2Int.RotMatrix90,
+                    RoomRotation.Deg180 => Matrix2x2Int.RotMatrix180,
+                    RoomRotation.Deg270 => Matrix2x2Int.RotMatrix270,
+                    _ => Matrix2x2Int.Identity,
+                };
 
                 // If candidate passes 
                 if (CheckConfigs(localPosFromCell, candidate.Shape, currentBlueprint))

@@ -127,15 +127,15 @@ namespace RyansLibrary.Labyrinth
             // Candidate c2 accepted last
             ShapeCandidate c2 = validShapes[2];
             Assert.AreEqual(c2.Shape, _shapes[1]);          // c2 = Candidate of 2x1x1
-            Assert.AreEqual(c2.Cell, Vector3Int.zero);      // c2 = Base cell of (0, 0, 0)
+            Assert.AreEqual(c2.Anchor, Vector3Int.zero);      // c2 = Base cell of (0, 0, 0)
             // Candidate c3 accepted second
             ShapeCandidate c3 = validShapes[1];
             Assert.AreEqual(c3.Shape, _shapes[1]);          // c3 = Candidate of 2x1x1
-            Assert.AreEqual(c3.Cell, Vector3Int.right);     // c3 = Base cell of (1, 0, 0)
+            Assert.AreEqual(c3.Anchor, Vector3Int.right);     // c3 = Base cell of (1, 0, 0)
             // Candidate c1 accepted first
             ShapeCandidate c1 = validShapes[0];
             Assert.AreEqual(c1.Shape, _shapes[0]);          // c1 = Candidate of 1x1x1
-            Assert.AreEqual(c1.Cell, Vector3Int.zero);      // c1 = Base cell of (0, 0, 0)
+            Assert.AreEqual(c1.Anchor, Vector3Int.zero);      // c1 = Base cell of (0, 0, 0)
         }
         #endregion
 
@@ -165,15 +165,15 @@ namespace RyansLibrary.Labyrinth
 
             ShapeCandidate c2 = validShapes[2];
             Assert.AreEqual(_shapes[1], c2.Shape);              // c2 = Candidate of 2x1x1 covering middle + right
-            Assert.AreEqual(Vector3Int.zero, c2.Cell);
+            Assert.AreEqual(Vector3Int.zero, c2.Anchor);
 
             ShapeCandidate c3 = validShapes[1];
             Assert.AreEqual(_shapes[1], c3.Shape);              // c3 = Candidate of 2x1x1 covering left + middle
-            Assert.AreEqual(Vector3Int.right, c3.Cell);
+            Assert.AreEqual(Vector3Int.right, c3.Anchor);
 
             ShapeCandidate c1 = validShapes[0];
             Assert.AreEqual(_shapes[0], c1.Shape);              // c1 = Candidate of 1x1x1 on the middle cell
-            Assert.AreEqual(Vector3Int.zero, c1.Cell);
+            Assert.AreEqual(Vector3Int.zero, c1.Anchor);
         }
 
         /// <summary>
@@ -200,15 +200,15 @@ namespace RyansLibrary.Labyrinth
 
             ShapeCandidate c6 = validShapes[2];
             Assert.AreEqual(_shapes[3], c6.Shape);             // c6 = Candidate of 2x1x2, the perfect fit
-            Assert.AreEqual(Vector3Int.zero, c6.Cell);
+            Assert.AreEqual(Vector3Int.zero, c6.Anchor);
 
             ShapeCandidate mid = validShapes[1];
             Assert.AreEqual(_shapes[1], mid.Shape);             // c2 = Candidate of 2x1x1 across the near edge
-            Assert.AreEqual(Vector3Int.zero, mid.Cell);
+            Assert.AreEqual(Vector3Int.zero, mid.Anchor);
 
             ShapeCandidate bottom = validShapes[0];
             Assert.AreEqual(_shapes[0], bottom.Shape);          // c1 = Candidate of 1x1x1
-            Assert.AreEqual(Vector3Int.zero, bottom.Cell);
+            Assert.AreEqual(Vector3Int.zero, bottom.Anchor);
         }
 
         /// <summary>
@@ -232,11 +232,11 @@ namespace RyansLibrary.Labyrinth
 
             ShapeCandidate c8 = validShapes[1];
             Assert.AreEqual(_shapes[2], c8.Shape);             // c8 = Candidate of 1x2x1 spanning both floors
-            Assert.AreEqual(Vector3Int.zero, c8.Cell);
+            Assert.AreEqual(Vector3Int.zero, c8.Anchor);
 
             ShapeCandidate c1 = validShapes[0];
             Assert.AreEqual(_shapes[0], c1.Shape);          // c1 = Candidate of 1x1x1
-            Assert.AreEqual(Vector3Int.zero, c1.Cell);
+            Assert.AreEqual(Vector3Int.zero, c1.Anchor);
         }
 
         /// <summary>
@@ -260,11 +260,11 @@ namespace RyansLibrary.Labyrinth
 
             ShapeCandidate c9 = validShapes[1];
             Assert.AreEqual(_shapes[2], c9.Shape);             // c8 = Candidate of 1x2x1 spanning both floors
-            Assert.AreEqual(Vector3Int.up, c9.Cell);
+            Assert.AreEqual(Vector3Int.up, c9.Anchor);
 
             ShapeCandidate c1 = validShapes[0];
             Assert.AreEqual(_shapes[0], c1.Shape);          // c1 = Candidate of 1x1x1
-            Assert.AreEqual(Vector3Int.zero, c1.Cell);
+            Assert.AreEqual(Vector3Int.zero, c1.Anchor);
         }
 
         /// <summary>
@@ -523,7 +523,7 @@ namespace RyansLibrary.Labyrinth
             Assert.AreEqual(1, validShapes.Count);
             ShapeCandidate only = validShapes[0];
             Assert.AreEqual(_shapes[1], only.Shape);
-            Assert.AreEqual(Vector3Int.zero, only.Cell);        // covers cells 1 and 2 only
+            Assert.AreEqual(Vector3Int.zero, only.Anchor);        // covers cells 1 and 2 only
         }
 
         /// <summary>
@@ -547,7 +547,7 @@ namespace RyansLibrary.Labyrinth
 
             // Assert
             Assert.AreEqual(1, validShapes.Count);
-            Assert.AreEqual(Vector3Int.zero, validShapes[0].Cell);
+            Assert.AreEqual(Vector3Int.zero, validShapes[0].Anchor);
         }
 
         /// <summary>
@@ -578,11 +578,11 @@ namespace RyansLibrary.Labyrinth
 
             ShapeCandidate fromRightBranch = validShapes[1];
             Assert.AreEqual(_shapes[1], fromRightBranch.Shape);
-            Assert.AreEqual(Vector3Int.zero, fromRightBranch.Cell);     // covers middle + right
+            Assert.AreEqual(Vector3Int.zero, fromRightBranch.Anchor);     // covers middle + right
 
             ShapeCandidate fromLeftBranch = validShapes[0];
             Assert.AreEqual(_shapes[1], fromLeftBranch.Shape);
-            Assert.AreEqual(Vector3Int.right, fromLeftBranch.Cell);     // covers left + middle
+            Assert.AreEqual(Vector3Int.right, fromLeftBranch.Anchor);     // covers left + middle
         }
 
         /// <summary>
@@ -610,7 +610,7 @@ namespace RyansLibrary.Labyrinth
             Assert.AreEqual(1, validShapes.Count);
             ShapeCandidate only = validShapes[0];
             Assert.AreEqual(bar, only.Shape);
-            Assert.AreEqual(Vector3Int.zero, only.Cell);
+            Assert.AreEqual(Vector3Int.zero, only.Anchor);
         }
 
         /// <summary>
@@ -685,7 +685,7 @@ namespace RyansLibrary.Labyrinth
             Assert.AreEqual(1, validShapes.Count);
             ShapeCandidate only = validShapes[0];
             Assert.AreEqual(lTromino, only.Shape);
-            Assert.AreEqual(Vector3Int.zero, only.Cell);        // anchored on the arm we started from
+            Assert.AreEqual(Vector3Int.zero, only.Anchor);        // anchored on the arm we started from
         }
 
         /// <summary>
@@ -771,7 +771,7 @@ namespace RyansLibrary.Labyrinth
             foreach (var candidate in validShapes)
             {
                 Assert.AreEqual(bar, candidate.Shape);
-                anchors.Add(candidate.Cell);
+                anchors.Add(candidate.Anchor);
             }
 
             Assert.Contains(new Vector3Int(2, 0, 0), anchors);      // covers c0 c1 c2
@@ -831,7 +831,7 @@ namespace RyansLibrary.Labyrinth
             foreach (var candidate in validShapes)
             {
                 Assert.AreEqual(square, candidate.Shape);
-                anchors.Add(candidate.Cell);
+                anchors.Add(candidate.Anchor);
             }
 
             Assert.Contains(new Vector3Int(1, 0, 0), anchors);      // left half  A B D E
@@ -1131,7 +1131,7 @@ namespace RyansLibrary.Labyrinth
         ///
         /// Nothing exploits this today because CheckForValidCells only ever hands back Blueprint-state
         /// cells as anchors. It becomes a live bug the moment anything calls CheckConfigs with an
-        /// arbitrary offset - which ParseBlueprints does, via candidate.Cell + localPosition.
+        /// arbitrary offset - which ParseBlueprints does, via candidate.Anchor + localPosition.
         /// </summary>
         [Test]
         public void TestConfigIgnoresAnchorCellState()

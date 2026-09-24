@@ -24,7 +24,7 @@ namespace RyansLibrary.Labyrinth
             InputPorts.Add(pathInput);                  // Path
             InputPorts.Add(boundsInput);                // Bounds
             InputPorts.Add(dimensionsInput);     // Largest Room Dimensions
-            InputPorts.Add(cellCountInput);             // Cell Count
+            InputPorts.Add(cellCountInput);             // Anchor Count
             InputPorts.Add(maxPlacementAttempsInput);   // Max Placement Attempts
         }
 

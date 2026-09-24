@@ -25,7 +25,7 @@ namespace RyansLibrary.Labyrinth
     [CreateAssetMenu(fileName = "ShapeData", menuName = "Scriptable Objects/Procedural Generation/Shape Data", order = 3)]
     public class ShapeData : ScriptableObject
     {
-        [SerializedDictionary("Cell Position", "Cell State")]
+        [SerializedDictionary("Anchor Position", "Anchor State")]
         public SerializedDictionary<Vector3Int, CellState> Cells;
         public int CellCount        // Only count cells marked as 'Blueprint'
         {

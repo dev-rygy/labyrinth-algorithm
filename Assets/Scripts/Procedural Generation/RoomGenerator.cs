@@ -4,86 +4,13 @@
  * Last Modified:   09/23/2026 (Ryan)
  * Notes:           Room Generator
 */
-
 using RyansLibrary.Utilities;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;      // Using Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
 {
-    /// <summary>
-    /// A simple hash map with buckets.
-    /// </summary>
-    /// <typeparam name="L">Bucket Key</typeparam>
-    /// <typeparam name="B">Bucket Collection Object</typeparam>
-    public class BucketCollection<L, B>
-    {
-        private Dictionary<L, List<B>> _bucketDict;
-
-        public int BucketCount => _bucketDict.Count;
-
-        public BucketCollection()
-        {
-            _bucketDict = new Dictionary<L, List<B>>();
-        }
-
-        public void AddItemToBucket(L bucketKey, B bucketItem)
-        {
-            // Create a new bucket
-            if (!_bucketDict.TryGetValue(bucketKey, out var bucket))
-            {
-                // Bucket is null so initialize
-                bucket = new List<B>();
-                _bucketDict.Add(bucketKey, bucket);
-            }
-
-            // Add to an existing bucket
-            bucket.Add(bucketItem);
-        }
-
-        public bool TryGetBucket(L bucketKey, out List<B> bucket)
-        {
-            if (_bucketDict.TryGetValue(bucketKey, out bucket))
-            {
-                return true;
-            }
-
-            bucket = null;
-            return false;
-        }
-
-        public int GetCountInBucket(L bucketKey)
-        {
-            if (TryGetBucket(bucketKey, out var bucket))
-            {
-                return bucket.Count;
-            }
-            else
-            {
-                Debug.LogWarning($"Bucket with key {bucketKey} does not exist.");
-                return 0;
-            }
-        }
-
-        public bool IsBucketEmpty(L bucketKey)
-        {
-            if (TryGetBucket(bucketKey, out var bucket))
-            {
-                return bucket.Count <= 0;
-            }
-            else
-            {
-                Debug.LogWarning($"Bucket with key {bucketKey} does not exist.");
-                return false;
-            }
-        }
-
-        public bool IsEmpty()
-        {
-            return _bucketDict.Count <= 0;
-        }
-    }
-
     public class RoomGenerator
     {
         private MapGenerationContext _context;
@@ -167,7 +94,7 @@ namespace RyansLibrary.Labyrinth
                 }
 
                 // Spawn room and make all overlapping blueprints unavailable
-                Vector3Int placementPosition = currentBlueprint.Position - candidate.Cell;
+                Vector3Int placementPosition = currentBlueprint.Position - candidate.Anchor;
                 Room room = GenerateRoom(path, pathEntry.Prefab, placementPosition);
 
                 if (room == null)
@@ -185,7 +112,7 @@ namespace RyansLibrary.Labyrinth
         /// Pulls the ShapeData out of every ShapeEntry in the path. Fails if there are no entries or any entry is
         /// missing its ShapeData, since the parser can't handle a null shape.
         /// </summary>
-        private bool TryGetRoomShapes(Path path, out List<ShapeData> shapes)
+        internal bool TryGetRoomShapes(Path path, out List<ShapeData> shapes)
         {
             shapes = null;
 
@@ -211,7 +138,7 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        private BucketCollection<ShapeData, ShapeCandidate> BucketAllCandidates(List<ShapeCandidate> candidates)
+        internal BucketCollection<ShapeData, ShapeCandidate> BucketAllCandidates(List<ShapeCandidate> candidates)
         {
             if (candidates == null || candidates.Count <= 0)
             {
@@ -245,7 +172,7 @@ namespace RyansLibrary.Labyrinth
         /// <summary>
         /// Picks a shape weighted by its ShapeEntry._weight, then a random candidate of that shape.
         /// </summary>
-        private ShapeCandidate PickWeightedCandidate(List<ShapeEntry> entries, BucketCollection<ShapeData, ShapeCandidate> buckets)
+        internal ShapeCandidate PickWeightedCandidate(List<ShapeEntry> entries, BucketCollection<ShapeData, ShapeCandidate> buckets)
         {
             if (buckets == null || buckets.IsEmpty())
             {
@@ -314,7 +241,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="entries">Room-shape entries from a path</param>
         /// <param name="shape">Shape to </param>
         /// <returns></returns>
-        private RoomEntry SelectRandomRoomFromShape(List<ShapeEntry> entries, ShapeData shape)
+        internal RoomEntry SelectRandomRoomFromShape(List<ShapeEntry> entries, ShapeData shape)
         {
             if (entries == null || entries.Count <= 0)
             {
@@ -456,7 +383,7 @@ namespace RyansLibrary.Labyrinth
 
         #region Utility
         // Vector based conversion from room -> world coords
-        public Vector3 ConvertToWorldCoords(Vector3Int roomCoords)
+        private Vector3 ConvertToWorldCoords(Vector3Int roomCoords)
         {
             return roomCoords * _gridUnitSize;
         }

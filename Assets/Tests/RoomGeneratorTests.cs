@@ -6,6 +6,7 @@
 */
 using AYellowpaper.SerializedCollections;
 using NUnit.Framework;
+using RyansLibrary.Utilities;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
