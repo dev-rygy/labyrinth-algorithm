@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
 
         #region Blueprint Room Generation
         /// <summary>
-        /// Generate a new blueprint room at the desired location. Add it to the master path and
+        /// Generate a new blueprint room at the desired location. AddBlueprint it to the master path and
         /// desired path passed in as an arguement. Generate a blueprint room gizmo if debug is enabled.
         /// NOTE: Position must be in room coords
         /// </summary>
@@ -84,8 +84,8 @@ namespace RyansLibrary.Labyrinth
             newBlueprint.Available = available;
 
             // Update paths and masters with new blueprint room
-            path.Add(newBlueprint);
-            context.BlueprintDictionary.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
+            path.AddBlueprint(newBlueprint);
+            context.BlueprintDictionary.Add(origin, newBlueprint);      // AddBlueprint to Master Dictionary (required)
 
             if (_debugLogs) Debug.Log($"Generated blueprint room {blueprintName} at {origin}");
             return newBlueprint;

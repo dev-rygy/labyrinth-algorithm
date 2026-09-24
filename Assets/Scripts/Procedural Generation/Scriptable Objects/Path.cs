@@ -12,9 +12,10 @@ namespace RyansLibrary.Labyrinth
 {
     public enum PathType
     {
-        main,
-        prize,
-        master
+        Main,
+        Prize,
+        Connection,
+        Master
     }
 
     [Serializable]
@@ -50,8 +51,12 @@ namespace RyansLibrary.Labyrinth
     public class Path : ScriptableObject
     {
         // Editor Fields
-        [field: SerializeField] public string Name { get; set; }
-        [field: SerializeField] public PathType Type { get; private set; }
+        [SerializeField] private string _name = "New Path";
+        public string Name => _name;
+        [SerializeField] private PathType _type;
+        public PathType Type => _type;
+
+        // TODO: Remove these fields once the map generator graph is implemented.
         [field: SerializeField] public int DesiredPathLength { get; private set; }
         [field: SerializeField] public bool DrunkardWalkCanGoVertical { get; private set; } = true;
 
@@ -61,22 +66,27 @@ namespace RyansLibrary.Labyrinth
         [field: Header("Debug")]
         [field: SerializeField] public Color PathGizmoColor;
 
-        // Data Storage
+        // Storage
         private List<Blueprint> _blueprintList;
         public List<Blueprint> BlueprintList => _blueprintList;
         private List<Room> _rooms;
         public List<Room> Rooms => _rooms;
 
-        // UNUSED
-        // public int startMasterIdx { get; set; }  // Start index in master path
-        // ublic int endMasterIdx { get; set; }    // End index in master path
-
-        public bool IsInitialized => CheckInitialize();
-
         // Return the number of blueprint rooms along this path.
         public int BlueprintCount => _blueprintList.Count;
         // Return the number of rooms along this path.
         public int RoomCount => _rooms.Count;
+
+        public bool IsInitialized
+        {
+            get
+            {
+                if (BlueprintList != null && Rooms != null)
+                    return true;
+
+                return false;
+            }
+        }
 
         // Constructor for path; gets it's start and end index in the master path
         public void Initialize()
@@ -88,26 +98,18 @@ namespace RyansLibrary.Labyrinth
             // endMasterIdx = endIdx;
         }
 
-        private bool CheckInitialize()
-        {
-            if (BlueprintList != null && Rooms != null)
-                return true;
-
-            return false;
-        }
-
         /// <summary>
-        /// Add a blueprint room to the path.
+        /// AddBlueprint a blueprint room to the path.
         /// </summary>
-        public void Add(Blueprint blueprint)
+        public void AddBlueprint(Blueprint blueprint)
         {
             BlueprintList.Add(blueprint);
         }
 
         /// <summary>
-        /// Add a room to the path.
+        /// AddBlueprint a room to the path.
         /// </summary>
-        public void Add(Room room)
+        public void AddRoom(Room room)
         {
             Rooms.Add(room);
         }
@@ -119,6 +121,15 @@ namespace RyansLibrary.Labyrinth
         public void ClearBlueprints()
         {
             BlueprintList.Clear();
+        }
+
+        /// <summary>
+        /// Clear the referenced rooms in this path.
+        /// Warning: Dangerous unless you know what you're doing
+        /// </summary>
+        public void ClearRooms()
+        {
+            Rooms.Clear();
         }
     }
 }

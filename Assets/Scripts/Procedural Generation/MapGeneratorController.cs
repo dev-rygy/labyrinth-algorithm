@@ -1005,7 +1005,7 @@ namespace RyansLibrary.Labyrinth
         {
             float totalCellOccupancy = 0;
 
-            // Add Unique Room volume
+            // AddBlueprint Unique Room volume
             foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.Prefab.TryGetComponent(out Room room))
@@ -1016,13 +1016,13 @@ namespace RyansLibrary.Labyrinth
                     Debug.LogWarning("Room Entry Prefab has no Room Script");
             }
 
-            // Add Divergent Room volume
+            // AddBlueprint Divergent Room volume
             totalCellOccupancy += zone.DivergentRoomsCellOccupancy;
 
-            // Add Main Path volume
+            // AddBlueprint Main Path volume
             totalCellOccupancy += zone.MainPath.DesiredPathLength;
 
-            // Add Alt. Paths volume
+            // AddBlueprint Alt. Paths volume
             foreach (Path path in zone.Paths)
                 totalCellOccupancy += path.DesiredPathLength;
 

@@ -356,7 +356,7 @@ namespace RyansLibrary.Labyrinth
 
             generatedRoom.Initialize();
 
-            path.Add(generatedRoom);
+            path.AddRoom(generatedRoom);
             return generatedRoom;
         }
 
@@ -374,7 +374,7 @@ namespace RyansLibrary.Labyrinth
             Quaternion rotation = Quaternion.identity;      // TODO: set rotation
             Room generatedRoom = Object.Instantiate(prefab, ConvertToWorldCoords(placementPosition), rotation, _roomContainer).GetComponent<Room>();
 
-            path.Add(generatedRoom);
+            path.AddRoom(generatedRoom);
             return generatedRoom;
         }
 

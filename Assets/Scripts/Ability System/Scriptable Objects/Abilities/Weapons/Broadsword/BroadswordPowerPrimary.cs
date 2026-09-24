@@ -74,7 +74,7 @@ public class BroadswordPowerPrimary : Ability<PlayerStateMachine>
     private void PowerTimer(float deltaTime)
     {
         timerTime += deltaTime;
-        attackForce += attackForceGain * deltaTime;     // Add to force over time
+        attackForce += attackForceGain * deltaTime;     // AddBlueprint to force over time
 
         if (timerTime >= maximumPowerTime)
             CommenceAttack();

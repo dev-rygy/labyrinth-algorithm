@@ -27,28 +27,28 @@ namespace RyansLibrary.Labyrinth
 
     //        ShapeData shape1x1x1 = ScriptableObject.CreateInstance<ShapeData>();
     //        shape1x1x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
-    //        shape1x1x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
-    //        _shapes.Add(shape1x1x1);
+    //        shape1x1x1.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
+    //        _shapes.AddBlueprint(shape1x1x1);
 
     //        ShapeData shape2x1x1 = ScriptableObject.CreateInstance<ShapeData>();
     //        shape2x1x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
-    //        shape2x1x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
-    //        shape2x1x1.Cells.Add(new Vector3Int(1, 0, 0), CellState.Blueprint);
-    //        _shapes.Add(shape2x1x1);
+    //        shape2x1x1.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
+    //        shape2x1x1.Cells.AddBlueprint(new Vector3Int(1, 0, 0), CellState.Blueprint);
+    //        _shapes.AddBlueprint(shape2x1x1);
 
     //        ShapeData shape1x2x1 = ScriptableObject.CreateInstance<ShapeData>();
     //        shape1x2x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
-    //        shape1x2x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
-    //        shape1x2x1.Cells.Add(new Vector3Int(0, 1, 0), CellState.Blueprint);
-    //        _shapes.Add(shape1x2x1);
+    //        shape1x2x1.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
+    //        shape1x2x1.Cells.AddBlueprint(new Vector3Int(0, 1, 0), CellState.Blueprint);
+    //        _shapes.AddBlueprint(shape1x2x1);
 
     //        ShapeData shape2x1x2 = ScriptableObject.CreateInstance<ShapeData>();
     //        shape2x1x2.Cells = new SerializedDictionary<Vector3Int, CellState>();
-    //        shape2x1x2.Cells.Add(Vector3Int.zero, CellState.Blueprint);
-    //        shape2x1x2.Cells.Add(new Vector3Int(1, 0, 0), CellState.Blueprint);
-    //        shape2x1x2.Cells.Add(new Vector3Int(1, 0, 1), CellState.Blueprint);
-    //        shape2x1x2.Cells.Add(new Vector3Int(0, 0, 1), CellState.Blueprint);
-    //        _shapes.Add(shape2x1x2);
+    //        shape2x1x2.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
+    //        shape2x1x2.Cells.AddBlueprint(new Vector3Int(1, 0, 0), CellState.Blueprint);
+    //        shape2x1x2.Cells.AddBlueprint(new Vector3Int(1, 0, 1), CellState.Blueprint);
+    //        shape2x1x2.Cells.AddBlueprint(new Vector3Int(0, 0, 1), CellState.Blueprint);
+    //        _shapes.AddBlueprint(shape2x1x2);
     //    }
 
     //    [TearDown]
@@ -68,7 +68,7 @@ namespace RyansLibrary.Labyrinth
     //        Vector3Int bpPosition = RandomVector();
     //        List<ShapeCandidate> validShapes;
     //        Blueprint b1 = new Blueprint(bpPosition);
-    //        _blueprintDictionary.Add(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
 
     //        // Act
     //        validShapes = _parser.CheckValidShapes(b1, _shapes);
@@ -85,7 +85,7 @@ namespace RyansLibrary.Labyrinth
     //        Vector3Int bpPosition = RandomVector();
     //        List<ShapeCandidate> validShapes;
     //        Blueprint b1 = new Blueprint(bpPosition);
-    //        _blueprintDictionary.Add(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
 
     //        _shapes = new();
 
@@ -103,15 +103,15 @@ namespace RyansLibrary.Labyrinth
     //        Vector3Int bpPosition = RandomVector();
     //        List<ShapeCandidate> validShapes;
     //        Blueprint b1 = new Blueprint(bpPosition);
-    //        _blueprintDictionary.Add(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
     //        Blueprint b2 = new Blueprint(bpPosition + Vector3Int.left);
-    //        _blueprintDictionary.Add(b2.Position, b2);
+    //        _blueprintDictionary.AddBlueprint(b2.Position, b2);
     //        Blueprint b3 = new Blueprint(bpPosition + Vector3Int.right);
-    //        _blueprintDictionary.Add(b3.Position, b3);
+    //        _blueprintDictionary.AddBlueprint(b3.Position, b3);
     //        Blueprint b4 = new Blueprint(bpPosition + Vector3Int.forward);
-    //        _blueprintDictionary.Add(b4.Position, b4);
+    //        _blueprintDictionary.AddBlueprint(b4.Position, b4);
     //        Blueprint b5 = new Blueprint(bpPosition + Vector3Int.back);
-    //        _blueprintDictionary.Add(b5.Position, b5);
+    //        _blueprintDictionary.AddBlueprint(b5.Position, b5);
 
     //        // Act
     //        validShapes = _parser.CheckValidShapes(b1, _shapes);
@@ -330,11 +330,11 @@ namespace RyansLibrary.Labyrinth
 
     //            Vector3Int o = RandomVector(100000);
     //            Blueprint center = new Blueprint(o);
-    //            dictionary.Add(center.Position, center);
+    //            dictionary.AddBlueprint(center.Position, center);
     //            foreach (var dir in new[] { Vector3Int.left, Vector3Int.right, Vector3Int.forward, Vector3Int.back })
     //            {
     //                Blueprint bp = new Blueprint(o + dir);
-    //                dictionary.Add(bp.Position, bp);
+    //                dictionary.AddBlueprint(bp.Position, bp);
     //            }
 
     //            // Act
@@ -765,7 +765,7 @@ namespace RyansLibrary.Labyrinth
     //        foreach (var candidate in validShapes)
     //        {
     //            Assert.AreEqual(bar, candidate.Shape);
-    //            anchors.Add(candidate.Anchor);
+    //            anchors.AddBlueprint(candidate.Anchor);
     //        }
 
     //        Assert.Contains(new Vector3Int(2, 0, 0), anchors);      // covers c0 c1 c2
@@ -825,7 +825,7 @@ namespace RyansLibrary.Labyrinth
     //        foreach (var candidate in validShapes)
     //        {
     //            Assert.AreEqual(square, candidate.Shape);
-    //            anchors.Add(candidate.Anchor);
+    //            anchors.AddBlueprint(candidate.Anchor);
     //        }
 
     //        Assert.Contains(new Vector3Int(1, 0, 0), anchors);      // left half  A B D E
@@ -907,8 +907,8 @@ namespace RyansLibrary.Labyrinth
 
     //        // Arrange  (Set test data and conditions)
     //        Blueprint b1 = new Blueprint(bpPosition);
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
 
     //        // Act      (Execute the code you're testing)
     //        bool result = _parser.CheckConfigs(Vector3Int.zero, _shape, b1);
@@ -926,10 +926,10 @@ namespace RyansLibrary.Labyrinth
     //        Vector3Int bpPosition = RandomVector();
     //        Blueprint b1 = new Blueprint(bpPosition);
     //        Blueprint b2 = new Blueprint(bpPosition + Vector3Int.right);             // Has a right blueprint
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _blueprintDictionary.Add(b2.Position, b2);
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);
-    //        _shape.Cells.Add(Vector3Int.right, CellState.NoBlueprint);  // Requires there to not be a blueprint to the right
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b2.Position, b2);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.right, CellState.NoBlueprint);  // Requires there to not be a blueprint to the right
 
     //        // Act
     //        bool result = _parser.CheckConfigs(Vector3Int.zero, _shape, b1);
@@ -944,9 +944,9 @@ namespace RyansLibrary.Labyrinth
     //        // Arrange
     //        Vector3Int bpPosition = RandomVector();
     //        Blueprint b1 = new Blueprint(bpPosition);
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);
-    //        _shape.Cells.Add(Vector3Int.right, CellState.NoBlueprint);  // Requires there to not be a blueprint to the right
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.right, CellState.NoBlueprint);  // Requires there to not be a blueprint to the right
 
     //        // Act
     //        bool result = _parser.CheckConfigs(Vector3Int.zero, _shape, b1);
@@ -966,9 +966,9 @@ namespace RyansLibrary.Labyrinth
     //        Vector3Int bpPosition = RandomVector();
     //        Blueprint b1 = new Blueprint(bpPosition);
     //        Blueprint b2 = new Blueprint(bpPosition + Vector3Int.right);     // disreguarded by check
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _blueprintDictionary.Add(b2.Position, b2);
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b2.Position, b2);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
 
     //        // Act
     //        bool result = _parser.CheckConfigs(Vector3Int.zero, _shape, b1);
@@ -992,17 +992,17 @@ namespace RyansLibrary.Labyrinth
     //        Blueprint b4 = new Blueprint(bpPosition + Vector3Int.forward);
     //        Blueprint b5 = new Blueprint(bpPosition + Vector3Int.back);
     //        Blueprint b6 = new Blueprint(bpPosition + Vector3Int.up);
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _blueprintDictionary.Add(b2.Position, b2);
-    //        _blueprintDictionary.Add(b3.Position, b3);
-    //        _blueprintDictionary.Add(b4.Position, b4);
-    //        _blueprintDictionary.Add(b5.Position, b5);
-    //        _blueprintDictionary.Add(b6.Position, b6);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b2.Position, b2);
+    //        _blueprintDictionary.AddBlueprint(b3.Position, b3);
+    //        _blueprintDictionary.AddBlueprint(b4.Position, b4);
+    //        _blueprintDictionary.AddBlueprint(b5.Position, b5);
+    //        _blueprintDictionary.AddBlueprint(b6.Position, b6);
 
     //        // origin, right, left = Blueprint, forward, back, up = DontCare
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);     // origin cell
-    //        _shape.Cells.Add(Vector3Int.right, CellState.Blueprint);
-    //        _shape.Cells.Add(Vector3Int.left, CellState.Blueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);     // origin cell
+    //        _shape.Cells.AddBlueprint(Vector3Int.right, CellState.Blueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.left, CellState.Blueprint);
 
     //        // Act
     //        bool result = _parser.CheckConfigs(Vector3Int.zero, _shape, b1);
@@ -1026,17 +1026,17 @@ namespace RyansLibrary.Labyrinth
     //        Blueprint b4 = new Blueprint(bpPosition + Vector3Int.forward);
     //        Blueprint b5 = new Blueprint(bpPosition + Vector3Int.back);
     //        Blueprint b6 = new Blueprint(bpPosition + Vector3Int.up);
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _blueprintDictionary.Add(b2.Position, b2);
-    //        _blueprintDictionary.Add(b3.Position, b3);
-    //        _blueprintDictionary.Add(b4.Position, b4);
-    //        _blueprintDictionary.Add(b5.Position, b5);
-    //        _blueprintDictionary.Add(b6.Position, b6);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b2.Position, b2);
+    //        _blueprintDictionary.AddBlueprint(b3.Position, b3);
+    //        _blueprintDictionary.AddBlueprint(b4.Position, b4);
+    //        _blueprintDictionary.AddBlueprint(b5.Position, b5);
+    //        _blueprintDictionary.AddBlueprint(b6.Position, b6);
 
     //        // origin, right, left = Blueprint, forward, back, up = DontCare
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);     // origin cell
-    //        _shape.Cells.Add(Vector3Int.right, CellState.NoBlueprint);
-    //        _shape.Cells.Add(Vector3Int.left, CellState.NoBlueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);     // origin cell
+    //        _shape.Cells.AddBlueprint(Vector3Int.right, CellState.NoBlueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.left, CellState.NoBlueprint);
 
     //        // Act
     //        bool result = _parser.CheckConfigs(Vector3Int.zero, _shape, b1);
@@ -1056,10 +1056,10 @@ namespace RyansLibrary.Labyrinth
     //        Vector3Int bpPosition = RandomVector();
     //        Blueprint b1 = new Blueprint(bpPosition);
     //        Blueprint b2 = new Blueprint(bpPosition + Vector3Int.right);
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _blueprintDictionary.Add(b2.Position, b2);
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);
-    //        _shape.Cells.Add(Vector3Int.right, CellState.Blueprint);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b2.Position, b2);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.right, CellState.Blueprint);
 
     //        // Act
     //        bool result = _parser.CheckConfigs(Vector3Int.right, _shape, b2);
@@ -1079,12 +1079,12 @@ namespace RyansLibrary.Labyrinth
     //        Vector3Int bpPosition = RandomVector();
     //        Blueprint b1 = new Blueprint(bpPosition);
     //        Blueprint b2 = new Blueprint(bpPosition + Vector3Int.right);
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _blueprintDictionary.Add(b2.Position, b2);
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);
-    //        _shape.Cells.Add(Vector3Int.right, CellState.Blueprint);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b2.Position, b2);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.right, CellState.Blueprint);
     //        // Should fail because the shape requires a blueprint at (1,1,0) but there is none
-    //        _shape.Cells.Add(Vector3Int.right + Vector3Int.up, CellState.Blueprint);
+    //        _shape.Cells.AddBlueprint(Vector3Int.right + Vector3Int.up, CellState.Blueprint);
 
     //        // Act
     //        bool result = _parser.CheckConfigs(Vector3Int.right, _shape, b2);
@@ -1104,9 +1104,9 @@ namespace RyansLibrary.Labyrinth
     //        Vector3Int bpPosition = RandomVector();
     //        Blueprint b1 = new Blueprint(bpPosition);
     //        Blueprint b2 = new Blueprint(bpPosition + Vector3Int.right);
-    //        _blueprintDictionary.Add(b1.Position, b1);
-    //        _blueprintDictionary.Add(b2.Position, b2);
-    //        _shape.Cells.Add(Vector3Int.zero, CellState.Blueprint);
+    //        _blueprintDictionary.AddBlueprint(b1.Position, b1);
+    //        _blueprintDictionary.AddBlueprint(b2.Position, b2);
+    //        _shape.Cells.AddBlueprint(Vector3Int.zero, CellState.Blueprint);
     //        // Missing a cell at (1,0,0) which is required for the shape to match the blueprint
 
     //        // Act
@@ -1180,7 +1180,7 @@ namespace RyansLibrary.Labyrinth
     //    {
     //        Blueprint blueprint = new Blueprint(position);
     //        blueprint.Available = available;
-    //        _blueprintDictionary.Add(blueprint.Position, blueprint);
+    //        _blueprintDictionary.AddBlueprint(blueprint.Position, blueprint);
     //        return blueprint;
     //    }
 
@@ -1192,7 +1192,7 @@ namespace RyansLibrary.Labyrinth
     //        ShapeData shape = ScriptableObject.CreateInstance<ShapeData>();
     //        shape.Cells = new SerializedDictionary<Vector3Int, CellState>();
     //        foreach (var cell in blueprintCells)
-    //            shape.Cells.Add(cell, CellState.Blueprint);
+    //            shape.Cells.AddBlueprint(cell, CellState.Blueprint);
     //        return shape;
     //    }
 
@@ -1205,7 +1205,7 @@ namespace RyansLibrary.Labyrinth
     //        ShapeData shape = ScriptableObject.CreateInstance<ShapeData>();
     //        shape.Cells = new SerializedDictionary<Vector3Int, CellState>();
     //        foreach (var entry in cells)
-    //            shape.Cells.Add(entry.cell, entry.state);
+    //            shape.Cells.AddBlueprint(entry.cell, entry.state);
     //        return shape;
     //    }
 

@@ -1,7 +1,7 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    09/01/2026
- * Last Modified:   09/23/2026 (Ryan)
+ * Last Modified:   09/24/2026 (Ryan)
  * Notes:           Data-only definition of a parsible _roomShape's footprint
 */
 using System.Collections.Generic;
@@ -120,7 +120,7 @@ namespace RyansLibrary.Labyrinth
                     continue;
 
                 // Turn cells into candidates
-                // Add candidates for all cells marked as 'Blueprint'
+                // AddBlueprint candidates for all cells marked as 'Blueprint'
                 foreach (var cell in validCells)
                 {
                     // If the shape is able to be rotated then add candidates for all rotations
@@ -185,13 +185,13 @@ namespace RyansLibrary.Labyrinth
             // Check all candidates
             foreach (var candidate in nextRoundCandidates.ToArray())
             {
-                // Shape cell that lands on this blueprint; undo the candidate's rotation, then offset from its anchor
+                // Shape cell that lands on this blueprint; undo the candidate's rotation, then cellOffset from its anchor
                 Vector3Int localPosFromAnchor = candidate.Anchor + candidate.Rotation.ToInverseMatrix() * localPosition;
 
                 // If candidate passes
                 if (CheckConfigs(localPosFromAnchor, candidate.Shape, currentBlueprint, candidate.Rotation))
                 {
-                    // Add passed cell to candidate
+                    // AddBlueprint passed cell to candidate
                     candidate.CellCovered(localPosFromAnchor);
 
                     // If all cells of shape are satisfied; first time satisfaction
@@ -277,19 +277,29 @@ namespace RyansLibrary.Labyrinth
         }
 
         #region Check Configs
-        public bool CheckConfigs(Vector3Int localPosition, ShapeData shapeData, Blueprint blueprint, RoomRotation rotation = RoomRotation.Deg0)
+        /// <summary>
+        /// Match a cell's configs agains a blueprint's configs.
+        /// Configs can be 'don't care', 'blueprint', 'no blueprint'
+        /// Rotation checking needs to be accounted for by using a rotation matrix.
+        /// </summary>
+        /// <param name="cellOffset">Offset of shape cell from it's anchor</param>
+        /// <param name="shapeData">Shape</param>
+        /// <param name="blueprint">Blueprint we are checking</param>
+        /// <param name="rotation">Rotation of cell configs</param>
+        /// <returns>'True' if configs match, 'False' if not.</returns>
+        public bool CheckConfigs(Vector3Int cellOffset, ShapeData shapeData, Blueprint blueprint, RoomRotation rotation = RoomRotation.Deg0)
         {
             // Shape does not contain a cell at position, so it's an illegal check
-            if (!shapeData.Cells.ContainsKey(localPosition))
+            if (!shapeData.Cells.ContainsKey(cellOffset))
                 return false;
 
             CellState[] ShapeDataConfigs = new CellState[6];
-            ShapeDataConfigs[0] = CheckSide(shapeData, localPosition, Vector3Int.right);
-            ShapeDataConfigs[1] = CheckSide(shapeData, localPosition, Vector3Int.left);
-            ShapeDataConfigs[2] = CheckSide(shapeData, localPosition, Vector3Int.forward);
-            ShapeDataConfigs[3] = CheckSide(shapeData, localPosition, Vector3Int.back);
-            ShapeDataConfigs[4] = CheckSide(shapeData, localPosition, Vector3Int.up);
-            ShapeDataConfigs[5] = CheckSide(shapeData, localPosition, Vector3Int.down);
+            ShapeDataConfigs[0] = CheckSide(shapeData, cellOffset, Vector3Int.right);
+            ShapeDataConfigs[1] = CheckSide(shapeData, cellOffset, Vector3Int.left);
+            ShapeDataConfigs[2] = CheckSide(shapeData, cellOffset, Vector3Int.forward);
+            ShapeDataConfigs[3] = CheckSide(shapeData, cellOffset, Vector3Int.back);
+            ShapeDataConfigs[4] = CheckSide(shapeData, cellOffset, Vector3Int.up);
+            ShapeDataConfigs[5] = CheckSide(shapeData, cellOffset, Vector3Int.down);
 
             // Each shape side faces a turned world direction once the shape is rotated
             Matrix3x3Int rotationMatrix = rotation.ToMatrix();
@@ -316,6 +326,9 @@ namespace RyansLibrary.Labyrinth
             return true; // All configurations match
         }
 
+        /// <summary>
+        /// CheckConfigs helper function for shape cells.
+        /// </summary>
         private CellState CheckSide(ShapeData data, Vector3Int origin, Vector3Int offset)
         {
             if (data.Cells.TryGetValue(origin + offset, out var cellState))
@@ -330,6 +343,9 @@ namespace RyansLibrary.Labyrinth
             }
         }
 
+        /// <summary>
+        /// CheckConfigs helper function for blueprints.
+        /// </summary>
         private CellState CheckSide(Blueprint blueprint, Vector3Int offset)
         {
             if (_blueprintDictionary.TryGetValue(blueprint.Position + offset, out var bp))

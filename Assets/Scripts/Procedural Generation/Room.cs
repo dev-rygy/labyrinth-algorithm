@@ -13,17 +13,6 @@ using Math = RyansLibrary.Utilities.Math;
 
 namespace RyansLibrary.Labyrinth
 {
-    // Determines how much grid space a room will ocupy.
-    public enum RoomShape
-    {
-        smallRoom,
-        longRoom,
-        tallRoom,
-        bigRoom,
-        lRoom,
-        unique
-    }
-
     // Determines its gameplay and purpose.
     public enum RoomType
     {
@@ -69,17 +58,6 @@ namespace RyansLibrary.Labyrinth
         }
     }
 
-    // Determines the offset of the room in the world.
-    public enum RoomShift
-    {
-        N = 0,
-        S = 1,
-        E = 2,
-        W = 3,
-        Up = 4,
-        Down = 5
-    }
-
     [Serializable]
     public struct RoomWall
     {
@@ -118,12 +96,9 @@ namespace RyansLibrary.Labyrinth
         [Header("Room Components")]
         [SerializeField] private List<RoomCell> _roomCells;
         public List<RoomCell> RoomCells => _roomCells;
-        //[SerializeField] private List<Transform> _roomWalls;
-        //[field: SerializeField] public List<Vector3Int> AvailableCellData { get; private set; }
         [SerializeField] public List<SpawnPad> RoomSpawners;
 
         [Header("Room Properties")]
-        [SerializeField] public RoomShape roomShape;
         [field: SerializeField] public Vector3Int RoomDimensions { get; private set; } = Vector3Int.one;
         [field: SerializeField] public RoomType RoomType { get; private set; }
 

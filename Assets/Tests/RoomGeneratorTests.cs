@@ -80,7 +80,7 @@ namespace RyansLibrary.Labyrinth
     //    {
     //        // Arrange
     //        RoomGenerator generator = null;
-    //        _path.Add(new Blueprint(RandomVector()));
+    //        _path.AddBlueprint(new Blueprint(RandomVector()));
     //        SetRoomShapes(_path, MakeShapeEntry(_shape1x1x1, 1, _prefab1x1x1));
     //        CaptureErrorLogs();
 
@@ -1135,7 +1135,7 @@ namespace RyansLibrary.Labyrinth
     //        // Act
     //        Room room = generator.GenerateRoom(_path, _prefab1x1x1, o);
     //        if (room != null)
-    //            _createdObjects.Add(room.gameObject);
+    //            _createdObjects.AddBlueprint(room.gameObject);
 
     //        // Assert
     //        Assert.IsNull(room);
@@ -1324,7 +1324,7 @@ namespace RyansLibrary.Labyrinth
     //    #region Helpers
     //    private T Track<T>(T obj) where T : Object
     //    {
-    //        _createdObjects.Add(obj);
+    //        _createdObjects.AddBlueprint(obj);
     //        return obj;
     //    }
 
@@ -1332,8 +1332,8 @@ namespace RyansLibrary.Labyrinth
     //    {
     //        Blueprint blueprint = new Blueprint(position);
     //        blueprint.Available = available;
-    //        _context.BlueprintDictionary.Add(blueprint.Position, blueprint);
-    //        _path.Add(blueprint);
+    //        _context.BlueprintDictionary.AddBlueprint(blueprint.Position, blueprint);
+    //        _path.AddBlueprint(blueprint);
     //        return blueprint;
     //    }
 
@@ -1361,7 +1361,7 @@ namespace RyansLibrary.Labyrinth
     //        ShapeData shape = Track(ScriptableObject.CreateInstance<ShapeData>());
     //        shape.Cells = new SerializedDictionary<Vector3Int, CellState>();
     //        foreach (Vector3Int cell in cells)
-    //            shape.Cells.Add(cell, CellState.Blueprint);
+    //            shape.Cells.AddBlueprint(cell, CellState.Blueprint);
     //        return shape;
     //    }
 
@@ -1375,7 +1375,7 @@ namespace RyansLibrary.Labyrinth
 
     //        List<RoomCell> cells = new();
     //        foreach (Vector3Int position in cellPositions)
-    //            cells.Add(new RoomCell { Position = position, IsAvailable = false, Walls = new List<RoomWall>() });
+    //            cells.AddBlueprint(new RoomCell { Position = position, IsAvailable = false, Walls = new List<RoomWall>() });
 
     //        SetPrivateField(room, "_roomCells", cells);
     //        return prefab;
@@ -1392,7 +1392,7 @@ namespace RyansLibrary.Labyrinth
     //            Transform wall = Track(new GameObject($"Wall {i}")).transform;
     //            new GameObject("Entranceway").transform.SetParent(wall);
     //            new GameObject("Solid Wall").transform.SetParent(wall);
-    //            walls.Add(new RoomWall { WallTransform = wall });
+    //            walls.AddBlueprint(new RoomWall { WallTransform = wall });
     //        }
     //        return walls;
     //    }
@@ -1461,7 +1461,7 @@ namespace RyansLibrary.Labyrinth
     //        foreach (RoomCell cell in room.RoomCells)
     //        {
     //            Vector3 worldPosition = room.transform.position + room.transform.rotation * (Vector3)(cell.Position * k_gridUnitSize);
-    //            coveredCells.Add(Vector3Int.RoundToInt(worldPosition / k_gridUnitSize));
+    //            coveredCells.AddBlueprint(Vector3Int.RoundToInt(worldPosition / k_gridUnitSize));
     //        }
 
     //        CollectionAssert.AreEquivalent(expectedCells, coveredCells);
@@ -1501,7 +1501,7 @@ namespace RyansLibrary.Labyrinth
     //    private void OnLogMessage(string condition, string stackTrace, LogType type)
     //    {
     //        if (type == LogType.Error || type == LogType.Exception || type == LogType.Assert)
-    //            _errorLogs.Add(condition);
+    //            _errorLogs.AddBlueprint(condition);
     //    }
 
     //    private Vector3Int RandomVector(int range = 1000)
