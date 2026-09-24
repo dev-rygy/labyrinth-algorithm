@@ -4,7 +4,6 @@
  * Last Modified:   09/08/2026 (Ryan)
  * Notes:           Blueprint Parser Unit Tests
 */
-using AYellowpaper.SerializedCollections;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -29,27 +28,27 @@ namespace RyansLibrary.Labyrinth
             _shapes = new();
 
             _shape = ScriptableObject.CreateInstance<ShapeData>();
-            _shape.Cells = new SerializedDictionary<Vector3Int, CellState>();
+            _shape.Cells = new Dictionary<Vector3Int, CellState>();
 
             ShapeData shape1x1x1 = ScriptableObject.CreateInstance<ShapeData>();
-            shape1x1x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
+            shape1x1x1.Cells = new Dictionary<Vector3Int, CellState>();
             shape1x1x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
             _shapes.Add(shape1x1x1);
 
             ShapeData shape2x1x1 = ScriptableObject.CreateInstance<ShapeData>();
-            shape2x1x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
+            shape2x1x1.Cells = new Dictionary<Vector3Int, CellState>();
             shape2x1x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
             shape2x1x1.Cells.Add(new Vector3Int(1, 0, 0), CellState.Blueprint);
             _shapes.Add(shape2x1x1);
 
             ShapeData shape1x2x1 = ScriptableObject.CreateInstance<ShapeData>();
-            shape1x2x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
+            shape1x2x1.Cells = new Dictionary<Vector3Int, CellState>();
             shape1x2x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
             shape1x2x1.Cells.Add(new Vector3Int(0, 1, 0), CellState.Blueprint);
             _shapes.Add(shape1x2x1);
 
             ShapeData shape2x1x2 = ScriptableObject.CreateInstance<ShapeData>();
-            shape2x1x2.Cells = new SerializedDictionary<Vector3Int, CellState>();
+            shape2x1x2.Cells = new Dictionary<Vector3Int, CellState>();
             shape2x1x2.Cells.Add(Vector3Int.zero, CellState.Blueprint);
             shape2x1x2.Cells.Add(new Vector3Int(1, 0, 0), CellState.Blueprint);
             shape2x1x2.Cells.Add(new Vector3Int(1, 0, 1), CellState.Blueprint);
@@ -1196,7 +1195,7 @@ namespace RyansLibrary.Labyrinth
         private ShapeData MakeShape(params Vector3Int[] blueprintCells)
         {
             ShapeData shape = ScriptableObject.CreateInstance<ShapeData>();
-            shape.Cells = new SerializedDictionary<Vector3Int, CellState>();
+            shape.Cells = new Dictionary<Vector3Int, CellState>();
             foreach (var cell in blueprintCells)
                 shape.Cells.Add(cell, CellState.Blueprint);
             return shape;
@@ -1209,7 +1208,7 @@ namespace RyansLibrary.Labyrinth
         private ShapeData MakeShapeStates(params (Vector3Int cell, CellState state)[] cells)
         {
             ShapeData shape = ScriptableObject.CreateInstance<ShapeData>();
-            shape.Cells = new SerializedDictionary<Vector3Int, CellState>();
+            shape.Cells = new Dictionary<Vector3Int, CellState>();
             foreach (var entry in cells)
                 shape.Cells.Add(entry.cell, entry.state);
             return shape;

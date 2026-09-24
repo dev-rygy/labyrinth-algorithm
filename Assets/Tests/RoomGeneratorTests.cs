@@ -4,7 +4,6 @@
  * Last Modified:   09/23/2026 (Ryan)
  * Notes:           Room Generator Unit Tests
 */
-using AYellowpaper.SerializedCollections;
 using NUnit.Framework;
 using RyansLibrary.Utilities;
 using System.Collections.Generic;
@@ -1368,7 +1367,7 @@ namespace RyansLibrary.Labyrinth
         private ShapeData MakeShape(params Vector3Int[] cells)
         {
             ShapeData shape = Track(ScriptableObject.CreateInstance<ShapeData>());
-            shape.Cells = new SerializedDictionary<Vector3Int, CellState>();
+            shape.Cells = new Dictionary<Vector3Int, CellState>();
             foreach (Vector3Int cell in cells)
                 shape.Cells.Add(cell, CellState.Blueprint);
             return shape;
