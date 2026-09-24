@@ -17,7 +17,7 @@ namespace RyansLibrary.Labyrinth
         master
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct RoomEntry : IWeighted
     {
         [SerializeField] private GameObject _prefab;
@@ -26,7 +26,7 @@ namespace RyansLibrary.Labyrinth
         public int Weight => _weight;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct ShapeEntry : IWeighted
     {
         [SerializeField] private ShapeData _roomShape;
@@ -53,27 +53,10 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public string Name { get; set; }
         [field: SerializeField] public PathType Type { get; private set; }
         [field: SerializeField] public int DesiredPathLength { get; private set; }
-        [field: SerializeField] public List<ShapeEntry> RoomShapes { get; private set; }
-
-        // TODO: Old required lists, remove after new MapGenerator is implemented
-        [field: SerializeField] public List<RoomEntry> rooms1x1x1 { get; private set; }
-        [field: SerializeField] public List<RoomEntry> rooms2x1x1 { get; private set; }
-        [field: SerializeField] public List<RoomEntry> rooms1x2x1 { get; private set; }
-        [field: SerializeField] public List<RoomEntry> rooms2x1x2 { get; private set; }
-        [field: SerializeField] public List<RoomEntry> rooms2x1x2l { get; private set; }
-
         [field: SerializeField] public bool DrunkardWalkCanGoVertical { get; private set; } = true;
 
-        // TODO: Old required variables, remove after new MapGenerator is implemented
-        [field: Header("Room Generation Chance")]
-        [Tooltip("The percent chance for a room with a tall shape to spawn when the conditions are met.")]
-        [field: SerializeField][field: Range(0, 1)] public float TallRoomSpawnChance { get; private set; } = 0;          // The spawn chance of tall rooms
-        [Tooltip("The percent chance for a room with a long shape to spawn when the conditions are met.")]
-        [field: SerializeField][field: Range(0, 1)] public float LongRoomSpawnChance { get; private set; } = 0;          // The spawn chance of long rooms
-        [Tooltip("The percent chance for a room with a big shape to spawn when the conditions are met.")]
-        [field: SerializeField][field: Range(0, 1)] public float BigRoomSpawnChance { get; private set; } = 0;           // The spawn chance of big rooms
-        [Tooltip("The percent chance for a room with an l-shape to spawn when the conditions are met.")]
-        [field: SerializeField][field: Range(0, 1)] public float LRoomSpawnChance { get; private set; } = 0;           // The spawn chanc
+        [Header("Shapes & Rooms")]
+        [field: SerializeField] public List<ShapeEntry> RoomShapes { get; private set; }
 
         [field: Header("Debug")]
         [field: SerializeField] public Color PathGizmoColor;

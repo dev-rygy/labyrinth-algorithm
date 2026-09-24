@@ -25,15 +25,17 @@ namespace RyansLibrary.Labyrinth
     [CreateAssetMenu(fileName = "ShapeData", menuName = "Scriptable Objects/Procedural Generation/Shape Data", order = 3)]
     public class ShapeData : ScriptableObject
     {
-        [SerializeField]
-        public Dictionary<Vector3Int, CellState> Cells;
+        [SerializeField] private Dictionary<Vector3Int, CellState> _cells;
+        public Dictionary<Vector3Int, CellState> Cells => _cells;
+        [SerializeField] private bool _canRotate = true;
+        public bool CanRotate => _canRotate;
         public int CellCount
         // Only count cells marked as 'Blueprint'
         {
             get
             {
                 int count = 0;
-                foreach (var cell in Cells)
+                foreach (var cell in _cells)
                 {
                     if (cell.Value == CellState.Blueprint)
                         count++;

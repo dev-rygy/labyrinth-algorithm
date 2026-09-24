@@ -15,23 +15,11 @@ MonoBehaviour:
   <Name>k__BackingField: Castle Mines Connection Path
   <Type>k__BackingField: 0
   <DesiredPathLength>k__BackingField: 30
+  <DrunkardWalkCanGoVertical>k__BackingField: 1
   <RoomShapes>k__BackingField:
-  - _roomShape: {fileID: 11400000, guid: 00af0b301a9c113458071458467806af, type: 2}
+  - _roomShape: {fileID: 11400000, guid: 4b5d6b85111d7c948a8b2270d65c7183, type: 2}
     _weight: 100
     _rooms:
-    - _prefab: {fileID: 8151408096384611613, guid: 2e82e767107d33b45996a06ba7f2d73e,
-        type: 3}
+    - _prefab: {fileID: 8151408096384611613, guid: 2e82e767107d33b45996a06ba7f2d73e, type: 3}
       _weight: 100
-  <rooms1x1x1>k__BackingField:
-  - _prefab: {fileID: 0}
-    _weight: 0
-  <rooms2x1x1>k__BackingField: []
-  <rooms1x2x1>k__BackingField: []
-  <rooms2x1x2>k__BackingField: []
-  <rooms2x1x2l>k__BackingField: []
-  <DrunkardWalkCanGoVertical>k__BackingField: 1
-  <TallRoomSpawnChance>k__BackingField: 0
-  <LongRoomSpawnChance>k__BackingField: 0
-  <BigRoomSpawnChance>k__BackingField: 0
-  <LRoomSpawnChance>k__BackingField: 0
   PathGizmoColor: {r: 0.7924528, g: 0, b: 0.62481415, a: 0.29803923}

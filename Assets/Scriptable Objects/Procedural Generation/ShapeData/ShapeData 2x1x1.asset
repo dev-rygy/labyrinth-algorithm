@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd9a8f92374c8645893e0e8ca877f9f, type: 3}
   m_Name: ShapeData 2x1x1
   m_EditorClassIdentifier: RyansLibrary.Labyrinth::RyansLibrary.Labyrinth.ShapeData
-  Cells:
+  _cells:
   - key: {x: 0, y: 0, z: 0}
     value: 0
   - key: {x: 1, y: 0, z: 0}
     value: 0
+  _canRotate: 1

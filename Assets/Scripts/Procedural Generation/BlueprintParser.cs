@@ -12,16 +12,18 @@ namespace RyansLibrary.Labyrinth
 {
     public class ShapeCandidate
     {
+        // Candidate Properties
         private ShapeData _shape;
         public ShapeData Shape => _shape;
         private Vector3Int _anchor;
         public Vector3Int Anchor => _anchor;
         private RoomRotation _rotation;
         public RoomRotation Rotation => _rotation;
+
+        // Temp Parsing Data
         private readonly HashSet<Vector3Int> _coveredCells;
         public HashSet<Vector3Int> CoveredCells => _coveredCells;
         public int PassedCells => _coveredCells.Count;
-
         private bool _isFilled;
         public bool IsFilled => _isFilled;
 
@@ -53,7 +55,10 @@ namespace RyansLibrary.Labyrinth
         }
     }
 
-    // Lexgen
+    /// <summary>
+    /// Lexgen Parser.
+    /// Uses recursive descent based parsing to fit rooms on blueprints.
+    /// </summary>
     public class BlueprintParser
     {
         // Parser Directions
@@ -115,12 +120,23 @@ namespace RyansLibrary.Labyrinth
                     continue;
 
                 // Turn cells into candidates
-                foreach (var cell in validCells)        // Add all 'Blueprint' cells
+                // Add candidates for all cells marked as 'Blueprint'
+                foreach (var cell in validCells)
                 {
-                    for (int i = 0; i < 4; i++)         // Add all rotation factors
+                    // If the shape is able to be rotated then add candidates for all rotations
+                    if (shape.CanRotate)
                     {
-                        RoomRotation r = (RoomRotation)i;
-                        ShapeCandidate newCandidate = new ShapeCandidate(shape, cell, r);
+                        for (int i = 0; i < 4; i++)
+                        {
+                            RoomRotation r = (RoomRotation)i;
+                            ShapeCandidate newCandidate = new ShapeCandidate(shape, cell, r);
+                            candidates.Add(newCandidate);
+                        }
+                    }
+                    // else just add one candidate with 0 rotation
+                    else
+                    {
+                        ShapeCandidate newCandidate = new ShapeCandidate(shape, cell);
                         candidates.Add(newCandidate);
                     }
                 }
