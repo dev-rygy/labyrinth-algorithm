@@ -330,7 +330,6 @@ namespace RyansLibrary.Labyrinth
                 // Generate Main Path to boss
                 LoadMainPathOperations(zone);
 
-
                 // Generate Alternative paths (prize, trial, etc.)
                 LoadAltPathOperations(zone);
             }
