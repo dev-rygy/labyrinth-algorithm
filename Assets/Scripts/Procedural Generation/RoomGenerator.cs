@@ -361,6 +361,24 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
+        /// Spawn a room given a position and direction; room type not passed as room is expected to
+        /// already know it's type if unique (FOR NOW BUT MAYBE NOT LATER)
+        /// For random room placement algorithm to use.
+        /// </summary>
+        /// <param name="prefab"></param>
+        /// <param name="placementPosition"></param>
+        /// <param name="rDir"></param>
+        /// <returns></returns>
+        public Room GenerateRoom(Path path, GameObject prefab, Vector3Int placementPosition)
+        {
+            Quaternion rotation = Quaternion.identity;      // TODO: set rotation
+            Room generatedRoom = Object.Instantiate(prefab, ConvertToWorldCoords(placementPosition), rotation, _roomContainer).GetComponent<Room>();
+
+            path.Add(generatedRoom);
+            return generatedRoom;
+        }
+
+        /// <summary>
         /// Checks the constructor args before any generation is attempted.
         /// </summary>
         private bool IsGeneratorValid()

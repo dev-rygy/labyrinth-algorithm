@@ -121,9 +121,7 @@ namespace RyansLibrary.Labyrinth
         // Storage for blueprints and blueprint operations
         private MapGenerationContext _context;
         public MapGenerationContext Context => _context;
-
-        private OldRoomGenerator _roomGenerator;
-        private RoomGenerator _newRoomGenerator;
+        private RoomGenerator _roomGenerator;
 
         // Stepwise procedure
         private int _stepBudget = 0;
@@ -191,8 +189,7 @@ namespace RyansLibrary.Labyrinth
 
             // TODO: Replace with new Map Generator
             // Initialize Room Generator
-            _roomGenerator = new OldRoomGenerator(_context, _gridUnitSize, _roomContainer);
-            _newRoomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
+            _roomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
 
             // Initialize the main path in each zone
             foreach (Zone zone in _zones)
@@ -208,7 +205,6 @@ namespace RyansLibrary.Labyrinth
 
             // Toggle Debug Logs
             ToggleBlueprintLogs(_debugBlueprintLogs);
-            ToggleRoomGeneratorLogs(_debugRoomGeneratorLogs);
         }
 
         private void InitializeZone(Zone zone)
@@ -931,7 +927,7 @@ namespace RyansLibrary.Labyrinth
 
             // Generate _rooms along main path
             // result = _roomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
-            result = _newRoomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
+            result = _roomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
             if (!result)
             {
                 Debug.LogError($"Path Room Generation for path {zone.MainPath} in zone {zone} failed.");
@@ -942,7 +938,7 @@ namespace RyansLibrary.Labyrinth
             foreach (Path path in zone.Paths)
             {
                 // result = _roomGenerator.ParsePathAndGenerateRooms(path);
-                result = _newRoomGenerator.ParsePathAndGenerateRooms(path);
+                result = _roomGenerator.ParsePathAndGenerateRooms(path);
                 if (!result)
                 {
                     Debug.LogError($"Path Room Generation for path {path} in zone {zone} failed.");
@@ -971,7 +967,7 @@ namespace RyansLibrary.Labyrinth
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                     actualPosition += zone.Bounds.position;
 
-                Room generatedRoom = _roomGenerator.GenerateRoom(entry.Prefab, actualPosition, zone.MainPath);
+                Room generatedRoom = _roomGenerator.GenerateRoom(zone.MainPath, entry.Prefab, actualPosition);
 
                 // TODO: Make this into a new function in the room generator. Make the function check for all cells inside
                 // the unique room.
@@ -1084,14 +1080,6 @@ namespace RyansLibrary.Labyrinth
             // BlueprintData<>.ToggleDebugLogs(toggle);
 
             BlueprintGenerator.ToggleDebugLogs(_debugBlueprintLogs);
-        }
-
-        public void ToggleRoomGeneratorLogs(bool toggle)
-        {
-            if (_roomGenerator == null)
-                return;
-
-            _roomGenerator.ToggleDebugLogs(toggle);
         }
 
         // Stepwise Function Toggles
