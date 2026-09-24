@@ -64,7 +64,7 @@ namespace RyansLibrary.Labyrinth
     public struct RoomCell
     {
         [SerializeField] public Vector3Int Position;
-        [SerializeField] public bool IsAvilable;
+        [SerializeField] public bool IsAvailable;
         [SerializeField] public List<RoomWall> Walls;
     }
 
@@ -147,7 +147,7 @@ namespace RyansLibrary.Labyrinth
             // TODO: Handle rotation with new parsing algorithm
             // blueprintArray = RotateEntryFlag(blueprintArray, rotation);
 
-            if (!cell.IsAvilable)
+            if (!cell.IsAvailable)
                 return;
 
             for (int i = 0; i < blueprint.EntryPointFlags.Length; i++) // iterate through all six faces of the Blueprint's flag array
@@ -210,7 +210,7 @@ namespace RyansLibrary.Labyrinth
         {
             for (int i = 0; i < _roomCells.Count; i++)     // iterate through all room cells
             {
-                if (_roomCells[i].IsAvilable)
+                if (_roomCells[i].IsAvailable)
                 {
                     for (int j = 0; j < k_wallCount; j++)     // iterate through the walls/faces of each unit
                     {
@@ -229,7 +229,7 @@ namespace RyansLibrary.Labyrinth
         {
             foreach (RoomCell cell in _roomCells)
             {
-                if (cell.IsAvilable)
+                if (cell.IsAvailable)
                 {
                     foreach (RoomWall wall in cell.Walls)
                     {
@@ -284,7 +284,7 @@ namespace RyansLibrary.Labyrinth
             {
                 Vector3 cellWorldPos = transform.position + (13f * 0.5f) * Vector3.up + (Vector3)cell.Position * 13; // Assuming each cell is 13 units apart
 
-                if (cell.IsAvilable)
+                if (cell.IsAvailable)
                     Gizmos.color = _availableCellColor;
                 else
                     Gizmos.color = _unavailableCellColor;

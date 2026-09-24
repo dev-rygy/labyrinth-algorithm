@@ -30,7 +30,7 @@ namespace RyansLibrary.UnityEditor
             EditorGUI.BeginProperty(position, label, property);
             // Init properties
             SerializedProperty positionProp = property.FindPropertyRelative("Position");
-            SerializedProperty availableProp = property.FindPropertyRelative("IsAvilable");
+            SerializedProperty availableProp = property.FindPropertyRelative("IsAvailable");
             SerializedProperty wallsProp = property.FindPropertyRelative("Walls");
 
             // Safety check
@@ -113,7 +113,7 @@ namespace RyansLibrary.UnityEditor
         {
             float lineHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
-            // Position + IsAvilable + "Walls" header + face button row
+            // Position + IsAvailable + "Walls" header + face button row
             float height = lineHeight * 4;
 
             if (_selectedFace.TryGetValue(property.propertyPath, out int selected) && selected >= 0)

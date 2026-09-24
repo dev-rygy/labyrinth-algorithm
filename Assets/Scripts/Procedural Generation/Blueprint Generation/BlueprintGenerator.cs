@@ -496,7 +496,7 @@ namespace RyansLibrary.Labyrinth
             // Set cells that are supposed to be available to available
             foreach (RoomCell cell in roomCells)
             {
-                if (!cell.IsAvilable)   // Make sure cell is available
+                if (!cell.IsAvailable)   // Make sure cell is available
                     continue;
 
                 Vector3Int cellPosition = roomOrigin + cell.Position;      // Find the actual position in room space of the cell

@@ -1,13 +1,12 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    09/14/2026
- * Last Modified:   09/17/2026 (Ryan)
+ * Last Modified:   09/23/2026 (Ryan)
  * Notes:           Room Generator
 */
 
 using RyansLibrary.Utilities;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
@@ -78,6 +77,11 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
         }
+
+        public bool IsEmpty()
+        {
+            return _bucketDict.Count <= 0;
+        }
     }
 
     public class RoomGenerator
@@ -89,8 +93,9 @@ namespace RyansLibrary.Labyrinth
 
         public RoomGenerator(MapGenerationContext context, int gridUnitSize, Transform roomContainer)
         {
+            // Null args are reported when generation is attempted (see IsGeneratorValid), not here
             _context = context;
-            _parser = new BlueprintParser(_context.BlueprintDictionary);
+            _parser = _context != null ? new BlueprintParser(_context.BlueprintDictionary) : null;
 
             _gridUnitSize = gridUnitSize;
             _roomContainer = roomContainer;
@@ -98,28 +103,35 @@ namespace RyansLibrary.Labyrinth
 
         public bool ParsePathAndGenerateRooms(Path path)
         {
+            if (!IsGeneratorValid())
+                return false;
+
             if (path == null || !path.IsInitialized)
             {
-                Debug.LogError($"Path {path.Name} was null or not initialized.");
+                Debug.LogError($"Path {(path == null ? "null" : path.Name)} was null or not initialized.");
                 return false;
             }
 
             if (path.BlueprintList == null || path.BlueprintCount <= 0)
             {
                 Debug.LogError($"Path {path.Name} blueprint list was null or has no blueprints to parse");
+                return false;
             }
 
-            foreach (Blueprint currrentBlueprint in path.BlueprintList)
+            if (!TryGetRoomShapes(path, out List<ShapeData> shapes))
+                return false;
+
+            foreach (Blueprint currentBlueprint in path.BlueprintList)
             {
-                if (!currrentBlueprint.Available)
+                if (!currentBlueprint.Available)
                     continue;
 
                 // Parse blueprints and return all candidates
-                List<ShapeCandidate> candidates = _parser.CheckValidShapes(currrentBlueprint, path.RoomShapes.Select(e => e.RoomShape).ToList());
+                List<ShapeCandidate> candidates = _parser.CheckValidShapes(currentBlueprint, shapes);
 
                 if (candidates == null || candidates.Count <= 0)
                 {
-                    Debug.Log($"Parsing failed on blueprint {currrentBlueprint.BlueprintID} in path {path.name}. " +
+                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
                         $"No valid candidates found.");
                     return false;
                 }
@@ -127,10 +139,9 @@ namespace RyansLibrary.Labyrinth
                 // Sort candidates into buckets based on ShapeData
                 BucketCollection<ShapeData, ShapeCandidate> buckets = BucketAllCandidates(candidates);
 
-                // TODO: Dead code; Claude said to remove I guess.
-                if (buckets == null || buckets.BucketCount < 0)
+                if (buckets == null)
                 {
-                    Debug.Log($"Parsing failed on blueprint {currrentBlueprint.BlueprintID} in path {path.name}. " +
+                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
                         $"No valid candidate buckets made.");
                     return false;
                 }
@@ -140,8 +151,8 @@ namespace RyansLibrary.Labyrinth
 
                 if (candidate == null)
                 {
-                    Debug.Log($"Parsing failed on blueprint {currrentBlueprint.BlueprintID} in path {path.name}. " +
-                        $"No candidates choosen from bucketed list.");
+                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
+                        $"No candidates chosen from bucketed list.");
                     return false;
                 }
 
@@ -150,18 +161,18 @@ namespace RyansLibrary.Labyrinth
 
                 if (pathEntry.Prefab == null)
                 {
-                    Debug.Log($"Parsing failed on blueprint {currrentBlueprint.BlueprintID} in path {path.name}. " +
-                        $"No room choosen from shape {candidate.Shape}");
+                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
+                        $"No room chosen from shape {candidate.Shape}");
                     return false;
                 }
 
                 // Spawn room and make all overlapping blueprints unavailable
-                Vector3Int placementPosition = currrentBlueprint.Position - candidate.Cell;
+                Vector3Int placementPosition = currentBlueprint.Position - candidate.Cell;
                 Room room = GenerateRoom(path, pathEntry.Prefab, placementPosition);
 
                 if (room == null)
                 {
-                    Debug.Log($"Parsing failed on blueprint {currrentBlueprint.BlueprintID} in path {path.name}. " +
+                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
                         $"No room generated.");
                     return false;
                 }
@@ -170,9 +181,39 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
+        /// <summary>
+        /// Pulls the ShapeData out of every ShapeEntry in the path. Fails if there are no entries or any entry is
+        /// missing its ShapeData, since the parser can't handle a null shape.
+        /// </summary>
+        private bool TryGetRoomShapes(Path path, out List<ShapeData> shapes)
+        {
+            shapes = null;
+
+            if (path.RoomShapes == null || path.RoomShapes.Count <= 0)
+            {
+                Debug.LogError($"No shapes exist for path {path.Name}");
+                return false;
+            }
+
+            shapes = new List<ShapeData>(path.RoomShapes.Count);
+            foreach (ShapeEntry entry in path.RoomShapes)
+            {
+                if (entry.RoomShape == null || entry.RoomShape.Cells == null)
+                {
+                    Debug.LogError($"Path {path.Name} has a ShapeEntry with no ShapeData or no cells.");
+                    shapes = null;
+                    return false;
+                }
+
+                shapes.Add(entry.RoomShape);
+            }
+
+            return true;
+        }
+
         private BucketCollection<ShapeData, ShapeCandidate> BucketAllCandidates(List<ShapeCandidate> candidates)
         {
-            if (candidates == null)
+            if (candidates == null || candidates.Count <= 0)
             {
                 Debug.LogError("Candidate list was null or empty.");
                 return null;
@@ -182,6 +223,19 @@ namespace RyansLibrary.Labyrinth
             BucketCollection<ShapeData, ShapeCandidate> buckets = new();
             foreach (var candidate in candidates)
             {
+                if (candidate == null)
+                {
+                    Debug.LogError("Candidate was null");
+                    return null;
+                }
+
+                if (candidate.Shape == null)
+                {
+                    Debug.LogError("Candidate has no shape.");
+                    return null;
+                }
+
+                // Create new bucket and add candidate
                 buckets.AddItemToBucket(candidate.Shape, candidate);
             }
 
@@ -193,14 +247,15 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         private ShapeCandidate PickWeightedCandidate(List<ShapeEntry> entries, BucketCollection<ShapeData, ShapeCandidate> buckets)
         {
-            if (buckets == null)
+            if (buckets == null || buckets.IsEmpty())
             {
-                Debug.LogError("Bucket collection was null.");
+                Debug.LogError("Bucket collection was null or empty.");
                 return null;
             }
             if (entries == null || entries.Count <= 0)
             {
                 Debug.LogError("Room shape entries was null or empty.");
+                return null;
             }
 
             // Shapes that passed parse go on to next process; only shapes that actually produced candidates are eligible
@@ -213,13 +268,13 @@ namespace RyansLibrary.Labyrinth
                         eligibleShapes.Add(entry);
                     else
                     {
-                        Debug.LogError("Bucket has no items.");
+                        Debug.LogError("Bucket has no items or does not exist.");
                         return null;
                     }
                 }
             }
 
-            // No shapes eligable due to bucket being empty or no buckets existing for all shapes
+            // No shapes eligible due to bucket being empty or no buckets existing for all shapes
             if (eligibleShapes.Count <= 0)
             {
                 Debug.LogError("No shapes are eligible for picking. Were buckets empty? Did all shapes have an existing bucket?");
@@ -229,26 +284,26 @@ namespace RyansLibrary.Labyrinth
             // Choose a random shape with weights
             if (!WeightedRandom.TryPick(eligibleShapes, out ShapeEntry chosenShape))
             {
-                Debug.LogError("No shape choosen for generation. Were all their probabilities 0?");
+                Debug.LogError("No shape chosen for generation. Were all their probabilities 0?");
                 return null;
             }
 
             // Choose a random candidate w/o weights
             if (buckets.TryGetBucket(chosenShape.RoomShape, out List<ShapeCandidate> chosenBucket))
             {
-                ShapeCandidate choosenCandidate = chosenBucket[Random.Range(0, chosenBucket.Count)];
+                ShapeCandidate chosenCandidate = chosenBucket[Random.Range(0, chosenBucket.Count)];
 
-                if (choosenCandidate == null)
+                if (chosenCandidate == null)
                 {
-                    Debug.LogError("Choosen candidate was null.");
+                    Debug.LogError("Chosen candidate was null.");
                     return null;
                 }
 
-                return choosenCandidate;
+                return chosenCandidate;
             }
             else
             {
-                Debug.LogError("Bucket does not exist for choosen shape.");
+                Debug.LogError("Bucket does not exist for chosen shape.");
                 return null;
             }
         }
@@ -261,7 +316,7 @@ namespace RyansLibrary.Labyrinth
         /// <returns></returns>
         private RoomEntry SelectRandomRoomFromShape(List<ShapeEntry> entries, ShapeData shape)
         {
-            if (entries == null || entries.Count <= 0 || shape == null)
+            if (entries == null || entries.Count <= 0)
             {
                 Debug.LogError("Shape entry list was null or empty.");
                 return new RoomEntry();
@@ -276,9 +331,15 @@ namespace RyansLibrary.Labyrinth
             List<RoomEntry> rooms = new();
             foreach (ShapeEntry entry in entries)
             {
-                // Skip entry if shapes don't match; skip entry if it has no rooms
-                if (entry.RoomShape != shape || entry.RoomShape == null)
+                // Skip entry if it has no shape or shapes don't match
+                if (entry.RoomShape == null || entry.RoomShape != shape)
                     continue;
+
+                if (entry.Rooms == null || entry.Rooms.Count <= 0)
+                {
+                    Debug.LogError("A ShapeEntry contains no rooms.");
+                    return new RoomEntry();
+                }
 
                 foreach (RoomEntry room in entry.Rooms)
                 {
@@ -298,43 +359,106 @@ namespace RyansLibrary.Labyrinth
             return pickedRoom;
         }
 
-        private Room GenerateRoom(Path path, GameObject prefab, Vector3Int placementPosition)
+        /// <summary>
+        /// Spawns a room and claims the blueprints under its cells. Every check runs before anything is spawned or
+        /// claimed, so a failed placement leaves the scene and blueprint grid untouched.
+        /// </summary>
+        public Room GenerateRoom(Path path, GameObject prefab, Vector3Int placementPosition)
         {
-            Quaternion rotation = Quaternion.identity;
-            Room generatedRoom = Object.Instantiate(prefab, ConvertToWorldCoords(placementPosition), rotation, _roomContainer).GetComponent<Room>();
+            if (!IsGeneratorValid())
+                return null;
 
-            // Scan all room cells and disable overlapping blueprint availability
-            foreach (RoomCell cell in generatedRoom.RoomCells)
+            if (path == null || !path.IsInitialized)
+            {
+                Debug.LogError("Room generation failed - path was null or not initialized.");
+                return null;
+            }
+
+            if (prefab == null)
+            {
+                Debug.LogError("Room generation failed - prefab was null.");
+                return null;
+            }
+
+            if (!prefab.TryGetComponent(out Room prefabRoom))
+            {
+                Debug.LogError($"Room generation failed - prefab {prefab.name} has no Room component.");
+                return null;
+            }
+
+            if (prefabRoom.RoomCells == null || prefabRoom.RoomCells.Count <= 0)
+            {
+                Debug.LogError($"Room generation failed - prefab {prefab.name} has no room cells.");
+                return null;
+            }
+
+            // Find the blueprint under every room cell; placement is illegal if one is missing or already claimed
+            List<Blueprint> cellBlueprints = new(prefabRoom.RoomCells.Count);
+            foreach (RoomCell cell in prefabRoom.RoomCells)
             {
                 Vector3Int positionInWorld = cell.Position + placementPosition;
 
-                if (_context.BlueprintDictionary.TryGetValue(positionInWorld, out var blueprint))
+                if (!_context.BlueprintDictionary.TryGetValue(positionInWorld, out var blueprint))
                 {
-                    blueprint.Available = false;
-                    generatedRoom.CopyBlueprintEntranceFlags(blueprint, cell);
-                }
-                else
-                {
-                    Debug.LogError($"No blueprint exists at this room's cell's postion in world {positionInWorld}");
+                    Debug.LogError($"No blueprint exists at this room's cell's position in world {positionInWorld}");
                     return null;
                 }
+
+                if (!blueprint.Available)
+                {
+                    Debug.LogError($"Room generation failed - blueprint at {positionInWorld} is already claimed by another room.");
+                    return null;
+                }
+
+                cellBlueprints.Add(blueprint);
+            }
+
+            Room generatedRoom = Object.Instantiate(prefabRoom, ConvertToWorldCoords(placementPosition), Quaternion.identity, _roomContainer);
+
+            // Disable overlapping blueprint availability; clone's cells are in the same order as the prefab's
+            for (int i = 0; i < cellBlueprints.Count; i++)
+            {
+                cellBlueprints[i].Available = false;
+                generatedRoom.CopyBlueprintEntranceFlags(cellBlueprints[i], generatedRoom.RoomCells[i]);
             }
 
             generatedRoom.Initialize();
 
-            generatedRoom.transform.parent = _roomContainer;
             path.Add(generatedRoom);
             return generatedRoom;
         }
 
+        /// <summary>
+        /// Checks the constructor args before any generation is attempted.
+        /// </summary>
+        private bool IsGeneratorValid()
+        {
+            bool isValid = true;
+
+            if (_context == null)
+            {
+                Debug.LogError("RoomGenerator has no MapGenerationContext.");
+                isValid = false;
+            }
+            if (_roomContainer == null)
+            {
+                Debug.LogError("RoomGenerator has no room container to place rooms in.");
+                isValid = false;
+            }
+            if (_gridUnitSize <= 0)
+            {
+                Debug.LogError($"RoomGenerator grid unit size must be positive; was {_gridUnitSize}.");
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
         #region Utility
         // Vector based conversion from room -> world coords
-        private Vector3 ConvertToWorldCoords(Vector3Int roomCoords)
+        public Vector3 ConvertToWorldCoords(Vector3Int roomCoords)
         {
-            int xComp = roomCoords.x * _gridUnitSize;
-            int yComp = roomCoords.y * _gridUnitSize;
-            int zComp = roomCoords.z * _gridUnitSize;
-            return new Vector3(xComp, yComp, zComp);
+            return roomCoords * _gridUnitSize;
         }
         #endregion
     }

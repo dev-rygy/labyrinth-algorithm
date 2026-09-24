@@ -979,7 +979,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     for (int i = 0; i < generatedRoom.RoomCells.Count; i++)
                     {
-                        if (!generatedRoom.RoomCells[i].IsAvilable)     // Make sure cell is available
+                        if (!generatedRoom.RoomCells[i].IsAvailable)     // Make sure cell is available
                             continue;
 
                         if (_context.BlueprintDictionary.TryGetValue(actualPosition + generatedRoom.RoomCells[i].Position, out Blueprint blueprint))

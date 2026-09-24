@@ -6,13 +6,12 @@
 */
 using AYellowpaper.SerializedCollections;
 using NUnit.Framework;
-using RyansLibrary.Labyrinth;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace RyansLibrary
+namespace RyansLibrary.Labyrinth
 {
     public class BlueprintParserTests
     {
@@ -30,27 +29,27 @@ namespace RyansLibrary
             _shapes = new();
 
             _shape = ScriptableObject.CreateInstance<ShapeData>();
-            _shape.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            _shape.Cells = new SerializedDictionary<Vector3Int, CellState>();
 
             ShapeData shape1x1x1 = ScriptableObject.CreateInstance<ShapeData>();
-            shape1x1x1.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            shape1x1x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
             shape1x1x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
             _shapes.Add(shape1x1x1);
 
             ShapeData shape2x1x1 = ScriptableObject.CreateInstance<ShapeData>();
-            shape2x1x1.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            shape2x1x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
             shape2x1x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
             shape2x1x1.Cells.Add(new Vector3Int(1, 0, 0), CellState.Blueprint);
             _shapes.Add(shape2x1x1);
 
             ShapeData shape1x2x1 = ScriptableObject.CreateInstance<ShapeData>();
-            shape1x2x1.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            shape1x2x1.Cells = new SerializedDictionary<Vector3Int, CellState>();
             shape1x2x1.Cells.Add(Vector3Int.zero, CellState.Blueprint);
             shape1x2x1.Cells.Add(new Vector3Int(0, 1, 0), CellState.Blueprint);
             _shapes.Add(shape1x2x1);
 
             ShapeData shape2x1x2 = ScriptableObject.CreateInstance<ShapeData>();
-            shape2x1x2.Cells = new AYellowpaper.SerializedCollections.SerializedDictionary<Vector3Int, CellState>();
+            shape2x1x2.Cells = new SerializedDictionary<Vector3Int, CellState>();
             shape2x1x2.Cells.Add(Vector3Int.zero, CellState.Blueprint);
             shape2x1x2.Cells.Add(new Vector3Int(1, 0, 0), CellState.Blueprint);
             shape2x1x2.Cells.Add(new Vector3Int(1, 0, 1), CellState.Blueprint);
@@ -100,7 +99,7 @@ namespace RyansLibrary
             validShapes = _parser.CheckValidShapes(b1, _shapes);
 
             // Assert
-            LogAssert.Expect(LogType.Error, "No possible shapes to parse.");
+            LogAssert.Expect(LogType.Error, "Parsing Failed - No possible shapes to parse.");
         }
 
         [Test]
@@ -415,15 +414,14 @@ namespace RyansLibrary
         {
             // Arrange
             Vector3Int o = RandomVector();
-            Blueprint start = AddBlueprint(o, available: false);
+            Blueprint start = AddBlueprint(o, false);
 
             // Act
             List<ShapeCandidate> validShapes = _parser.CheckValidShapes(start, _shapes);
 
             // Assert
-            LogAssert.Expect(LogType.Error, "Base blueprint is not available to parse");
-            Assert.IsNotNull(validShapes);
-            Assert.AreEqual(0, validShapes.Count);
+            LogAssert.Expect(LogType.Error, "Parsing Failed - Base blueprint is not available to parse");
+            Assert.IsNull(validShapes);
         }
         #endregion
 
@@ -488,7 +486,10 @@ namespace RyansLibrary
             Blueprint start = AddBlueprint(o);
 
             // Act / Assert
-            Assert.Throws<System.NullReferenceException>(() => _parser.CheckValidShapes(start, null));
+            _parser.CheckValidShapes(start, null);
+
+            // Assert
+            LogAssert.Expect(LogType.Error, "Parsing Failed - No possible shapes to parse.");
         }
         #endregion
 

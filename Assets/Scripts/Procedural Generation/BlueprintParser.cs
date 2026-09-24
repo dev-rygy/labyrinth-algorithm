@@ -87,7 +87,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (possibleShapes == null || possibleShapes.Count <= 0)
             {
-                Debug.LogError("Parsing Falied - No possible shapes to parse.");
+                Debug.LogError("Parsing Failed - No possible shapes to parse.");
                 return null;
             }
 
