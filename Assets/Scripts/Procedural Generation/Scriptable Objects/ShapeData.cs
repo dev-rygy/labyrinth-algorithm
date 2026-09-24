@@ -4,7 +4,7 @@
  * Last Modified:   08/19/2026 (Ryan)
  * Notes:           Data-only definition of a parsible _roomShape's footprint
 */
-using AYellowpaper.SerializedCollections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RyansLibrary.Labyrinth
@@ -25,9 +25,10 @@ namespace RyansLibrary.Labyrinth
     [CreateAssetMenu(fileName = "ShapeData", menuName = "Scriptable Objects/Procedural Generation/Shape Data", order = 3)]
     public class ShapeData : ScriptableObject
     {
-        [SerializedDictionary("Anchor Position", "Anchor State")]
-        public SerializedDictionary<Vector3Int, CellState> Cells;
-        public int CellCount        // Only count cells marked as 'Blueprint'
+        [SerializeField]
+        public Dictionary<Vector3Int, CellState> Cells;
+        public int CellCount
+        // Only count cells marked as 'Blueprint'
         {
             get
             {

@@ -13,10 +13,9 @@ MonoBehaviour:
   m_Name: ShapeData 2x1x2 L
   m_EditorClassIdentifier: RyansLibrary.Labyrinth::RyansLibrary.Labyrinth.ShapeData
   Cells:
-    _serializedList:
-    - Key: {x: 0, y: 0, z: 0}
-      Value: 0
-    - Key: {x: 1, y: 0, z: 0}
-      Value: 0
-    - Key: {x: 1, y: 0, z: 1}
-      Value: 0
+  - key: {x: 0, y: 0, z: 0}
+    value: 0
+  - key: {x: 1, y: 0, z: 0}
+    value: 0
+  - key: {x: 1, y: 0, z: 1}
+    value: 0
