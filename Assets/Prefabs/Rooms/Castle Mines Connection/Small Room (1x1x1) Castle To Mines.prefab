@@ -1045,6 +1045,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
         type: 3}
+      propertyPath: _roomCells.Array.data[0].IsAvailable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6698013543921010159, guid: fd27e97f036c1354fa942368a32fa135,
+        type: 3}
       propertyPath: _roomCells.Array.data[0].Walls.Array.data[5].IsExemptFromMutation
       value: 1
       objectReference: {fileID: 0}

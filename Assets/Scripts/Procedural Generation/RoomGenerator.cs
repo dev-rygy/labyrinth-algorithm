@@ -7,6 +7,7 @@
 using RyansLibrary.Utilities;
 using System.Collections.Generic;
 using UnityEngine;
+using static RyansLibrary.Utilities.Math;
 using Random = UnityEngine.Random;      // Using Unity Engine's Random not System.Collection's Random
 
 namespace RyansLibrary.Labyrinth
@@ -93,9 +94,9 @@ namespace RyansLibrary.Labyrinth
                     return false;
                 }
 
-                // Spawn room and make all overlapping blueprints unavailable
-                Vector3Int placementPosition = currentBlueprint.Position - candidate.Anchor;
-                Room room = GenerateRoom(path, pathEntry.Prefab, placementPosition);
+                // Spawn room and make all overlapping blueprints unavailable; the anchor offset turns with the room
+                Vector3Int placementPosition = currentBlueprint.Position - candidate.Rotation.ToMatrix() * candidate.Anchor;
+                Room room = GenerateRoom(path, pathEntry.Prefab, placementPosition, candidate.Rotation);
 
                 if (room == null)
                 {
@@ -290,7 +291,8 @@ namespace RyansLibrary.Labyrinth
         /// Spawns a room and claims the blueprints under its cells. Every check runs before anything is spawned or
         /// claimed, so a failed placement leaves the scene and blueprint grid untouched.
         /// </summary>
-        public Room GenerateRoom(Path path, GameObject prefab, Vector3Int placementPosition)
+        /// <param name="rotation">Turns the room, and the cells it claims, about its origin cell</param>
+        public Room GenerateRoom(Path path, GameObject prefab, Vector3Int placementPosition, RoomRotation rotation = RoomRotation.Deg0)
         {
             if (!IsGeneratorValid())
                 return null;
@@ -319,11 +321,12 @@ namespace RyansLibrary.Labyrinth
                 return null;
             }
 
-            // Find the blueprint under every room cell; placement is illegal if one is missing or already claimed
+            // Find the blueprint under every (rotated) room cell; placement is illegal if one is missing or already claimed
+            Matrix3x3Int rotationMatrix = rotation.ToMatrix();
             List<Blueprint> cellBlueprints = new(prefabRoom.RoomCells.Count);
             foreach (RoomCell cell in prefabRoom.RoomCells)
             {
-                Vector3Int positionInWorld = cell.Position + placementPosition;
+                Vector3Int positionInWorld = placementPosition + rotationMatrix * cell.Position;
 
                 if (!_context.BlueprintDictionary.TryGetValue(positionInWorld, out var blueprint))
                 {
@@ -340,13 +343,15 @@ namespace RyansLibrary.Labyrinth
                 cellBlueprints.Add(blueprint);
             }
 
-            Room generatedRoom = Object.Instantiate(prefabRoom, ConvertToWorldCoords(placementPosition), Quaternion.identity, _roomContainer);
+            // Same turn as rotationMatrix so the room's geometry sits on the blueprints it claims
+            Quaternion worldRotation = Quaternion.Euler(0f, 90f * (int)rotation, 0f);
+            Room generatedRoom = Object.Instantiate(prefabRoom, ConvertToWorldCoords(placementPosition), worldRotation, _roomContainer);
 
             // Disable overlapping blueprint availability; clone's cells are in the same order as the prefab's
             for (int i = 0; i < cellBlueprints.Count; i++)
             {
                 cellBlueprints[i].Available = false;
-                generatedRoom.CopyBlueprintEntranceFlags(cellBlueprints[i], generatedRoom.RoomCells[i]);
+                generatedRoom.CopyBlueprintEntranceFlags(cellBlueprints[i], generatedRoom.RoomCells[i], rotation);
             }
 
             generatedRoom.Initialize();

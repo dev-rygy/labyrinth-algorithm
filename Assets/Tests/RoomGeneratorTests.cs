@@ -153,12 +153,13 @@ namespace RyansLibrary.Labyrinth
             Assert.AreEqual(1, _path.RoomCount);
             Assert.IsFalse(b1.Available);
             Assert.IsFalse(b2.Available);
-            Assert.AreEqual(ToWorld(o), _path.Rooms[0].transform.position);
+            AssertRoomCovers(_path.Rooms[0], b1.Position, b2.Position);
         }
 
         /// <summary>
-        /// Path walks right to left, so the base blueprint is the 2x1x1's (1,0,0) cell. The room origin must be
-        /// shifted back by the candidate cell (placement = blueprint - cell), landing on the left blueprint.
+        /// Path walks right to left, so the base blueprint is not the room's origin cell for every candidate. The room
+        /// origin must be shifted back by the turned anchor (placement = blueprint - rotation * anchor): unturned from the
+        /// (1,0,0) cell, or turned 180 from the (0,0,0) cell. Either way the room must land on both blueprints.
         /// </summary>
         [Test]
         public void TestParseReversedPathOffsetsRoomOrigin()
@@ -177,7 +178,7 @@ namespace RyansLibrary.Labyrinth
             Assert.AreEqual(1, _path.RoomCount);
             Assert.IsFalse(right.Available);
             Assert.IsFalse(left.Available);
-            Assert.AreEqual(ToWorld(o), _path.Rooms[0].transform.position);
+            AssertRoomCovers(_path.Rooms[0], right.Position, left.Position);
         }
 
         [Test]
@@ -1185,6 +1186,150 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
+        #region Rotation Tests
+        /// <summary>
+        /// A 2x1x1 (cells along X) over two blueprints along Z only fits turned. Exactly two turns fit: 270 anchored
+        /// on the (0,0,0) cell, or 90 anchored on the (1,0,0) cell.
+        /// </summary>
+        [Test]
+        public void TestParserFindsLongRoomTurnedAlongZ()
+        {
+            // Arrange
+            Vector3Int o = RandomVector();
+            Blueprint b1 = AddBlueprint(o);
+            AddBlueprint(o + Vector3Int.forward);
+            BlueprintParser parser = new BlueprintParser(_context.BlueprintDictionary);
+
+            // Act
+            List<ShapeCandidate> candidates = parser.CheckValidShapes(b1, new List<ShapeData> { _shape2x1x1 });
+
+            // Assert
+            Assert.AreEqual(2, candidates.Count);
+            Assert.IsTrue(candidates.Exists(c => c.Anchor == Vector3Int.zero && c.Rotation == RoomRotation.Deg270));
+            Assert.IsTrue(candidates.Exists(c => c.Anchor == Vector3Int.right && c.Rotation == RoomRotation.Deg90));
+        }
+
+        /// <summary>
+        /// Same layout end to end. Either fitting turn can be picked at random, so parse it several times and check
+        /// every pick lands the room's real (transformed) cells on the two blueprints.
+        /// </summary>
+        [Test]
+        public void TestParseLongRoomTurnedAlongZ()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                // Arrange
+                ResetGrid();
+                Vector3Int o = RandomVector();
+                Blueprint b1 = AddBlueprint(o);
+                Blueprint b2 = AddBlueprint(o + Vector3Int.forward);
+                SetRoomShapes(_path, MakeShapeEntry(_shape2x1x1, 1, _prefab2x1x1));
+
+                // Act
+                bool result = _generator.ParsePathAndGenerateRooms(_path);
+
+                // Assert
+                Assert.IsTrue(result);
+                Assert.AreEqual(1, _path.RoomCount);
+                Assert.IsFalse(b1.Available);
+                Assert.IsFalse(b2.Available);
+                AssertRoomCovers(_path.Rooms[0], b1.Position, b2.Position);
+            }
+        }
+
+        /// <summary>
+        /// L room with cells (0,0,0), (1,0,0), (0,0,1) over an L of blueprints pointing -X and -Z from its corner.
+        /// Only the 180 turn anchored on the corner fits.
+        /// </summary>
+        [Test]
+        public void TestParseLRoomTurnedAround()
+        {
+            // Arrange
+            Vector3Int o = RandomVector();
+            Blueprint corner = AddBlueprint(o);
+            Blueprint left = AddBlueprint(o + Vector3Int.left);
+            Blueprint back = AddBlueprint(o + Vector3Int.back);
+            ShapeData shapeL = MakeShape(Vector3Int.zero, Vector3Int.right, Vector3Int.forward);
+            GameObject prefabL = MakeRoomPrefab("Room L", Vector3Int.zero, Vector3Int.right, Vector3Int.forward);
+            SetRoomShapes(_path, MakeShapeEntry(shapeL, 1, prefabL));
+
+            // Act
+            bool result = _generator.ParsePathAndGenerateRooms(_path);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(1, _path.RoomCount);
+            Room room = _path.Rooms[0];
+            Assert.AreEqual(ToWorld(o), room.transform.position);
+            AssertYaw(180f, room);
+            AssertRoomCovers(room, corner.Position, left.Position, back.Position);
+            AssertAllBlueprintsClaimed();
+        }
+
+        /// <summary>
+        /// A turned 2x1x1 claims only the blueprints under its turned cells and faces the same way as its transform.
+        /// Expected second cells come from Unity's yaw (e.g. Euler(0, 90, 0) turns +X to -Z), not from the matrices.
+        /// </summary>
+        [TestCase(RoomRotation.Deg0, 1, 0)]
+        [TestCase(RoomRotation.Deg90, 0, -1)]
+        [TestCase(RoomRotation.Deg180, -1, 0)]
+        [TestCase(RoomRotation.Deg270, 0, 1)]
+        public void TestGenerateRoomTurned(RoomRotation rotation, int secondCellX, int secondCellZ)
+        {
+            // Arrange
+            Vector3Int o = RandomVector();
+            Vector3Int secondCell = o + new Vector3Int(secondCellX, 0, secondCellZ);
+            Blueprint origin = AddBlueprint(o);
+            List<Blueprint> neighbours = new()      // Every spot the second cell could turn to
+            {
+                AddBlueprint(o + Vector3Int.right),
+                AddBlueprint(o + Vector3Int.left),
+                AddBlueprint(o + Vector3Int.forward),
+                AddBlueprint(o + Vector3Int.back),
+            };
+
+            // Act
+            Room room = _generator.GenerateRoom(_path, _prefab2x1x1, o, rotation);
+
+            // Assert
+            Assert.IsNotNull(room);
+            Assert.AreEqual(ToWorld(o), room.transform.position);
+            AssertYaw(90f * (int)rotation, room);
+            Assert.IsFalse(origin.Available);
+            foreach (Blueprint neighbour in neighbours)
+                Assert.AreEqual(neighbour.Position != secondCell, neighbour.Available, $"Blueprint {neighbour.Position} claimed wrong.");
+            AssertRoomCovers(room, o, secondCell);
+        }
+
+        /// <summary>
+        /// Blueprint flags face world directions. With only the world +X flag set, the one wall that faces +X after
+        /// the turn must be the only open one.
+        /// </summary>
+        [TestCase(RoomRotation.Deg0, 0)]        // +X wall still faces +X
+        [TestCase(RoomRotation.Deg90, 2)]       // +Z wall turns to face +X
+        [TestCase(RoomRotation.Deg180, 1)]      // -X wall turns to face +X
+        [TestCase(RoomRotation.Deg270, 3)]      // -Z wall turns to face +X
+        public void TestTurnedRoomOpensWallFacingWorldFlag(RoomRotation rotation, int expectedOpenWall)
+        {
+            // Arrange
+            Room room = Track(new GameObject("Door Room")).AddComponent<Room>();
+            RoomCell cell = new RoomCell { Position = Vector3Int.zero, IsAvailable = true, Walls = MakeWalls() };
+            Blueprint blueprint = new Blueprint(Vector3Int.zero);
+            blueprint.EntryPointFlags[0] = true;        // World +X doorway
+
+            // Act
+            room.CopyBlueprintEntranceFlags(blueprint, cell, rotation);
+
+            // Assert
+            for (int i = 0; i < cell.Walls.Count; i++)
+            {
+                Transform wall = cell.Walls[i].WallTransform;
+                Assert.AreEqual(i == expectedOpenWall, wall.GetChild(0).gameObject.activeSelf, $"Wall {i} entranceway");
+                Assert.AreEqual(i != expectedOpenWall, wall.GetChild(1).gameObject.activeSelf, $"Wall {i} solid wall");
+            }
+        }
+        #endregion
+
         #region Helpers
         private T Track<T>(T obj) where T : Object
         {
@@ -1199,6 +1344,16 @@ namespace RyansLibrary.Labyrinth
             _context.BlueprintDictionary.Add(blueprint.Position, blueprint);
             _path.Add(blueprint);
             return blueprint;
+        }
+
+        /// <summary>
+        /// Fresh blueprint grid, generator and path, for tests that parse the same layout more than once.
+        /// </summary>
+        private void ResetGrid()
+        {
+            _context = new MapGenerationContext();
+            _generator = new RoomGenerator(_context, k_gridUnitSize, _container);
+            _path = MakePath();
         }
 
         private Path MakePath()
@@ -1233,6 +1388,22 @@ namespace RyansLibrary.Labyrinth
 
             SetPrivateField(room, "_roomCells", cells);
             return prefab;
+        }
+
+        /// <summary>
+        /// Six walls in face order (+X, -X, +Z, -Z, +Y, -Y), each with an entranceway child (0) and a solid wall child (1).
+        /// </summary>
+        private List<RoomWall> MakeWalls()
+        {
+            List<RoomWall> walls = new();
+            for (int i = 0; i < 6; i++)
+            {
+                Transform wall = Track(new GameObject($"Wall {i}")).transform;
+                new GameObject("Entranceway").transform.SetParent(wall);
+                new GameObject("Solid Wall").transform.SetParent(wall);
+                walls.Add(new RoomWall { WallTransform = wall });
+            }
+            return walls;
         }
 
         private static RoomEntry MakeRoomEntry(GameObject prefab, int weight)
@@ -1287,6 +1458,28 @@ namespace RyansLibrary.Labyrinth
         private Vector3 ToWorld(Vector3Int position)
         {
             return (Vector3)(position * k_gridUnitSize);
+        }
+
+        /// <summary>
+        /// Checks the grid cells a spawned room really sits on, worked out from its transform rather than the
+        /// generator's math, so the room's geometry and the blueprints it claimed can't disagree.
+        /// </summary>
+        private void AssertRoomCovers(Room room, params Vector3Int[] expectedCells)
+        {
+            List<Vector3Int> coveredCells = new();
+            foreach (RoomCell cell in room.RoomCells)
+            {
+                Vector3 worldPosition = room.transform.position + room.transform.rotation * (Vector3)(cell.Position * k_gridUnitSize);
+                coveredCells.Add(Vector3Int.RoundToInt(worldPosition / k_gridUnitSize));
+            }
+
+            CollectionAssert.AreEquivalent(expectedCells, coveredCells);
+        }
+
+        private void AssertYaw(float expectedYaw, Room room)
+        {
+            float angle = Quaternion.Angle(Quaternion.Euler(0f, expectedYaw, 0f), room.transform.rotation);
+            Assert.Less(angle, 0.01f, $"Room yaw is off by {angle} degrees.");
         }
 
         private void AssertNoRoomAt(Vector3Int position)

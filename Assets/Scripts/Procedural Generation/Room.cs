@@ -1,13 +1,14 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   07/07/2026 (Ryan)
+ * Last Modified:   09/23/2026 (Ryan)
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Math = RyansLibrary.Utilities.Math;
 
 namespace RyansLibrary.Labyrinth
@@ -42,6 +43,32 @@ namespace RyansLibrary.Labyrinth
         Deg270 = 3,
     }
 
+    public static class RoomRotationExtensions
+    {
+        /// <summary>
+        /// Yaw matrix for a room rotation. Same turn as the room's transform, Quaternion.Euler(0, 90 * rotation, 0).
+        /// </summary>
+        public static Math.Matrix3x3Int ToMatrix(this RoomRotation rotation)
+        {
+            return rotation switch
+            {
+                RoomRotation.Deg0 => Math.Matrix3x3Int.Identity,
+                RoomRotation.Deg90 => Math.Matrix3x3Int.RotMatrixY90,
+                RoomRotation.Deg180 => Math.Matrix3x3Int.RotMatrixY180,
+                RoomRotation.Deg270 => Math.Matrix3x3Int.RotMatrixY270,
+                _ => Math.Matrix3x3Int.Identity,
+            };
+        }
+
+        /// <summary>
+        /// Undoes ToMatrix(); maps world offsets back into the room's unrotated (shape) space.
+        /// </summary>
+        public static Math.Matrix3x3Int ToInverseMatrix(this RoomRotation rotation)
+        {
+            return ((RoomRotation)((4 - (int)rotation) % 4)).ToMatrix();
+        }
+    }
+
     // Determines the offset of the room in the world.
     public enum RoomShift
     {
@@ -64,7 +91,7 @@ namespace RyansLibrary.Labyrinth
     public struct RoomCell
     {
         [SerializeField] public Vector3Int Position;
-        [SerializeField] public bool IsAvailable;
+        [SerializeField, FormerlySerializedAs("IsAvilable")] public bool IsAvailable;     // Prefabs still save the old misspelled name
         [SerializeField] public List<RoomWall> Walls;
     }
 
@@ -76,6 +103,17 @@ namespace RyansLibrary.Labyrinth
     public class Room : MonoBehaviour
     {
         private const int k_wallCount = 6;
+
+        // Face order shared by Blueprint.EntryPointFlags and RoomCell.Walls: +X, -X, +Z, -Z, +Y, -Y
+        private static readonly Vector3Int[] k_faceDirections =
+        {
+            Vector3Int.right,
+            Vector3Int.left,
+            Vector3Int.forward,
+            Vector3Int.back,
+            Vector3Int.up,
+            Vector3Int.down,
+        };
 
         [Header("Room Components")]
         [SerializeField] private List<RoomCell> _roomCells;
@@ -142,20 +180,23 @@ namespace RyansLibrary.Labyrinth
         /// </summary>
         /// <param name="blueprintArray">The blueprint room's entranceway array (6 possible entrances)</param>
         /// <param name="unitIndex">A specific unit space of the room in question</param>
-        public void CopyBlueprintEntranceFlags(Blueprint blueprint, RoomCell cell)
+        /// <param name="rotation">Room's rotation in the world; blueprint flags face world directions, walls face the room's own</param>
+        public void CopyBlueprintEntranceFlags(Blueprint blueprint, RoomCell cell, RoomRotation rotation = RoomRotation.Deg0)
         {
-            // TODO: Handle rotation with new parsing algorithm
-            // blueprintArray = RotateEntryFlag(blueprintArray, rotation);
-
             if (!cell.IsAvailable)
                 return;
 
-            for (int i = 0; i < blueprint.EntryPointFlags.Length; i++) // iterate through all six faces of the Blueprint's flag array
+            Math.Matrix3x3Int rotationMatrix = rotation.ToMatrix();
+
+            for (int i = 0; i < blueprint.EntryPointFlags.Length; i++) // iterate through all six walls of the room cell
             {
                 if (cell.Walls[i].IsExemptFromMutation)
                     continue;
 
-                if (blueprint.EntryPointFlags[i])
+                // World face this wall points at once the room is rotated
+                int worldFace = Array.IndexOf(k_faceDirections, rotationMatrix * k_faceDirections[i]);
+
+                if (blueprint.EntryPointFlags[worldFace])
                     ActivateEntranceway(cell.Walls[i]);
                 else
                     DeactivateEntranceway(cell.Walls[i]);
