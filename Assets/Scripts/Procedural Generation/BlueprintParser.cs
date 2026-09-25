@@ -51,7 +51,9 @@ namespace RyansLibrary.Labyrinth
 
         public void CellCovered(Vector3Int shapeCell)
         {
-            _coveredCells.Add(shapeCell);
+            // Only 'Blueprint' cells belong to the room; others are just neighbor constraints
+            if (_shape.Cells.TryGetValue(shapeCell, out var state) && state == CellState.Blueprint)
+                _coveredCells.Add(shapeCell);
         }
     }
 
@@ -289,8 +291,8 @@ namespace RyansLibrary.Labyrinth
         /// <returns>'True' if configs match, 'False' if not.</returns>
         public bool CheckConfigs(Vector3Int cellOffset, ShapeData shapeData, Blueprint blueprint, RoomRotation rotation = RoomRotation.Deg0)
         {
-            // Shape does not contain a cell at position, so it's an illegal check
-            if (!shapeData.Cells.ContainsKey(cellOffset))
+            // Shape does not contain a cell at position, so it's an illegal check; Only cells marked as 'Blueprint' may be checked
+            if (!shapeData.Cells.TryGetValue(cellOffset, out var self) || self != CellState.Blueprint)
                 return false;
 
             CellState[] ShapeDataConfigs = new CellState[6];
@@ -314,13 +316,20 @@ namespace RyansLibrary.Labyrinth
 
             for (int i = 0; i < 6; i++)
             {
-                if (ShapeDataConfigs[i] == CellState.DontCare)
+                if (ShapeDataConfigs[i] == CellState.DontCare)      // Skip "DontCare"
                 {
                     continue;
                 }
-                else if (ShapeDataConfigs[i] != BlueprintConfigs[i])
+                // if 'Blueprint' != 'Blueprint' || 'NeedBlueprint' != 'Blueprint' -> Configurations do not match
+                else if ((ShapeDataConfigs[i] == CellState.Blueprint || ShapeDataConfigs[i] == CellState.NeedBlueprint)
+                    && BlueprintConfigs[i] != CellState.Blueprint)
                 {
-                    return false; // Configurations do not match
+                    return false;
+                }
+                // if 'NoBlueprint' == 'Blueprint' -> Configurations do not match
+                else if (ShapeDataConfigs[i] == CellState.NoBlueprint && BlueprintConfigs[i] == CellState.Blueprint)
+                {
+                    return false;
                 }
             }
             return true; // All configurations match

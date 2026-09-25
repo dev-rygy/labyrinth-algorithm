@@ -14,6 +14,7 @@ namespace RyansLibrary.Labyrinth
         Blueprint,
         NoBlueprint,
         DontCare,
+        NeedBlueprint
     }
 
     /// <summary>

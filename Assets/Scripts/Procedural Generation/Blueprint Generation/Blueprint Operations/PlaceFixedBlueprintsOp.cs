@@ -76,7 +76,7 @@ namespace RyansLibrary.Labyrinth
 
                 // Check Collision with other rooms
                 List<Blueprint> blueprintList;
-                blueprintList = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
+                blueprintList = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, roomOrigin, room.RoomDimensions, false, room.RoomCells);      // Fill room space with blueprint rooms
                 if (blueprintList == null)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"PlaceFixedBlueprintsOp: Unique Fixed Room \"{room.name}\" was obstructed and could not be placed.");

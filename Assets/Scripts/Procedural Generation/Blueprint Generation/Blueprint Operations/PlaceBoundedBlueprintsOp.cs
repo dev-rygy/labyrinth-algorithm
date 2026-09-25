@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
         {
             if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component
             {
-                bool result = BlueprintGenerator.PlaceBoundedBlueprints(_context, path, bounds, room.RoomDimensions, out Vector3Int spawnPosition, false);
+                bool result = BlueprintGenerator.PlaceBoundedBlueprints(_context, path, bounds, room.RoomDimensions, out Vector3Int spawnPosition, false, room.RoomCells);
 
                 if (!result)
                 {

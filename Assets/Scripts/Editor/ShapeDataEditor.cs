@@ -26,6 +26,7 @@ namespace RyansLibrary.UnityEditor
             { CellState.Blueprint, new Color(0.1f, 0.55f, 1f, k_opacity) },      // neon blue
             { CellState.NoBlueprint, new Color(1f, 0.15f, 0.2f, k_opacity) },    // neon red
             { CellState.DontCare, new Color(0.8f, 0.8f, 0.8f, k_opacity) },      // light grey
+            { CellState.NeedBlueprint, new Color(0.1f, 0.8f, 0.1f, k_opacity)},  // neon green
         };
 
         private PreviewRenderUtility _previewUtility;

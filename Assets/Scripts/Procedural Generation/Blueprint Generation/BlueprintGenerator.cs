@@ -99,8 +99,9 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">Path to add blueprint rooms to</param>
         /// <param name="origin">Start position</param>
         /// <param name="roomDimensions"></param>
+        /// <param name="roomCells">Room cells that must also be free; can sit outside the dimensions (e.g. entrance cells)</param>
         /// <returns>Blueprint rooms generated in a list if needed.</returns>
-        public static List<Blueprint> GenerateBlueprintsFromDimensions(MapGenerationContext context, Path path, Vector3Int origin, Vector3Int roomDimensions, bool available = true)
+        public static List<Blueprint> GenerateBlueprintsFromDimensions(MapGenerationContext context, Path path, Vector3Int origin, Vector3Int roomDimensions, bool available = true, List<RoomCell> roomCells = null)
         {
             List<Blueprint> roomBlueprints = new List<Blueprint>();
             List<Vector3Int> blueprintroomPositions = new List<Vector3Int>();
@@ -125,6 +126,20 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
+            // Room cells can sit outside the dimensions (entrance cells); they must be free too
+            if (roomCells != null)
+            {
+                foreach (RoomCell cell in roomCells)
+                {
+                    if (CheckCollision(context, origin + cell.Position, out Blueprint collidedBlueprint))
+                    {
+                        if (_debugLogs)
+                            Debug.LogWarning($"Failed to generate blueprint room due to room cell collision with {collidedBlueprint.BlueprintID}");
+                        return null;
+                    }
+                }
+            }
+
             // If no errors then generate blueprint rooms from dimensions
             foreach (Vector3Int spawnPosition in blueprintroomPositions)
                 roomBlueprints.Add(GenerateBlueprint(context, path, spawnPosition, available));      // Call to method above
@@ -136,8 +151,9 @@ namespace RyansLibrary.Labyrinth
         /// Will place rooms randomly in a zone but will pull rooms randomly from the main path.
         /// </summary>
         /// <param name="zone"></param>
+        /// <param name="roomCells">Room cells that must also be free; can sit outside the dimensions (e.g. entrance cells)</param>
         /// <returns></returns>
-        public static bool PlaceBoundedBlueprints(MapGenerationContext context, Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true)
+        public static bool PlaceBoundedBlueprints(MapGenerationContext context, Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true, List<RoomCell> roomCells = null)
         {
             // Adjust the upper bounds so that the room's volume will properly fit within the bounded space; in
             // other words it will never spawn outside it's bounds
@@ -156,7 +172,7 @@ namespace RyansLibrary.Labyrinth
             );
 
             // Append the newly generated blueprint rooms to the end of the list
-            List<Blueprint> newBlueprints = GenerateBlueprintsFromDimensions(context, path, randomSpawnPos, dimensions, available);
+            List<Blueprint> newBlueprints = GenerateBlueprintsFromDimensions(context, path, randomSpawnPos, dimensions, available, roomCells);
 
             spawnPosition = randomSpawnPos;
 
