@@ -74,4 +74,14 @@ MonoBehaviour:
       _weight: 50
     - _prefab: {fileID: 2571759191402628205, guid: fd2dae29bec57ea4fadab2f7d4eb4831, type: 3}
       _weight: 50
+  - _roomShape: {fileID: 11400000, guid: b0a5ebe3829125e489643af6b96ff059, type: 2}
+    _weight: 70
+    _rooms:
+    - _prefab: {fileID: 7926676956717936625, guid: a85c0535e26f55c449458625d9022fa3, type: 3}
+      _weight: 100
+  - _roomShape: {fileID: 11400000, guid: 64b2efc65780bcf40b4934a2ac8ab726, type: 2}
+    _weight: 100
+    _rooms:
+    - _prefab: {fileID: 2225487664097771796, guid: cea86bb5917876140b08b5789b0069ad, type: 3}
+      _weight: 100
   PathGizmoColor: {r: 0.09019608, g: 0.99215686, b: 1, a: 0.29803923}

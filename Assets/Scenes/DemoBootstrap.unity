@@ -341,7 +341,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
       propertyPath: _uniqueRoomBoundsColor.a
-      value: 0
+      value: 0.7372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
+      propertyPath: _uniqueRoomBoundsColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
+      propertyPath: _uniqueRoomBoundsColor.g
+      value: 0.9571654
+      objectReference: {fileID: 0}
+    - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
+      propertyPath: _uniqueRoomBoundsColor.r
+      value: 0.015686274
       objectReference: {fileID: 0}
     - target: {fileID: 402649731811173750, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
       propertyPath: _debugTriangulationGizmos
@@ -357,11 +369,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
       propertyPath: _customSeed
-      value: 897817920
+      value: -1750968607
       objectReference: {fileID: 0}
     - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
       propertyPath: _generateRandomSeed
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814551060216618171, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
+      propertyPath: _zoneConnections.Array.data[0].<ZoneSpawnBounds>k__BackingField.m_Size.x
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7192508511762545472, guid: fef5e2b2458183a43a04374132d05a5c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -742,6 +758,10 @@ PrefabInstance:
     - target: {fileID: 7834460035053565675, guid: ea4379ffa3cc78549a609c693a2ee9b3, type: 3}
       propertyPath: m_Name
       value: HUD Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7834460035053565675, guid: ea4379ffa3cc78549a609c693a2ee9b3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
