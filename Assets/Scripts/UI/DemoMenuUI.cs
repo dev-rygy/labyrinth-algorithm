@@ -63,13 +63,13 @@ public class DemoMenuUI : MonoBehaviour
 
     public void StartNewGame()
     {
-        MapGeneratorController.Instance.ToggleStepwiseDebugging(false);
+        MapGeneratorController.Instance.ToggleOperationStepwiseDebugging(false);
         ApplicationController.Instance.StartNewGame();
     }
 
     public void StartDebugging()
     {
-        MapGeneratorController.Instance.ToggleStepwiseDebugging(true);
+        MapGeneratorController.Instance.ToggleOperationStepwiseDebugging(true);
         ApplicationController.Instance.StartNewGame();
     }
 

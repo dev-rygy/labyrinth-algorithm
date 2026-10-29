@@ -28,7 +28,7 @@ public class SeedSweepTests
         if (controller == null)
             Debug.LogError("MapGeneratorController does not exist.");
 
-        controller.ToggleStepwiseDebugging(false);
+        controller.ToggleOperationStepwiseDebugging(false);
 
 
 

@@ -115,7 +115,7 @@ public class LoadingScreenUI : MonoBehaviour
         _loadingSlider.value = 0;
         _loadingStatus = 0;
 
-        if (!MapGeneratorController.Instance.IsDebuggingSequential)
+        if (!MapGeneratorController.Instance.DebugOperationSequential)
             _contentObject.gameObject.SetActive(true);
     }
 

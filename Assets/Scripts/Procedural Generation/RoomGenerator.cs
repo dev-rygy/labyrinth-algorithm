@@ -31,6 +31,31 @@ namespace RyansLibrary.Labyrinth
 
         public bool ParsePathAndGenerateRooms(Path path)
         {
+            if (!CheckParsable(path, out List<ShapeData> shapes))
+                return false;
+
+            foreach (Blueprint currentBlueprint in path.BlueprintList)
+            {
+                // Blueprints already claimed by a room are skipped
+                if (!currentBlueprint.Available)
+                    continue;
+
+                if (ParseBlueprintAndGenerateRoom(path, shapes, currentBlueprint) == null)
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks the generator and path before parsing, and pulls out the shapes the parser will try to fit.
+        /// Callers that step the parser themselves (see MapGeneratorController.GeneratePathRooms) call this once per
+        /// path, then ParseBlueprintAndGenerateRoom once per available blueprint.
+        /// </summary>
+        public bool CheckParsable(Path path, out List<ShapeData> shapes)
+        {
+            shapes = null;
+
             if (!IsGeneratorValid())
                 return false;
 
@@ -46,67 +71,67 @@ namespace RyansLibrary.Labyrinth
                 return false;
             }
 
-            if (!TryGetRoomShapes(path, out List<ShapeData> shapes))
-                return false;
+            return TryGetRoomShapes(path, out shapes);
+        }
 
-            foreach (Blueprint currentBlueprint in path.BlueprintList)
+        /// <summary>
+        /// One parse step: fits shapes around the blueprint, picks a weighted candidate and room for it, then spawns it.
+        /// </summary>
+        /// <returns>The generated room, or null if any part of the step failed.</returns>
+        public Room ParseBlueprintAndGenerateRoom(Path path, List<ShapeData> shapes, Blueprint currentBlueprint)
+        {
+            // Parse blueprints and return all candidates
+            List<ShapeCandidate> candidates = _parser.CheckValidShapes(currentBlueprint, shapes);
+
+            if (candidates == null || candidates.Count <= 0)
             {
-                if (!currentBlueprint.Available)
-                    continue;
-
-                // Parse blueprints and return all candidates
-                List<ShapeCandidate> candidates = _parser.CheckValidShapes(currentBlueprint, shapes);
-
-                if (candidates == null || candidates.Count <= 0)
-                {
-                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
-                        $"No valid candidates found.");
-                    return false;
-                }
-
-                // Sort candidates into buckets based on ShapeData
-                BucketCollection<ShapeData, ShapeCandidate> buckets = BucketAllCandidates(candidates);
-
-                if (buckets == null)
-                {
-                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
-                        $"No valid candidate buckets made.");
-                    return false;
-                }
-
-                // Choose a random candidate from a weighted selection
-                ShapeCandidate candidate = PickWeightedCandidate(path.RoomShapes, buckets);
-
-                if (candidate == null)
-                {
-                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
-                        $"No candidates chosen from bucketed list.");
-                    return false;
-                }
-
-                // Choose a random room from a ShapeData
-                RoomEntry pathEntry = SelectRandomRoomFromShape(path.RoomShapes, candidate.Shape);
-
-                if (pathEntry.Prefab == null)
-                {
-                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
-                        $"No room chosen from shape {candidate.Shape}");
-                    return false;
-                }
-
-                // Spawn room and make all overlapping blueprints unavailable; the anchor offset turns with the room
-                Vector3Int placementPosition = currentBlueprint.Position - candidate.Rotation.ToMatrix() * candidate.Anchor;
-                Room room = GenerateRoom(path, pathEntry.Prefab, placementPosition, candidate.Rotation);
-
-                if (room == null)
-                {
-                    Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
-                        $"No room generated.");
-                    return false;
-                }
+                Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
+                    $"No valid candidates found.");
+                return null;
             }
 
-            return true;
+            // Sort candidates into buckets based on ShapeData
+            BucketCollection<ShapeData, ShapeCandidate> buckets = BucketAllCandidates(candidates);
+
+            if (buckets == null)
+            {
+                Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
+                    $"No valid candidate buckets made.");
+                return null;
+            }
+
+            // Choose a random candidate from a weighted selection
+            ShapeCandidate candidate = PickWeightedCandidate(path.RoomShapes, buckets);
+
+            if (candidate == null)
+            {
+                Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
+                    $"No candidates chosen from bucketed list.");
+                return null;
+            }
+
+            // Choose a random room from a ShapeData
+            RoomEntry pathEntry = SelectRandomRoomFromShape(path.RoomShapes, candidate.Shape);
+
+            if (pathEntry.Prefab == null)
+            {
+                Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
+                    $"No room chosen from shape {candidate.Shape}");
+                return null;
+            }
+
+            // Spawn room and make all overlapping blueprints unavailable; the anchor offset turns with the room
+            Vector3Int placementPosition = currentBlueprint.Position - candidate.Rotation.ToMatrix() * candidate.Anchor;
+            Room room = GenerateRoom(path, pathEntry.Prefab, placementPosition, candidate.Rotation);
+
+            if (room == null)
+            {
+                Debug.LogError($"Parsing failed on blueprint {currentBlueprint.BlueprintID} in path {path.Name}. " +
+                    $"No room generated.");
+                return null;
+            }
+
+            return room;
         }
 
         /// <summary>

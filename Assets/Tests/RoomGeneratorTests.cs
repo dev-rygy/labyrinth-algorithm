@@ -360,6 +360,83 @@ namespace RyansLibrary.Labyrinth
         }
         #endregion
 
+        #region Stepwise Parse Tests
+        [Test]
+        public void TestCanParsePathReturnsShapes()
+        {
+            // Arrange
+            AddBlueprint(RandomVector());
+            SetRoomShapes(_path, MakeShapeEntry(_shape1x1x1, 1, _prefab1x1x1), MakeShapeEntry(_shape2x1x1, 1, _prefab2x1x1));
+
+            // Act
+            bool result = _generator.CheckParsable(_path, out List<ShapeData> shapes);
+
+            // Assert
+            Assert.IsTrue(result);
+            CollectionAssert.AreEqual(new[] { _shape1x1x1, _shape2x1x1 }, shapes);
+        }
+
+        [Test]
+        public void TestCanParseNullPath()
+        {
+            // Arrange
+            bool result = true;
+            List<ShapeData> shapes = null;
+            CaptureErrorLogs();
+
+            // Act
+            Assert.DoesNotThrow(() => result = _generator.CheckParsable(null, out shapes));
+
+            // Assert
+            Assert.IsFalse(result);
+            Assert.IsNull(shapes);
+            AssertErrorLogged();
+        }
+
+        /// <summary>
+        /// A step spawns one room and claims every blueprint under it, so the next blueprint is no longer available
+        /// and a stepping caller skips it instead of spending a step on it.
+        /// </summary>
+        [Test]
+        public void TestParseBlueprintStepClaimsWholeRoom()
+        {
+            // Arrange
+            Vector3Int o = RandomVector();
+            Blueprint b1 = AddBlueprint(o);
+            Blueprint b2 = AddBlueprint(o + Vector3Int.right);
+            SetRoomShapes(_path, MakeShapeEntry(_shape2x1x1, 1, _prefab2x1x1));
+            _generator.CheckParsable(_path, out List<ShapeData> shapes);
+
+            // Act
+            Room room = _generator.ParseBlueprintAndGenerateRoom(_path, shapes, b1);
+
+            // Assert
+            Assert.IsNotNull(room);
+            Assert.AreEqual(1, _path.RoomCount);
+            Assert.IsFalse(b1.Available);
+            Assert.IsFalse(b2.Available);
+        }
+
+        [Test]
+        public void TestParseBlueprintStepFailureSpawnsNothing()
+        {
+            // Arrange
+            Blueprint b1 = AddBlueprint(RandomVector());
+            SetRoomShapes(_path, MakeShapeEntry(_shape1x1x1, 0, _prefab1x1x1));
+            _generator.CheckParsable(_path, out List<ShapeData> shapes);
+            LogAssert.Expect(LogType.Error, new Regex("No shape chosen for generation"));
+            LogAssert.Expect(LogType.Error, new Regex("No candidates chosen from bucketed list"));
+
+            // Act
+            Room room = _generator.ParseBlueprintAndGenerateRoom(_path, shapes, b1);
+
+            // Assert
+            Assert.IsNull(room);
+            Assert.AreEqual(0, _path.RoomCount);
+            Assert.IsTrue(b1.Available);
+        }
+        #endregion
+
         #region Shape Entry Tests
         [Test]
         public void TestParseShapeEntryNullRooms()

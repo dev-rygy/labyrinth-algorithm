@@ -21,7 +21,7 @@ public class RunTimeUI : MonoBehaviour
         _mapGeneratorInstance = MapGeneratorController.Instance;
         _applicationControllerInstance = ApplicationController.Instance;
 
-        if (_mapGeneratorInstance.IsDebuggingSequential)
+        if (_mapGeneratorInstance.DebugOperationSequential)
         {
             ShowDebuggingOptions();
         }
@@ -64,12 +64,12 @@ public class RunTimeUI : MonoBehaviour
 
     public void Step(int steps)
     {
-        _mapGeneratorInstance.Advance(steps);
+        _mapGeneratorInstance.AdvanceOperation(steps);
     }
 
     public void StepAll()
     {
-        _mapGeneratorInstance.AdvanceAll();
+        _mapGeneratorInstance.AdvanceOperationsAll();
     }
 
     public void ExitToMenu()
@@ -84,7 +84,7 @@ public class RunTimeUI : MonoBehaviour
         _seedContentObject.SetActive(true);
         _interactionContentObject.SetActive(true);
 
-        if (_mapGeneratorInstance.IsGenerating && _mapGeneratorInstance.IsDebuggingSequential)
+        if (_mapGeneratorInstance.IsGenerating && _mapGeneratorInstance.DebugOperationSequential)
         {
             ShowDebuggingOptions();
         }
@@ -115,7 +115,7 @@ public class RunTimeUI : MonoBehaviour
     {
         if (_mapGeneratorInstance.IsGenerating)
         {
-            if (_mapGeneratorInstance.IsDebuggingSequential)
+            if (_mapGeneratorInstance.DebugOperationSequential)
                 _helpText.text = _debuggingTextDescription;
             else
                 _helpText.text = string.Empty;
