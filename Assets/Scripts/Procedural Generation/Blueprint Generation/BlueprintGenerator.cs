@@ -26,16 +26,16 @@ namespace RyansLibrary.Labyrinth
     /// </remarks>
     public class Blueprint
     {
-        public readonly string CellID;
+        public readonly string BlueprintID;
         public readonly Vector3Int Position;    // Position of blueprint coords on grid
         public bool Available { get; set; }       // Prevents/allows parsing algorithm from using blueprint in algorithm
         public bool[] EntryPointFlags { get; set; }
 
         // Constructor
-        public Blueprint(Vector3Int postion, string cellID = "Blueprint")
+        public Blueprint(Vector3Int postion, string blueprintID = "Blueprint")
         {
             Available = true;
-            CellID = cellID;
+            BlueprintID = blueprintID;
             Position = postion;
             EntryPointFlags = new bool[6];       // A flag to mark which entrances should be open for a room
         }
@@ -58,7 +58,7 @@ namespace RyansLibrary.Labyrinth
 
         #region Blueprint Room Generation
         /// <summary>
-        /// Generate a new blueprint room at the desired location. Add it to the master path and
+        /// Generate a new blueprint room at the desired location. AddBlueprint it to the master path and
         /// desired path passed in as an arguement. Generate a blueprint room gizmo if debug is enabled.
         /// NOTE: Position must be in room coords
         /// </summary>
@@ -84,8 +84,8 @@ namespace RyansLibrary.Labyrinth
             newBlueprint.Available = available;
 
             // Update paths and masters with new blueprint room
-            path.Add(newBlueprint);
-            context.BlueprintDictionary.Add(origin, newBlueprint);      // Add to Master Dictionary (required)
+            path.AddBlueprint(newBlueprint);
+            context.BlueprintDictionary.Add(origin, newBlueprint);      // AddBlueprint to Master Dictionary (required)
 
             if (_debugLogs) Debug.Log($"Generated blueprint room {blueprintName} at {origin}");
             return newBlueprint;
@@ -99,8 +99,9 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">Path to add blueprint rooms to</param>
         /// <param name="origin">Start position</param>
         /// <param name="roomDimensions"></param>
+        /// <param name="roomCells">Room cells that must also be free; can sit outside the dimensions (e.g. entrance cells)</param>
         /// <returns>Blueprint rooms generated in a list if needed.</returns>
-        public static List<Blueprint> GenerateBlueprintsFromDimensions(MapGenerationContext context, Path path, Vector3Int origin, Vector3Int roomDimensions, bool available = true)
+        public static List<Blueprint> GenerateBlueprintsFromDimensions(MapGenerationContext context, Path path, Vector3Int origin, Vector3Int roomDimensions, bool available = true, List<RoomCell> roomCells = null)
         {
             List<Blueprint> roomBlueprints = new List<Blueprint>();
             List<Vector3Int> blueprintroomPositions = new List<Vector3Int>();
@@ -116,11 +117,25 @@ namespace RyansLibrary.Labyrinth
                         if (CheckCollision(context, blueprintroomPos, out Blueprint collidedBlueprint))
                         {
                             if (_debugLogs)
-                                Debug.LogWarning($"Failed to generate blueprint room due to collision with {collidedBlueprint.CellID}");
+                                Debug.LogWarning($"Failed to generate blueprint room due to collision with {collidedBlueprint.BlueprintID}");
                             return null;
                         }
 
                         blueprintroomPositions.Add(blueprintroomPos);
+                    }
+                }
+            }
+
+            // Room cells can sit outside the dimensions (entrance cells); they must be free too
+            if (roomCells != null)
+            {
+                foreach (RoomCell cell in roomCells)
+                {
+                    if (CheckCollision(context, origin + cell.Position, out Blueprint collidedBlueprint))
+                    {
+                        if (_debugLogs)
+                            Debug.LogWarning($"Failed to generate blueprint room due to room cell collision with {collidedBlueprint.BlueprintID}");
+                        return null;
                     }
                 }
             }
@@ -136,8 +151,9 @@ namespace RyansLibrary.Labyrinth
         /// Will place rooms randomly in a zone but will pull rooms randomly from the main path.
         /// </summary>
         /// <param name="zone"></param>
+        /// <param name="roomCells">Room cells that must also be free; can sit outside the dimensions (e.g. entrance cells)</param>
         /// <returns></returns>
-        public static bool PlaceBoundedBlueprints(MapGenerationContext context, Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true)
+        public static bool PlaceBoundedBlueprints(MapGenerationContext context, Path path, BoundsInt bounds, Vector3Int dimensions, out Vector3Int spawnPosition, bool available = true, List<RoomCell> roomCells = null)
         {
             // Adjust the upper bounds so that the room's volume will properly fit within the bounded space; in
             // other words it will never spawn outside it's bounds
@@ -156,7 +172,7 @@ namespace RyansLibrary.Labyrinth
             );
 
             // Append the newly generated blueprint rooms to the end of the list
-            List<Blueprint> newBlueprints = GenerateBlueprintsFromDimensions(context, path, randomSpawnPos, dimensions, available);
+            List<Blueprint> newBlueprints = GenerateBlueprintsFromDimensions(context, path, randomSpawnPos, dimensions, available, roomCells);
 
             spawnPosition = randomSpawnPos;
 
@@ -299,17 +315,17 @@ namespace RyansLibrary.Labyrinth
         {
             // Default the endIndex to the path's end index
             if (endIndex == -1)
-                endIndex = path.BlueprintCount() - 1;
+                endIndex = path.BlueprintCount - 1;
 
             // Check if range is valid
-            if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (path.BlueprintCount() - 1)))
+            if ((startIndex < 0) || (startIndex > endIndex) || (endIndex > (path.BlueprintCount - 1)))
             {
                 Debug.LogError("Path index out of range or set incorrectly.");
                 return null;
             }
 
             // Check if path to choose from is valid
-            if (path.BlueprintCount() <= 0)
+            if (path.BlueprintCount <= 0)
             {
                 Debug.LogError($"A starting room could not be choosen because {path.Name} has no rooms.");
                 return null;
@@ -496,7 +512,7 @@ namespace RyansLibrary.Labyrinth
             // Set cells that are supposed to be available to available
             foreach (RoomCell cell in roomCells)
             {
-                if (!cell.IsAvilable)   // Make sure cell is available
+                if (!cell.IsAvailable)   // Make sure cell is available
                     continue;
 
                 Vector3Int cellPosition = roomOrigin + cell.Position;      // Find the actual position in room space of the cell

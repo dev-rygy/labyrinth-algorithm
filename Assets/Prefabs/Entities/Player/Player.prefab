@@ -74743,7 +74743,7 @@ MonoBehaviour:
   <DebugStateMachine>k__BackingField: 0
   <PlayerCharacter>k__BackingField: {fileID: 5327056992418592808}
   <UnarmedWeapon>k__BackingField: {fileID: 6515989059875717228}
-  <MovementSpeed>k__BackingField: 5
+  _movementSpeed: 5
   <MoveRotationDampValue>k__BackingField: 10
   <ClimbSpeed>k__BackingField: 3
   <ClimbTriggerOffset>k__BackingField: 0.1
@@ -74781,7 +74781,7 @@ MonoBehaviour:
   <GravityMultiplier>k__BackingField: -9.81
   <StaticVerticalVelocity>k__BackingField: -2
   _terminalVelocity: 50
-  <HasGravity>k__BackingField: 1
+  <HasGravity>k__BackingField: 0
   EnableGroundCheck: 1
   _groundRayFanAngleX: 70
   _groundRayCount: 5

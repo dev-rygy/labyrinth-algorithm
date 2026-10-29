@@ -5,7 +5,6 @@
  * Notes:           
 */
 using RyansLibrary.Labyrinth;
-using UnityEngine;
 
 /// <summary>
 /// Operation that reads how many blueprint rooms currently exist in a Path and returns the count mainly for
@@ -31,7 +30,7 @@ public class GetPathLengthOp : BlueprintOperation
         if (!TryGetInput(0, out Path path))
             return false;
 
-        _context.Set(OutputPorts[0], path.BlueprintCount());
+        _context.Set(OutputPorts[0], path.BlueprintCount);
         return true;
     }
 }

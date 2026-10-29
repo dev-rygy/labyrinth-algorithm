@@ -23,6 +23,7 @@ public class ApplicationController : MonoBehaviour
     [Header("Player")]
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Vector3 playerSpawnPoint = new Vector3(65, 0, 0);
+    [SerializeField] private bool _spawnPlayerOnStart = true;
     [Header("Camera")]
     [SerializeField] private CameraController _cameraController;
     [SerializeField] private CameraMode _startCameraMode = CameraMode.Player;
@@ -83,7 +84,8 @@ public class ApplicationController : MonoBehaviour
         yield return MapGeneratorController.Instance.StartGeneration();
 
         // Spawn player
-        _player = Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
+        if (_spawnPlayerOnStart)
+            _player = Instantiate(playerPrefab, playerSpawnPoint, Quaternion.identity);
 
         _cameraController.SetCameraMode(_startCameraMode);
 
@@ -95,6 +97,7 @@ public class ApplicationController : MonoBehaviour
     {
         // Clear Labyrinth
         MapGeneratorController.Instance.ResetLabyrinth();
+        yield return null;
 
         // Restart Map Generation
         yield return MapGeneratorController.Instance.StartGeneration();

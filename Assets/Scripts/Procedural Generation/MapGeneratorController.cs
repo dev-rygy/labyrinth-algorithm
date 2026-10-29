@@ -5,7 +5,6 @@
  * Notes:           
 */
 using RyansLibrary.Debugging;
-using RyansLibrary.UnityEditor;
 using RyansLibrary.Utilities;
 using System;
 using System.Collections;
@@ -28,6 +27,43 @@ namespace RyansLibrary.Labyrinth
         [field: SerializeField] public Zone ConnectionZone { get; set; }
         [field: SerializeField] public BoundsInt ZoneSpawnBounds { get; set; }
     }
+
+    // Step budget for a stepwise procedure; a coroutine waits on it before each step
+    public class StepGate
+    {
+        private int _budget = 0;
+        private bool _runToEnd = false;
+
+        public void Advance(int stepLength)
+        {
+            if (stepLength <= 0)
+                return;
+
+            _budget += stepLength;
+            _runToEnd = false;
+        }
+
+        public void AdvanceAll()
+        {
+            _runToEnd = true;
+        }
+
+        public void Reset()
+        {
+            _budget = 0;
+            _runToEnd = false;
+        }
+
+        // Halts until a step is available, then consumes it
+        public IEnumerator WaitForStep()
+        {
+            while (!_runToEnd && _budget <= 0)
+                yield return null;
+
+            if (!_runToEnd)
+                _budget--;
+        }
+    }
     #endregion
 
     /// <summary>
@@ -38,10 +74,11 @@ namespace RyansLibrary.Labyrinth
     ///      BlueprintOperation/BlueprintData nodes (drunkard walk, triangulation, MST, pathfinding, ...) and queues
     ///      them in MapGenerationContext.OperationQueue. Nothing is actually generated yet at this point.
     ///   3. ExecuteOperations - drains that queue one operation at a time (a coroutine so it can be stepped/paused
-    ///      for debugging via DebugSequential/Advance/AdvanceAll). This is where the abstract Blueprint grid actually
+    ///      for debugging via DebugSequential/AdvanceOperation/AdvanceOperationsAll). This is where the abstract Blueprint grid actually
     ///      gets filled in.
     ///   4. GenerateRooms - walks the finished Blueprint grid and hands it to RoomGenerator to instantiate real room
-    ///      prefabs in world space.
+    ///      prefabs in world space (a coroutine so the parser can be stepped one room at a time for debugging via
+    ///      DebugParserSequential/AdvanceParser/AdvanceParserAll).
     /// Splitting "decide the algorithm" (stage 2) from "run it" (stage 3) is what the whole BlueprintOperation graph
     /// design is for.
     /// </summary>
@@ -109,25 +146,30 @@ namespace RyansLibrary.Labyrinth
         [SerializeField] private bool _debugLogs = false;
         [SerializeField] private bool _debugBlueprintLogs = false;
         [SerializeField] private bool _debugRoomGeneratorLogs = false;
+        [Tooltip("Pauses room generation after each parsed room until stepped with mapgenerator.parser.step.")]
 
-        // Flags
+        // Generation Flags
         private bool _isGenerating;
         public bool IsGenerating => _isGenerating;
         private bool _hasGenerated;
         public bool HasGenerated => _hasGenerated;
-        private bool _isDubuggingSequential;
-        public bool IsDebuggingSequential => _isDubuggingSequential;
+        private bool _isExecutingOperations;
+        private bool _isParsing;
 
+        // Stepwise Debugging
+        private bool _debugOperationSequential = true;
+        public bool DebugOperationSequential => _debugOperationSequential;
+        private bool _debugParserSequential = true;
+        public bool DebugParserSequential => _debugParserSequential;
 
         // Storage for blueprints and blueprint operations
         private MapGenerationContext _context;
         public MapGenerationContext Context => _context;
-
         private RoomGenerator _roomGenerator;
 
-        // Stepwise procedure
-        private int _stepBudget = 0;
-        private bool _runToEnd = false;
+        // Stepwise procedures; separate budgets so leftover operation steps never spawn rooms
+        private readonly StepGate _operationGate = new();
+        private readonly StepGate _parserGate = new();
         #endregion
 
         #region Mono
@@ -189,6 +231,7 @@ namespace RyansLibrary.Labyrinth
             // Create new context - Proc gen state and storage manager
             _context = new();
 
+            // TODO: Replace with new Map Generator
             // Initialize Room Generator
             _roomGenerator = new RoomGenerator(_context, _gridUnitSize, _roomContainer);
 
@@ -206,7 +249,6 @@ namespace RyansLibrary.Labyrinth
 
             // Toggle Debug Logs
             ToggleBlueprintLogs(_debugBlueprintLogs);
-            ToggleRoomGeneratorLogs(_debugRoomGeneratorLogs);
         }
 
         private void InitializeZone(Zone zone)
@@ -220,7 +262,7 @@ namespace RyansLibrary.Labyrinth
         /// 1. Initialization
         /// 2. Zone Spawning
         /// 3. Load and Execute Blueprint Operations
-        /// 4. Generate Rooms
+        /// 4. Generate _rooms
         /// </summary>
         /// <returns></returns>
         private IEnumerator GenerateLabyrinth()
@@ -248,7 +290,7 @@ namespace RyansLibrary.Labyrinth
             yield return StartCoroutine(ExecuteOperations());
 
             // Parse the blueprint and generate rooms
-            GenerateRooms();
+            yield return StartCoroutine(GenerateRooms());
 
             // Labyrinth Generation Success
             // Event to signal when map generation is complete
@@ -332,46 +374,51 @@ namespace RyansLibrary.Labyrinth
                 // Generate Main Path to boss
                 LoadMainPathOperations(zone);
 
-
                 // Generate Alternative paths (prize, trial, etc.)
                 LoadAltPathOperations(zone);
             }
         }
 
-        #region Operation Execution
-        private void ConsumeStep()
+        public void AdvanceOperation(int stepLength)
         {
             // Make sure the algorithm is still running
             if (!_isGenerating || _hasGenerated)
                 return;
 
-            if (_runToEnd)
-                return;
-
-            if (_stepBudget > 0)
-                _stepBudget--;
+            _operationGate.Advance(stepLength);
         }
 
-        public void Advance(int stepLength)
+        public void AdvanceOperationsAll()
         {
             // Make sure the algorithm is still running
             if (!_isGenerating || _hasGenerated)
                 return;
 
-            if (stepLength <= 0)
-                return;
-
-            _stepBudget += stepLength;
-            _runToEnd = false;
+            _operationGate.AdvanceAll();
         }
 
-        public void AdvanceAll()
+        public void AdvanceParser(int stepLength)
         {
+            if (_isExecutingOperations)
+                return;
+
             // Make sure the algorithm is still running
             if (!_isGenerating || _hasGenerated)
                 return;
 
-            _runToEnd = true;
+            _parserGate.Advance(stepLength);
+        }
+
+        public void AdvanceParserAll()
+        {
+            if (_isExecutingOperations)
+                return;
+
+            // Make sure the algorithm is still running
+            if (!_isGenerating || _hasGenerated)
+                return;
+
+            _parserGate.AdvanceAll();
         }
 
         private IEnumerator ExecuteOperations()
@@ -379,17 +426,14 @@ namespace RyansLibrary.Labyrinth
             OnOperationsStarted?.Invoke();
             OnOperationsGetTotal?.Invoke(GetOperationCount());
 
+            _isExecutingOperations = true;
+
             // Execute operations and generate blueprints
             while (_context.OperationQueue.Count > 0)
             {
-                if (_isDubuggingSequential)
-                {
-                    // Halt the execution of operations
-                    while (!_runToEnd && _stepBudget <= 0)
-                        yield return null;
-
-                    ConsumeStep();
-                }
+                // Halt the execution of operations
+                if (_debugOperationSequential)
+                    yield return _operationGate.WaitForStep();
 
                 // Dequeue the current opration
                 BlueprintOperation operation = _context.OperationQueueDequeue();
@@ -423,37 +467,34 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
+            _isExecutingOperations = false;
+
             OnOperationsEnded?.Invoke();
 
             if (_debugBlueprintLogs) Debug.Log("End of operation execution.");
         }
         #endregion
 
-        private void GenerateRooms()
+        private IEnumerator GenerateRooms()
         {
             OnRoomParseStarted?.Invoke();
 
-            // Generate Zone Connection Rooms
+            _isParsing = true;
+
+            // Generate Zone Connection _rooms
             // Since the connection zones are just a zone generate rooms normally
+            // GenerateZoneRooms stops the algorithm itself if any room fails to generate
             foreach (ZoneConnectionEntry entry in _zoneConnections)
             {
-                if (!GenerateZoneRooms(entry.ConnectionZone))
-                {
-                    GenerationFailed();
-                    return;     // Room Generation failed for zone connection; stop algorithm
-                }
+                yield return StartCoroutine(GenerateZoneRooms(entry.ConnectionZone));
             }
-
 
             foreach (Zone zone in _zones)
             {
-                if (!GenerateZoneRooms(zone))
-                {
-                    Debug.LogError("Rooms failed to generate.");
-                    GenerationFailed();
-                    return;
-                }
+                yield return StartCoroutine(GenerateZoneRooms(zone));
             }
+
+            _isParsing = false;
 
             OnRoomParseDone?.Invoke();
 
@@ -471,11 +512,14 @@ namespace RyansLibrary.Labyrinth
 
             // Stop the entire generation coroutine chain
             StopAllCoroutines();
-            _context.ClearAll();
+            if (_context != null)
+                _context.ClearAll();
 
             // Reset stepwise procedure values
-            _stepBudget = 0;
-            _runToEnd = false;
+            if (_operationGate != null)
+                _operationGate.Reset();
+            if (_parserGate != null)
+                _parserGate.Reset();
 
             DestroyAllRooms();      // Destroy all rooms from last generation
 
@@ -498,7 +542,6 @@ namespace RyansLibrary.Labyrinth
 
             OnGenerationFailed?.Invoke();
         }
-        #endregion
 
         #region Blueprint Procedure
         /// <summary>
@@ -525,11 +568,11 @@ namespace RyansLibrary.Labyrinth
             // Generate Delauney Triangulation
             LoadMainPathConnectionsOperations(zone);
 
-            if (_debugLogs) Debug.Log($"{zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount()} rooms.");
+            if (_debugLogs) Debug.Log($"{zone.Name} generated path {zone.MainPath.name} with {zone.MainPath.BlueprintCount} rooms.");
         }
 
         /// <summary>
-        /// Places all Unique Rooms specified in zone.
+        /// Places all Unique _rooms specified in zone.
         /// </summary>
         /// <param name="zone">Zone to place unique rooms in</param>
         /// <returns>Placement success or failure</returns>
@@ -540,8 +583,8 @@ namespace RyansLibrary.Labyrinth
             BoundsIntBlueprintData zoneBoundsBlueprintData = new BoundsIntBlueprintData(_context, zone.Bounds);
             zoneBoundsBlueprintData.LoadIntoMemory();
 
-            // 1.) Spawn Fixed Rooms (Rooms that have a set spawn destination)
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            // 1.) Spawn Fixed _rooms (_rooms that have a set spawn destination)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                 {
@@ -554,8 +597,8 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            // 2.) Spawn Bounded Rooms (Rooms that have a unique spawn area)
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            // 2.) Spawn Bounded _rooms (_rooms that have a unique spawn area)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Constrained)
                 {
@@ -573,8 +616,8 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-            // 3.) Spawn Free Rooms (Rooms that can spawn in any point inside the zone bounds)
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            // 3.) Spawn Free _rooms (_rooms that can spawn in any point inside the zone bounds)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.PlacementType == RoomPlacementType.Free)
                 {
@@ -891,30 +934,36 @@ namespace RyansLibrary.Labyrinth
         /// paths and generate rooms based on conditions. These conditions are based on 
         /// room shape chance, room prefab chance, if the room shape will align adequately to the path, and what path
         /// the room is a part of. It will also activate the entranceways of rooms based on the path's sequence.
+        /// Stops the algorithm (GenerationFailed) if any room fails to generate.
         /// </summary>
-        public bool GenerateZoneRooms(Zone zone)
+        public IEnumerator GenerateZoneRooms(Zone zone)
         {
             // Must have a zone to generate anything
             if (zone == null)
             {
                 Debug.LogError($"Zone Entry Missing for room generation procedure.");
-                return false;
+                GenerationFailed();
+                yield break;
             }
 
-            // Generate Unique Rooms
-            bool result;
-            result = GenerateUniqueRooms(zone);
-            if (!result)
+            // All of a zone's unique rooms spawn together in one parser step
+            if (_debugParserSequential && zone.UniqueRooms.Count > 0)
+                yield return _parserGate.WaitForStep();
+
+            // Generate Unique _rooms
+            if (!GenerateUniqueRooms(zone))
             {
                 Debug.LogError($"Unique Room Generation for zone {zone} failed.");
-                return false;
+                GenerationFailed();
+                yield break;
             }
 
             // Turn off blueprint availability for unique rooms; we do not want to parse and spawn new rooms in these spots
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
-                // If room is Fixed then actual position needs to be calculated
                 Vector3Int actualPosition = entry.SpawnPosition;
+
+                // If room is Fixed then actual position needs to be calculated relative to the bounded zone
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                     actualPosition += zone.Bounds.position;
 
@@ -926,34 +975,56 @@ namespace RyansLibrary.Labyrinth
                 if (_debugRoomGeneratorLogs) Debug.Log("Blueprint Room: " + actualPosition + "has available cells disabled.");
             }
 
-            // Generate Rooms along main path
-            result = _roomGenerator.ParsePathAndGenerateRooms(zone.MainPath);
-            if (!result)
-            {
-                Debug.LogError($"Path Room Generation for path {zone.MainPath} in zone {zone} failed.");
-                return false;
-            }
+            // Generate _rooms along main path
+            yield return StartCoroutine(GeneratePathRooms(zone, zone.MainPath));
 
-            // Generate Rooms along alt. paths
+            // Generate _rooms along alt. paths
             foreach (Path path in zone.Paths)
             {
-                result = _roomGenerator.ParsePathAndGenerateRooms(path);
-                if (!result)
+                yield return StartCoroutine(GeneratePathRooms(zone, path));
+            }
+        }
+
+        /// <summary>
+        /// Parses a path and generates its rooms one blueprint at a time. With stepwise parser debugging on, halts
+        /// before each room until stepped; otherwise every room spawns in the same frame.
+        /// </summary>
+        private IEnumerator GeneratePathRooms(Zone zone, Path path)
+        {
+            if (!_roomGenerator.CheckParsable(path, out List<ShapeData> shapes))
+            {
+                Debug.LogError($"Path Room Generation for path {path} in zone {zone} failed.");
+                GenerationFailed();
+                yield break;
+            }
+
+            foreach (Blueprint blueprint in path.BlueprintList)
+            {
+                // Blueprints already claimed by a room are skipped and don't count as a step
+                if (!blueprint.Available)
+                    continue;
+
+                // Halt the parser
+                if (_debugParserSequential)
+                    yield return _parserGate.WaitForStep();
+
+                // Room generation failed for path; stop algorithm
+                if (_roomGenerator.ParseBlueprintAndGenerateRoom(path, shapes, blueprint) == null)
                 {
                     Debug.LogError($"Path Room Generation for path {path} in zone {zone} failed.");
-                    return false;
+                    GenerationFailed();
+                    yield break;
                 }
             }
-            return true;
         }
 
         // Unlike ParsePathAndGenerateRooms (which picks a room shape/prefab based on the path's blueprint layout),
-        // unique rooms already know their exact prefab from RoomEntry, so this just instantiates it directly at its
+        // unique rooms already know their exact prefab from UniqueRoomEntry, so this just instantiates it directly at its
         // resolved position and copies over whichever entranceway flags were set on the blueprint grid during
         // generation (so doors line up with whatever corridor was pathfound into this room).
         public bool GenerateUniqueRooms(Zone zone)
         {
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (_context.BlueprintDictionary == null)
                 {
@@ -966,7 +1037,7 @@ namespace RyansLibrary.Labyrinth
                 if (entry.PlacementType == RoomPlacementType.Fixed)
                     actualPosition += zone.Bounds.position;
 
-                Room generatedRoom = _roomGenerator.GenerateRoom(entry.Prefab, actualPosition, zone.MainPath);
+                Room generatedRoom = _roomGenerator.GenerateRoom(zone.MainPath, entry.Prefab, actualPosition);
 
                 // TODO: Make this into a new function in the room generator. Make the function check for all cells inside
                 // the unique room.
@@ -974,7 +1045,7 @@ namespace RyansLibrary.Labyrinth
                 {
                     for (int i = 0; i < generatedRoom.RoomCells.Count; i++)
                     {
-                        if (!generatedRoom.RoomCells[i].IsAvilable)     // Make sure cell is available
+                        if (!generatedRoom.RoomCells[i].IsAvailable)     // Make sure cell is available
                             continue;
 
                         if (_context.BlueprintDictionary.TryGetValue(actualPosition + generatedRoom.RoomCells[i].Position, out Blueprint blueprint))
@@ -1005,8 +1076,8 @@ namespace RyansLibrary.Labyrinth
         {
             float totalCellOccupancy = 0;
 
-            // Add Unique Room volume
-            foreach (RoomEntry entry in zone.UniqueRooms)
+            // AddBlueprint Unique Room volume
+            foreach (UniqueRoomEntry entry in zone.UniqueRooms)
             {
                 if (entry.Prefab.TryGetComponent(out Room room))
                 {
@@ -1016,13 +1087,13 @@ namespace RyansLibrary.Labyrinth
                     Debug.LogWarning("Room Entry Prefab has no Room Script");
             }
 
-            // Add Divergent Room volume
+            // AddBlueprint Divergent Room volume
             totalCellOccupancy += zone.DivergentRoomsCellOccupancy;
 
-            // Add Main Path volume
+            // AddBlueprint Main Path volume
             totalCellOccupancy += zone.MainPath.DesiredPathLength;
 
-            // Add Alt. Paths volume
+            // AddBlueprint Alt. Paths volume
             foreach (Path path in zone.Paths)
                 totalCellOccupancy += path.DesiredPathLength;
 
@@ -1081,65 +1152,23 @@ namespace RyansLibrary.Labyrinth
             BlueprintGenerator.ToggleDebugLogs(_debugBlueprintLogs);
         }
 
-        public void ToggleRoomGeneratorLogs(bool toggle)
+        // Stepwise Function Toggles
+        public void ToggleOperationStepwiseDebugging(bool toggle)
         {
-            if (_roomGenerator == null)
-                return;
-
-            _roomGenerator.ToggleDebugLogs(toggle);
+            _debugOperationSequential = toggle;
         }
 
-        // Stepwise Function Toggles
-        public void ToggleStepwiseDebugging(bool toggle)
+        public void ToggleParserStepwiseDebugging(bool toggle)
         {
-            _isDubuggingSequential = toggle;
+            _debugParserSequential = toggle;
         }
         #endregion
 
         #region Console Commands
         private void RegisterConsoleCommands()
         {
-            // Map generator step command - Step the map generator by a desired amount of operations.
-            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.step",
-                "When debugging will advance the map generator operation queue by a desired amount of operations.",
-                args =>
-                {
-                    int stepLength = 1;        // Default step length
-
-                    if (args.Length < 1)        // No step amount given; default to stepping 1 operation
-                    {
-                        Advance(stepLength);
-                        return;
-                    }
-                    else if (int.TryParse(args[0], out stepLength))      // Step amount given and is valid
-                    {
-                        if (stepLength < 1)
-                        {
-                            Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
-                            return;
-                        }
-
-                        Advance(stepLength);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
-                    }
-                    Debug.Log($"Map generator stepped {stepLength} operation(s).");
-                }));
-
-            // Map generator step all command - Execute all of the remaining map generator operations.
-            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.stepall",
-                "When debugging, will execute all the remaining operations in the operation queue.",
-                args =>
-                {
-                    AdvanceAll();
-                    Debug.Log("Map Generator executed all remaining operations.");
-                }));
-
-            // Map generator reset command - Resets and restarts the map generator state.
+            /// ******* Execution Debugging Commands *******
+            // Map generator start command - Begins generating a new map. Cannot be used while generating or when a map is already generated.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.start",
                 "Begins generating a new map. Cannot be used while generating or when a map is already generated.",
@@ -1159,6 +1188,7 @@ namespace RyansLibrary.Labyrinth
                     Debug.Log("All data deleted. Map Generator restarted.");
                 }));
 
+            /// ******* Seed Debugging Commands *******
             // Register custom seed command - Sets the map generator to use a custom seed for generation.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.setseed",
@@ -1185,7 +1215,7 @@ namespace RyansLibrary.Labyrinth
                 }
                 ));
 
-            // Register custom seed command - Sets the map generator to use a custom seed for generation.
+            // Map gnerator display seed command - Displays the current seed value to the console.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.seed",
                 "Displays the current seed value to the console.",
@@ -1195,7 +1225,7 @@ namespace RyansLibrary.Labyrinth
                 }
                 ));
 
-            // Map generator restart command - Resets and restarts the map generator state.
+            // Map generator toggle random seed command - Toggles a random seed for map generation instead of a custom seed.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
                 "mapgenerator.togglerandomseed",
                 "Toggles the use of a random seed for map generation.",
@@ -1206,11 +1236,11 @@ namespace RyansLibrary.Labyrinth
                         Debug.LogWarning("No argument given, please enter true or false.");
                         return;
                     }
-                    else if (args[0] == "true")
+                    else if (args[0] == "true")     // Use random seed for generation
                     {
                         _generateRandomSeed = true;
                     }
-                    else if (args[0] == "false")
+                    else if (args[0] == "false")    // Use custom seed for generation
                     {
                         _generateRandomSeed = false;
                     }
@@ -1223,9 +1253,61 @@ namespace RyansLibrary.Labyrinth
                     Debug.Log($"Map Generator toggle random seed set to {_generateRandomSeed}.");
                 }));
 
-            // Map generator restart command - Resets and restarts the map generator state.
+            /// ******* Blueprint Operation Debugging Commands *******
+            // Blueprint operation queue step command - Step the blueprint operation queue by a desired amount of operations.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.toggleblueprintstacktrace",
+                "mapgenerator.blueprint.step",
+                "When debugging will advance the map generator operation queue by a desired amount of operations.",
+                args =>
+                {
+                    if (!_isGenerating)
+                    {
+                        Debug.LogWarning("Cannot step blueprint parser when not generating.");
+                        return;
+                    }
+
+                    int stepLength = 1;        // Default step length
+
+                    if (args.Length < 1)        // No step amount given; default to stepping 1 operation
+                    {
+                        AdvanceOperation(stepLength);
+                    }
+                    else if (int.TryParse(args[0], out stepLength))      // Step amount given and is valid
+                    {
+                        if (stepLength < 1)
+                        {
+                            Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
+                            return;
+                        }
+
+                        AdvanceOperation(stepLength);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
+                    }
+                    Debug.Log($"Map generator stepped {stepLength} operation(s).");
+                }));
+
+            // Blueprint operation queue step all command - Execute all of the remaining blueprint operations.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.blueprint.stepall",
+                "When debugging, will execute all the remaining operations in the operation queue.",
+                args =>
+                {
+                    if (!_isGenerating)
+                    {
+                        Debug.LogWarning("Cannot step blueprint parser when not generating.");
+                        return;
+                    }
+
+                    AdvanceOperationsAll();
+                    Debug.Log("Map Generator executed all remaining operations.");
+                }));
+
+            // Map generator toggle stack trace command - Shows a stack trace of all blueprint operations in the console for debugging purposes.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.blueprint.togglestacktrace",
                 "Displays blueprint operation log to the console.",
                 args =>
                 {
@@ -1249,6 +1331,97 @@ namespace RyansLibrary.Labyrinth
 
                     Debug.Log($"Blueprint stack trace set to {_debugBlueprintLogs}.");
                 }, true));
+
+            /// ******* Blueprint Parser Debugging Commands *******
+            // Blueprint parser step command - Step the blueprint parser by a desired amount of operations.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.parser.step",
+                "When debugging will advance the blueprint parser by a desired amount of rooms.",
+                args =>
+                {
+                    if (!_isGenerating)
+                    {
+                        Debug.LogWarning("Cannot step blueprint parser when not generating.");
+                        return;
+                    }
+
+                    if (_isExecutingOperations)
+                    {
+                        Debug.LogWarning("Cannot step blueprint parser until blueprint execution is complete.");
+                        return;
+                    }
+
+                    int stepLength = 1;        // Default step length
+
+                    if (args.Length < 1)        // No step amount given; default to stepping 1 room
+                    {
+                        AdvanceParser(stepLength);
+                    }
+                    else if (int.TryParse(args[0], out stepLength))      // Step amount given and is valid
+                    {
+                        if (stepLength < 1)
+                        {
+                            Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
+                            return;
+                        }
+
+                        AdvanceParser(stepLength);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a positive amount of steps to advance.");
+                    }
+                    Debug.Log($"Map generator parser parsed and generated {stepLength} room(s).");
+                }));
+
+            // Blueprint parser step all command - Parse all remaining blueprints in map.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.parser.stepall",
+                "When debugging will execute all the remaining operations in the blueprint parser.",
+                args =>
+                {
+                    if (!_isGenerating)
+                    {
+                        Debug.LogWarning("Cannot step blueprint parser when not generating.");
+                        return;
+                    }
+
+                    if (_isExecutingOperations)
+                    {
+                        Debug.LogWarning("Cannot step blueprint parser until blueprint execution is complete.");
+                        return;
+                    }
+
+                    AdvanceParserAll();
+                    Debug.Log("Map Generator parsed all remaining blueprints.");
+                }));
+
+            // Blueprint parser toggle stepwise command - Toggles pausing the parser after each room until stepped.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.parser.togglestepwise",
+                "Toggles stepping the blueprint parser one room at a time.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("No argument given, please enter true or false.");
+                        return;
+                    }
+                    else if (args[0] == "true")
+                    {
+                        ToggleParserStepwiseDebugging(true);
+                    }
+                    else if (args[0] == "false")
+                    {
+                        ToggleParserStepwiseDebugging(false);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please input either true or false.");
+                    }
+
+                    Debug.Log($"Blueprint parser stepwise set to {_debugParserSequential}.");
+                }));
         }
         #endregion
     }

@@ -35,12 +35,12 @@ namespace RyansLibrary.Labyrinth
         {
             if (!TryGetInput(0, out Path path))
                 return false;
-            if (!TryGetInput(1, out RoomEntry entry))
+            if (!TryGetInput(1, out UniqueRoomEntry entry))
                 return false;
             if (!TryGetInput(2, out BoundsInt bounds))
                 return false;
 
-            if (path == null || entry == null)
+            if (path == null || entry.Prefab == null)
             {
                 LogNullError();
                 return false;
@@ -57,7 +57,7 @@ namespace RyansLibrary.Labyrinth
         /// <param name="path">Path to store blueprints in</param>
         /// <param name="bounds">Bounds to constrict placement</param>
         /// <returns></returns>
-        private bool PlaceFixedUniqueRoomBlueprints(Path path, RoomEntry entry, BoundsInt bounds)
+        private bool PlaceFixedUniqueRoomBlueprints(Path path, UniqueRoomEntry entry, BoundsInt bounds)
         {
             if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component
             {
@@ -76,7 +76,7 @@ namespace RyansLibrary.Labyrinth
 
                 // Check Collision with other rooms
                 List<Blueprint> blueprintList;
-                blueprintList = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, roomOrigin, room.RoomDimensions, false);      // Fill room space with blueprint rooms
+                blueprintList = BlueprintGenerator.GenerateBlueprintsFromDimensions(_context, path, roomOrigin, room.RoomDimensions, false, room.RoomCells);      // Fill room space with blueprint rooms
                 if (blueprintList == null)     // Room was outside the bounds of the zone
                 {
                     Debug.LogError($"PlaceFixedBlueprintsOp: Unique Fixed Room \"{room.name}\" was obstructed and could not be placed.");

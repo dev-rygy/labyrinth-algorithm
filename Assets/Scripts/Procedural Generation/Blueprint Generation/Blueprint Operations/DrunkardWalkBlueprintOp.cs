@@ -72,9 +72,9 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
             return false;
         }
 
-        if (endIndex >= branchedPath.BlueprintCount() || startIndex < 0)
+        if (endIndex >= branchedPath.BlueprintCount || startIndex < 0)
         {
-            Debug.LogError($"DrunkardWalkBlueprintOp: Ending index ({endIndex}) was greater than the path's length ({branchedPath.BlueprintCount()}) " +
+            Debug.LogError($"DrunkardWalkBlueprintOp: Ending index ({endIndex}) was greater than the path's length ({branchedPath.BlueprintCount}) " +
                 $"OR starting index ({startIndex}) was less than 0.");
             return false;
         }
@@ -125,7 +125,7 @@ public class DrunkardWalkBlueprintOp : BlueprintOperation
     private bool BlueprintDrunkardWalkRecursive(Path path, BoundsInt bounds, Blueprint previousBlueprint, bool canGoVertical)
     {
         // Amount of desired blueprints placed; stop condition
-        if (path.BlueprintCount() >= path.DesiredPathLength)
+        if (path.BlueprintCount >= path.DesiredPathLength)
             return true;
 
         // Attempt to place a new blueprint

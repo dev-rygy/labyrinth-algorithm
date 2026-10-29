@@ -147,9 +147,9 @@ namespace RyansLibrary.Labyrinth
                     DrawBoundingBox(zone.Bounds, Vector3.zero, _zoneBoundsColor, drawer);
 
                     // Draw unique room bounds
-                    foreach (RoomEntry room in zone.UniqueRooms)
+                    foreach (UniqueRoomEntry room in zone.UniqueRooms)
                     {
-                        if (room == null)
+                        if (room.Prefab == null)
                             continue;
 
                         if (room.PlacementType != RoomPlacementType.Constrained)

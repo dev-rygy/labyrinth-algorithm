@@ -4,10 +4,6 @@
  * Last Modified:   06/04/2026 (Ryan)
  * Notes:           
 */
-using System;
-using UnityEngine;
-using static UnityEngine.LowLevelPhysics2D.PhysicsComposer;
-
 namespace RyansLibrary.Labyrinth
 {
     /// <summary>
@@ -37,7 +33,7 @@ namespace RyansLibrary.Labyrinth
         public override void LoadIntoMemory()
         {
             _context.Set(OutputPorts[0], _cache);
-            _context.Set(OutputPorts[1], _cache.BlueprintCount());
+            _context.Set(OutputPorts[1], _cache.BlueprintCount);
             _context.Set(OutputPorts[2], _cache.BlueprintList);
 
             if (_debugLogs) LogDataAllocation();

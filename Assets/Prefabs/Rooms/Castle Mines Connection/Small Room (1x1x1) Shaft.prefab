@@ -1240,6 +1240,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6698013543921010159, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
         type: 3}
+      propertyPath: _roomCells.Array.data[0].IsAvailable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6698013543921010159, guid: cdbb42a81e2b22d4ebefbc59bafb4207,
+        type: 3}
       propertyPath: _roomCells.Array.data[0].Walls.Array.size
       value: 6
       objectReference: {fileID: 0}

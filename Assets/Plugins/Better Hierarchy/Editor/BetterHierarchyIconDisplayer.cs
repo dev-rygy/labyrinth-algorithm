@@ -12,14 +12,14 @@ namespace Utilities.BetterHierarchy
     {
         private static bool hierarchyHasFocus;
         private static EditorWindow hierarchyEditorWindow;
-        private static readonly HashSet<int> additionalSelectedInstanceIDs;
+        private static readonly HashSet<EntityId> additionalSelectedInstanceIDs;
         private const float HIERARCHY_ICON_WIDTH = 18.5f;
 
         static BetterHierarchyIconDisplayer()
         {
-			additionalSelectedInstanceIDs = new HashSet<int>();
-            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyWindowItemOnGUI;
-            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyWindowItemOnGUI;
+			additionalSelectedInstanceIDs = new HashSet<EntityId>();
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI -= OnHierarchyWindowItemOnGUI;
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI += OnHierarchyWindowItemOnGUI;
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
             OnSettingsChangedEvents -= EditorApplication.RepaintHierarchyWindow;
@@ -47,7 +47,7 @@ namespace Utilities.BetterHierarchy
             return focusedWindow != null && focusedWindow.GetType().Name == "SceneHierarchyWindow";
         }
 
-        private static void OnHierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
+        private static void OnHierarchyWindowItemOnGUI(EntityId instanceID, Rect selectionRect)
         {
             if (!IsEnabled)
                 return;

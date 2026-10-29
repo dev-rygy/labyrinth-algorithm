@@ -34,12 +34,12 @@ namespace RyansLibrary.Labyrinth
         {
             if (!TryGetInput(0, out Path path))
                 return false;
-            if (!TryGetInput(1, out RoomEntry entry))
+            if (!TryGetInput(1, out UniqueRoomEntry entry))
                 return false;
             if (!TryGetInput(2, out BoundsInt bounds))
                 return false;
 
-            if (path is null || entry is null)
+            if (path is null || entry.Prefab is null)
             {
                 LogNullError();
                 return false;
@@ -54,11 +54,11 @@ namespace RyansLibrary.Labyrinth
             return true;
         }
 
-        private bool PlaceBoundedUniqueRoomBlueprints(Path path, RoomEntry entry, BoundsInt bounds)
+        private bool PlaceBoundedUniqueRoomBlueprints(Path path, UniqueRoomEntry entry, BoundsInt bounds)
         {
             if (entry.Prefab.TryGetComponent(out Room room))      // Prefab in entry does not have a Room Component
             {
-                bool result = BlueprintGenerator.PlaceBoundedBlueprints(_context, path, bounds, room.RoomDimensions, out Vector3Int spawnPosition, false);
+                bool result = BlueprintGenerator.PlaceBoundedBlueprints(_context, path, bounds, room.RoomDimensions, out Vector3Int spawnPosition, false, room.RoomCells);
 
                 if (!result)
                 {

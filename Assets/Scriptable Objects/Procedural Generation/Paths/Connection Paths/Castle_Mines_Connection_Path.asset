@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab2be37bdc730874bbc2eaa4348fa132, type: 3}
+  m_Name: Castle_Mines_Connection_Path
+  m_EditorClassIdentifier: 
+  _name: Casle Mines Connection
+  _type: 2
+  <DesiredPathLength>k__BackingField: 30
+  <DrunkardWalkCanGoVertical>k__BackingField: 1
+  <RoomShapes>k__BackingField:
+  - _roomShape: {fileID: 11400000, guid: 4b5d6b85111d7c948a8b2270d65c7183, type: 2}
+    _weight: 100
+    _rooms:
+    - _prefab: {fileID: 8151408096384611613, guid: 2e82e767107d33b45996a06ba7f2d73e, type: 3}
+      _weight: 100
+  PathGizmoColor: {r: 0.7924528, g: 0, b: 0.62481415, a: 0.29803923}

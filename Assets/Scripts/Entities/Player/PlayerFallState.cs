@@ -52,10 +52,7 @@ public class PlayerFallState : PlayerState
         }
     }
 
-    public override void Exit()
-    {
-        Debug.Log("Fall state exited.");
-    }
+    public override void Exit() { }
 
     private IEnumerator LandCo()
     {

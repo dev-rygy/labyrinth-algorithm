@@ -9,6 +9,7 @@
  *                  3.) Start State = { Idle }
  *                  4.) Final States = { Death }
 */
+using RyansLibrary;
 using RyansLibrary.Abilities;
 using RyansLibrary.Debugging;
 using RyansLibrary.Input;

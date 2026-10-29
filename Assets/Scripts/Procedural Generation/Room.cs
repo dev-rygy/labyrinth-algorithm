@@ -1,28 +1,18 @@
 /*
  * Created By:      Ryan Carpenter
  * Date Created:    10/13/2024
- * Last Modified:   07/07/2026 (Ryan)
+ * Last Modified:   09/23/2026 (Ryan)
  * Notes:           Room data; some values set by the 
  *                  Map Generator and some values pre set
 */
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Math = RyansLibrary.Utilities.Math;
 
 namespace RyansLibrary.Labyrinth
 {
-    // Determines how much grid space a room will ocupy.
-    public enum RoomShape
-    {
-        smallRoom,
-        longRoom,
-        tallRoom,
-        bigRoom,
-        lRoom,
-        unique
-    }
-
     // Determines its gameplay and purpose.
     public enum RoomType
     {
@@ -42,15 +32,30 @@ namespace RyansLibrary.Labyrinth
         Deg270 = 3,
     }
 
-    // Determines the offset of the room in the world.
-    public enum RoomShift
+    public static class RoomRotationExtensions
     {
-        N = 0,
-        S = 1,
-        E = 2,
-        W = 3,
-        Up = 4,
-        Down = 5
+        /// <summary>
+        /// Yaw matrix for a room rotation. Same turn as the room's transform, Quaternion.Euler(0, 90 * rotation, 0).
+        /// </summary>
+        public static Math.Matrix3x3Int ToMatrix(this RoomRotation rotation)
+        {
+            return rotation switch
+            {
+                RoomRotation.Deg0 => Math.Matrix3x3Int.Identity,
+                RoomRotation.Deg90 => Math.Matrix3x3Int.RotMatrixY90,
+                RoomRotation.Deg180 => Math.Matrix3x3Int.RotMatrixY180,
+                RoomRotation.Deg270 => Math.Matrix3x3Int.RotMatrixY270,
+                _ => Math.Matrix3x3Int.Identity,
+            };
+        }
+
+        /// <summary>
+        /// Undoes ToMatrix(); maps world offsets back into the room's unrotated (shape) space.
+        /// </summary>
+        public static Math.Matrix3x3Int ToInverseMatrix(this RoomRotation rotation)
+        {
+            return ((RoomRotation)((4 - (int)rotation) % 4)).ToMatrix();
+        }
     }
 
     [Serializable]
@@ -64,7 +69,7 @@ namespace RyansLibrary.Labyrinth
     public struct RoomCell
     {
         [SerializeField] public Vector3Int Position;
-        [SerializeField] public bool IsAvilable;
+        [SerializeField, FormerlySerializedAs("IsAvilable")] public bool IsAvailable;     // Prefabs still save the old misspelled name
         [SerializeField] public List<RoomWall> Walls;
     }
 
@@ -77,15 +82,23 @@ namespace RyansLibrary.Labyrinth
     {
         private const int k_wallCount = 6;
 
+        // Face order shared by Blueprint.EntryPointFlags and RoomCell.Walls: +X, -X, +Z, -Z, +Y, -Y
+        private static readonly Vector3Int[] k_faceDirections =
+        {
+            Vector3Int.right,
+            Vector3Int.left,
+            Vector3Int.forward,
+            Vector3Int.back,
+            Vector3Int.up,
+            Vector3Int.down,
+        };
+
         [Header("Room Components")]
         [SerializeField] private List<RoomCell> _roomCells;
         public List<RoomCell> RoomCells => _roomCells;
-        //[SerializeField] private List<Transform> _roomWalls;
-        //[field: SerializeField] public List<Vector3Int> AvailableCellData { get; private set; }
         [SerializeField] public List<SpawnPad> RoomSpawners;
 
         [Header("Room Properties")]
-        [SerializeField] public RoomShape roomShape;
         [field: SerializeField] public Vector3Int RoomDimensions { get; private set; } = Vector3Int.one;
         [field: SerializeField] public RoomType RoomType { get; private set; }
 
@@ -138,6 +151,34 @@ namespace RyansLibrary.Labyrinth
         }
 
         /// <summary>
+        /// Simply copy the bluePrint room's entranceway flags into the room's open entraceways.
+        /// </summary>
+        /// <param name="blueprintArray">The blueprint room's entranceway array (6 possible entrances)</param>
+        /// <param name="unitIndex">A specific unit space of the room in question</param>
+        /// <param name="rotation">Room's rotation in the world; blueprint flags face world directions, walls face the room's own</param>
+        public void CopyBlueprintEntranceFlags(Blueprint blueprint, RoomCell cell, RoomRotation rotation = RoomRotation.Deg0)
+        {
+            if (!cell.IsAvailable)
+                return;
+
+            Math.Matrix3x3Int rotationMatrix = rotation.ToMatrix();
+
+            for (int i = 0; i < blueprint.EntryPointFlags.Length; i++) // iterate through all six walls of the room cell
+            {
+                if (cell.Walls[i].IsExemptFromMutation)
+                    continue;
+
+                // World face this wall points at once the room is rotated
+                int worldFace = Array.IndexOf(k_faceDirections, rotationMatrix * k_faceDirections[i]);
+
+                if (blueprint.EntryPointFlags[worldFace])
+                    ActivateEntranceway(cell.Walls[i]);
+                else
+                    DeactivateEntranceway(cell.Walls[i]);
+            }
+        }
+
+        /// <summary>
         /// Apply a horizontal rotation to the blueprint entranceway flags so that they match the room's orientation in the world.
         /// Simply shift the values in the blueprint array around to handle a 90 degree rotation.
         /// </summary>
@@ -185,7 +226,7 @@ namespace RyansLibrary.Labyrinth
         {
             for (int i = 0; i < _roomCells.Count; i++)     // iterate through all room cells
             {
-                if (_roomCells[i].IsAvilable)
+                if (_roomCells[i].IsAvailable)
                 {
                     for (int j = 0; j < k_wallCount; j++)     // iterate through the walls/faces of each unit
                     {
@@ -204,7 +245,7 @@ namespace RyansLibrary.Labyrinth
         {
             foreach (RoomCell cell in _roomCells)
             {
-                if (cell.IsAvilable)
+                if (cell.IsAvailable)
                 {
                     foreach (RoomWall wall in cell.Walls)
                     {
@@ -259,7 +300,7 @@ namespace RyansLibrary.Labyrinth
             {
                 Vector3 cellWorldPos = transform.position + (13f * 0.5f) * Vector3.up + (Vector3)cell.Position * 13; // Assuming each cell is 13 units apart
 
-                if (cell.IsAvilable)
+                if (cell.IsAvailable)
                     Gizmos.color = _availableCellColor;
                 else
                     Gizmos.color = _unavailableCellColor;
