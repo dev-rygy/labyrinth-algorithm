@@ -441,7 +441,6 @@ namespace RyansLibrary.Labyrinth
                 }
             }
 
-
             foreach (Zone zone in _zones)
             {
                 if (!GenerateZoneRooms(zone))
@@ -1091,9 +1090,96 @@ namespace RyansLibrary.Labyrinth
         #region Console Commands
         private void RegisterConsoleCommands()
         {
-            // Map generator step command - Step the map generator by a desired amount of operations.
+            /// ******* Execution Debugging Commands *******
+            // Map generator start command - Begins generating a new map. Cannot be used while generating or when a map is already generated.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.step",
+                "mapgenerator.start",
+                "Begins generating a new map. Cannot be used while generating or when a map is already generated.",
+                args =>
+                {
+                    StartCoroutine(GenerateLabyrinth());
+                    Debug.Log("All data deleted. Map Generator restarted.");
+                }));
+
+            // Map generator reset command - Resets and restarts the map generator state.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.reset",
+                "When debugging, will reset the map generator and start a new generation.",
+                args =>
+                {
+                    ResetLabyrinth();
+                    Debug.Log("All data deleted. Map Generator restarted.");
+                }));
+
+            /// ******* Seed Debugging Commands *******
+            // Register custom seed command - Sets the map generator to use a custom seed for generation.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.setseed",
+                "Sets the map generator to use a custom seed for generation.",
+                args =>
+                {
+                    int seed = 0;
+
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("No argument given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
+                        return;
+                    }
+                    else if (!int.TryParse(args[0], out seed))
+                    {
+                        Debug.LogWarning("Invalid argument given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
+                        return;
+                    }
+
+                    _customSeed = seed;
+
+                    OnSeedUpdate?.Invoke();
+                    Debug.Log($"Map Generator seed set to {seed}.");
+                }
+                ));
+
+            // Map gnerator display seed command - Displays the current seed value to the console.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.seed",
+                "Displays the current seed value to the console.",
+                args =>
+                {
+                    Debug.Log($"Seed: {_seed}");
+                }
+                ));
+
+            // Map generator toggle random seed command - Toggles a random seed for map generation instead of a custom seed.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.togglerandomseed",
+                "Toggles the use of a random seed for map generation.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("No argument given, please enter true or false.");
+                        return;
+                    }
+                    else if (args[0] == "true")     // Use random seed for generation
+                    {
+                        _generateRandomSeed = true;
+                    }
+                    else if (args[0] == "false")    // Use custom seed for generation
+                    {
+                        _generateRandomSeed = false;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please input either true or false.");
+                    }
+
+                    OnSeedUpdate?.Invoke();
+                    Debug.Log($"Map Generator toggle random seed set to {_generateRandomSeed}.");
+                }));
+
+            /// ******* Blueprint Operation Debugging Commands *******
+            // Blueprint operation queue step command - Step the blueprint operation queue by a desired amount of operations.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.blueprint.step",
                 "When debugging will advance the map generator operation queue by a desired amount of operations.",
                 args =>
                 {
@@ -1121,9 +1207,9 @@ namespace RyansLibrary.Labyrinth
                     Debug.Log($"Map generator stepped {stepLength} operation(s).");
                 }));
 
-            // Map generator step all command - Execute all of the remaining map generator operations.
+            // Blueprint operation queue step all command - Execute all of the remaining blueprint operations.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.stepall",
+                "mapgenerator.blueprint.stepall",
                 "When debugging, will execute all the remaining operations in the operation queue.",
                 args =>
                 {
@@ -1131,93 +1217,9 @@ namespace RyansLibrary.Labyrinth
                     Debug.Log("Map Generator executed all remaining operations.");
                 }));
 
-            // Map generator reset command - Resets and restarts the map generator state.
+            // Map generator toggle stack trace command - Shows a stack trace of all blueprint operations in the console for debugging purposes.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.start",
-                "Begins generating a new map. Cannot be used while generating or when a map is already generated.",
-                args =>
-                {
-                    StartCoroutine(GenerateLabyrinth());
-                    Debug.Log("All data deleted. Map Generator restarted.");
-                }));
-
-            // Map generator reset command - Resets and restarts the map generator state.
-            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.reset",
-                "When debugging, will reset the map generator and start a new generation.",
-                args =>
-                {
-                    ResetLabyrinth();
-                    Debug.Log("All data deleted. Map Generator restarted.");
-                }));
-
-            // Register custom seed command - Sets the map generator to use a custom seed for generation.
-            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.setseed",
-                "Sets the map generator to use a custom seed for generation.",
-                args =>
-                {
-                    int seed = 0;
-
-                    if (args.Length < 1)
-                    {
-                        Debug.LogWarning("No argument given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
-                        return;
-                    }
-                    else if (!int.TryParse(args[0], out seed))
-                    {
-                        Debug.LogWarning("Invalid argument given, please enter a valid seed value between " + int.MinValue + " and " + int.MaxValue + ".");
-                        return;
-                    }
-
-                    _customSeed = seed;
-
-                    OnSeedUpdate?.Invoke();
-                    Debug.Log($"Map Generator seed set to {seed}.");
-                }
-                ));
-
-            // Register custom seed command - Sets the map generator to use a custom seed for generation.
-            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.seed",
-                "Displays the current seed value to the console.",
-                args =>
-                {
-                    Debug.Log($"Seed: {_seed}");
-                }
-                ));
-
-            // Map generator restart command - Resets and restarts the map generator state.
-            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.togglerandomseed",
-                "Toggles the use of a random seed for map generation.",
-                args =>
-                {
-                    if (args.Length < 1)
-                    {
-                        Debug.LogWarning("No argument given, please enter true or false.");
-                        return;
-                    }
-                    else if (args[0] == "true")
-                    {
-                        _generateRandomSeed = true;
-                    }
-                    else if (args[0] == "false")
-                    {
-                        _generateRandomSeed = false;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please input either true or false.");
-                    }
-
-                    OnSeedUpdate?.Invoke();
-                    Debug.Log($"Map Generator toggle random seed set to {_generateRandomSeed}.");
-                }));
-
-            // Map generator restart command - Resets and restarts the map generator state.
-            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.toggleblueprintstacktrace",
+                "mapgenerator.blueprint.togglestacktrace",
                 "Displays blueprint operation log to the console.",
                 args =>
                 {
@@ -1241,6 +1243,25 @@ namespace RyansLibrary.Labyrinth
 
                     Debug.Log($"Blueprint stack trace set to {_debugBlueprintLogs}.");
                 }, true));
+
+            /// ******* Blueprint Parser Debugging Commands *******
+            // Blueprint parser step command - Step the blueprint parser by a desired amount of operations.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.parser.step",
+                "When debugging will advance the blueprint parser by a desired amount of operations.",
+                args =>
+                {
+                    // TODO: Implement blueprint parser step command
+                }));
+
+            // Blueprint parser step all command - Parse all remaining blueprints in map.
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                "mapgenerator.parser.stepall",
+                "When debugging will execute all the remaining operations in the blueprint parser.",
+                args =>
+                {
+                    // TODO: Implement blueprint parser step all command
+                }));
         }
         #endregion
     }
