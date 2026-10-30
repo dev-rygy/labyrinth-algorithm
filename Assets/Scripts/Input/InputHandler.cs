@@ -55,12 +55,15 @@ namespace RyansLibrary.Input
         [SerializeField] private bool _toggleConsole = true;
         [SerializeField] private bool _debug = false;
 
+        // Console auto-move direction; overrides player and free cam movement input while non-zero
+        private Vector2 _autoMoveInput;
+
         // The player's Unnormalized Input
         private Vector2 _movementInput;
-        public Vector2 MovementInput => _movementInput;
+        public Vector2 MovementInput => _autoMoveInput != Vector2.zero ? _autoMoveInput : _movementInput;
         // The player's Normalized Input
         private Vector2 _moveDirectionNormalized;
-        public Vector2 MoveDirectionNormalized => _moveDirectionNormalized;
+        public Vector2 MoveDirectionNormalized => _autoMoveInput != Vector2.zero ? _autoMoveInput : _moveDirectionNormalized;
         private bool _isHoldingPrimaryCombo;
         public bool IsHoldingPrimaryCombo => _isHoldingPrimaryCombo;
         private bool _isHoldingSecondaryCombo;
@@ -71,9 +74,9 @@ namespace RyansLibrary.Input
         public bool IsHoldingSecondaryPower => _isHoldingSecondaryPower;
 
         private Vector2 _freeCamMoveInput;
-        public Vector2 FreeCamMoveInput => _freeCamMoveInput;
+        public Vector2 FreeCamMoveInput => _autoMoveInput != Vector2.zero ? _autoMoveInput : _freeCamMoveInput;
         private Vector2 _freeCamMoveInputNormalized;
-        public Vector2 FreeCamMoveInputNormalized => _freeCamMoveInputNormalized;
+        public Vector2 FreeCamMoveInputNormalized => _autoMoveInput != Vector2.zero ? _autoMoveInput : _freeCamMoveInputNormalized;
         private Vector2 _freeCamLookInput;
         public Vector2 FreeCamLookInput => _freeCamLookInput;
         private PlayerControls _playerControls;
@@ -142,6 +145,10 @@ namespace RyansLibrary.Input
             _prevActionMap = null;
         }
 
+        private void Update()
+        {
+            //Debug.Log($"Movement Input ({_movementInput})");
+        }
         private void SubscribeToPlayerEvents()
         {
             // Movement Input Events
@@ -440,36 +447,84 @@ namespace RyansLibrary.Input
 
         private void RegisterConsoleCommands()
         {
-            // Map generator restart command - Resets and restarts the map generator state.
+            // Input Move Command - Automoves whatever the player is controlling in a specified direction via console command
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                    "input.map",
-                    "switches input to a specific action map.",
+                    "input.move",
+                    "Automoves the player in a specified direction.",
                 args =>
                     {
                         if (args.Length < 1)
                         {
-                            Debug.LogWarning("No argument given, please enter 'player', 'freecam', or 'console'.");
+                            Debug.LogWarning("No argument given, please enter a direction or 'none' ('left', 'right', 'forward', 'backward', or 'none').");
                             return;
                         }
-                        else if (args[0] == "player")
+
+                        string direction = args[0].ToLower();
+
+                        if (direction == "left")
                         {
-                            SetActionMap(InputMap.Player);
+                            _autoMoveInput = Vector2.left;
                         }
-                        else if (args[0] == "freecam")
+                        else if (direction == "right")
                         {
-                            SetActionMap(InputMap.FreeCam);
+                            _autoMoveInput = Vector2.right;
                         }
-                        else if (args[0] == "console")
+                        else if (direction == "forward")
                         {
-                            SetActionMap(InputMap.Console);
+                            _autoMoveInput = Vector2.up;
+                        }
+                        else if (direction == "backward")
+                        {
+                            _autoMoveInput = Vector2.down;
+                        }
+                        else if (direction == "none")
+                        {
+                            _autoMoveInput = Vector2.zero;
                         }
                         else
                         {
-                            Debug.LogWarning($"Invalid argument '{args[0]}'. Please input 'player', 'freecam', or 'console'.");
+                            Debug.LogWarning($"Invalid argument '{args[0]}'. Please enter a direction or 'none' ('left', 'right', 'forward', 'backward', or 'none').");
+                            return;
                         }
 
-                        Debug.Log($"Input map was switched to {args[0]}.");
+                        // Notify listeners that movement input changed
+                        OnMove?.Invoke();
+                        OnFreeCamMove?.Invoke();
+
+                        Debug.Log($"Movement direction set to {direction}.");
                     }, true));
+
+            // Input Map Command - Allows switching between input maps via console command
+            Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
+                    "input.map",
+                    "Switches input to a specific action map.",
+                args =>
+                {
+                    if (args.Length < 1)
+                    {
+                        Debug.LogWarning("No argument given, please enter 'player', 'freecam', or 'console'.");
+                        return;
+                    }
+                    else if (args[0] == "player")
+                    {
+                        SetActionMap(InputMap.Player);
+                    }
+                    else if (args[0] == "freecam")
+                    {
+                        SetActionMap(InputMap.FreeCam);
+                    }
+                    else if (args[0] == "console")
+                    {
+                        SetActionMap(InputMap.Console);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid argument '{args[0]}'. Please input 'player', 'freecam', or 'console'.");
+                    }
+
+                    Debug.Log($"Input map was switched to {args[0]}.");
+                }, true));
         }
+
     }
 }

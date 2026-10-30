@@ -11,6 +11,7 @@ public class FreeCamera : MonoBehaviour
     [SerializeField] private bool _invertYLook;
     [SerializeField] private float botCamAngleClamp = 0.75f;      // Clamp the top angle of vertical look
     [SerializeField] private float topCamAngleClamp = -0.75f;     // Clamp the bot angle of vertical look
+    [SerializeField] private bool _moveOnAxis = false;
 
     [Header("Required References")]
     [SerializeField] private Transform _cameraPivotTransform;
@@ -79,7 +80,11 @@ public class FreeCamera : MonoBehaviour
     private void Move()
     {
         Vector3 movement = new Vector3(InputHandler.Instance.FreeCamMoveInput.x, 0, InputHandler.Instance.FreeCamMoveInput.y);
-        movement = _cameraPivotTransform.right * movement.x + _cameraOffsetTransform.forward * movement.z;
+
+        if (!_moveOnAxis)       // Move relative to the camera's eye
+        {
+            movement = _cameraPivotTransform.right * movement.x + _cameraOffsetTransform.forward * movement.z;
+        }
 
         if (movement != Vector3.zero)
         {
