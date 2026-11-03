@@ -19,7 +19,7 @@ namespace RyansLibrary.Labyrinth
     /// inspection.
     /// </summary>
     [RequireComponent(typeof(MapGeneratorController))]
-    public class MapGeneratorDebugger : MonoBehaviour
+    public class MapGeneratorGizmoController : MonoBehaviour
     {
         [Header("Debugging")]
         [Space]
