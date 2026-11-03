@@ -1262,7 +1262,13 @@ namespace RyansLibrary.Labyrinth
                 {
                     if (!_isGenerating)
                     {
-                        Debug.LogWarning("Cannot step blueprint parser when not generating.");
+                        Debug.LogWarning("Cannot step through operations when not generating.");
+                        return;
+                    }
+
+                    if (!_isExecutingOperations)
+                    {
+                        Debug.Log("Cannot step anymore operations. Operation execution complete.");
                         return;
                     }
 
@@ -1297,7 +1303,13 @@ namespace RyansLibrary.Labyrinth
                 {
                     if (!_isGenerating)
                     {
-                        Debug.LogWarning("Cannot step blueprint parser when not generating.");
+                        Debug.LogWarning("Cannot step through operations when not generating.");
+                        return;
+                    }
+
+                    if (!_isExecutingOperations)
+                    {
+                        Debug.Log("Cannot step anymore operations. Operation execution complete.");
                         return;
                     }
 
@@ -1351,6 +1363,12 @@ namespace RyansLibrary.Labyrinth
                         return;
                     }
 
+                    if (!_isParsing)
+                    {
+                        Debug.Log("Cannot parse more blueprints. All blueprints parsed.");
+                        return;
+                    }
+
                     int stepLength = 1;        // Default step length
 
                     if (args.Length < 1)        // No step amount given; default to stepping 1 room
@@ -1389,6 +1407,12 @@ namespace RyansLibrary.Labyrinth
                     if (_isExecutingOperations)
                     {
                         Debug.LogWarning("Cannot step blueprint parser until blueprint execution is complete.");
+                        return;
+                    }
+
+                    if (!_isParsing)
+                    {
+                        Debug.Log("Cannot parse more blueprints. All blueprints parsed.");
                         return;
                     }
 
