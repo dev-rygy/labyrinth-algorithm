@@ -1170,7 +1170,7 @@ namespace RyansLibrary.Labyrinth
             /// ******* Execution Debugging Commands *******
             // Map generator start command - Begins generating a new map. Cannot be used while generating or when a map is already generated.
             Console.CommandRegistry.RegisterCommand(new ConsoleCommand(
-                "mapgenerator.start",
+                "mapgenerator.init",
                 "Begins generating a new map. Cannot be used while generating or when a map is already generated.",
                 args =>
                 {
